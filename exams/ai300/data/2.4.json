@@ -633,24 +633,24 @@
   "obj": "2.4.3",
   "difficulty": "hard",
   "type": "single",
-  "stem": "Margie's Travel has a schedule named nightly_retrain that User1 created. The schedule triggers a retraining pipeline job that runs on a compute cluster with a managed identity. Last week, an administrator removed the role assignment of User1 on the workspace. Since then, every job that the schedule triggers fails, although the schedule is enabled and earlier jobs succeeded.\n\nWhat should you do?",
+  "stem": "A. Datum Corporation monitors a fraud detection model with Azure Machine Learning model monitoring. The risk team needs an alert when the standard deviation of any numerical input feature in production data exceeds 2, a metric that no prebuilt signal computes. A data scientist registers a component named std_signal that computes a metric named std_deviation for each feature. You create the monitor from a YAML definition by using az ml schedule create.\n\nWhich configuration should you use?",
   "choices": [
-   "Assign the AzureML Data Scientist role to the managed identity of the cluster.",
-   "Run `az ml schedule enable -n nightly_retrain` to reactivate the schedule.",
-   "Set start_time of the schedule to the current time, and then update it.",
-   "Restore the permissions that User1 needs to submit jobs in the workspace."
+   "Hardcode the limit of 2 in std_signal, output only metric_name and metric_value, and omit metric_thresholds from the custom signal",
+   "Add std_deviation: 2 under metric_thresholds.numerical of a data_quality signal, and set alert_enabled to true on that signal",
+   "Set alert_enabled to false on the custom signal, and create an Azure Monitor metric alert rule for std_deviation with a threshold of 2",
+   "Add a custom signal with metric_name std_deviation and threshold 2 under metric_thresholds, and have std_signal output threshold_value"
   ],
   "answer": [
    3
   ],
-  "explanation": "Jobs that a schedule triggers depend on the job submission permissions of the schedule author. Learn's troubleshooting table separates two symptoms: a schedule that triggers no jobs (it is disabled, or its start_time is in the future) and triggered jobs that fail after earlier successes (the author lost the permissions to submit the job). Workspace admins can also control who creates and manages schedules with the schedules read, write, and delete actions.",
+  "explanation": "Prebuilt signals accept only their own metric names under metric_thresholds, for example data_type_error_rate, null_value_rate, and out_of_bounds_rate for data quality. For any other metric, register a custom signal component that takes the production data plus, by convention, one <metric-name>_threshold input per metric, and outputs signal_metrics with group, metric_name, metric_value, and threshold_value. Learn sets up custom signals with the Azure CLI, because the Python SDK and the studio currently do not support them.",
   "rationale": [
-   "Incorrect: the cluster identity is used inside the job, but the failure comes from the schedule author lacking job submission permissions. Learn notes that the jobs fail even when a managed identity is assigned.",
-   "Incorrect: the schedule is already enabled and still triggers jobs; the jobs fail after they are triggered. Use az ml schedule enable when a disabled schedule triggers no jobs at all.",
-   "Incorrect: a start_time in the future stops a schedule from triggering jobs, but here jobs are triggered and then fail. Changing start_time does not give the author the permissions to submit jobs.",
-   "Correct: Learn lists this exact symptom. Triggered jobs fail after earlier successes when the schedule author loses the permissions to submit the job, even when a managed identity is assigned, and restoring those permissions is the resolution."
+   "Incorrect: Learn's signal_metrics schema for a custom signal has four columns: group, metric_name, metric_value, and threshold_value, and the monitor definition lists each metric with its threshold under metric_thresholds. A hardcoded limit without threshold_value breaks that contract.",
+   "Incorrect: a data_quality signal accepts only data_type_error_rate, null_value_rate, and out_of_bounds_rate under metric_thresholds. No prebuilt signal computes a standard deviation, which is exactly the case that custom signals cover, with std_deviation as the Learn example.",
+   "Incorrect: Azure Monitor metric alert rules evaluate platform metrics that a resource emits, such as RequestLatency_P95 of an online endpoint. The std_deviation value is computed by the monitoring job, and setting alert_enabled to false turns off the alert notification for the signal.",
+   "Correct: a custom signal is a registered component that outputs signal_metrics with group, metric_name, metric_value, and threshold_value columns. In the monitor YAML, metric_thresholds lists metric_name std_deviation with threshold 2, and the run alerts when a threshold is exceeded."
   ],
-  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-schedule-pipeline-job"
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
  },
  {
   "id": "2.4.3-08",

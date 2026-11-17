@@ -834,24 +834,24 @@
   "obj": "4.1.4",
   "difficulty": "easy",
   "type": "single",
-  "stem": "Tailspin Toys uses the microsoft/ai-agent-evals GitHub Action to evaluate three versions of an agent in one run. The agent-ids input is set to \"support-agent:3,support-agent:4,support-agent:5\" and must keep this order, because a dashboard reads the results in that sequence. Version 4 runs in production, and the statistical comparison must use version 4 as the reference.\n\nWhich input should you add to the action?",
+  "stem": "First Up Consultants uses a code-based custom evaluator in Microsoft Foundry in its automated evaluation runs. The grade() function parses each agent response with json.loads() and scores the fields that it finds. In the evaluation report, every response that is not valid JSON shows a score of 0.0 and is marked as an error. Such responses must instead receive a fallback score of 0.1 and must not be reported as errors.\n\nWhat should you do?",
   "choices": [
-   "baseline-agent-id: \"support-agent:4\"",
-   "deployment-name: \"support-agent:4\"",
-   "agent-ids: \"support-agent:4,support-agent:3,support-agent:5\"",
-   "agent-ids: \"support-agent:4\""
+   "Catch the parsing exception in grade() with try/except, and return 0.1",
+   "Set the pass_threshold initialization parameter of the evaluator to 0.1",
+   "Recreate the evaluator as a prompt-based evaluator with binary scoring",
+   "Raise the execution time limit for each grading call of the evaluator"
   ],
   "answer": [
    0
   ],
-  "explanation": "The microsoft/ai-agent-evals action invokes Foundry agents with the queries from a data file, runs the listed evaluators, and writes a report with confidence intervals to the summary of the GitHub Actions run. When agent-ids lists several agents, the report adds a pairwise statistical comparison against the baseline, which is baseline-agent-id or, by default, the first agent in the list.",
+  "explanation": "A code-based evaluator is a Python grade(sample, item) function that returns a float from 0.0 to 1.0 and runs in a sandbox: no network access, 2 minutes per grading call, and a fixed list of packages. If grade() raises an exception or times out, the service records 0.0 for that item and marks it as an error in the evaluation report, so Learn advises defensive code that returns a fallback score.",
   "rationale": [
-   "Correct: baseline-agent-id sets the agent version that the other versions are compared against in the pairwise statistical comparison. Without it, the action uses the first agent in agent-ids, which is version 3 here.",
-   "Incorrect: deployment-name is a required input that names the Azure AI model deployment the action uses for evaluation. It does not select an agent version, so it cannot change which agent the statistical comparison uses as its baseline.",
-   "Incorrect: moving version 4 to the front of agent-ids would make it the default baseline, but the requirements state that agent-ids must keep its current order for the dashboard.",
-   "Incorrect: listing only version 4 evaluates a single agent, so there is no comparison at all. Use a single agent ID when you want scores and confidence intervals for one version only."
+   "Correct: when grade() raises an exception or times out, the service records 0.0 for that item and marks it as an error in the report. Learn advises catching risky operations with try/except and returning a fallback score, here 0.1, so the item is scored normally.",
+   "Incorrect: pass_threshold is a required initialization parameter that sets the score an item must reach to pass. It does not change how the service handles an exception in grade(), so invalid JSON is still recorded as 0.0 and marked as an error.",
+   "Incorrect: a prompt-based evaluator asks a judge model to return JSON with result and reason, and binary scoring makes result a boolean. It replaces deterministic parsing with an LLM judgment and cannot return the fallback score of 0.1.",
+   "Incorrect: the sandbox limits each grading call to 2 minutes, and a timeout is also recorded as 0.0 with an error. Here the error comes from the exception that json.loads() raises on invalid JSON, so more time would not change the result."
   ],
-  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluation-github-action"
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/custom-evaluators"
  },
  {
   "id": "4.1.4-03",
