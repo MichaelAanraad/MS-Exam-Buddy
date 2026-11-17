@@ -1,0 +1,703 @@
+[
+ {
+  "id": "2.4.1-01",
+  "obj": "2.4.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. deploys a classification model to a managed online endpoint and enables data collection for the deployment. A data scientist creates an out-of-box model monitor by running `az ml schedule create`. The monitor definition sets monitoring_target and alert_notification, but it contains no monitoring_signals section and no reference data.\n\nWhich data should you expect the data drift signal to use as its comparison baseline?",
+  "choices": [
+   "recent past production inference data from the deployment",
+   "the training data asset that was used to train the model",
+   "the validation data asset that was used to evaluate the model",
+   "ground truth data that the application collects for each request"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "An out-of-box monitor detects the production inference data asset of the online deployment and adds three signals: data drift, prediction drift, and data quality. Without a reference data section, each signal compares the latest production window with recent past production data, using smart default metrics and thresholds. For a more meaningful comparison, Learn recommends adding training data as the baseline for data drift and data quality, and validation data for prediction drift.",
+  "rationale": [
+   "Correct: when no reference data is specified, the out-of-box monitor uses the recent, past production inference data asset of the deployment as the baseline for data drift, prediction drift, and data quality.",
+   "Incorrect: training data is the recommended baseline for data drift, but you must add it explicitly as reference_data with data_context training. The out-of-box monitor in the stem has no reference data, so it does not use the training data.",
+   "Incorrect: validation data is the recommended baseline for prediction drift, not a default. You add it as reference_data with data_context validation when you configure an advanced prediction drift signal.",
+   "Incorrect: ground truth data is needed only for the model performance signal, which the out-of-box monitor does not include. You supply it as a separate registered data asset when you monitor accuracy, precision, or recall."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.1-02",
+  "obj": "2.4.1",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Northwind Traders deploys a tabular classification model to a managed online endpoint. The data collector logs the model inputs and model outputs, and the training data and validation data are registered as data assets. You need to configure one monitoring signal for each of four alert requirements.\n\nWhich monitoring signal should you configure for each requirement? To answer, drag the appropriate signals to the correct requirements. Each signal may be used once, more than once, or not at all.",
+  "choices": [
+   "Data drift",
+   "Prediction drift",
+   "Data quality",
+   "Feature attribution drift",
+   "Model performance"
+  ],
+  "targets": [
+   "Requirement1: the distribution of the income input feature moves away from its distribution in the training data",
+   "Requirement2: the share of missing values in the region input column grows",
+   "Requirement3: the distribution of the predicted classes moves away from the distribution on the validation data",
+   "Requirement4: the contribution of the input features to the predictions changes compared with training"
+  ],
+  "answer": [
+   0,
+   2,
+   1,
+   3
+  ],
+  "rationale": [
+   "Requirement1 compares the distribution of a model input with the training data, which is what the data drift signal does, by using metrics such as Jensen-Shannon distance or the two-sample Kolmogorov-Smirnov test.",
+   "Requirement2 is about data integrity, not distribution: the data quality signal computes the null value rate, the data type error rate, and the out-of-bounds rate for each input feature.",
+   "Requirement3 concerns the model outputs, so the prediction drift signal applies. Learn recommends validation data as the comparison baseline for prediction drift.",
+   "Requirement4 tracks feature importance in production against feature importance in training, which is the feature attribution drift signal (preview), measured with normalized discounted cumulative gain."
+  ],
+  "notes": [
+   "Data drift: compares the distribution of model inputs with training data or recent production data. Use it to catch shifts in the features that the model receives.",
+   "Prediction drift: compares the distribution of model outputs with validation data, labeled test data, or recent production data. Use it to track shifts in what the model predicts, which needs no ground truth.",
+   "Data quality: checks model inputs for null values, data type mismatches, and out-of-bounds values compared with the reference data. Use it to catch broken upstream data pipelines.",
+   "Feature attribution drift (preview): compares feature importance in production with feature importance in training, so it needs training data plus collected inputs and outputs. Use it to see whether the model now relies on different features.",
+   "Model performance (preview): compares model outputs with ground truth data to compute accuracy, precision, and recall, or MAE, MSE, and RMSE. It is not used here because no requirement involves actual outcomes."
+  ],
+  "explanation": "Each built-in signal answers a different question. Drift signals compare distributions (inputs for data drift, outputs for prediction drift), data quality checks the integrity of the inputs, feature attribution drift compares feature importance, and model performance needs ground truth. Pick the signal by asking which data is compared (inputs, outputs, importance, or actuals) and against which baseline.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-model-monitoring"
+ },
+ {
+  "id": "2.4.1-03",
+  "obj": "2.4.1",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Proseware, Inc. has an online endpoint named credit-ep in an Azure Machine Learning workspace. The score.py file logs pandas DataFrames by using Collector objects named model_inputs and model_outputs. The deployment.yml file for a deployment named blue contains a data_collector section that enables both collections. The drift-monitor.yml file defines a model monitor that targets the blue deployment.\n\nYou need to deploy blue, confirm that production data reaches the workspace blob storage before you create the monitor, and review the drift of each feature after the first monitoring run.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az ml online-deployment create -f deployment.yml`.",
+   "Run `az ml online-endpoint invoke --name credit-ep --deployment-name blue --request-file sample-request.json`, and then browse modelDataCollector/credit-ep/blue in workspaceblobstore.",
+   "Run `az ml schedule create -f drift-monitor.yml`.",
+   "In Azure Machine Learning studio, open Monitoring, select the monitor, and open the data_drift signal details.",
+   "Run `az ml data create -f collected-inputs.yml` to register the collected JSONL files as a data asset.",
+   "Add request and response collections to the data_collector section, and then run `az ml online-deployment update -f deployment.yml`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "Model monitoring for an online endpoint has three phases: collect production inference data, set up the monitor, and analyze the results. With the data collector, data lands in the workspace Blob Storage and is registered as data assets that the monitor discovers. Results appear on the studio Monitoring page only after the first scheduled monitoring run.",
+  "rationale": [
+   "Step 1: the deployment must exist before it can receive requests. Because deployment.yml already contains the data_collector section, creating the deployment turns on the collection of model_inputs and model_outputs.",
+   "Step 2: invoking the endpoint produces inference data, which the collector writes under azureml://datastores/workspaceblobstore/paths/modelDataCollector/credit-ep/blue/. Browsing that path confirms collection before you create the monitor, as the stem requires.",
+   "Step 3: az ml schedule create registers the monitor as a schedule. Azure Machine Learning uses the data asset that the collector registered for the deployment and runs the monitoring job on the configured trigger.",
+   "Step 4: results exist only after a monitoring run. On the Monitoring page you open the monitor, check Notifications, and select data_drift to see the metric per feature and the production versus reference distribution.",
+   "Incorrect: when the Collector objects are named model_inputs and model_outputs, the collected data is registered as data assets automatically and the monitor recognizes them. Register data yourself only for batch endpoints or models deployed outside Azure Machine Learning.",
+   "Incorrect: request and response collections turn on payload logging, which is not guaranteed to be tabular and needs a preprocessing component for monitoring. Use payload logging when you cannot change the scoring script; here custom logging already exists."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-collect-production-data"
+ },
+ {
+  "id": "2.4.1-04",
+  "obj": "2.4.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam, Inc. monitors a credit risk model that has 400 input features. The model is deployed to a managed online endpoint with data collection enabled, and the current data drift signal uses recent past production data as its reference. The registered data asset credit-train:1 contains the training data, including the prediction column DEFAULT_NEXT_MONTH.\n\nYou need the data drift signal to cover only the 20 most important features, as calculated by Azure Machine Learning, to reduce computation cost and alert noise.\n\nWhat should you do?",
+  "choices": [
+   "Keep recent past production data as reference_data, and set top_n_feature_importance to 20 in the features section of the data drift signal.",
+   "Add a feature_attribution_drift signal that uses credit-train:1 as reference_data, and set a normalized_discounted_cumulative_gain threshold.",
+   "Use credit-train:1 as reference_data with data_context training and target_column DEFAULT_NEXT_MONTH, and set top_n_feature_importance to 20.",
+   "Use the validation data asset as reference_data with data_context validation, and set top_n_feature_importance to 20 in the features section."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Feature importance in model monitoring is calculated from the training data, so a top N feature filter needs the training data asset as reference data and the name of the target (prediction) column. With both set, the data drift and data quality signals can monitor only the N most important features. Monitoring a feature subset is the recommended way to cut computation cost and monitoring noise for models with many features.",
+  "rationale": [
+   "Incorrect: without training data and a target column, Azure Machine Learning cannot calculate feature importance, so a top N filter cannot rank the features. Recent production data is a valid baseline when you monitor all features or a named list.",
+   "Incorrect: feature attribution drift tracks how feature importance changes between training and production, measured with NDCG. It does not restrict the data drift signal to the most important features. Add it when you want a warning that the model relies on different features.",
+   "Correct: feature importance requires the training data asset as reference_data and reference_data.data_column_names.target_column. With both set, features.top_n_feature_importance: 20 limits the drift signal to the 20 most important features.",
+   "Incorrect: validation data is the recommended baseline for prediction drift. Feature importance for a top N filter is calculated from the training data asset, so a validation reference does not meet the requirement."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.1-05",
+  "obj": "2.4.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys configures a data drift signal for a model that has a categorical input feature named payment_method with the values card, cash, and voucher. You need to choose a drift metric that supports categorical features.\n\nWhich metric should you configure for payment_method?",
+  "choices": [
+   "Two-sample Kolmogorov-Smirnov test",
+   "Pearson's chi-squared test",
+   "Normalized Wasserstein distance",
+   "Normalized discounted cumulative gain"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Data drift metrics are configured separately for numerical and categorical features. Numerical features can use Jensen-Shannon distance, normalized Wasserstein distance, population stability index, or the two-sample Kolmogorov-Smirnov test. Categorical features can use Jensen-Shannon distance, Pearson's chi-squared test, or population stability index.",
+  "rationale": [
+   "Incorrect: the two-sample Kolmogorov-Smirnov test compares continuous distributions and is a numerical drift metric. Use it for numerical features such as income or age.",
+   "Correct: Pearson's chi-squared test compares the frequency of each category in production with the reference data, so it is a categorical drift metric. Jensen-Shannon distance and population stability index also support categorical features.",
+   "Incorrect: normalized Wasserstein distance measures how far a numerical distribution has moved, so it applies to numerical features only. Use it when the size of a shift in a continuous feature matters.",
+   "Incorrect: normalized discounted cumulative gain is the metric of the feature attribution drift signal, which compares feature importance rankings. It does not measure the distribution of a single feature."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-monitor"
+ },
+ {
+  "id": "2.4.1-06",
+  "obj": "2.4.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. runs a data drift monitor weekly. The production data window uses a lookback window size of P7D and a lookback window offset of P0D. The reference data is recent past production data with a rolling window. You need the reference window to end exactly where the production window starts, with no overlap and no gap.\n\nWhich value should you set for reference_data.data_window.lookback_window_offset?",
+  "choices": [
+   "P0D",
+   "P1D",
+   "P7D",
+   "P14D"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The lookback window size sets how much data a window covers, and the lookback window offset moves the end of the window back from the time of the monitoring run. To keep the reference and production windows from overlapping, set the reference offset to at least the production window size plus the production offset. By default, the reference offset is two times the production lookback window size.",
+  "rationale": [
+   "Incorrect: an offset of P0D ends the reference window at the time of the run, so it overlaps the production window completely and drift is measured against the same data. P0D is the default offset for the production window, not for the reference window.",
+   "Incorrect: P1D ends the reference window one day before the run, so six days still overlap with the seven-day production window. The reference offset must be at least the production window size plus its offset.",
+   "Correct: the production window covers the last seven days (size P7D, offset P0D). A reference offset of P7D ends the reference window right where the production window starts, so there is no overlap and no gap.",
+   "Incorrect: P14D is the default (two times the production window size). It avoids overlap but leaves a seven-day gap between the windows. Keep it when the default spacing is acceptable rather than adjacent windows."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-model-monitoring"
+ },
+ {
+  "id": "2.4.1-07",
+  "obj": "2.4.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank deploys a model to an Azure Machine Learning batch endpoint. A scoring step writes raw JSON files with the model inputs to a blob container. The folder is registered as a uri_folder data asset that is updated after each batch run, and the training data is registered as an mltable data asset. You need to monitor data drift for the model by using Azure Machine Learning model monitoring.\n\nWhat should you do?",
+  "choices": [
+   "Add a data_collector section that enables the model_inputs collection to the batch deployment YAML, and then update the batch deployment.",
+   "Register a custom signal component that returns a signal_metrics table, and add it to the monitor as a monitoring signal of type custom.",
+   "Set monitoring_target.endpoint_deployment_id to the batch endpoint and deployment, and omit production_data from the data drift signal.",
+   "Register a custom preprocessing component that returns an mltable for the data window, and set it as pre_processing_component of production_data."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Out-of-box monitoring relies on the data collector, which works for managed online endpoints and Kubernetes online endpoints. For batch endpoints and models deployed outside Azure Machine Learning, you collect production data yourself, register it as a data asset that you keep updated, and provide a preprocessing component when the data collector did not collect the data. The component receives data_window_start, data_window_end, and the uri_folder input, and it outputs a tabular mltable that supports time windowing.",
+  "rationale": [
+   "Incorrect: the data collector logs production data from managed online endpoints and Kubernetes online endpoints. For a batch endpoint, you are responsible for collecting the production data yourself, as the scoring step already does.",
+   "Incorrect: a custom signal component computes your own metrics from processed production data and outputs signal_metrics. It does not turn raw JSON into a windowed table. Use it when the built-in signals do not fit your business metric.",
+   "Incorrect: endpoint_deployment_id identifies an online deployment whose collected data the monitor finds automatically. A batch deployment has no collected data asset to find, so production_data must be defined explicitly.",
+   "Correct: a uri_folder of raw JSON is not tabular, so model monitoring needs a registered preprocessing component with data_window_start, data_window_end, and input_data inputs and a preprocessed_data mltable output, referenced in production_data.pre_processing_component."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.1-08",
+  "obj": "2.4.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wide World Importers has a model monitor with data drift and data quality signals. After the latest run, an alert email reports a threshold breach. A data scientist must identify which features breached the threshold and compare the production distribution of each feature with its reference distribution in a histogram.\n\nWhich page should the data scientist use?",
+  "choices": [
+   "the Monitoring tab of the endpoint in Azure Machine Learning studio",
+   "the Monitoring page in Azure Machine Learning studio",
+   "the Metrics page of the online deployment in the Azure portal",
+   "the Browse tab of workspaceblobstore in Azure Machine Learning studio"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Model monitoring results are analyzed in Azure Machine Learning studio. The monitor overview lists the signals, and its Notifications section shows the features that breached a threshold. Each signal page shows the metric value per feature, trend lines across runs, and a detail view that compares the production and reference distributions of a feature.",
+  "rationale": [
+   "Incorrect: the endpoint Monitoring tab shows high-level activity graphs, such as requests per minute, when Application Insights is enabled for the deployment. It does not show drift results per feature.",
+   "Correct: under Manage, the Monitoring page lists the monitors. The overview shows Notifications with the features that breached thresholds, and selecting data_drift and then a feature shows the production versus reference histogram and drift over time.",
+   "Incorrect: the Metrics page in the Azure portal shows platform metrics such as request latency and CPU utilization. Use it for the operational health of the deployment, not for drift between data distributions.",
+   "Incorrect: the Browse tab of workspaceblobstore shows the raw JSONL files that the data collector writes. Use it to confirm that production data is collected, not to analyze drift metrics."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.1-09",
+  "obj": "2.4.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud collects production inference data from an online deployment into a custom datastore. The datastore is configured without stored credentials, and data collection succeeds. The model monitoring jobs fail because they cannot read the collected data. Company policy prohibits storing account keys or shared access signature (SAS) tokens in Azure Machine Learning.\n\nYou need the monitoring jobs to read the data by using credential-less authentication.\n\nWhat should you do?",
+  "choices": [
+   "Assign the Storage Blob Data Contributor role on the container to the managed identity of the online endpoint that collects the data.",
+   "Add a SAS token with read permission on the container to the datastore credentials, and set the token to expire after 30 days.",
+   "Attach a user-assigned managed identity with access to the datastore to the workspace, and set systemDatastoresAuthMode to identity.",
+   "Set the managed network isolation mode of the workspace to AllowOnlyApprovedOutbound, and add an outbound rule for the storage account."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Model monitoring reads collected data from a datastore either with credentials stored on the datastore or credential-less. For credential-less access, you attach a user-assigned managed identity to the workspace, grant it permissions on the datastore, and set the workspace property systemDatastoresAuthMode to identity. Also note that model monitoring does not support the AllowOnlyApprovedOutbound managed network isolation setting.",
+  "rationale": [
+   "Incorrect: Storage Blob Data Contributor on the endpoint identity lets the data collector write to a custom container, and collection already works. The monitoring jobs read the data separately, so this role does not fix them.",
+   "Incorrect: a SAS token on the datastore is the credential-based option, which the policy prohibits even with a short expiry. Use stored credentials only when policy allows them and identity-based access is not possible.",
+   "Correct: the credential-less setup for model monitoring is a user-assigned managed identity attached to the workspace, with permissions on the datastore, plus the workspace property systemDatastoresAuthMode set to identity. No keys or SAS tokens are stored.",
+   "Incorrect: model monitoring does not support the AllowOnlyApprovedOutbound managed virtual network setting, so this change would break monitoring instead of fixing authentication. Use that mode for strict outbound control in workspaces that do not rely on model monitoring."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-model-monitoring"
+ },
+ {
+  "id": "2.4.2-01",
+  "obj": "2.4.2",
+  "difficulty": "medium",
+  "type": "single",
+  "series": "S-mon",
+  "stem": "Humongous Insurance deploys a claims fraud classifier to a managed online endpoint. The deployment uses the Azure Machine Learning data collector with the model_inputs and model_outputs collections enabled, and requests often arrive in bursts. The confirmed outcome of each claim arrives from a case management system several days later, keyed by the claim_id value that the client application sends in each request.\n\nYou need to configure monitoring that reports the precision and recall of the model in production, based on the confirmed outcomes.\n\nSolution: You add claim_id as a column of the DataFrame that the scoring script passes to the outputs collector. You keep a registered data asset of confirmed outcomes that includes claim_id, and you add a model_performance signal that joins the model outputs and the outcomes on their claim_id columns.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Model performance monitoring compares model outputs with ground truth. It needs a unique ID for each row in both data assets so that each prediction can be joined with its actual outcome. Logging your own ID as a separate column avoids the problem that the data collector batches rows that arrive close together under one correlation ID.",
+  "rationale": [
+   "Correct: precision and recall come from the model_performance signal, which joins the model outputs with a ground truth data asset on matching unique ID columns. Logging claim_id in its own column gives every row an ID that the case management system also knows, even when requests are batched.",
+   "Incorrect: the solution does meet the goal. No would be right if the outcomes had no ID in common with the logged outputs, because the signal could not join the predictions with the actual outcomes."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.2-02",
+  "obj": "2.4.2",
+  "difficulty": "easy",
+  "type": "single",
+  "series": "S-mon",
+  "stem": "Humongous Insurance deploys a claims fraud classifier to a managed online endpoint. The deployment uses the Azure Machine Learning data collector with the model_inputs and model_outputs collections enabled, and requests often arrive in bursts. The confirmed outcome of each claim arrives from a case management system several days later, keyed by the claim_id value that the client application sends in each request.\n\nYou need to configure monitoring that reports the precision and recall of the model in production, based on the confirmed outcomes.\n\nSolution: You add a prediction_drift signal that uses the validation data asset as reference data, and you set a threshold on the Jensen-Shannon distance.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Prediction drift compares the distribution of the predictions with a baseline; it never looks at the actual outcomes. Precision and recall need the model performance signal, which joins the model outputs with ground truth data.",
+  "rationale": [
+   "Incorrect: a prediction drift signal shows whether the share of predicted fraud changes compared with the validation data, but it cannot tell whether those predictions were right. Precision and recall require comparing the predictions with the confirmed outcomes.",
+   "Correct: the solution does not meet the goal. Prediction drift tracks shifts in the predicted outputs and works without ground truth, so it cannot give objective metrics such as precision and recall."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-model-monitoring"
+ },
+ {
+  "id": "2.4.2-03",
+  "obj": "2.4.2",
+  "difficulty": "hard",
+  "type": "single",
+  "series": "S-mon",
+  "stem": "Humongous Insurance deploys a claims fraud classifier to a managed online endpoint. The deployment uses the Azure Machine Learning data collector with the model_inputs and model_outputs collections enabled, and requests often arrive in bursts. The confirmed outcome of each claim arrives from a case management system several days later, keyed by the claim_id value that the client application sends in each request.\n\nYou need to configure monitoring that reports the precision and recall of the model in production, based on the confirmed outcomes.\n\nSolution: You add a model_performance signal that uses the registered training data asset as reference data, with the label column of the training data as the target column.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The model performance signal must join each production prediction with the actual outcome of that same request. Training labels describe historical examples, not the requests that the deployment scored, so they cannot act as ground truth for production metrics. Learn's model performance example uses the ground truth data asset as reference data (data_context ground_truth) and joins it with the model outputs on matching ID columns.",
+  "rationale": [
+   "Incorrect: the training data holds labels for historical records, not for the claims that the deployment scored in production. Without ground truth rows that share a unique ID with the logged outputs, the signal cannot compute production precision and recall.",
+   "Correct: the solution does not meet the goal. Training data is the right reference for data drift, data quality, and feature importance, while model performance needs ground truth data, here the confirmed outcomes from the case management system."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.2-04",
+  "obj": "2.4.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee deploys a model to a managed online endpoint by using a curated environment. The operations team wants live metrics, transaction search, and the failures and performance views for the deployment, without writing Kusto queries.\n\nWhat should you do?",
+  "choices": [
+   "Add a diagnostic setting that sends AmlOnlineEndpointTrafficLog to Log Analytics.",
+   "Create a model monitor that includes a data quality signal for the deployment.",
+   "Pin the request latency chart of the deployment to an Azure portal dashboard.",
+   "Enable Application Insights diagnostics when you create the online deployment."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Online endpoints integrate with Azure Monitor in three ways: platform metrics, resource logs sent through diagnostic settings, and Application Insights. Curated environments include the Application Insights integration, which you turn on when you create the deployment; it adds live metrics, transaction search, and the failures and performance views.",
+  "rationale": [
+   "Incorrect: a diagnostic setting sends the traffic log to a Log Analytics workspace, where you analyze requests with Kusto queries. Use it for detailed request analysis, such as response code reasons, not for live metrics views.",
+   "Incorrect: a data quality signal checks model inputs for null values, data type errors, and out-of-bounds values. It does not show live request or failure telemetry. Use it to catch broken input data.",
+   "Incorrect: a portal dashboard visualizes platform metrics such as latency, but it does not provide transaction search or live metrics. Use dashboards to combine metrics from several resources in one view.",
+   "Correct: with Application Insights diagnostics enabled when the deployment is created, built-in metrics and logs flow to Application Insights, which provides live metrics, transaction search, and the failures and performance views without writing queries."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-online-endpoints"
+ },
+ {
+  "id": "2.4.2-05",
+  "obj": "2.4.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Consolidated Messenger deploys a regression model that predicts delivery time in minutes. Ground truth delivery times are collected and joined with the model outputs in a model performance signal. Stakeholders want one metric that is expressed in minutes and that penalizes large errors more heavily than small errors.\n\nWhich metric should you configure?",
+  "choices": [
+   "Mean absolute error (MAE)",
+   "Mean squared error (MSE)",
+   "Root mean squared error (RMSE)",
+   "Normalized Wasserstein distance"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The model performance signal computes accuracy, precision, and recall for classification models, and MAE, MSE, and RMSE for regression models, always by comparing model outputs with ground truth. Choose among the regression metrics by unit and by how strongly large errors should count.",
+  "rationale": [
+   "Incorrect: MAE is expressed in minutes, but it weights every error linearly, so one large error counts no more than several small errors with the same total. Use MAE when all errors should count equally.",
+   "Incorrect: MSE squares the errors and so penalizes large errors, but its unit is minutes squared, which stakeholders cannot read as a delivery delay. Use MSE when you only compare models with each other.",
+   "Correct: RMSE squares the errors before averaging, so large errors weigh more, and the square root returns the value to minutes. It is one of the three regression metrics of the model performance signal, with MAE and MSE.",
+   "Incorrect: normalized Wasserstein distance is a drift metric that compares two distributions, for example of predictions over time. It does not compare predictions with actual outcomes, so it is not a model performance metric."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.2-06",
+  "obj": "2.4.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery monitors an online endpoint in Azure Monitor. A service level objective states that 99 percent of scoring requests must complete within 400 milliseconds.\n\nWhich metric should you chart to track this objective?",
+  "choices": [
+   "RequestLatency",
+   "RequestLatency_P50",
+   "RequestLatency_P99",
+   "RequestsPerMinute"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Online endpoints emit traffic metrics such as average request latency, latency percentiles (P50, P90, P95, and P99), requests per minute, and network bytes, plus resource metrics per deployment such as CPU and memory utilization. Percentile metrics fit service level objectives that are stated as a share of requests.",
+  "rationale": [
+   "Incorrect: RequestLatency is the average time to respond to a request. An average can stay low while the slowest one percent of requests take longer than 400 ms, so it does not track a 99 percent objective.",
+   "Incorrect: RequestLatency_P50 is the median latency, which describes only half of the requests. Use it to describe typical latency, not a tail latency objective.",
+   "Correct: RequestLatency_P99 reports the 99th percentile of request latency, which matches an objective about 99 percent of requests directly. It is available at the endpoint scope, with a deployment dimension, and at the deployment scope.",
+   "Incorrect: RequestsPerMinute counts requests and can be split by status code, but it says nothing about how long requests take. Use it to track load or error rates."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-monitor/reference/supported-metrics/microsoft-machinelearningservices-workspaces-onlineendpoints-metrics"
+ },
+ {
+  "id": "2.4.2-07",
+  "obj": "2.4.2",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Contoso Pharmaceuticals configures a model performance signal for a classification model on a managed online endpoint. The data collector logs the model outputs with the autogenerated correlation ID, and a registered data asset contains the actual labels.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The monitor joins the model outputs and the actual labels on unique ID columns before it computes the metrics.",
+   "The model performance signal can report the root mean squared error (RMSE) of this classification model.",
+   "If the data collector batches three rows into one logged JSON object with the correlation ID abc, the matching IDs in the labels data asset are abc_0, abc_1, and abc_2."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The model performance signal measures objective model quality by comparing model outputs with ground truth. Both data assets need matching unique IDs; with the autogenerated correlation ID, batched rows get an index suffix, which is why Learn recommends logging your own ID in a separate column. Classification models get accuracy, precision, and recall, and regression models get MAE, MSE, and RMSE.",
+  "rationale": [
+   "Yes: model performance monitoring needs a unique ID for each row in both the model outputs and the ground truth data, and it uses those IDs to join the two data assets before it computes accuracy, precision, and recall.",
+   "No: RMSE, MAE, and MSE are the regression metrics of the signal. For a classification model, the signal reports accuracy, precision, and recall.",
+   "Yes: batched rows in one JSON object share a correlation ID, so model performance monitoring indexes them in order as abc_0, abc_1, and abc_2. To avoid this indexing, log your own unique ID in a separate DataFrame column."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.2-08",
+  "obj": "2.4.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Graphic Design Institute runs a deployment named blue with three instances on a managed online endpoint. You need to build an Azure portal dashboard that shows whether any single instance of blue is CPU-saturated and how many requests to the endpoint fail with server errors.\n\nWhich two metrics should you add to the dashboard? Each correct answer presents part of the solution.",
+  "choices": [
+   "DeploymentCapacity at the deployment scope, split by State",
+   "CpuUtilizationPercentage at the deployment scope, split by instanceId",
+   "RequestLatency_P99 at the endpoint scope, split by deployment",
+   "RequestsPerMinute at the endpoint scope, split by statusCodeClass",
+   "DataCollectionErrorsPerMinute at the endpoint scope, split by reason"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "Online endpoint metrics are scoped. Traffic metrics such as request latency and requests per minute live at the endpoint scope, with a deployment dimension, while resource metrics such as CPU, memory, GPU, and disk utilization live at the deployment scope and can be split per instance. Dimensions such as statusCodeClass and instanceId let one chart answer a precise question.",
+  "rationale": [
+   "Incorrect: DeploymentCapacity reports the number of instances in the deployment, split by state. It shows scale, not how busy each instance is. Use it to confirm that autoscale added or removed instances.",
+   "Correct: CpuUtilizationPercentage is a deployment-scope metric with an instanceId dimension, so splitting it by instance shows whether any single instance of blue is saturated.",
+   "Incorrect: RequestLatency_P99 shows tail latency, which can rise when instances are saturated, but it measures neither CPU usage nor failed requests. Use it to track a latency objective.",
+   "Correct: RequestsPerMinute at the endpoint scope has statusCode and statusCodeClass dimensions, so splitting it by status code class shows how many requests fail with 5xx server errors.",
+   "Incorrect: DataCollectionErrorsPerMinute counts data collection events that the data collector dropped, not failed scoring requests. Use it to check that production data for model monitoring is complete."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-monitor/reference/supported-metrics/microsoft-machinelearningservices-workspaces-onlineendpoints-deployments-metrics"
+ },
+ {
+  "id": "2.4.2-09",
+  "obj": "2.4.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lamna Healthcare Company monitors the precision of a classification model with a model performance signal that runs weekly. The production data window uses a lookback window size of P7D and a lookback window offset of P0D, and the reference data is the complete ground truth data asset without a data window. The actual outcome of each prediction is added to the ground truth data asset 10 days after the prediction, so none of the predictions in the current production window has an outcome when the monitor runs.\n\nYou need each run to compute precision for a seven-day window of predictions whose outcomes are already available.\n\nWhat should you do?",
+  "choices": [
+   "Set production_data.data_window.lookback_window_size to P17D.",
+   "Set production_data.data_window.lookback_window_offset to P10D.",
+   "Set reference_data.data_window.lookback_window_offset to P10D.",
+   "Change the interval of the recurrence trigger from 7 to 10 days."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Each monitoring run selects data with a lookback window size (how much data) and a lookback window offset (how far before the run the window ends). An offset on the production window excludes data that is not ready yet, such as predictions whose ground truth arrives later. Learn shows the same idea with an offset that leaves weekend data out of a weekly run.",
+  "rationale": [
+   "Incorrect: a larger window size still ends at the time of the run, so the most recent 10 days of predictions without outcomes stay in the window, and the window is no longer seven days long.",
+   "Correct: the offset moves the end of the production window back from the time of the run. With size P7D and offset P10D, each run uses predictions from 17 to 10 days ago, which all have outcomes in the ground truth data asset.",
+   "Incorrect: a reference_data offset shifts the window of the ground truth data, not the production window. The production window still ends at the time of the run, so it still holds only predictions without outcomes. Use a reference offset to keep a rolling reference window from overlapping the production window.",
+   "Incorrect: running every 10 days changes how often the monitor runs, but each run still includes the predictions made just before the run, which have no outcomes yet."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-model-monitoring"
+ },
+ {
+  "id": "2.4.3-01",
+  "obj": "2.4.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Trey Research wants Azure Event Grid to deliver an event whenever a model monitor in its Azure Machine Learning workspace finds that a metric breaches its threshold. You create an event subscription on the workspace.\n\nWhich event type should you select?",
+  "choices": [
+   "Dataset drift detected",
+   "Run completed",
+   "Run status changed",
+   "Model registered"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Azure Machine Learning publishes events such as run completed, run status changed, model registered, and model deployed to Event Grid. A model monitoring run that finds a threshold breach fails with a message about features that violate metric thresholds, so you subscribe to Run status changed and filter on the threshold breach run tag.",
+  "rationale": [
+   "Incorrect: Dataset drift detected is raised by the v1 data drift (dataset) monitors, not by current model monitoring. Learn warns explicitly not to select it for model monitoring events.",
+   "Incorrect: Run completed is raised when a run completes successfully. A monitoring run that breaches a threshold fails, so you would miss exactly the events you need. Use it to react to finished training jobs.",
+   "Correct: a monitoring run that breaches a threshold changes its status to failed. Learn says to select only Run status changed and then add an advanced filter on data.RunTags.azureml_modelmonitor_threshold_breached.",
+   "Incorrect: Model registered is raised when a new model or model version is registered. Use it to start a deployment workflow, not to react to monitoring results."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.3-02",
+  "obj": "2.4.3",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Lucerne Publishing has a schedule named retrain_schedule in an Azure Machine Learning workspace. The schedule runs a retraining pipeline job every day. Company policy requires you to remove the existing schedule and then create a schedule with the same name from the weekly-retrain.yml file, which defines a cron trigger. You must then confirm that the new schedule is active.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az ml schedule disable -n retrain_schedule`.",
+   "Run `az ml schedule delete -n retrain_schedule`.",
+   "Run `az ml schedule create --file weekly-retrain.yml`.",
+   "Run `az ml schedule show -n retrain_schedule`, and verify that is_enabled is true.",
+   "Run `az ml schedule enable -n retrain_schedule`.",
+   "Run `az ml job create --file weekly-retrain-pipeline.yml`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "Time-based retraining in Azure Machine Learning uses a schedule that links a job to a recurrence or cron trigger. You manage schedules with az ml schedule create, show, list, enable, disable, and delete. A schedule must be disabled before it can be deleted, and deletion is permanent.",
+  "rationale": [
+   "Step 1: only a disabled schedule can be deleted, so you disable retrain_schedule first. Disabling stops new jobs from being triggered but keeps the schedule definition.",
+   "Step 2: with the schedule disabled, az ml schedule delete removes it permanently. The policy requires removal before creation; without it, az ml schedule create with the same name would update the existing schedule instead of replacing it.",
+   "Step 3: az ml schedule create reads weekly-retrain.yml, which associates the retraining pipeline job with the cron trigger, and creates the schedule with the name that the file defines.",
+   "Step 4: az ml schedule show returns the schedule details. A newly created schedule shows is_enabled: true, which confirms that it is active.",
+   "Incorrect: a new schedule is enabled when it is created, so running enable adds nothing here. Use az ml schedule enable to resume a schedule that you disabled earlier.",
+   "Incorrect: az ml job create submits the pipeline job once and creates no recurring trigger. Use it to test the retraining pipeline before you schedule it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-schedule-pipeline-job"
+ },
+ {
+  "id": "2.4.3-03",
+  "obj": "2.4.3",
+  "difficulty": "medium",
+  "type": "dropdown",
+  "stem": "Relecloud monitors a churn model on a managed online endpoint. The monitor must run at 06:00 UTC every Monday, as defined by a crontab expression. It must alert the MLOps team when the drift of any numerical input feature, compared with the training data, exceeds a distance of 0.1.\n\nHow should you complete the monitor definition? To answer, select the appropriate options in the answer area.\n\n```yaml\nname: churn_monitor\ntrigger:\n  type: [[1]]\n  expression: \"0 6 * * 1\"\ncreate_monitor:\n  compute:\n    instance_type: standard_e4s_v3\n  monitoring_target:\n    ml_task: classification\n    endpoint_deployment_id: azureml:churn-ep:blue\n  monitoring_signals:\n    churn_drift:\n      type: data_drift\n      reference_data:\n        input_data:\n          path: azureml:churn-training:1\n          type: mltable\n        data_context: training\n      [[2]]: true\n      metric_thresholds:\n        numerical:\n          [[3]]: 0.1\n  alert_notification:\n    emails:\n      - mlops@relecloud.com\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "recurrence",
+     "cron"
+    ],
+    "why": [
+     "Incorrect: a recurrence trigger uses frequency, interval, and an optional pattern of hours, minutes, and week days instead of an expression. Use it when you prefer named fields over a crontab string.",
+     "Correct: a trigger with a crontab expression has type cron. The expression holds five fields, MINUTES HOURS DAYS MONTHS DAYS-OF-WEEK, so \"0 6 * * 1\" means 06:00 every Monday, in UTC unless a time zone is set."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "enabled",
+     "alert_notification",
+     "alert_enabled"
+    ],
+    "why": [
+     "Incorrect: enabled is the key that turns on a collection, such as model_inputs, in the data_collector section of a deployment. It is not a property of a monitoring signal.",
+     "Incorrect: alert_notification is defined once at the monitor level and lists the email recipients. It already appears at the end of the definition and is not a per-signal switch.",
+     "Correct: alert_enabled turns alert notifications on or off for one monitoring signal. With true, a breach of a threshold in metric_thresholds sends an alert to the addresses in alert_notification."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "null_value_rate",
+     "jensen_shannon_distance",
+     "normalized_discounted_cumulative_gain"
+    ],
+    "why": [
+     "Incorrect: null_value_rate is a metric of the data quality signal and measures missing values, not a shift in distribution. Use it in a data_quality signal.",
+     "Correct: Jensen-Shannon distance is a distance metric that the data drift signal supports for numerical and categorical features, so it fits a drift threshold of 0.1 on numerical features.",
+     "Incorrect: normalized_discounted_cumulative_gain is the metric of the feature attribution drift signal and compares feature importance rankings. It is not a data drift metric."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   2,
+   1
+  ],
+  "explanation": "A model monitor is a schedule: the trigger (cron or recurrence) sets when the monitoring job runs, and create_monitor defines the compute, target, signals, and notifications. Each signal has metric_thresholds for numerical and categorical features and an alert_enabled switch; breaches of signals with alerts enabled are emailed to the alert_notification recipients.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-monitor"
+ },
+ {
+  "id": "2.4.3-04",
+  "obj": "2.4.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam Residences runs a model monitor named credit_card_fraud_monitor with a data drift signal named credit_card_fraud_monitor_data_drift and a data quality signal named credit_card_fraud_monitor_data_quality. An Event Grid subscription on the workspace selects the Run status changed event type and sends events to an Azure Function that starts retraining. Retraining must start only when the data drift signal breaches its threshold.\n\nWhich filter should you add to the event subscription?",
+  "choices": [
+   "Key data.runStatus, operator String contains, value failed, combined with a subject filter that begins with experiments/",
+   "Key data.RunTags.azureml_modelmonitor_threshold_breached, operator String contains, value credit_card_fraud_monitor_data_drift",
+   "Key data.RunTags.azureml_modelmonitor_threshold_breached, operator String contains, value has failed due to one or more features",
+   "Included event type Microsoft.MachineLearningServices.DatasetDriftDetected, with a subject filter that begins with datadrifts/"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Event Grid integration for model monitoring uses the Run status changed event with advanced filters on data.RunTags.azureml_modelmonitor_threshold_breached. A filter on the breach message catches every threshold breach in the workspace; a filter on a signal name, which follows the format <monitor-name>_<signal-description>, narrows the events to one signal of one monitor.",
+  "rationale": [
+   "Incorrect: a failed run status matches every failed run in the workspace, including training jobs that fail for other reasons and data quality breaches. It would start retraining far too often.",
+   "Correct: Learn describes filtering the threshold breach run tag with String contains and the name of a monitoring signal, in the format <monitor-name>_<signal-description>, to receive events at the signal level. Only data drift breaches then reach the function.",
+   "Incorrect: this value matches a breach of any signal in any monitor, so a data quality breach would also start retraining. Use it as the general filter when every threshold breach should trigger the action.",
+   "Incorrect: Dataset drift detected belongs to the v1 dataset monitors and is not raised by model monitoring. Learn warns not to select it, so the function would never be triggered by this monitor."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.3-05",
+  "obj": "2.4.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Alpine Ski House created an out-of-box model monitor for a deployment in Azure Machine Learning studio. Alert emails about threshold breaches reach only the user who created the monitor. The alerts must also reach the shared mailbox mlops@alpineskihouse.com, without adding any other Azure service.\n\nWhat should you do?",
+  "choices": [
+   "Update the monitor so that alert_enabled is set to true on each monitoring signal.",
+   "Create a metric alert rule with an action group that emails the shared mailbox.",
+   "Create an Event Grid subscription that sends breach events to a Logic Apps workflow.",
+   "Update the monitor so that alert_notification lists the shared mailbox under emails."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Model monitoring has built-in email alerts. Each signal with alert_enabled set to true sends an alert when a metric breaches its threshold, and the monitor-level alert_notification lists the recipients; by default, the user who set up the monitor receives the email. Event Grid is the extension point when a breach must start other actions.",
+  "rationale": [
+   "Incorrect: alert_enabled turns alerts on or off per signal, and the alerts already arrive, so it does not change the recipients. Use it to silence a noisy signal or to turn on alerts for a new signal.",
+   "Incorrect: an Azure Monitor metric alert reacts to platform metrics such as latency, not to drift results, and it adds Azure Monitor alerts and an action group. Use it for operational thresholds on the endpoint.",
+   "Incorrect: Event Grid with a Logic Apps workflow can send custom emails for breaches, but it adds two services, which the requirement forbids. Use it when you need conditions or richer email content.",
+   "Correct: by default, an alert email goes to the user who set up the monitor. Adding the shared mailbox to the alert_notification emails list of the monitor sends the alerts there too, with no extra service."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.3-06",
+  "obj": "2.4.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Blue Yonder Airlines must notify the on-call engineer by SMS when the P95 request latency of a deployment named blue on a managed online endpoint stays above 800 milliseconds for 15 minutes. The deployment must keep its current number of instances.\n\nWhat should you create?",
+  "choices": [
+   "an autoscale rule on blue that adds an instance when RequestLatency_P95 is above 800 ms",
+   "a model monitor with a custom latency signal that emails the on-call engineer on a breach",
+   "a metric alert rule on blue for RequestLatency_P95 with an action group that sends an SMS",
+   "an Event Grid subscription for Run status changed events with a handler that sends an SMS"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Operational thresholds for online endpoints, such as latency, request rate, or CPU utilization, are handled by Azure Monitor metric alert rules. The rule defines the metric, the threshold, and the evaluation period, and an action group defines who is notified and which automation runs. Data and model thresholds, such as drift, belong to model monitoring instead.",
+  "rationale": [
+   "Incorrect: autoscale changes the instance count based on metrics, which the requirement forbids, and it does not send an SMS. Use autoscale when the deployment should absorb load automatically.",
+   "Incorrect: a custom signal computes metrics from collected production inference data on a schedule, and the built-in alerts of model monitoring are emails, not SMS. Latency is a platform metric of the endpoint, not a property of the collected data.",
+   "Correct: a metric alert rule evaluates RequestLatency_P95 against a threshold over an evaluation period, and its action group sends notifications such as SMS, email, or voice, or calls a webhook, an Azure Function, or a Logic Apps workflow.",
+   "Incorrect: Azure Machine Learning Event Grid events cover run status, run completion, model registration, and model deployment. No event is raised for request latency, so the handler would never run for this condition."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-online-endpoints"
+ },
+ {
+  "id": "2.4.3-07",
+  "obj": "2.4.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Margie's Travel has a schedule named nightly_retrain that User1 created. The schedule triggers a retraining pipeline job that runs on a compute cluster with a managed identity. Last week, an administrator removed the role assignment of User1 on the workspace. Since then, every job that the schedule triggers fails, although the schedule is enabled and earlier jobs succeeded.\n\nWhat should you do?",
+  "choices": [
+   "Assign the AzureML Data Scientist role to the managed identity of the cluster.",
+   "Run `az ml schedule enable -n nightly_retrain` to reactivate the schedule.",
+   "Set start_time of the schedule to the current time, and then update it.",
+   "Restore the permissions that User1 needs to submit jobs in the workspace."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Jobs that a schedule triggers depend on the job submission permissions of the schedule author. Learn's troubleshooting table separates two symptoms: a schedule that triggers no jobs (it is disabled, or its start_time is in the future) and triggered jobs that fail after earlier successes (the author lost the permissions to submit the job). Workspace admins can also control who creates and manages schedules with the schedules read, write, and delete actions.",
+  "rationale": [
+   "Incorrect: the cluster identity is used inside the job, but the failure comes from the schedule author lacking job submission permissions. Learn notes that the jobs fail even when a managed identity is assigned.",
+   "Incorrect: the schedule is already enabled and still triggers jobs; the jobs fail after they are triggered. Use az ml schedule enable when a disabled schedule triggers no jobs at all.",
+   "Incorrect: a start_time in the future stops a schedule from triggering jobs, but here jobs are triggered and then fail. Changing start_time does not give the author the permissions to submit jobs.",
+   "Correct: Learn lists this exact symptom. Triggered jobs fail after earlier successes when the schedule author loses the permissions to submit the job, even when a managed identity is assigned, and restoring those permissions is the resolution."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-schedule-pipeline-job"
+ },
+ {
+  "id": "2.4.3-08",
+  "obj": "2.4.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adventure Works Cycles has a model monitor for a model on a managed online endpoint. When the data drift signal breaches its threshold, a retraining pipeline job must start automatically within minutes. Retraining must not run when no threshold is breached, and the solution must not depend on Azure Machine Learning SDK v1 features.\n\nWhich solution should you use?",
+  "choices": [
+   "a schedule created by using az ml schedule create that runs the retraining pipeline job every day at a fixed time and registers the new model",
+   "an Event Grid subscription that filters Run status changed events for threshold breaches and calls an Azure Function that submits the pipeline job",
+   "a metric alert rule on DataCollectionErrorsPerMinute with an action group that calls an Azure Function that submits the retraining pipeline job",
+   "a DataDriftDetector monitor and an Event Grid subscription for Dataset drift detected events that call an Azure Function that submits the job"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Retraining can be triggered by time or by events. Time-based retraining uses an Azure Machine Learning schedule. Event-based retraining uses the threshold breach of the model monitor as the event, routed through Event Grid to a handler such as Azure Functions, Logic Apps, or Event Hubs, which then submits the retraining pipeline job.",
+  "rationale": [
+   "Incorrect: a daily schedule retrains at a fixed time whether or not drift occurred, which the requirement forbids, and it can lag a breach by up to a day. Use a schedule for regular time-based retraining.",
+   "Correct: a monitoring run that breaches a threshold fails with a breach tag, Event Grid delivers the Run status changed event, and the function submits the retraining pipeline only for breaches. Learn describes running a pipeline to retrain when monitors detect drift.",
+   "Incorrect: DataCollectionErrorsPerMinute counts dropped data collection events, so it reports collection problems, not drift. An action group can call a function, but this metric does not reflect the drift threshold.",
+   "Incorrect: DataDriftDetector and the Dataset drift detected event belong to the v1 dataset monitors in the azureml-datadrift package of SDK v1, which is deprecated and past its end of support. The requirement excludes SDK v1 features."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-model-performance"
+ },
+ {
+  "id": "2.4.3-09",
+  "obj": "2.4.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Southridge Video wants an email sent to the data science team each time a model monitor run in its Azure Machine Learning workspace breaches a threshold. The email must include the event type and a link to the workspace. The team wants a low-code workflow instead of writing and hosting code.\n\nWhich event handler should you use for the Event Grid subscription?",
+  "choices": [
+   "Azure Functions",
+   "Azure Event Hubs",
+   "Azure Logic Apps",
+   "Azure Data Factory pipeline"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Event Grid routes Azure Machine Learning events to decoupled handlers. Pick the handler by what must happen: Logic Apps for low-code workflows such as email notifications, Azure Functions for custom code such as submitting a pipeline job, Event Hubs for streaming events to other systems, and Data Factory pipelines for data movement.",
+  "rationale": [
+   "Incorrect: Azure Functions runs code that you write and host, such as a function that submits a retraining pipeline job. It can send email, but it does not meet the low-code requirement.",
+   "Incorrect: Event Hubs ingests and streams events to downstream consumers, but it does not send email on its own. Use it when you want to store or process a stream of monitoring events.",
+   "Correct: Learn's example uses a Logic Apps workflow that Azure Machine Learning events trigger, with a Send an email action that puts the event type and topic in the subject and a workspace link in the body. No code is needed.",
+   "Incorrect: a Data Factory pipeline can be an Event Grid handler, but Learn's guide to sending email from a pipeline calls a Logic Apps workflow with a Web activity, so the pipeline only adds a step. Use it when the event should start data movement, such as refreshing training data."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-event-grid"
+ }
+]

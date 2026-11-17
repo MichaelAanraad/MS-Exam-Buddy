@@ -1,0 +1,768 @@
+[
+ {
+  "id": "2.3.1-01",
+  "obj": "2.3.1",
+  "difficulty": "easy",
+  "type": "order",
+  "stem": "Relecloud registered a scikit-learn model in MLflow format as fare-model version 2 in an Azure Machine Learning workspace. You must deploy the model to a new managed online endpoint named fare-online by using the Azure CLI. The files endpoint.yml and blue.yml are ready; blue.yml references the registered model and has no code_configuration section. Company policy requires that a deployment is created without traffic and that traffic is assigned in a separate command after provisioning succeeds. Finally, you must confirm that the endpoint routes a scoring request that does not name a deployment to the new deployment.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az ml online-endpoint create --name fare-online -f endpoint.yml`.",
+   "Run `az ml online-deployment create --name blue --endpoint-name fare-online -f blue.yml`.",
+   "Run `az ml online-endpoint update --name fare-online --traffic \"blue=100\"`.",
+   "Run `az ml online-endpoint invoke --name fare-online --request-file sample.json`.",
+   "Run `az ml compute create -n cpu-cluster --type amlcompute --min-instances 0 --max-instances 2`.",
+   "Run `az ml online-deployment create --name blue --endpoint-name fare-online -f blue.yml --local`.",
+   "Run `az ml online-deployment create --name blue --endpoint-name fare-online -f blue.yml --all-traffic`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "An online endpoint is the stable interface (scoring URI and authentication mode), and the deployments under it host the model. Create the endpoint, then the deployment, and only then the traffic rules, because traffic refers to deployment names. MLflow models use no-code deployment, so the deployment YAML needs no scoring script or environment.",
+  "rationale": [
+   "Step 1: the endpoint defines the scoring URI and the authentication mode, and a deployment is always created under an existing endpoint, so az ml online-endpoint create comes first.",
+   "Step 2: az ml online-deployment create provisions the instances under fare-online. Because fare-model is an MLflow model, no scoring script or environment is needed. Without --all-traffic, the deployment starts with 0 percent of the traffic, as the policy requires.",
+   "Step 3: traffic can be set only after the deployment exists. Setting blue=100 makes the endpoint route every request that does not name a deployment to blue, in the separate command that the policy asks for.",
+   "Step 4: invoke without --deployment-name follows the traffic rules of the endpoint, so a successful response proves that the routing works. Before step 3, the endpoint answers such a request with HTTP 404, because no deployment has a positive traffic weight.",
+   "Incorrect: managed online endpoints provision and manage their own compute from the instance_type and instance_count of the deployment, so no compute cluster is needed. Create a compute cluster for batch endpoints or training jobs.",
+   "Incorrect: --local deploys to a Docker container on your own computer for debugging, and local endpoints do not support traffic rules. Use it to test a deployment before you deploy it to Azure, not to create the cloud deployment.",
+   "Incorrect: --all-traffic assigns 100 percent of the traffic in the same command that creates the deployment, which breaks the policy of a separate traffic step. Use it when one command should create the first deployment and route all traffic to it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-deploy-online-endpoints"
+ },
+ {
+  "id": "2.3.1-02",
+  "obj": "2.3.1",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Tailspin Toys has a custom PyTorch model that is registered as defect-model version 1 in an Azure Machine Learning workspace. A compute cluster named batch-cluster exists. You must deploy the model to a new batch endpoint named defect-batch, score a folder of images in a registered datastore by invoking the endpoint without naming a deployment, and then follow the progress of the scoring job in Azure Machine Learning studio. The files endpoint.yml and deployment.yml are ready.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az ml batch-endpoint create --file endpoint.yml --name defect-batch`.",
+   "Run `az ml batch-deployment create --file deployment.yml --endpoint-name defect-batch --set-default`.",
+   "Run `JOB_NAME=$(az ml batch-endpoint invoke --name defect-batch --input $INPUT_URI --input-type uri_folder --query name -o tsv)`.",
+   "Run `az ml job show -n $JOB_NAME --web`.",
+   "Run `az ml online-deployment get-logs --name defect-dpl --endpoint defect-batch`.",
+   "Run `az ml online-endpoint invoke --name defect-batch --request-file images.json`.",
+   "Run `az ml online-endpoint update --name defect-batch --traffic \"defect-dpl=100\"`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "Batch endpoints run long, asynchronous scoring jobs on a compute cluster and read their input from storage. Each invocation goes to the default deployment unless the caller names another one, and it returns a job that you monitor like any other Azure Machine Learning job.",
+  "rationale": [
+   "Step 1: the batch endpoint provides the stable URI that clients call to start scoring jobs. A batch deployment is always created under an existing endpoint, so the endpoint comes first.",
+   "Step 2: the deployment combines the registered model, the scoring script, the environment, and batch-cluster. --set-default makes it the default deployment, so an invocation that names no deployment is routed to it.",
+   "Step 3: invoke starts an asynchronous batch scoring job over the folder and returns the job name, which --query name -o tsv stores in JOB_NAME. The invocation names no deployment, so it runs on the default deployment from step 2; without a default, it fails with 'No valid deployments to route to'.",
+   "Step 4: az ml job show with --web opens the batch scoring job in the studio, where you follow its progress and later open its outputs and logs. It needs the job name from the previous step.",
+   "Incorrect: get-logs reads the container logs of an online deployment. Batch deployments run as jobs, so you read their logs with az ml job stream or on the Outputs + logs tab of the job. Use get-logs for online endpoints.",
+   "Incorrect: online-endpoint invoke sends one synchronous request to an online endpoint. A batch endpoint receives a pointer to data, such as a folder, and starts a job. Use online invoke when a model serves real-time requests.",
+   "Incorrect: traffic percentages split requests across the deployments of an online endpoint. A batch endpoint routes each invocation to its default deployment, which you set with --set-default or defaults.deployment_name."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-batch-model-deployments"
+ },
+ {
+  "id": "2.3.1-03",
+  "obj": "2.3.1",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Fourth Coffee deploys a custom demand forecasting model to a batch endpoint by using the Azure Machine Learning Python SDK v2. The deployment must meet the following requirements:\n\n- Each run() call of the scoring script receives 20 input files.\n- Each node runs four scoring processes in parallel.\n- All results are merged into one predictions.csv file.\n- Scoring one mini batch can take up to five minutes before it is retried.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\ndeployment = ModelBatchDeployment(\n    name=\"forecast-dpl\",\n    endpoint_name=\"forecast-batch\",\n    model=model,\n    code_configuration=CodeConfiguration(code=\"code/\", scoring_script=\"batch_driver.py\"),\n    environment=env,\n    compute=\"batch-cluster\",\n    settings=ModelBatchDeploymentSettings(\n        instance_count=2,\n        [[1]]=4,\n        mini_batch_size=20,\n        output_action=BatchDeploymentOutputAction.[[2]],\n        output_file_name=\"predictions.csv\",\n        retry_settings=BatchRetrySettings(max_retries=3, timeout=[[3]]),\n    ),\n)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "max_concurrent_requests_per_instance",
+     "max_concurrency_per_instance"
+    ],
+    "why": [
+     "Incorrect: max_concurrent_requests_per_instance is a request_settings value of managed online deployments that limits how many HTTP requests one instance handles at the same time. It is not a parameter of ModelBatchDeploymentSettings; batch deployments use max_concurrency_per_instance.",
+     "Correct: max_concurrency_per_instance sets how many scoring processes run the run() function in parallel on each node, so a value of 4 gives four parallel processes on each of the two instances."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "APPEND_ROW",
+     "SUMMARY_ONLY"
+    ],
+    "why": [
+     "Correct: APPEND_ROW merges the outputs that every run() call returns into one file, named by output_file_name, here predictions.csv. It is also the default output action.",
+     "Incorrect: SUMMARY_ONLY does not merge the results into an output file; it only tracks the outcome to evaluate the error threshold. Use it when the scoring script writes its own output files."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "5",
+     "300",
+     "300000"
+    ],
+    "why": [
+     "Incorrect: the timeout is expressed in seconds, not minutes, so a value of 5 aborts each mini batch after five seconds, and the job fails once the retries are used up.",
+     "Correct: the timeout of the retry settings is in seconds, so five minutes is 300. A mini batch that runs longer is aborted and retried up to max_retries times; the default timeout is 30 seconds.",
+     "Incorrect: the value is in seconds, not milliseconds, so 300000 allows more than three days per mini batch instead of five minutes. Milliseconds are used by request_timeout_ms of online deployments."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   0,
+   1
+  ],
+  "explanation": "In a batch model deployment, mini_batch_size sets how many files one run() call receives, max_concurrency_per_instance sets the parallel scoring processes per node, and instance_count sets the nodes per job. The output action decides whether results are merged into one file, and the retry settings set the per-mini-batch timeout in seconds and the number of retries.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-batch-model-deployments"
+ },
+ {
+  "id": "2.3.1-04",
+  "obj": "2.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank trained a custom model that classifies scanned cheque images. The model is a single registered model with a scoring script and needs no other processing steps. Every Sunday, about two million image files are added to a folder in an Azure Blob Storage container that is registered as a datastore. The predictions are needed by Monday morning, no user waits for an individual result, and no compute should run between the weekly runs.\n\nWhich deployment option should you use?",
+  "choices": [
+   "A model deployment on a batch endpoint that uses a compute cluster",
+   "A managed online endpoint with autoscale based on CPU use",
+   "A Kubernetes online endpoint on an attached AKS cluster",
+   "A pipeline component deployment on a batch endpoint"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Choose the endpoint type by latency and data shape. Online endpoints answer individual requests in real time; batch endpoints receive a pointer to data in storage, run a parallel job on a compute cluster, and write the results to a datastore. Within batch endpoints, use a model deployment for one model and a pipeline component deployment for a multi-step graph.",
+  "rationale": [
+   "Correct: batch endpoints score large volumes of data that are spread over many files, run asynchronously when latency does not matter, and use a compute cluster that can scale to zero nodes, so no compute runs between the weekly runs.",
+   "Incorrect: managed online endpoints serve synchronous, low-latency requests whose input fits in an HTTP payload, and their instances keep running between requests. Use them when an application waits for each prediction.",
+   "Incorrect: Kubernetes online endpoints also serve real-time HTTP requests, on a cluster that your team manages. Use them when real-time inference must run on your own Kubernetes infrastructure.",
+   "Incorrect: a pipeline component deployment runs a complete multi-step pipeline, for example preprocessing, scoring, and postprocessing components. A single model with its scoring script fits a model deployment; use a pipeline deployment to reuse pipeline components."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-endpoints-batch"
+ },
+ {
+  "id": "2.3.1-05",
+  "obj": "2.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. serves an MLflow model from a managed online deployment that uses no-code deployment. The team must now add preprocessing that converts raw postal codes into sales regions before the model runs. You add a score.py file and a code_configuration section to the deployment YAML file.\n\nWhich other setting should the deployment YAML file include?",
+  "choices": [
+   "An environment that includes the packages that score.py needs",
+   "A model signature that describes the input columns",
+   "A readiness_probe section with a longer initial delay",
+   "The egress_public_network_access key set to disabled"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "MLflow models support no-code deployment: Azure Machine Learning generates the scoring script and the environment. As soon as you add your own scoring script, for example for preprocessing or for a model without a PyFunc flavor, you take over both and must also specify the environment of the deployment.",
+  "rationale": [
+   "Correct: when you specify a scoring script for an MLflow model deployment, you must also specify the environment for the deployment. It must contain the packages that score.py imports, including the azureml-inference-server-http package.",
+   "Incorrect: a model signature is logged with the MLflow model when it is trained, not declared in the deployment YAML. No-code deployments use it to validate input; a custom scoring script parses the input itself.",
+   "Incorrect: probe settings control when the container counts as live and ready. Change them when the container needs longer to start than the defaults allow, not to add a scoring script.",
+   "Incorrect: egress_public_network_access secures outbound traffic with the legacy network isolation method, which Microsoft recommends replacing with a workspace managed virtual network. It has no role in adding a scoring script."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-deploy-mlflow-models-online-endpoints"
+ },
+ {
+  "id": "2.3.1-06",
+  "obj": "2.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. attached its existing Azure Kubernetes Service (AKS) cluster to an Azure Machine Learning workspace as Kubernetes compute. A fraud model must answer synchronous HTTP requests from a payment app within one second and must run on the nodes of that cluster. Security requires that clients authenticate with short-lived tokens that expire instead of static keys.\n\nWhich endpoint configuration should you use?",
+  "choices": [
+   "A Kubernetes online endpoint with auth_mode set to aml_token",
+   "A Kubernetes online endpoint with auth_mode set to aad_token",
+   "A managed online endpoint with auth_mode set to aad_token",
+   "A Kubernetes online endpoint with auth_mode set to key"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Online endpoints support three data plane authentication modes: key (static, rotated manually), aml_token (short-lived and refreshed), and aad_token (Microsoft Entra ID with an RBAC role that allows the score action). aad_token is available on managed online endpoints only, so on a Kubernetes online endpoint the most secure option is aml_token.",
+  "rationale": [
+   "Correct: a Kubernetes online endpoint runs the deployment on the attached cluster, and aml_token issues short-lived tokens that expire and are refreshed instead of static keys. Kubernetes online endpoints support the key and aml_token modes.",
+   "Incorrect: Microsoft Entra token authentication (aad_token) is supported for managed online endpoints only. For a Kubernetes online endpoint, the choice is key or aml_token.",
+   "Incorrect: a managed online endpoint runs on compute that Azure Machine Learning provisions and manages, not on the nodes of your AKS cluster. With aad_token, it is the right choice when the cluster requirement does not apply.",
+   "Incorrect: keys do not expire and must be rotated manually, which breaks the short-lived token requirement. Key authentication is the simplest option and fits development and testing."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-authenticate-online-endpoint"
+ },
+ {
+  "id": "2.3.1-07",
+  "obj": "2.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adventure Works Cycles has a batch endpoint named sales-batch with two deployments: dpl-v1 and dpl-v2. A scheduled process invokes sales-batch without specifying a deployment name.\n\nWhich setting should you check to find out which deployment runs the job?",
+  "choices": [
+   "The defaults.deployment_name property of sales-batch",
+   "The traffic allocation of sales-batch across the deployments",
+   "The creation time of each deployment in sales-batch",
+   "The mirror_traffic property of sales-batch"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A batch endpoint can host several deployments, but an invocation runs on exactly one: the deployment that the caller names, or otherwise the default deployment. Changing defaults.deployment_name changes the model behind the endpoint without changing the URL that consumers call.",
+  "rationale": [
+   "Correct: a batch endpoint routes every invocation that does not name a deployment to its default deployment, which is stored in defaults.deployment_name and can be changed at any time.",
+   "Incorrect: traffic percentages split requests across the deployments of an online endpoint. A batch endpoint does not split invocations by percentage; it uses one default deployment.",
+   "Incorrect: adding a newer deployment does not change the default. The endpoint keeps serving its default deployment until you update defaults.deployment_name or create a deployment with --set-default.",
+   "Incorrect: mirror_traffic is a property of online endpoints that copies a share of live requests to a shadow deployment. It does not decide where batch scoring jobs run."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-endpoints-batch"
+ },
+ {
+  "id": "2.3.1-08",
+  "obj": "2.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "case": "C-c",
+  "stem": "You need to implement the nightly scoring requirements.\n\nWhat should you create?",
+  "choices": [
+   "A batch endpoint with a model deployment of delay-model version 3 on cpu-cluster that specifies no scoring script or environment",
+   "A batch endpoint with a model deployment of delay-model version 3 on cpu-cluster that uses a custom scoring script and a curated environment",
+   "A batch endpoint with a pipeline component deployment on cpu-cluster that runs a custom scoring component",
+   "A deployment of delay-model version 3 on delay-online with 0 percent of the traffic that a scheduled job calls for every file"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "For large, file-based scoring without latency requirements, use a batch endpoint. MLflow models are deployed to batch endpoints without a scoring script or environment, which minimizes custom code, and a compute cluster with a minimum of 0 nodes costs nothing between jobs.",
+  "rationale": [
+   "Correct: delay-model version 3 is an MLflow model, so a batch model deployment needs no scoring script or environment. cpu-cluster scales to 0 nodes between runs, and the default append_row output merges the results into one CSV file per job.",
+   "Incorrect: a custom scoring script is code that the team must maintain, and you would also have to define your own environment, because curated environments are not supported in batch deployments. Write a batch scoring script only when the model is not in MLflow format or needs custom processing.",
+   "Incorrect: a pipeline component deployment runs a multi-step pipeline and needs a custom component here, which adds code. Use it when scoring needs several steps, such as preprocessing and postprocessing, or reuses training components.",
+   "Incorrect: an online deployment keeps its instances running between requests, so it incurs cost between the nightly runs, and the scheduled job is custom code. Online endpoints fit low-latency requests whose input fits in an HTTP payload."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-endpoints-batch"
+ },
+ {
+  "id": "2.3.1-09",
+  "obj": "2.3.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "case": "C-c",
+  "stem": "You need to meet the real-time requirements for delay-online.\n\nWhich two changes should you make? Each correct answer presents part of the solution.",
+  "choices": [
+   "Set auth_mode of delay-online to aad_token.",
+   "Set instance_count of the blue deployment to 3.",
+   "Set auth_mode of delay-online to aml_token.",
+   "Re-create delay-online as a Kubernetes online endpoint that uses aad_token.",
+   "Set max_concurrent_requests_per_instance of the blue deployment to 3."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Microsoft Entra token authentication (aad_token) is the most secure data plane mode for managed online endpoints: callers use their own identity, so no secret is stored, and they need an RBAC role that allows the score action. High availability comes from the number of instances, and Microsoft recommends at least three.",
+  "rationale": [
+   "Correct: with aad_token, App1 requests a Microsoft Entra token for its managed identity at run time, so no secret is stored, and each request is authorized by an RBAC role that allows the score action on delay-online.",
+   "Correct: for high availability, Microsoft recommends an instance_count of at least 3. blue has 2 instances, so it does not follow the recommendation; you can change the count with az ml online-deployment update.",
+   "Incorrect: aml_token tokens expire, but scoring with them requires no RBAC role, so requests are not authorized by Azure RBAC based on the identity of App1. Use aml_token for short-lived tokens on Kubernetes online endpoints.",
+   "Incorrect: aad_token is supported for managed online endpoints only, so a Kubernetes online endpoint cannot use it, and your team would also manage the cluster nodes. Use Kubernetes online endpoints when inference must run on your own cluster.",
+   "Incorrect: max_concurrent_requests_per_instance controls how many requests one instance handles at the same time. It does not add instances, so blue still has two instances and does not follow the high availability recommendation."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-authenticate-online-endpoint"
+ },
+ {
+  "id": "2.3.2-01",
+  "obj": "2.3.2",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Fabrikam, Inc. changed the score.py script of a fraud model and must test the change on a developer workstation that has Docker Engine running before the change is deployed to Azure. The files endpoint.yml and blue.yml reference local model files and a local conda file. You must create a local endpoint named fraud-ep and a local deployment named blue, send a sample request to the deployment, and then read the messages that the run() function logs for that request.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az ml online-endpoint create --local -n fraud-ep -f endpoint.yml`.",
+   "Run `az ml online-deployment create --local -n blue --endpoint fraud-ep -f blue.yml`.",
+   "Run `az ml online-endpoint invoke --local --name fraud-ep --request-file sample-request.json`.",
+   "Run `az ml online-deployment get-logs --local -n blue --endpoint fraud-ep`.",
+   "Run `az ml online-endpoint update --local --name fraud-ep --traffic \"blue=100\"`.",
+   "Run `az ml online-endpoint get-credentials --name fraud-ep --query primaryKey`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "Local endpoints run the deployment in Docker on your own computer, so you catch scoring script and configuration errors before you deploy to Azure. They have limits: no traffic rules, authentication, or probe settings, one deployment per endpoint, and only local model files and conda files.",
+  "rationale": [
+   "Step 1: the requirements include a local endpoint named fraud-ep, and a deployment is created under an endpoint, so the endpoint comes first. Without this step, creating the local deployment would create the endpoint for you, but when you run it, it must come before the deployment.",
+   "Step 2: --local builds or reuses a Docker image from the environment in blue.yml and starts a container with the local model and code mounted. Errors in the environment configuration or the model files appear at this stage.",
+   "Step 3: invoke --local sends the sample request to the scoring URI of the local container, which runs init() once at startup and run() for the request.",
+   "Step 4: get-logs --local returns the console output of the local container, including the messages that run() logged for the request that you just sent.",
+   "Incorrect: local endpoints do not support traffic rules and support only one deployment per endpoint, so every request already goes to blue. Traffic rules apply to endpoints in Azure.",
+   "Incorrect: local endpoints do not support authentication, so no key is needed. get-credentials returns the keys or token of an endpoint in Azure, which a REST client needs to call its scoring URI."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-deploy-online-endpoints"
+ },
+ {
+  "id": "2.3.2-02",
+  "obj": "2.3.2",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Northwind Traders creates several managed online deployments, and four of them fail. You must choose the fix for each failure.\n\nWhich fix should you apply to each failure? To answer, drag the appropriate fixes to the correct failures. Each fix may be used once, more than once, or not at all.",
+  "choices": [
+   "Pin the package versions in the conda file",
+   "Use an instance_type that has more disk space",
+   "Increase initial_delay and failure_threshold of the probes",
+   "Run az ml workspace sync-keys",
+   "Request a quota increase for the VM family",
+   "Increase request_timeout_ms in request_settings"
+  ],
+  "targets": [
+   "Deployment1: ImageBuildFailure, and the last line of the build log is 'Installing pip dependencies: ...working...'",
+   "Deployment2: OutOfQuota, because the model is larger than the disk space that the VM provides",
+   "Deployment3: ResourceNotReady, because the container needs several minutes to load the model in init()",
+   "Deployment4: ImageBuildFailure with the message 'container registry authorization failure'"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "rationale": [
+   "When the build log shows no obvious error and ends while pip dependencies install, a dependency is the likely cause. Pinning the versions in the conda file gives the resolver a fixed set of packages to install.",
+   "A disk quota error occurs when the model is larger than the available disk space, so the model cannot be downloaded. A SKU with more disk space, or a smaller image and model, fixes it; a quota increase does not add disk to the VM.",
+   "When container initialization takes too long, the readiness or liveness probe fails beyond its failure threshold. A longer initial delay or a higher failure threshold gives init() time to finish. A bigger VM SKU can also speed up initialization, but the probe settings address the failure directly.",
+   "A container registry authorization failure can come from workspace resource keys that are out of sync. az ml workspace sync-keys starts the key synchronization manually, which can resolve the failure."
+  ],
+  "notes": [
+   "Fixes exact versions of the pip and conda packages in the environment. Use it when an image build fails or hangs while dependencies are resolved.",
+   "Changes the VM size of the deployment. Use a SKU with more disk for disk quota errors, and a SKU with more memory for memory quota errors.",
+   "Probe settings control when the container counts as live and ready. Raise them when the container needs longer to start than the defaults allow.",
+   "Synchronizes the keys of the resources that belong to the workspace, such as its container registry. Use it for container registry authorization failures during the image build.",
+   "Raises the number of vCPUs that the subscription can use for a VM family. Use it for CPU quota errors, when there are not enough cores for the instances that you request.",
+   "Sets the scoring timeout of a deployment, up to 180000 milliseconds. Use it when requests fail with HTTP 408 because the model takes longer than the timeout."
+  ],
+  "explanation": "The deployment error code points to the phase that failed: ImageBuildFailure during the image build, OutOfQuota when a resource limit is hit, and ResourceNotReady when the container starts but crashes or fails its probes. Read the build log or the container logs first, and then apply the fix that matches the cause.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-troubleshoot-online-endpoints"
+ },
+ {
+  "id": "2.3.2-03",
+  "obj": "2.3.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Alpine Ski House creates a managed online endpoint named ski-ep and then creates a deployment by running `az ml online-deployment create --name blue --endpoint-name ski-ep -f blue.yml`. The provisioning state of blue is Succeeded. A web app that sends REST requests to the scoring URI of ski-ep receives HTTP 404 responses, and the container logs of blue show no incoming requests.\n\nWhich two actions should you perform? Each correct answer presents a complete solution.",
+  "choices": [
+   "Run `az ml online-endpoint update --name ski-ep --traffic \"blue=100\"`.",
+   "Add the `azureml-model-deployment: blue` header to each request.",
+   "Increase request_timeout_ms in the request settings of blue.",
+   "Run `az ml online-endpoint get-credentials --name ski-ep` and send the new key.",
+   "Increase the instance_count of blue to 3."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "HTTP status codes from a managed online endpoint point to the cause: 401 for authentication, 404 when no deployment has a positive traffic weight, 408 for a scoring timeout, 424 for a model error, and 429 for too many requests. A new deployment receives requests only through the traffic rules or the azureml-model-deployment header.",
+  "rationale": [
+   "Correct: a deployment that is created without --all-traffic has 0 percent of the traffic, and HTTP 404 means that the endpoint has no valid deployment with a positive weight. Assigning all traffic to blue makes the endpoint route the requests to it.",
+   "Correct: the azureml-model-deployment header routes a request directly to the named deployment and bypasses the traffic rules, so the requests reach blue even while its traffic allocation is 0 percent.",
+   "Incorrect: request_timeout_ms limits how long the model may take to score a request, and exceeding it returns HTTP 408. The requests never reach blue, so the timeout is not involved.",
+   "Incorrect: a missing, wrong, or expired key or token returns HTTP 401. The endpoint returns 404 because no deployment can receive the requests, which a new key does not change.",
+   "Incorrect: more instances add capacity, which helps when requests are rejected with HTTP 429. With 0 percent of the traffic, no requests reach blue regardless of its instance count."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-troubleshoot-online-endpoints"
+ },
+ {
+  "id": "2.3.2-04",
+  "obj": "2.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Proseware, Inc. deployed a document classification model to a managed online endpoint. Some large documents take about 12 seconds to score, and those requests fail with HTTP 408. The deployment uses the default request settings.\n\nWhich setting should you change?",
+  "choices": [
+   "request_settings.request_timeout_ms",
+   "request_settings.max_concurrent_requests_per_instance",
+   "liveness_probe.timeout",
+   "instance_count"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Each online deployment has request settings: request_timeout_ms limits how long one scoring request may run (default 5 seconds, maximum 180 seconds), and max_concurrent_requests_per_instance limits the parallel requests per instance. Match the HTTP status code to the setting before you change anything.",
+  "rationale": [
+   "Correct: HTTP 408 means that scoring took longer than request_timeout_ms, which defaults to 5000 milliseconds. Raise it above 12 seconds; the maximum allowed value is 180000 milliseconds.",
+   "Incorrect: max_concurrent_requests_per_instance sets how many requests one instance processes at the same time. Raise it, together with WORKER_COUNT, when requests are rejected with HTTP 429 while the instances have spare capacity.",
+   "Incorrect: the liveness probe timeout is how long one health check of the container may take before it counts as failed. It does not limit scoring requests; adjust probes when containers fail to start or keep restarting.",
+   "Incorrect: more instances let the deployment process more requests in parallel, but each request keeps the same timeout, so a 12-second request still fails. Scale out for HTTP 429 responses under load."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-deployment-managed-online"
+ },
+ {
+  "id": "2.3.2-05",
+  "obj": "2.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A data scientist at Graphic Design Institute must debug the init() and run() functions of a scoring script by setting breakpoints in Visual Studio Code. The laptop of the data scientist cannot run Docker Engine. The data scientist also wants to change packages in the local Python environment and test again without rebuilding a container image.\n\nWhat should the data scientist use?",
+  "choices": [
+   "The Azure Machine Learning inference HTTP server, started with azmlinfsrv",
+   "A local endpoint created with az ml online-deployment create --local",
+   "A local endpoint with the --vscode-debug flag and a dev container",
+   "A managed online deployment and az ml online-deployment get-logs"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "There are three local options to debug an online endpoint: the inference HTTP server (no Docker, the fastest loop for the scoring script), local endpoints (Docker, the full deployment configuration), and local endpoints with Visual Studio Code dev containers. In the cloud, you rely on container logs.",
+  "rationale": [
+   "Correct: the inference HTTP server is a Python package that exposes score.py as a local HTTP endpoint without Docker. It integrates with the Visual Studio Code debugger and lets you update the local Python environment without an image rebuild.",
+   "Incorrect: local endpoints run the deployment in a Docker container, so they need Docker Engine, and changing the environment means rebuilding the image. Use them to test the full deployment configuration before you deploy to Azure.",
+   "Incorrect: --vscode-debug attaches Visual Studio Code to a local endpoint inside a dev container, which also requires Docker Engine. Use it when Docker is available and you want to debug inside the image that the deployment uses.",
+   "Incorrect: container logs show the print and logging output of score.py in Azure, but you cannot set breakpoints or access the VM directly. Use them to diagnose deployments that already run in the cloud."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-inference-server-http"
+ },
+ {
+  "id": "2.3.2-06",
+  "obj": "2.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Humongous Insurance creates a managed online deployment named blue under an endpoint named claims-ep. The deployment fails with the error 'Unable to download user model'. You confirmed that the model blob exists in the workspace storage account.\n\nWhich command should you run next to see whether the model files were downloaded to the container?",
+  "choices": [
+   "az ml online-deployment get-logs -e claims-ep -n blue --container storage-initializer",
+   "az ml online-deployment get-logs -e claims-ep -n blue --container inference-server",
+   "az ml job stream --name blue",
+   "kubectl -n claims logs blue"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A managed online deployment runs two containers that you can read logs from: the storage initializer, which downloads the model and code, and the inference server, which runs score.py. Choose the container by the phase that failed.",
+  "rationale": [
+   "Correct: the storage initializer container runs before the inference server and downloads the model and code to the container. Its log shows whether that download succeeded, and you select it with --container storage-initializer.",
+   "Incorrect: inference-server is the default container, and its log holds the print and logging output of score.py. When the model cannot be downloaded, the scoring script never runs, so this log does not explain the failure.",
+   "Incorrect: az ml job stream streams the logs of jobs, such as training jobs and batch scoring jobs. An online deployment is not a job, so you read its logs with az ml online-deployment get-logs.",
+   "Incorrect: kubectl gives administrators direct access to logs on Kubernetes online endpoints, where they manage the cluster. Managed online endpoints give no direct access to the VMs, so you use get-logs instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-troubleshoot-online-endpoints"
+ },
+ {
+  "id": "2.3.2-07",
+  "obj": "2.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Trey Research invokes a batch endpoint that reads a data asset from a storage account. The batch scoring job fails, and the job log contains the message 'ScriptExecutionException was caused by StreamAccessException. StreamAccessException was caused by AuthenticationException.' The scoring script runs without errors when you test it locally.\n\nWhat should you do?",
+  "choices": [
+   "Assign the Storage Blob Data Reader role on the storage account to the managed identity of the compute cluster.",
+   "Assign the AcrPull role on the workspace container registry to the managed identity of the compute cluster.",
+   "Increase the timeout value in the retry settings of the batch deployment.",
+   "Set the error_threshold setting of the batch deployment to -1."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Batch scoring jobs mount their input on the nodes of the compute cluster, so the managed identity of the cluster needs read access to the storage. Use the job logs to tell access errors apart from script errors (logs/user/error) and from timeouts (retry settings).",
+  "rationale": [
+   "Correct: the compute cluster must mount the storage that holds the data asset. The authentication exception means that its managed identity lacks permission, so it needs at least Storage Blob Data Reader on the storage account.",
+   "Incorrect: AcrPull lets an identity pull container images from a registry. The failure is in mounting the input data, not in pulling the image; AcrPull matters when an image cannot be downloaded from a private registry.",
+   "Incorrect: the timeout limits how long one mini batch may run before it is retried, which fixes 'No progress update' failures. Here the storage cannot be accessed at all, so more time does not help.",
+   "Incorrect: error_threshold sets how many failed input files are tolerated before the job stops. When the data cannot be mounted, no file can be read, so tolerating failures does not produce predictions."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-troubleshoot-batch-endpoints"
+ },
+ {
+  "id": "2.3.2-08",
+  "obj": "2.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing configured diagnostic settings for a managed online endpoint that send all log categories to a Log Analytics workspace. You must find out when the inference-server container of a deployment failed its liveness probe and was restarted.\n\nWhich log table should you query?",
+  "choices": [
+   "AmlOnlineEndpointEventLog",
+   "AmlOnlineEndpointTrafficLog",
+   "AmlOnlineEndpointConsoleLog",
+   "AmlComputeJobEvent"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Online endpoints write three dedicated log tables when diagnostic settings send them to Log Analytics: the traffic log for requests, the console log for container output, and the event log for container life cycle events such as probe failures and restarts.",
+  "rationale": [
+   "Correct: AmlOnlineEndpointEventLog records life cycle events of the containers, such as LivenessProbeFailed and the Killing event that reports that the inference-server container failed its liveness probe and will be restarted.",
+   "Incorrect: AmlOnlineEndpointTrafficLog holds one row per request, with the response code, the model status code, and a breakdown of the latency. Use it to investigate failed or slow requests.",
+   "Incorrect: AmlOnlineEndpointConsoleLog holds the console output that the containers write, such as the logging output of score.py. Use it to debug the scoring script or a container that fails to start.",
+   "Incorrect: AmlComputeJobEvent records events of jobs that run on compute clusters, such as JobSubmitted and JobFailed. Online deployments are not jobs, so their container events are in the online endpoint tables."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-monitor-online-endpoints"
+ },
+ {
+  "id": "2.3.2-09",
+  "obj": "2.3.2",
+  "difficulty": "hard",
+  "type": "yesno",
+  "case": "C-c",
+  "stem": "You investigate the problem statement for delay-online.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "With the current configuration of blue, at most four requests can be processed in parallel before new requests are rejected.",
+   "Increasing request_timeout_ms in the request settings of blue resolves the HTTP 429 responses.",
+   "The HTTP 429 responses indicate that the model container in blue returned a non-200 response."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "HTTP 429 from a managed online endpoint means too many pending requests, or that the endpoint rate limit was reached. The parallel limit is 2 * max_concurrent_requests_per_instance * instance_count; raise it by adding instances, or by raising the per-instance concurrency together with WORKER_COUNT when the model can handle it, as the low CPU use suggests.",
+  "rationale": [
+   "Yes: Azure Machine Learning allows 2 * max_concurrent_requests_per_instance * instance_count requests in parallel. blue uses the default of 1 concurrent request per instance and 2 instances, so 2 * 1 * 2 = 4, and more requests are rejected with HTTP 429.",
+   "No: request_timeout_ms limits how long one request may be scored, and exceeding it returns HTTP 408. Requests take about 300 milliseconds, well within the default of 5000 milliseconds; the 429 responses come from the concurrency limit.",
+   "No: when the model container returns a non-200 response, the endpoint returns HTTP 424 and reports details in the ms-azureml-model-error-statuscode header. HTTP 429 means that more requests arrive than the deployment may process."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-troubleshoot-online-endpoints"
+ },
+ {
+  "id": "2.3.3-01",
+  "obj": "2.3.3",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Wingtip Toys serves a recommendation model from a managed online endpoint named rec-ep. A deployment named blue receives 100 percent of the traffic. You must roll out a new model version by using the Azure CLI and meet the following requirements:\n\n- Create a deployment named green from green.yml without exposing it to clients.\n- Verify green with one sample request before it receives any production requests, mirrored or live.\n- Validate green with copies of as large a share of the production requests as the platform allows, without changing the responses that clients receive.\n- Then let green answer 10 percent of the production requests.\n- Keep blue available for rollback.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az ml online-deployment create --name green --endpoint-name rec-ep -f green.yml`.",
+   "Run `az ml online-endpoint invoke --name rec-ep --deployment-name green --request-file sample.json`.",
+   "Run `az ml online-endpoint update --name rec-ep --mirror-traffic \"green=50\"`.",
+   "Run `az ml online-endpoint update --name rec-ep --mirror-traffic \"green=0\"`.",
+   "Run `az ml online-endpoint update --name rec-ep --traffic \"blue=90 green=10\"`.",
+   "Run `az ml online-deployment create --name green --endpoint-name rec-ep -f green.yml --all-traffic`.",
+   "Run `az ml online-endpoint update --name rec-ep --mirror-traffic \"green=100\"`.",
+   "Run `az ml online-deployment delete --name blue --endpoint rec-ep --yes --no-wait`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "A safe rollout on a managed online endpoint follows a fixed pattern: deploy the new version with no traffic, test it directly, shadow it with mirrored traffic, and then shift live traffic in small steps while the old deployment stays available. Mirroring is limited to one deployment and 50 percent of the traffic, and a deployment cannot receive mirrored and live traffic at the same time.",
+  "rationale": [
+   "Step 1: without --all-traffic, the new deployment starts with 0 percent of the traffic, so no client receives its predictions while you validate it.",
+   "Step 2: --deployment-name routes the request straight to green regardless of the traffic rules, so you can verify green while it receives no traffic. A request that names a deployment is not mirrored.",
+   "Step 3: mirroring copies the chosen share of the requests that do not name a deployment to green, while clients still receive the responses of blue. 50 percent is the maximum share that you can mirror.",
+   "Step 4: a deployment can receive live traffic or mirrored traffic, not both, so you set the mirror share of green back to 0 before you give it live traffic.",
+   "Step 5: green now answers 10 percent of the requests and blue the other 90 percent. The traffic shares across all deployments must total 100 percent (or 0 to disable traffic), and blue stays deployed so that you can move all traffic back to it.",
+   "Incorrect: --all-traffic gives green 100 percent of the traffic as soon as it is created, so every client receives the new model before it is verified. Use it for the first deployment of a new endpoint.",
+   "Incorrect: the maximum share of traffic that you can mirror is 50 percent, a cap that limits the effect on the bandwidth quota of the endpoint. A value of 100 exceeds that maximum.",
+   "Incorrect: a deployment that still has live traffic cannot be deleted, and blue must stay available for a rollback in any case. Delete the old deployment only after its traffic is set to 0 and the new deployment has proved stable."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-safely-rollout-online-endpoints"
+ },
+ {
+  "id": "2.3.3-02",
+  "obj": "2.3.3",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Coho Winery has a managed online endpoint named wine-ep with two deployments. The traffic setting of wine-ep is blue=100, and the mirror traffic setting is green=10.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "For 10 percent of the requests that do not name a deployment, clients receive the prediction from green.",
+   "A request that sets the azureml-model-deployment header to green returns the prediction from green.",
+   "Requests that set the azureml-model-deployment header to blue are also mirrored to green."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Traffic mirroring, also called shadow testing, copies a share of the requests that use the routing of the endpoint to one shadow deployment and discards its responses, so you can compare latency and errors without affecting clients. Requests that name a deployment bypass both the traffic split and the mirror.",
+  "rationale": [
+   "No: mirroring copies 10 percent of the requests to green so that you can gather metrics and logs, but the responses of green are not returned. All clients still receive predictions from blue.",
+   "Yes: you can name any deployment of the endpoint when you invoke it, even the shadow deployment, and the endpoint returns the prediction of that deployment. This is how you test green directly during the rollout.",
+   "No: when a request names a deployment, Azure Machine Learning sends it only to that deployment and does not mirror it. Only requests that leave the routing to the endpoint are mirrored to the shadow deployment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-safely-rollout-online-endpoints"
+ },
+ {
+  "id": "2.3.3-03",
+  "obj": "2.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel has a managed online endpoint with two deployments. The deployment named blue receives 100 percent of the traffic, and the new deployment named green receives 0 percent. The QA team must test green from a REST client without changing the traffic settings of the endpoint.\n\nWhat should the QA team add to each request?",
+  "choices": [
+   "The HTTP header azureml-model-deployment set to green",
+   "The HTTP header x-ms-client-request-id set to green",
+   "The HTTP header x-request-id set to green",
+   "An Authorization header that contains the primary key of the endpoint"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "During a rollout, you test a deployment that has no traffic by naming it: --deployment-name in the Azure CLI, deployment_name in the Python SDK, or the azureml-model-deployment header in REST calls. The traffic rules apply only to requests that do not name a deployment.",
+  "rationale": [
+   "Correct: the azureml-model-deployment header routes the request directly to the named deployment and bypasses the traffic rules, so green can be tested while it has 0 percent of the traffic.",
+   "Incorrect: x-ms-client-request-id is a tracing header that the client sets to correlate its own requests in the logs. It does not affect which deployment receives the request.",
+   "Incorrect: x-request-id is reserved for server tracing, and Azure Machine Learning overrides it with a valid GUID. Attach it to a support ticket for a failed request; it does not route requests.",
+   "Incorrect: with key authentication, every request needs the key in the Authorization header, but the key only authenticates the caller. Without the routing header, the request follows the traffic rules and reaches blue."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-safely-rollout-online-endpoints"
+ },
+ {
+  "id": "2.3.3-04",
+  "obj": "2.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Southridge Video moved part of the traffic of a managed online endpoint named video-ep to a new deployment named green. The traffic setting is blue=80 green=20. After an hour, the error rate of green rises. All requests must return to blue at once, and green must stay deployed so that the team can reproduce the errors with test requests.\n\nWhich command should you run?",
+  "choices": [
+   "az ml online-endpoint update --name video-ep --traffic \"blue=100 green=0\"",
+   "az ml online-deployment delete --name green --endpoint video-ep --yes",
+   "az ml online-endpoint update --name video-ep --mirror-traffic \"green=0\"",
+   "az ml online-deployment update --name blue --endpoint-name video-ep --set instance_count=4"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Keeping the old deployment running during a rollout is what makes rollback safe: a rollback is a traffic update on the endpoint, not a new deployment. Remove the old deployment only after the new one has carried all traffic long enough to be trusted.",
+  "rationale": [
+   "Correct: traffic is an endpoint setting, so one update moves all requests back to blue without a redeployment. green keeps running with 0 percent of the traffic, and the team can still call it by name to reproduce the errors.",
+   "Incorrect: a deployment that still has live traffic cannot be deleted, so this command fails while green holds 20 percent. Even after the traffic moves, deleting green removes the deployment that the team needs to reproduce the errors. Delete a deployment once it is no longer needed.",
+   "Incorrect: the mirror traffic setting controls shadow copies, and green receives live traffic, not mirrored traffic. Setting the mirror share to 0 leaves the live 20 percent share on green.",
+   "Incorrect: more blue instances add capacity but do not change the traffic split, so green still answers 20 percent of the requests. Scale blue before you move all traffic to it if its instances cannot handle the full load."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-safely-rollout-online-endpoints"
+ },
+ {
+  "id": "2.3.3-05",
+  "obj": "2.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Bellows College has a batch endpoint named grades-batch. Its default deployment, dpl-v1, is invoked every night by a scheduled pipeline that does not name a deployment. You created a deployment named dpl-v2 and tested it with a job that named dpl-v2. dpl-v2 must now serve the nightly jobs without changes to the scheduled pipeline, and you must be able to return to dpl-v1 quickly.\n\nWhich command should you run?",
+  "choices": [
+   "az ml batch-endpoint update --name grades-batch --set defaults.deployment_name=dpl-v2",
+   "az ml batch-endpoint invoke --name grades-batch --deployment-name dpl-v2 --input $INPUT_URI",
+   "az ml batch-deployment delete --name dpl-v1 --endpoint-name grades-batch --yes",
+   "az ml online-endpoint update --name grades-batch --traffic \"dpl-v1=0 dpl-v2=100\""
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Batch endpoints support a simple safe rollout: create the new deployment without --set-default, test it by naming it in an invocation, and then switch defaults.deployment_name. Consumers keep calling the same endpoint, and a rollback is switching the default back.",
+  "rationale": [
+   "Correct: a batch endpoint sends every invocation that names no deployment to its default deployment. Setting defaults.deployment_name to dpl-v2 switches the nightly jobs without touching the pipeline, and setting it back to dpl-v1 is the rollback.",
+   "Incorrect: naming dpl-v2 in invoke runs one job on it without changing the default, which is how you tested it. The scheduled pipeline names no deployment, so its jobs would still run on dpl-v1.",
+   "Incorrect: deleting dpl-v1 removes the deployment that you need for a quick rollback, and you change the default deployment by updating defaults.deployment_name, not by deleting deployments. Delete the old deployment only after the new default has proved itself.",
+   "Incorrect: traffic splitting belongs to online endpoints, which route requests by percentage. A batch endpoint routes to one default deployment, so you change grades-batch with az ml batch-endpoint update."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-batch-model-deployments"
+ },
+ {
+  "id": "2.3.3-06",
+  "obj": "2.3.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. has a managed online endpoint with a deployment named blue that receives 100 percent of the traffic. The team deployed two candidate models as the deployments green and red. Each candidate must be validated with copies of 30 percent of the production requests, and no client may receive a prediction from a candidate during validation.\n\nWhat should you do?",
+  "choices": [
+   "Mirror 30 percent of the traffic to green, set the mirror share of green back to 0 after the test, and then mirror 30 percent to red.",
+   "Run az ml online-endpoint update with --mirror-traffic \"green=30 red=30\" so that both candidates are validated at the same time.",
+   "Set the traffic to blue=40 green=30 red=30 and compare the metrics of the three deployments.",
+   "Mirror 30 percent of the traffic to green and send 30 percent of the live traffic to red at the same time."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Traffic mirroring has firm limits: one shadow deployment per endpoint, at most 50 percent of the traffic, managed online endpoints only, and a deployment receives either live or mirrored traffic. Plan the rollout of several candidates as consecutive shadow tests.",
+  "rationale": [
+   "Correct: an endpoint can mirror traffic to only one deployment at a time, and 30 percent is below the maximum of 50 percent. Validating the candidates one after the other keeps every client response on blue.",
+   "Incorrect: you can mirror traffic to only one deployment in an endpoint, so one mirror setting cannot shadow green and red at the same time. Shadow-test several candidates one after the other.",
+   "Incorrect: live traffic returns the predictions of green and red to 60 percent of the requests, which the requirement forbids. A live split is the step after shadow testing, when a candidate may serve real clients.",
+   "Incorrect: red would answer 30 percent of the requests with its own predictions, so clients would receive the predictions of a candidate during validation. Give a candidate live traffic only after it passes shadow testing."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-safely-rollout-online-endpoints"
+ },
+ {
+  "id": "2.3.3-07",
+  "obj": "2.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "First Up Consultants serves version 5 of a model from a deployment named blue under a managed online endpoint. Version 6 is registered. If version 6 misbehaves in production, the team must be able to return to version 5 within seconds, without a redeployment.\n\nWhat should you do?",
+  "choices": [
+   "Create a deployment of version 6 under the same endpoint and move traffic to it in steps.",
+   "Update blue in place with az ml online-deployment update so that it references version 6.",
+   "Create a new managed online endpoint for version 6 and give its URI to the clients.",
+   "Deploy version 6 to a batch endpoint and compare its predictions with those of blue."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Online endpoints separate the interface (the endpoint) from the implementation (the deployment). A blue-green rollout adds a new deployment, shifts traffic gradually, and keeps the old deployment until the new one is trusted, so a rollback is immediate and clients never change URIs.",
+  "rationale": [
+   "Correct: with a second deployment under the same endpoint, version 5 keeps running in blue. A rollback is a traffic update that moves requests back to blue, and the clients keep using the same URI.",
+   "Incorrect: an in-place update replaces version 5 in blue, so going back means another update that redeploys version 5. Use in-place updates for changes such as scaling, and in production run scaling and model changes as separate updates.",
+   "Incorrect: a new endpoint gets a new URI, so every client must change its configuration, and a rollback means switching the URI again. Endpoints are the stable interface; deployments are what you swap.",
+   "Incorrect: a batch endpoint scores data asynchronously and does not serve the real-time requests of the clients. Comparing predictions offline can validate a model, but it is not a rollout strategy for an online endpoint."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-endpoints-online"
+ },
+ {
+  "id": "2.3.3-08",
+  "obj": "2.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A. Datum Corporation completed a blue-green rollout on a managed online endpoint named fare-ep. The traffic setting is blue=0 green=100, and green has been stable for two weeks. You must stop paying for the virtual machines of blue without affecting green.\n\nWhich command should you run?",
+  "choices": [
+   "az ml online-deployment delete --name blue --endpoint fare-ep --yes",
+   "az ml online-endpoint delete --name fare-ep --yes",
+   "az ml online-endpoint update --name fare-ep --traffic \"green=100\"",
+   "az ml online-endpoint update --name fare-ep --mirror-traffic \"blue=0\""
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The last step of a blue-green rollout is to delete the old deployment once the new one has proved stable. Until then, keeping the old deployment at 0 percent of the traffic is your rollback insurance, which you pay for in VM costs.",
+  "rationale": [
+   "Correct: managed online endpoints charge for the VMs that are assigned to each deployment. Deleting blue removes its instances, and deleting one deployment does not affect the other deployments of the endpoint.",
+   "Incorrect: deleting an endpoint also deletes all its deployments, including green, which serves all production traffic. Delete the endpoint only when the service is retired.",
+   "Incorrect: blue already receives 0 percent of the traffic, but its instances keep running and are charged until the deployment is deleted. Changing the traffic setting does not remove a deployment.",
+   "Incorrect: the mirror traffic setting controls shadow copies of requests, and blue receives no mirrored traffic. Changing it does not remove the instances of blue, so the cost stays the same."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-safely-rollout-online-endpoints"
+ },
+ {
+  "id": "2.3.3-09",
+  "obj": "2.3.3",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "case": "C-c",
+  "stem": "You need to configure the rollout of delay-model version 4 to meet the rollout requirements.\n\nHow should you complete the commands? To answer, select the appropriate options in the answer area.\n\n```bash\naz ml online-deployment create --name green --endpoint-name delay-online -f green.yml\n\n# Validation stage\naz ml online-endpoint update --name delay-online [[1]] \"green=20\"\n\n# QA test request at any stage\ncurl --request POST \"$SCORING_URI\" --header \"Authorization: Bearer $TOKEN\" \\\n  --header \"Content-Type: application/json\" --header \"[[2]]: green\" --data @qa.json\n\n# Second stage\naz ml online-endpoint update --name delay-online --mirror-traffic \"green=0\"\naz ml online-endpoint update --name delay-online --traffic [[3]]\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "--traffic",
+     "--mirror-traffic"
+    ],
+    "why": [
+     "Incorrect: --traffic sets live traffic, so green would answer customer requests during the validation week and the responses that customers receive would change. Use --traffic in the second stage, where the shares of all deployments must total 100 percent.",
+     "Correct: --mirror-traffic copies 20 percent of the requests to green and discards the responses of green, so the responses that customers receive do not change while the team compares latency and errors."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "x-ms-client-request-id",
+     "azureml-model-deployment",
+     "x-request-id"
+    ],
+    "why": [
+     "Incorrect: x-ms-client-request-id is a client tracing ID that appears in the logs. It does not route the request, so the QA request would follow the traffic rules and reach blue.",
+     "Correct: azureml-model-deployment routes the request to green regardless of the traffic and mirror settings, so QA can test green at any stage without changing them.",
+     "Incorrect: x-request-id is reserved for server tracing, and Azure Machine Learning overrides it with a valid GUID. It does not select a deployment."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "\"green=10\"",
+     "\"blue=100 green=10\"",
+     "\"blue=90 green=10\""
+    ],
+    "why": [
+     "Incorrect: the traffic shares across all deployments of an endpoint must total 0 or 100 percent. A setting that names only green=10 does not state the 90 percent share of blue, so it cannot produce the required blue=90 green=10 split.",
+     "Incorrect: blue=100 green=10 adds up to 110 percent, but the total traffic must be 0 or 100 percent. Give blue 90 percent so that the shares add up to 100 percent.",
+     "Correct: blue=90 green=10 lets green answer 10 percent of the production requests while blue answers the rest, and the total is 100 percent, as the endpoint requires."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   1,
+   2
+  ],
+  "explanation": "A staged rollout uses two different endpoint settings: mirror traffic for a shadow stage in which the responses do not change, and traffic for live stages, whose shares must add up to 100 percent. A deployment cannot receive both at once, so the mirror share is reset to 0 before the live split, and the azureml-model-deployment header reaches any deployment at any stage.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-safely-rollout-online-endpoints"
+ }
+]

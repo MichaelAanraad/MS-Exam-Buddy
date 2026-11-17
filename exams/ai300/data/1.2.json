@@ -1,0 +1,775 @@
+[
+ {
+  "id": "1.2.1-01",
+  "obj": "1.2.1",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Fabrikam, Inc. exports support tickets as CSV files to Azure Data Lake Storage Gen2. A comment column contains quoted line breaks, and each quoted value must be read as part of one record. You must create a Table data asset named support-tickets, version 1. You author the MLTable file on your computer by using the mltable Python SDK, which is not installed on the computer yet, and you register the asset by using the Azure CLI ml extension, which has default workspace settings. A Python variable named paths already lists the CSV files.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `pip install mltable`.",
+   "Run `tbl = mltable.from_delimited_files(paths=paths, support_multi_line=True)`.",
+   "Run `tbl.save(\"./tickets\")`.",
+   "Run `az ml data create --path ./tickets --name support-tickets --version 1 --type mltable`.",
+   "Rename the file ./tickets/MLTable to ./tickets/MLTable.yml.",
+   "Run `az ml data create --path ./tickets/MLTable --name support-tickets --version 1 --type uri_file`.",
+   "Run `az ml data create --path ./tickets --name support-tickets --version 1 --type uri_folder`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "An mltable data asset is a folder that contains a file named MLTable, which holds the data loading blueprint (paths and read transformations). The mltable SDK builds that blueprint and save() writes the MLTable file to a folder; az ml data create with --type mltable then uploads the folder and registers it. support_multi_line=True makes quoted line breaks part of one record instead of a record break.",
+  "rationale": [
+   "Step 1: the mltable package provides from_delimited_files and save. It must be installed before any mltable code can run, so it comes first.",
+   "Step 2: from_delimited_files builds the table blueprint. support_multi_line=True interprets line breaks inside quoted values as part of one record; the default (False) treats every line break as a new record and can misalign fields.",
+   "Step 3: save() writes the blueprint as a file named MLTable into ./tickets. az ml data create needs a folder that contains a valid MLTable file, so the save must happen before registration.",
+   "Step 4: az ml data create with --type mltable and --path pointing to the folder uploads the folder to the default datastore and registers support-tickets version 1 as a Table asset.",
+   "Incorrect: Azure Machine Learning expects the file to be named exactly MLTable. Renaming it to MLTable.yml or MLTable.yaml makes the folder invalid as an mltable asset. Use a .yml extension only for other YAML specs, such as a data asset definition file.",
+   "Incorrect: pointing a uri_file asset at the MLTable file registers only that small YAML file as a generic file, without table semantics. The path of an mltable asset must be the folder that contains the MLTable file. Use uri_file for a single data file such as one CSV.",
+   "Incorrect: a uri_folder asset references the folder as plain files, so consumers do not get the read_delimited settings such as support_multi_line. Use uri_folder when a script reads a folder of files itself, for example images or Parquet files into pandas."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-data-assets?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.1-02",
+  "obj": "1.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys stores customer churn data as CSV files in a datastore. You plan to train a classification model by using an automated ML job that you submit with the Azure Machine Learning Python SDK v2. You need to register the training data as a data asset that the automated ML job accepts as training data. The solution must use the current v2 data asset types.\n\nWhich data asset should you create?",
+  "choices": [
+   "A data asset of type mltable",
+   "A data asset of type uri_file",
+   "A data asset of type uri_folder",
+   "A TabularDataset registered with SDK v1"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Azure Machine Learning v2 has three data asset types: uri_file (one file), uri_folder (a folder of files), and mltable (a table with a loading blueprint). Automated ML in SDK and CLI v2 takes its training data as an MLTable, because it needs tabular data with a known schema that includes the target column.",
+  "rationale": [
+   "Correct: automated ML v2 accepts MLTable data assets as training data. The MLTable file describes how to read the CSV files into a table, which automated ML needs to find the columns and the target column.",
+   "Incorrect: uri_file points to a single file without a table definition, so automated ML v2 cannot use it as training data. Use uri_file when a script reads one file itself, for example with pandas.read_csv.",
+   "Incorrect: uri_folder points to a folder of files without a table definition. Use it for command jobs that read a folder of files directly, such as images or Parquet files, not as automated ML training data.",
+   "Incorrect: v1 TabularDatasets are still accepted for backward compatibility, but they belong to the older SDK v1 data model and the requirement is to use the current v2 data asset types. Microsoft recommends MLTable for v2."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-auto-train?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.1-03",
+  "obj": "1.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. runs a command job that is defined in a YAML file. The job writes cleaned data to an output named clean_data. When the job completes, the output must be registered as a data asset named clean-sales so that downstream jobs can reference it by name. You must not add registration code to the training script.\n\nWhich setting should you add to the clean_data output in the job YAML file?",
+  "choices": [
+   "`name: clean-sales`",
+   "`path: azureml://datastores/workspaceblobstore/paths/clean-sales/`",
+   "`mode: upload`",
+   "`type: mltable`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A job output can register itself as a data asset: when you set name on the output, Azure Machine Learning creates a data asset with that name from the data that the job writes. path controls where the data is stored, mode controls how it is written, and type controls the asset type, but none of them registers an asset.",
+  "rationale": [
+   "Correct: setting name on a job output makes Azure Machine Learning create a data asset with that name from the output when the job runs, without any code in the script. Downstream jobs can then reference it as azureml:clean-sales:<version>.",
+   "Incorrect: path only chooses the storage location of the output, here a folder in the default datastore. The data lands there but is not registered as a named data asset. Set path when outputs must go to a specific datastore folder.",
+   "Incorrect: mode upload writes files to local disk and uploads them at the end of the job instead of using a read-write mount. It changes how data is written, not whether it is registered. Use upload when the script needs fast local writes.",
+   "Incorrect: type declares what kind of data the output holds (uri_file, uri_folder, or mltable). It does not create a named data asset, so downstream jobs still could not reference clean-sales by name. Set type to match the data the script writes; set name to register it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-data-assets?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.1-04",
+  "obj": "1.2.1",
+  "difficulty": "hard",
+  "type": "dragdrop",
+  "stem": "Woodgrove Bank has four data assets in an Azure Machine Learning workspace that need cleanup. Jobs that already consumed these assets must remain reproducible.\n\nWhich action should you take for each data asset? To answer, drag the appropriate actions to the correct data assets. Each action may be used once, more than once, or not at all.",
+  "choices": [
+   "Archive all versions of the asset",
+   "Archive only the affected version",
+   "Create a new version under the same name",
+   "Archive the asset and create a new asset under another name",
+   "Delete the affected version"
+  ],
+  "targets": [
+   "Asset1: registered as uri_folder, but the team needs it as an mltable asset",
+   "Asset2: no longer used, and it clutters the output of az ml data list",
+   "Asset3: its newest version points to a storage path that is out of date",
+   "Asset4: version 3 was registered by mistake; the other versions stay in use"
+  ],
+  "answer": [
+   3,
+   0,
+   2,
+   1
+  ],
+  "rationale": [
+   "Asset1 has the wrong type. A new version cannot have a different type than the initial version, so you archive the asset and create a new data asset under a different name with the mltable type.",
+   "Asset2 is no longer used and clutters listings. Archiving all versions hides it from az ml data list and the studio listing, while jobs that reference it can still resolve it.",
+   "Asset3 has a wrong path. Versions are immutable, so you register a new version under the same name with the correct path; jobs that used older versions keep their exact inputs.",
+   "Asset4 has one bad version. Archiving only that version (az ml data archive --name with --version) hides it from listings, while the other versions stay visible and in use."
+  ],
+  "notes": [
+   "Hides every version under the name from list queries and the studio listing; archived assets can still be referenced. Use it when a whole asset is retired or clutters listings.",
+   "Hides one version from list queries (CLI or SDK only; the studio cannot archive a single version). Use it when a single version was registered by mistake.",
+   "Adds an immutable version with new settings, such as a corrected path. Use it when the path is wrong or data changed, because older versions stay reproducible.",
+   "The fix for a wrong asset type: a new version must keep the type of the initial version, so you retire the old name and register the data under a new name with the right type.",
+   "Not available: data asset deletion is not supported by design, because it would break production jobs, reproducibility, lineage, and auditing. Archive instead."
+  ],
+  "explanation": "Data asset versions are immutable and cannot be deleted, so cleanup uses archive, new versions, or new names. Archive hides assets or versions from listings without breaking references, a new version fixes a wrong path, and a wrong type needs a new asset name because a version cannot change the type of the initial version.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-data-assets?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.1-05",
+  "obj": "1.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud archived all versions of a data asset named churn-data by running az ml data archive --name churn-data. Versions 1, 2, and 3 exist. Version 2 must now appear in az ml data list again, and versions 1 and 3 must stay hidden.\n\nWhat should you do?",
+  "choices": [
+   "Run `az ml data restore --name churn-data --version 2`.",
+   "Run `az ml data restore --name churn-data`, and then archive versions 1 and 3.",
+   "Archive versions 1 and 3, and then run `az ml data restore --name churn-data --version 2`.",
+   "In the studio, open version 2 of churn-data and select Restore."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Archiving works at two levels: the whole asset (all versions under a name) or a single version. When the whole asset is archived, individual versions cannot be restored; you restore the whole asset first and then archive the versions that must stay hidden. Single-version archive and restore are available in the CLI and SDK, not in the studio.",
+  "rationale": [
+   "Incorrect: when all versions of a data asset are archived, you cannot restore an individual version; you must restore all versions. Restoring one version by --version works only when that version was archived on its own.",
+   "Correct: restoring by name makes all versions visible again, which is required because the whole asset was archived. Archiving versions 1 and 3 individually afterwards hides them, so only version 2 appears in az ml data list.",
+   "Incorrect: while all versions of the asset are archived, an individual version cannot be restored, so the restore of version 2 fails no matter what you archive first. The whole asset must be restored first, and only then are versions 1 and 3 archived individually.",
+   "Incorrect: the studio does not support restoring a specific data asset version; it can only restore the whole asset. Use the studio Restore button when every version must become visible again."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-data-assets?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.1-06",
+  "obj": "1.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank labels data assets by medallion layer by using key-value metadata that teams filter on. Version 4 of a data asset named transactions has been validated and must be labeled with medallion set to silver. No new version of the asset may be created.\n\nWhich command should you run?",
+  "choices": [
+   "`az ml data update --name transactions --version 4 --set tags.medallion=silver`",
+   "`az ml data update --name transactions --version 4 --set description=silver`",
+   "`az ml data create --file transactions.yml --set tags.medallion=silver`",
+   "`az ml data archive --name transactions --version 4`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Data assets support tags, which are key-value metadata used for searching, filtering, and governance, for example medallion:bronze, silver, or gold. You can add tags when you create a version or add them to an existing version with az ml data update and --set tags.<key>=<value>, without creating a new version.",
+  "rationale": [
+   "Correct: az ml data update with --set tags.medallion=silver adds a key-value tag to the existing version 4, so the version stays the same and teams can filter on the medallion tag.",
+   "Incorrect: description is free text, not key-value metadata, so teams cannot filter on medallion=silver. Use the description to explain what an asset contains, and tags for structured labels.",
+   "Incorrect: az ml data create registers a new version from the YAML file, which the requirement forbids. Put tags in the YAML file when you add them as part of creating a new version.",
+   "Incorrect: archiving hides version 4 from list queries but adds no metadata. Use archive when a version is retired or registered by mistake, not to label a validated version."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-data-assets?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.1-07",
+  "obj": "1.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. registers an mltable data asset named camera-images. Its MLTable file uses glob patterns to select JPEG files from two containers in different storage accounts, and it includes only the images up to a given week. A training script must read only the selected images as files from a local path. The files must be streamed while the script reads them instead of being copied to the node before the script starts.\n\nWhich mode should you set for the job input?",
+  "choices": [
+   "`eval_mount`",
+   "`eval_download`",
+   "`ro_mount`",
+   "`direct`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "An MLTable can select files from several storage locations and subset them, and that view exists only after the data runtime evaluates the MLTable file. The eval_mount and eval_download modes are unique to MLTable: they evaluate the file and then mount or download the selected paths. ro_mount, download, and direct deliver the storage location of the asset itself.",
+  "rationale": [
+   "Correct: eval_mount makes the data runtime evaluate the MLTable file and mount the selected files from both containers on the compute target, so the script reads them as local paths and files stream on access.",
+   "Incorrect: eval_download also evaluates the MLTable file, but it copies all selected files to the local disk before the script starts, which the requirement forbids. Use it when the script needs every file locally for fast repeated reads.",
+   "Incorrect: ro_mount mounts the storage location of the asset, which for an mltable input is the folder that holds the MLTable file. Only the eval modes make the data runtime evaluate the MLTable file, so the selected images from both storage accounts are not mounted. Use ro_mount for uri_folder or uri_file inputs, or when the script loads the MLTable itself with the mltable package.",
+   "Incorrect: direct passes the URI of the asset as a string and does not mount or download anything, so the script must handle access and credentials itself. Use direct for Spark jobs or clients that read URIs natively."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-read-write-data-v2?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.2-01",
+  "obj": "1.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Proseware, Inc. data scientists train scikit-learn models in command jobs. They need an environment that Microsoft keeps updated with framework releases and security patches, that is backed by a cached Docker image to reduce job preparation time, and that they do not have to maintain themselves.\n\nWhich environment should you reference in the jobs?",
+  "choices": [
+   "A curated environment from the azureml registry",
+   "A custom environment built from a Docker build context",
+   "A custom environment from a conda file and a base image",
+   "An inline environment defined in the job YAML file"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Curated environments are predefined by Azure Machine Learning, hosted in the Microsoft-managed azureml registry, routinely updated with framework releases and security patches, and backed by cached Docker images. Custom environments (from an image, a build context, or a conda file plus base image) give you full control, but you maintain them yourself.",
+  "rationale": [
+   "Correct: curated environments are maintained by Microsoft, which updates them with new framework versions and security patches, and they are backed by cached images, which reduces job preparation time. You reference them, for example, as azureml://registries/azureml/environments/sklearn-1.5/labels/latest.",
+   "Incorrect: a build context environment is built from your own Dockerfile, so your team maintains the packages and patches, and the first job waits for an image build. Use it when you need custom system packages or Docker steps.",
+   "Incorrect: Azure Machine Learning builds a conda environment on top of your base image, so your team owns the package list and the first build adds preparation time. Use it when you need packages that no curated environment has.",
+   "Incorrect: an inline environment is an unregistered custom environment that you define and maintain in the job file, and it is not tracked as a versioned asset. Use it for quick experiments, not for a maintained shared environment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-environments-v2?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.2-02",
+  "obj": "1.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. maintains a Docker image in Azure Container Registry that has all the Python packages for training installed by pip. A data scientist registers an environment that sets image to this Docker image and sets conda_file to a file that lists two extra packages. Jobs that use the environment fail with ModuleNotFoundError for a package that is installed in the image. Company policy requires that all packages are installed when the image is built, not when a job starts.\n\nWhat should you do?",
+  "choices": [
+   "Install the two extra packages in the Docker image and remove conda_file from the environment.",
+   "Pin the version of each package in the conda file and register a new environment version.",
+   "Register a new version of the environment that has the same image and conda file.",
+   "Add a pip install step for the missing package to the command of the job."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When an environment specifies both image and conda_file, Azure Machine Learning builds a new conda environment from the conda file on top of the image and runs the job in that conda environment. Python packages installed in the base image are not available there. Either list every package in the conda file, or install everything in the image and leave conda_file out so the image is used as is.",
+  "rationale": [
+   "Correct: without conda_file, the environment uses the Docker image as is, so the packages installed in the image are available. Installing the two extra packages in the image keeps all installs at image build time, as the policy requires.",
+   "Incorrect: pinning versions changes the hash and forces a rebuild, but the job still runs in a conda environment that contains only the conda file packages, so the packages from the image stay missing. Pin versions when you need a specific newer release.",
+   "Incorrect: an identical definition produces the same hash, so the cached image is reused and the error stays. Name and version do not affect the hash. A new version helps only when the definition itself changes.",
+   "Incorrect: installing packages in the job command works around the error but installs at job start, which the policy forbids, and slows every run. Install packages in the image or the conda file instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-environments-v2?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.2-03",
+  "obj": "1.2.2",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Contoso, Ltd. has a local folder named train-context that contains a file named Dockerfile and a requirements.txt file that the Dockerfile installs. You must register an environment named train-env that Azure Machine Learning builds from this folder. You must also submit a command job that always uses the most recently created version of train-env, without code changes when new versions are registered.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nfrom azure.ai.ml import command\nfrom azure.ai.ml.entities import Environment, BuildContext\n\nenv = Environment(\n    name=\"train-env\",\n    [[1]],\n)\nml_client.[[2]].create_or_update(env)\n\njob = command(\n    code=\"./src\",\n    command=\"python train.py\",\n    environment=[[3]],\n    compute=\"cpu-cluster\",\n)\nml_client.jobs.create_or_update(job)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "build=BuildContext(path=\"./train-context\")",
+     "image=\"./train-context/Dockerfile\"",
+     "conda_file=\"./train-context/requirements.txt\""
+    ],
+    "why": [
+     "Correct: build with a BuildContext makes Azure Machine Learning build the image from the folder. It looks for a file named Dockerfile at the root of the build context by default, and that Dockerfile installs requirements.txt.",
+     "Incorrect: image expects the URI of a prebuilt image in a registry such as Docker Hub or Azure Container Registry, not a path to a local Dockerfile. Use image when the image already exists.",
+     "Incorrect: conda_file expects a conda YAML specification and must be combined with image as a base image. requirements.txt is a pip file and no base image is set. Use conda_file plus image when conda should manage the Python layer."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "components",
+     "environments",
+     "data"
+    ],
+    "why": [
+     "Incorrect: ml_client.components registers components, which package a command, code, interface, and environment as a reusable pipeline step. It does not register an Environment entity.",
+     "Correct: ml_client.environments.create_or_update registers the Environment as a versioned asset in the workspace. For a build context, Azure Machine Learning starts building the image when the environment is created.",
+     "Incorrect: ml_client.data registers data assets of type uri_file, uri_folder, or mltable. Use it to version training data, not environments."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "\"train-env:1\"",
+     "\"azureml://registries/azureml/environments/train-env/labels/latest\"",
+     "\"train-env@latest\""
+    ],
+    "why": [
+     "Incorrect: name:version pins version 1, so later versions are ignored until you edit the code. Pin an explicit version when a production job must stay reproducible.",
+     "Incorrect: the azureml registry is the Microsoft-managed registry that hosts curated environments. train-env is registered in your workspace, not there. Use this URI form for curated environments such as sklearn-1.5.",
+     "Correct: name@latest resolves at submission to the most recently created version of train-env in the workspace, so newly registered versions are used without code changes."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   1,
+   2
+  ],
+  "explanation": "An environment comes from a Docker image (image), a Docker build context (build), or a conda file on top of a base image (image plus conda_file). You register it with ml_client.environments.create_or_update, and jobs reference it by name and version or by name@latest, which resolves to the most recently created version.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-environments-v2?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.2-04",
+  "obj": "1.2.2",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Northwind Traders registers an environment named sk-env, version 1, from a base image and a conda file, and runs a job that builds and caches its image. A data scientist then registers an environment named sk-train, version 1, that uses the same base image and the same conda file.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A job that uses sk-train reuses the cached image that was built for sk-env.",
+   "If only the order of the packages in the conda file of sk-train changes, jobs that use sk-train still reuse the cached image of sk-env.",
+   "Archiving version 1 of sk-env deletes its cached image from the container registry of the workspace."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Azure Machine Learning decides whether to reuse a cached image by hashing the environment definition: the base image, custom Docker steps, and Python packages. The name and version are not part of the hash, but any change to the package list, including its order, produces a new hash and a new image build. Archiving hides an environment from lists but leaves its cached image in the container registry.",
+  "rationale": [
+   "Yes: the environment name and version have no effect on the hash, so two environments with the same base image and packages get the same hash, and jobs that use sk-train pull the image already cached for sk-env.",
+   "No: changing the order of dependencies or channels changes the hash, so Azure Machine Learning triggers a new image build instead of reusing the cached image. Keep conda files byte-for-byte stable when you want reuse.",
+   "No: archiving an environment version hides it from list queries but does not delete the cached image in the container registry. To remove that image, delete its repository with az acr repository delete."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-environments?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.2-05",
+  "obj": "1.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys copies the definition of a curated scikit-learn environment, adds two packages to its conda file, and registers the result with the name AzureML-sklearn-custom. Job submissions that reference this environment fail. The jobs must use the modified package list.\n\nWhat should you do?",
+  "choices": [
+   "Register the modified definition under a name that does not start with AzureML-.",
+   "Register the modified definition as a new version of AzureML-sklearn-custom.",
+   "Reference the curated environment by using its azureml registry URI instead.",
+   "Pin every package version in the conda file and register the environment again."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The name prefixes AzureML- and Microsoft are reserved for curated environments, and job submission fails when a custom environment name starts with either prefix. Any change to a curated environment results in a custom environment, which needs its own name. In the CLI and SDK, curated environment names start with AzureML-, which is how they are told apart from custom ones.",
+  "rationale": [
+   "Correct: AzureML- is reserved for curated environments, so a custom environment must use a name without that prefix (or the Microsoft prefix). With a new name, the jobs can use the modified package list.",
+   "Incorrect: a new version keeps the reserved AzureML- name, so submissions keep failing. A new version is the right move when only the definition of a correctly named environment changes.",
+   "Incorrect: the curated environment does not contain the two added packages, so the jobs would run without the modified package list. Reference the curated environment directly when its packages are enough.",
+   "Incorrect: pinning packages changes the hash and forces a rebuild, but the name still starts with the reserved prefix, so submissions still fail. Pin versions to control which release a rebuild installs."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-environments?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.2-06",
+  "obj": "1.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud has an environment named score-env. Version 3 is used by a production deployment, and test jobs reference azureml:score-env@latest. You must add a Python package to the environment. The production deployment must keep using exactly the packages of version 3, and the test jobs must get the new package without edits.\n\nWhat should you do?",
+  "choices": [
+   "Register version 4 of score-env with the updated conda file.",
+   "Update version 3 of score-env and set conda_file to the updated file.",
+   "Register a new environment named score-env-v2 with the updated conda file.",
+   "Archive version 3 of score-env and register the updated conda file as version 3."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Environment versions are immutable except for their description and tags. To change dependencies you register a new version under the same name; existing references to an explicit version keep working, and references that use @latest resolve to the most recently created version.",
+  "rationale": [
+   "Correct: a new version under the same name leaves version 3 unchanged for the production deployment, and azureml:score-env@latest resolves to version 4, the most recently created version, so the test jobs get the package without edits.",
+   "Incorrect: for environments, only description and tags can be updated; conda_file and other properties are immutable. Use az ml environment update to change the description or tags of an existing version.",
+   "Incorrect: a new name creates a separate environment, so azureml:score-env@latest still resolves to version 3 and the test jobs do not get the package. Use a new name for an unrelated environment.",
+   "Incorrect: archiving only hides version 3 from list queries; the version still exists and can still be referenced, and its properties other than description and tags are immutable, so its packages cannot be replaced under the same number. Archive versions that should no longer appear in lists."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-environments-v2?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.2-07",
+  "obj": "1.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. created an environment named train-env, version 1, in January from a base image and a conda file that lists scikit-learn without a version. In June, a data scientist registered train-env version 2 with an identical base image and conda file to get the newest scikit-learn release. Jobs that use version 2 still run the scikit-learn release from January.\n\nWhat should you do to make the jobs use the newer release?",
+  "choices": [
+   "Set scikit-learn to the required version in the conda file and register version 3.",
+   "Register the same conda file and base image under a new environment name.",
+   "Archive version 1 of train-env and register the same conda file as version 3.",
+   "Change the job YAML to reference azureml:train-env@latest."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Azure Machine Learning reuses a cached image when the hash of the environment definition (base image, Docker steps, Python packages) matches. An unpinned package resolves to the version available when the image was first built, and later environments with a matching definition reuse that image. Specifying a version number changes the hash and forces a rebuild with that release.",
+  "rationale": [
+   "Correct: pinning scikit-learn to a version, for example scikit-learn==<newer version>, changes the definition and its hash, so Azure Machine Learning builds a new image with that release instead of reusing the January image.",
+   "Incorrect: the name and version are not part of the hash, so an identical definition under a new name still matches the cached January image. A new name helps only for a different environment.",
+   "Incorrect: archiving does not delete the cached image, and an identical definition produces the same hash, so version 3 would still reuse the January image. Archive versions to hide them from lists.",
+   "Incorrect: @latest resolves to version 2, which has the same definition and therefore the same cached image. Use @latest when jobs should follow new versions that have a changed definition."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-environments?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.3-01",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Contoso, Ltd. stores three files in a Git repository. env.yml defines an environment named sk-env, version 2. train.yml defines a command component named train_model that references azureml:sk-env:2. pipeline.yml defines a pipeline job whose train step uses azureml:train_model@latest. None of these assets exist yet in a workspace named Workspace1 in a resource group named RG1. The Azure CLI and its ml extension are installed and you are signed in. Later commands must not repeat the workspace and resource group parameters.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`az configure --defaults workspace=Workspace1 group=RG1`",
+   "`az ml environment create --file env.yml`",
+   "`az ml component create --file train.yml`",
+   "`az ml job create --file pipeline.yml`",
+   "`az ml component create --file train.yml --registry-name contoso-reg`",
+   "`az ml component update --name train_model --set environment=azureml:sk-env:2`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A registered component references a registered environment by name and version, so the environment must exist before the component is created, and the component must exist before a pipeline job can reference it with azureml:<name>@latest. az configure --defaults sets the workspace and resource group once for all later az ml commands.",
+  "rationale": [
+   "Step 1: az configure --defaults stores Workspace1 and RG1 as defaults, so the following az ml commands can omit --workspace-name and --resource-group. It must run before the commands that rely on it.",
+   "Step 2: train.yml references azureml:sk-env:2. Component creation fails when the referenced environment name and version do not exist, so the environment must be registered before the component.",
+   "Step 3: az ml component create registers train_model in Workspace1 with automatic versioning. Only after registration can the pipeline resolve azureml:train_model@latest.",
+   "Step 4: az ml job create submits the pipeline job. Its train step resolves azureml:train_model@latest to the version just registered, which runs in the sk-env environment.",
+   "Incorrect: --registry-name creates the component in a registry instead of Workspace1, and azureml:train_model@latest resolves only against assets in the workspace, so the pipeline does not find it. Use --registry-name when a component must be shared across workspaces; pipelines then reference it by its azureml://registries/ URI.",
+   "Incorrect: az ml component update changes only a few fields, such as description and display_name, and the component already references sk-env:2. Use update to edit metadata; register a new version to change the command or environment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-component-pipelines-cli?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.3-02",
+  "obj": "1.2.3",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Alpine Ski House writes a command component for model training. The component must meet the following requirements:\n\n- Validation must reject a test_split_ratio value below 0 or above 1 before the pipeline job is submitted.\n- The model output must be in MLflow format so that it can be deployed without a scoring script.\n- The pipeline must run when no value is passed for max_epochs.\n\nHow should you complete the component YAML file? To answer, select the appropriate options in the answer area.\n\n```yaml\n$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json\ntype: command\nname: train_model\nversion: 1\ninputs:\n  training_data:\n    type: uri_folder\n  test_split_ratio:\n    type: number\n    [[1]]: 0\n    max: 1\n    default: 0.2\n  max_epochs:\n    type: integer\n    optional: true\noutputs:\n  model_output:\n    type: [[2]]\ncode: ./train_src\nenvironment: azureml:sk-env:2\ncommand: >-\n  python train.py\n  --training_data ${{inputs.training_data}}\n  --test_split_ratio ${{inputs.test_split_ratio}}\n  [[3]]\n  --model_output ${{outputs.model_output}}\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "default",
+     "min",
+     "enum"
+    ],
+    "why": [
+     "Incorrect: default is already set to 0.2 and only supplies a value when none is passed; it does not reject out-of-range values. Use default to give a literal input a fallback value.",
+     "Correct: min sets the lowest accepted value for a number or integer input. Together with max: 1, any value outside 0 to 1 fails validation before the pipeline job is submitted, in the CLI, SDK, and designer.",
+     "Incorrect: enum lists the allowed values of an input and applies only to string inputs, while test_split_ratio is a number. Use enum to restrict a string input to fixed choices."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "uri_file",
+     "mltable",
+     "mlflow_model"
+    ],
+    "why": [
+     "Incorrect: uri_file references a single file without MLflow metadata, so deployment would need a scoring script. Use uri_file for one output file, such as a metrics report.",
+     "Incorrect: mltable describes tabular data with a loading blueprint, not a model. Use it for table outputs that downstream steps load into pandas or Spark.",
+     "Correct: mlflow_model declares an output in MLflow format, which carries the model signature and flavor, so the model can be registered and deployed without writing inference code."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "--max_epochs ${{inputs.max_epochs}}",
+     "$[[--max_epochs ${{inputs.max_epochs}}]]"
+    ],
+    "why": [
+     "Incorrect: an input that is set to optional: true must be wrapped in $[[ ]] in the command. The plain ${{ }} form is for required inputs such as training_data, which always have a value at runtime.",
+     "Correct: $[[ ]] makes the whole --max_epochs argument conditional, so it is added to the command line only when a value is passed and is dropped otherwise, which lets the pipeline run without max_epochs."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   2,
+   1
+  ],
+  "explanation": "A component interface defines literal inputs (string, number, integer, boolean) and object inputs and outputs (uri_file, uri_folder, mltable, mlflow_model). Number and integer inputs can have min and max, which are checked at validation before submission, string inputs can have enum, and optional inputs must be wrapped in $[[ ]] in the command.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-component-command?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.3-03",
+  "obj": "1.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. writes a command component YAML file for a training step. The component must register successfully in the workspace.\n\nWhich value should you use for the name property?",
+  "choices": [
+   "`train_churn_model`",
+   "`trainChurnModel`",
+   "`train-churn-model`",
+   "`2_train_churn_model`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A component name must start with a lowercase letter and can contain only lowercase letters, numbers, and underscores, up to 255 characters. The display_name has no such restrictions and does not have to be unique, so use it for a readable label in the studio.",
+  "rationale": [
+   "Correct: train_churn_model starts with a lowercase letter and uses only lowercase letters and underscores, which matches the allowed pattern for component names.",
+   "Incorrect: uppercase letters, such as the C and M in this camel-case name, are not allowed in a component name. Put a capitalized label such as Train Churn Model in display_name, which does not have to be unique.",
+   "Incorrect: hyphens are not allowed in a component name; only lowercase letters, numbers, and underscores are. Hyphens are fine in other asset names, such as data assets like clean-sales.",
+   "Incorrect: a component name must start with a lowercase letter, not a number, even though numbers are allowed later in the name, as in train_model_2."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-component-command?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.3-04",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. registers a new version of a command component named train_model in Workspace1 every week. A pipeline job YAML file in another repository must always run the most recently created version of train_model without edits to the file. The component source code must not be uploaded when the pipeline job is submitted.\n\nWhich value should you set for the component property of the train step?",
+  "choices": [
+   "`azureml:train_model@latest`",
+   "`azureml:train_model:1`",
+   "`./components/train/train.yml`",
+   "`azureml://registries/azureml/components/train_model/labels/latest`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A pipeline step can use a local component file, which is uploaded with the job, or a registered component. A registered asset is referenced as azureml:<name>:<version> for an explicit version, or as azureml:<name>@latest, which resolves to the most recently created version of that name in the workspace.",
+  "rationale": [
+   "Correct: azureml:train_model@latest resolves at submission to the most recently created version of the registered component in Workspace1, so weekly versions are used without edits, and nothing is uploaded from the repository.",
+   "Incorrect: azureml:train_model:1 pins version 1, so new weekly versions are ignored until the file is edited. Pin a version when a production pipeline must stay reproducible.",
+   "Incorrect: a local component file is read from the repository and its code folder is uploaded with each submission, and the file is not in this repository. Use local files while you develop a component.",
+   "Incorrect: this URI points to the Microsoft-managed azureml registry, which hosts curated assets, not components registered in Workspace1. Use a registry URI for components that are shared through a registry."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-core-syntax?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.3-05",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank has a pipeline whose first step is a registered command component that downloads a CSV file from a public URL. The file at the URL changes every day, but the inputs of the step do not change. When the pipeline is resubmitted, the step completes immediately and uses the output of an earlier run. Another step that featurizes a static reference dataset must keep reusing its earlier output.\n\nWhat should you do?",
+  "choices": [
+   "Set is_deterministic to false in the component YAML and register a new version.",
+   "Set force_rerun to true in the settings of the pipeline job YAML file.",
+   "Set continue_on_step_failure to false in the settings of the pipeline job.",
+   "Set the mode of the step output to upload in the pipeline job YAML file."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A pipeline step is reused when its component is deterministic (is_deterministic: true, the default), force_rerun is false, and its code, environment, inputs, parameters, and settings are unchanged. Components that read changing external data, such as a URL, should set is_deterministic to false so that they always run, while other steps keep reuse.",
+  "rationale": [
+   "Correct: is_deterministic: false tells Azure Machine Learning that the component can produce different output for the same inputs, so the step always reruns and downloads the current file, while other deterministic steps can still be reused.",
+   "Incorrect: force_rerun reruns every step in the pipeline, so the featurization step would also lose reuse. Use force_rerun when a whole pipeline must run from scratch, for example after a change outside the pipeline.",
+   "Incorrect: continue_on_step_failure only controls whether other steps keep running after a step fails. It does not affect reuse. Set it to false when the whole pipeline should stop on the first failure.",
+   "Incorrect: output settings are part of the reuse criteria, so changing the mode makes the next submission rerun the step. Later submissions keep the same settings, the criteria are met again, and the stale output returns. Use upload mode when a script needs fast local writes."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-debug-pipeline-reuse-issues?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.3-06",
+  "obj": "1.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. writes the following command component YAML file. Registering it with az ml component create fails with a validation error about the inputs.\n\n```yaml\n$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json\ntype: command\nname: score_batch\nversion: 1\ninputs:\n  home:\n    type: uri_folder\n  threshold:\n    type: number\n    default: 0.5\noutputs:\n  scores:\n    type: uri_folder\ncode: ./src\nenvironment: azureml:score-env:4\ncommand: >-\n  python score.py --home ${{inputs.home}}\n  --threshold ${{inputs.threshold}} --scores ${{outputs.scores}}\n```\n\nWhat should you do to resolve the error?",
+  "choices": [
+   "Rename the home input, and update the command to use the new input name.",
+   "Add optional: true to the threshold input and wrap it in $[[ ]] in the command.",
+   "Replace the folded >- block with lines that end with a backslash.",
+   "Change the type of the home input from uri_folder to uri_file."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Some names are reserved as system parameters and cannot be used as component input or output names: path, ld_library_path, user, logname, home, pwd, and shell. Input and output names must also be unique, and every name used in the command must be defined in inputs or outputs.",
+  "rationale": [
+   "Correct: home is a reserved system parameter name, so it cannot be an input name. Renaming it, for example to input_folder, and updating the ${{inputs...}} reference in the command resolves the validation error.",
+   "Incorrect: threshold has a default value and is referenced correctly as a required input, so it is not the cause. Use optional: true with $[[ ]] when the pipeline must run without a value for an input.",
+   "Incorrect: using a backslash to continue a line is not supported in the command of a component; the folded >- block is the supported way to split a long command over several lines.",
+   "Incorrect: the type does not matter here; the name home is reserved whatever its type. uri_folder is correct for a folder of input files, and uri_file is for a single file."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-component-command?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.3-07",
+  "obj": "1.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A data scientist at Relecloud defines a component in a notebook by running prep = command(...) with inputs, outputs, code, a command, and an environment. You must register prep as a reusable component in the workspace without running it.\n\nWhich statement should you run?",
+  "choices": [
+   "`ml_client.create_or_update(prep.component)`",
+   "`ml_client.jobs.create_or_update(prep)`",
+   "`ml_client.components.get(name=\"prep\")`",
+   "`load_component(source=prep)`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The command() function returns a command object that can run as a job or be used as a pipeline step. Its component property holds the underlying command component, which you register with ml_client.create_or_update (or ml_client.components.create_or_update). A component defined in YAML is loaded with load_component and then registered the same way.",
+  "rationale": [
+   "Correct: prep.component is the command component behind the command object, and ml_client.create_or_update registers it in the workspace with a name and version, without submitting a job.",
+   "Incorrect: jobs.create_or_update submits prep as a command job that runs on compute, and it does not register a reusable component. Use it to run a script once with inputs and outputs.",
+   "Incorrect: components.get retrieves a component that is already registered; it does not register anything. Use it to fetch a registered component by name and version for use in a pipeline.",
+   "Incorrect: load_component reads a component definition from a YAML file path, not from a command object, and it does not register anything. Use it with a YAML file, then register the result."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/tutorial-pipeline-python-sdk?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.4-01",
+  "obj": "1.2.4",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Contoso, Ltd. trains models in a workspace named ws-dev, which is in a resource group named rg-dev, and must run the same training pipeline in a workspace named ws-test, which is in a resource group named rg-test. The environment and the training component must be defined once and shared by both workspaces. A registry named contoso-reg does not exist yet and must be created in a resource group named rg-shared; registry.yml lists the regions of both workspaces. env_train.yml defines the SKLearnEnv environment. train.yml defines a component whose environment is azureml://registries/contoso-reg/environments/SKLearnEnv/versions/1. pipeline.yml references the training component in contoso-reg.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`az ml registry create --file registry.yml --resource-group rg-shared`",
+   "`az ml environment create --file env_train.yml --registry-name contoso-reg`",
+   "`az ml component create --file train.yml --registry-name contoso-reg`",
+   "`az ml job create --file pipeline.yml --workspace-name ws-test --resource-group rg-test`",
+   "`az ml environment create --file env_train.yml --workspace-name ws-dev --resource-group rg-dev`",
+   "`az ml component create --file train.yml --workspace-name ws-dev --resource-group rg-dev`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A registry hosts assets (models, environments, components, and data) centrally so that any workspace in a supported region can use them, while compute and jobs stay in each workspace. The same az ml create commands target a registry with --registry-name and a workspace with --workspace-name. Referenced assets must exist in the registry before the assets that reference them.",
+  "rationale": [
+   "Step 1: az ml registry create provisions the registry, with storage accounts and a replicated container registry in the regions from registry.yml. No asset can be created in contoso-reg before it exists.",
+   "Step 2: --registry-name creates SKLearnEnv in contoso-reg. The component references this environment by its registry URI, so the environment must exist in the registry before the component is created.",
+   "Step 3: az ml component create with --registry-name stores the component in contoso-reg, where every workspace in a supported region can use it. The pipeline references this registry component.",
+   "Step 4: the pipeline job runs in ws-test with its compute and data, while the component and environment come from contoso-reg. ws-test is in a region that the registry supports, as registry.yml requires.",
+   "Incorrect: this creates SKLearnEnv only in ws-dev, which ws-test cannot use, and the azureml://registries/contoso-reg URI in train.yml still finds nothing. Create workspace environments for assets used in a single workspace.",
+   "Incorrect: this registers the component only in ws-dev, so ws-test cannot use it and it is not defined once for both workspaces. Register components in a workspace when only that workspace's pipelines need them."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-share-models-pipelines-across-workspaces-with-registries?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.4-02",
+  "obj": "1.2.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Fabrikam, Inc. has a workspace named ws-prod whose storage account has public network access disabled. A registry named fab-reg allows public network access. User1 has the AzureML Registry User role on fab-reg. When User1 runs az ml model share to share a model from ws-prod to fab-reg, the operation fails because of data exfiltration protection.\n\nWhich two actions should you perform to allow the share? Each correct answer presents part of the solution.",
+  "choices": [
+   "On the storage account of ws-prod, set public network access to Enabled from selected virtual networks and IP addresses.",
+   "On the storage account of ws-prod, add a resource instance rule of type Microsoft.MachineLearningServices/registries for fab-reg.",
+   "Create private endpoints for fab-reg, its storage account, and its container registry in the subnet of the ws-prod private endpoint.",
+   "Run az ml registry update --name fab-reg --public-network-access Disabled.",
+   "Assign the AzureML Registry User role on fab-reg to the managed identity of ws-prod."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Sharing copies an asset from the workspace storage account into the registry. When that storage account has public network access disabled, data exfiltration protection blocks the copy. You allow it by setting the storage account to accept selected networks and adding a resource instance rule for the registry, so only that registry gets through.",
+  "rationale": [
+   "Correct: this is the first step of the documented fix. The resource instance rule for the registry is added under this setting, which keeps the storage account closed to the internet except for the virtual networks, IP addresses, and resource instances you list.",
+   "Correct: a resource instance rule of type Microsoft.MachineLearningServices/registries with the name fab-reg lets that registry access the storage account, so the share can copy the model while other public traffic stays blocked.",
+   "Incorrect: these private endpoints let a secure workspace use assets from a private registry. fab-reg is public, and the block is on the workspace storage account, which still rejects the registry without a resource instance rule.",
+   "Incorrect: disabling public access makes fab-reg private, which then needs private endpoints, and it does not lift the block on the workspace storage account. Disable it when the registry must be reachable only over Private Link.",
+   "Incorrect: the stem states that data exfiltration protection on the workspace storage account blocks the share, and the documented fix is a network change on that account. A role assignment does not change storage network rules. Assign AzureML Registry User when an identity lacks permission to create assets in a registry."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-registry-network-isolation?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.4-03",
+  "obj": "1.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys has a registry named tt-reg. User1 must create, use, and delete models, components, and environments in tt-reg. User1 must not be able to create, update, or delete registries. You must use the built-in role that grants the least privilege.\n\nWhich role should you assign to User1 on tt-reg?",
+  "choices": [
+   "AzureML Registry User",
+   "Contributor",
+   "Reader",
+   "AzureML Data Scientist"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Registry permissions split into reading assets (registries/read and registries/assets/read), creating and deleting assets (registries/assets/write and delete), and managing the registry itself (registries/write and delete). AzureML Registry User grants all actions on registry assets plus read on the registry, but not registry management.",
+  "rationale": [
+   "Correct: AzureML Registry User allows all actions on registry assets (registries/assets/*) and reading the registry, so User1 can create, use, and delete assets but cannot create, update, or delete registries.",
+   "Incorrect: Contributor also allows creating, updating, and deleting registries, which User1 must not do. Assign Contributor or Owner to people who manage the registries themselves.",
+   "Incorrect: Reader lets a user browse registry assets and use them in a workspace, but not create or delete them. Assign Reader to consumers who only use shared assets.",
+   "Incorrect: AzureML Data Scientist grants actions inside workspaces (workspaces/*), not on registry assets. Assign it to users who run jobs and manage assets within a workspace."
+  ],
+  "ref": "https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/ai-machine-learning#azureml-registry-user"
+ },
+ {
+  "id": "1.2.4-04",
+  "obj": "1.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank registered version 3 of a model named churn in a workspace from the output of a training job and tested it on an endpoint. The Azure CLI defaults point to that workspace. The model must now be promoted to a registry named wgb-reg as churn version 3, and the registry copy must keep its link to the training job that produced it.\n\nWhich command should you run?",
+  "choices": [
+   "`az ml model share --name churn --version 3 --registry-name wgb-reg --share-with-name churn --share-with-version 3`",
+   "`az ml model create --name churn --version 3 --type mlflow_model --path ./model --registry-name wgb-reg`",
+   "`az ml model share --name churn --version 3 --registry-name wgb-reg`",
+   "`az ml data share --name churn --version 3 --registry-name wgb-reg --share-with-name churn --share-with-version 3`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "You can create a model in a registry from local files, or first register and test it in a workspace and then share it to a registry. Sharing copies the workspace model into the registry under the name and version you give, and a model that was created from a job output keeps its link to that training job, which preserves lineage across workspaces.",
+  "rationale": [
+   "Correct: az ml model share copies the workspace model to wgb-reg. --share-with-name and --share-with-version set its name and version in the registry, and the copy keeps the link to the training job that produced it.",
+   "Incorrect: creating the model from local files puts it in the registry, but the files carry no link to the training job, so lineage is lost. Use this when the model files exist only locally, for example from training outside Azure Machine Learning.",
+   "Incorrect: --share-with-name and --share-with-version are required parameters of az ml model share, so this command fails. They set the name and version that the model gets in the registry.",
+   "Incorrect: az ml data share (in preview) copies a data asset, not a model, from a workspace to a registry. Use it to share training data such as uri_folder assets across workspaces."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-share-models-pipelines-across-workspaces-with-registries?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.4-05",
+  "obj": "1.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud has a registry named rc-reg with eastus as its primary region and westus as an additional region. A production workspace in westeurope must deploy a model from rc-reg to a managed online endpoint, and the deployment fails. The model must stay in rc-reg so that its lineage is preserved.\n\nWhat should you do?",
+  "choices": [
+   "Add westeurope to the replication locations of rc-reg.",
+   "Change the primary location of rc-reg to westeurope.",
+   "Share the model from rc-reg to the production workspace.",
+   "Create a registry in westeurope and register the model there from local files."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A registry replicates its assets to the regions you list, and a workspace can use registry assets only when its region is one of those regions. The primary region is fixed at creation, but you can add other regions later, so plan the list from the regions where you have or expect workspaces.",
+  "rationale": [
+   "Correct: a workspace can deploy a model from a registry only if its region is supported by the registry. Additional regions can be updated after creation, so adding westeurope replicates the assets there and keeps the model in rc-reg.",
+   "Incorrect: the primary region of a registry cannot be changed after creation. Choose the primary region carefully when you create a registry; add other regions later as needed.",
+   "Incorrect: sharing copies an asset from a workspace to a registry, the opposite direction. Workspaces use registry models directly by their azureml://registries URI, which preserves lineage.",
+   "Incorrect: a second registry duplicates the asset, and a model created from local files has no link to its training job. Create another registry only for a separate sharing scope, such as another division."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-registries?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.4-06",
+  "obj": "1.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. has a registry named lit-reg that is reachable only through a private endpoint. Public network access is disabled on lit-reg and on its storage account and container registry. A data scientist connects from a compute instance in the virtual network that has the private endpoints and runs az ml environment create --file env.yml --registry-name lit-reg. The command fails. The environment must be available in lit-reg.\n\nWhat should you do?",
+  "choices": [
+   "Create the environment in a workspace, and then run az ml environment share to copy it to lit-reg.",
+   "Change env.yml to use a prebuilt image instead of a build context, and then run the command again.",
+   "Assign the AcrPush role on the container registry of lit-reg to the data scientist.",
+   "Run az ml registry update to add a replication location in the region of the compute instance."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "In a private registry whose container registry has public access disabled, creating an environment directly in the registry is not supported. The documented workaround is to create the environment in a workspace and share it to the registry. Clients that create other assets from local files must be connected to the virtual network of the registry's private endpoint.",
+  "rationale": [
+   "Correct: this is the documented workaround. The environment is created in a workspace, where it can be built, and az ml environment share copies it into lit-reg under the name and version that you choose.",
+   "Incorrect: creating any environment asset is not supported in a private registry whose container registry has public access disabled, so changing the definition type does not help. Prebuilt images suit cases where you control the image build.",
+   "Incorrect: Learn documents this as a limitation of private registries with a workaround, not a permission problem, so a role assignment does not remove it. AcrPush lets an identity push images to a container registry; for a registry, its own managed identity holds AcrPull on its container registry and issues scoped tokens when workspace compute pulls an image.",
+   "Incorrect: replication locations decide in which regions workspaces can use the registry assets. They do not affect environment creation in a private registry. Add regions when workspaces in a new region need the assets."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-registry-network-isolation?view=azureml-api-2"
+ },
+ {
+  "id": "1.2.4-07",
+  "obj": "1.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants to share a preprocessed training dataset with workspaces in three regions by creating a uri_folder data asset in a registry named contoso-reg. The data is in a folder on the compute instance of a data scientist and was also uploaded to the workspaceblobstore datastore. The data scientist runs az ml data create --registry-name contoso-reg with a YAML file whose path is azureml://datastores/workspaceblobstore/paths/prepared/, and the command fails.\n\nWhat should you do?",
+  "choices": [
+   "Set the path to the local folder on the compute instance, and run the command again.",
+   "Change the type in the YAML file to mltable, and keep the datastore path.",
+   "Assign Storage Blob Data Reader on the workspace storage account to the registry identity.",
+   "Change the path to the abfss URI of the same folder in the storage account."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When you create a data asset in a registry, a copy of the data is ingested into the registry storage so it can be replicated to all its regions. Currently, the only supported paths for registry data assets are local paths. Registries therefore suit broadly shared, non-sensitive data, not data that must stay in place or needs fine-grained access control.",
+  "rationale": [
+   "Correct: registry data assets currently support only local paths, such as a folder on the compute instance. The command uploads a copy of the folder into the registry storage, which replicates it to the registry regions.",
+   "Incorrect: the asset type does not change which paths a registry accepts; a datastore path is still not supported for a registry data asset. Use mltable when consumers need a table blueprint.",
+   "Incorrect: the failure comes from the unsupported path type, not from missing access, so a role assignment does not help. Datastore paths work for data assets that you create in a workspace.",
+   "Incorrect: an abfss URI also points to cloud storage, which registry data assets do not support as a path. abfss URIs work for workspace data assets that reference data in Data Lake Storage Gen2."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-share-data-across-workspaces-with-registries?view=azureml-api-2"
+ }
+]

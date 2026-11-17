@@ -1,0 +1,24 @@
+[
+ {
+  "id": "C-g",
+  "title": "Wide World Importers",
+  "sections": [
+   [
+    "Overview",
+    "Wide World Importers is a freight forwarding and customs brokerage company that has offices in Rotterdam, Antwerp, and Hamburg. About 400 customs brokers classify goods and answer client questions about import duties.\n\nThe company is building a retrieval-augmented generation (RAG) assistant named TariffAssist. TariffAssist answers broker questions and cites the regulation or ruling that supports each answer."
+   ],
+   [
+    "Existing environment",
+    "**Azure and Microsoft Foundry resources**\n\n- A Microsoft Foundry project named proj-tariff runs in the West Europe region. Its Foundry resource has two model deployments: chat, which uses gpt-4.1, and emb-ada, which uses text-embedding-ada-002.\n- An Azure AI Search service named srch-wwi uses the Standard tier and has semantic ranker enabled.\n- An index named idx-rulings contains the fields id (key), title, content (searchable string), hsCode (searchable and filterable string, for example 8471.30.00), language (filterable string), and contentVector. contentVector is a Collection(Edm.Single) field that has 1,536 dimensions and uses HNSW with the cosine metric. A vectorizer for contentVector calls emb-ada.\n- idx-rulings has a semantic configuration named sem-rulings that uses content as the prioritized content field.\n- An indexer named idx-rulings-indexer reads PDF files from a blob container. Its skillset contains a Text Split skill that has textSplitMode set to pages, maximumPageLength set to 5000, and pageOverlapLength set to 0, and an Azure OpenAI Embedding skill that calls emb-ada.\n- The corpus contains about 40,000 PDF pages of customs regulations and binding tariff information rulings in English, Dutch, and German.\n- TariffAssist sends pure vector queries of kind text with k set to 3 and passes the three chunks to the chat deployment.\n- An Azure App Configuration store named appcs-wwi and an Application Insights resource named appi-tariff exist. appi-tariff is connected to appcs-wwi.\n\n**Evaluation assets**\n\nSenior brokers labeled 300 test questions. For each question, they graded the relevance of candidate chunks on a scale from 0 to 4 and recorded the chunk IDs. The labels are stored in a JSONL file.\n\n**Problem statements**\n\n- Questions that contain a tariff code, such as \"duty rate for 8471.30.00 laptops\", often return rulings for other codes.\n- Answers about long regulations cite the right document but miss the specific paragraph, because each chunk covers several articles. Some paragraphs are split across two chunks, and the second chunk lacks the article heading.\n- Retrieval quality for questions in German and Dutch is lower than for questions in English.\n- The Hamburg office plans to move to a new building in 2027."
+   ],
+   [
+    "Requirements",
+    "**Retrieval requirements**\n\n- Exact tariff codes and regulation numbers in a question must be matched.\n- Natural-language questions must still retrieve conceptually related rulings.\n- Results must be reordered by a model-based reranker. The company does not want to host or manage a reranking model.\n- Chunks must be smaller, so that each chunk covers fewer articles, and text at a chunk boundary must appear in both adjacent chunks.\n\n**Embedding requirements**\n\n- Use the Azure OpenAI embedding model that has the highest multilingual retrieval benchmark score.\n- The vector field must not exceed 1,536 dimensions, so that the index stays within the current number of partitions.\n\n**Evaluation and rollout requirements**\n\n- Every retrieval change must be measured against the graded labels of the brokers before the change reaches production.\n- The new retrieval configuration must first be rolled out to 10 percent of the brokers, and the company must compare how often brokers accept an answer in each group.\n- Operations staff must be able to move every broker back to the current configuration immediately, without a code deployment."
+   ],
+   [
+    "Constraints",
+    "- Minimize custom code.\n- Preview features of Azure AI Search can be used.\n- Client documents must stay in the European Union."
+   ]
+  ]
+ }
+]

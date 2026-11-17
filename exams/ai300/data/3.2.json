@@ -1,0 +1,1248 @@
+[
+ {
+  "id": "3.2.1-01",
+  "obj": "3.2.1",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Fabrikam, Inc. has an Azure Machine Learning workspace in a region that supports serverless deployment of a chat model from Mistral AI. The model is offered through Azure Marketplace, and the workspace has never been subscribed to its offer. The Azure CLI is installed and the defaults for the workspace and resource group are configured, but the ml extension is not installed. The files subscription.yml and endpoint.yml contain the name mistral-chat and the model ID without a version.\n\nYou need to deploy the model as a serverless API deployment named mistral-chat and retrieve the key that App1 uses to call it.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`az extension add -n ml`",
+   "`az ml marketplace-subscription create -f subscription.yml`",
+   "`az ml serverless-endpoint create -f endpoint.yml`",
+   "`az ml serverless-endpoint get-credentials -n mistral-chat`",
+   "`az ml online-endpoint create -f endpoint.yml`",
+   "Add /versions/1 to the model_id value in endpoint.yml to pin the model version."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A serverless API deployment (a standard deployment) in an Azure Machine Learning workspace needs a marketplace subscription for models from non-Microsoft providers, then the serverless endpoint, and then its keys. Microsoft models such as Phi skip the subscription step. You copy the model ID without its version because serverless deployments always deploy the latest available version.",
+  "rationale": [
+   "Step 1: the marketplace-subscription and serverless-endpoint command groups belong to the ml extension of the Azure CLI (CLI v2), so the extension must be installed before any az ml command can run.",
+   "Step 2: models from non-Microsoft providers are billed through Azure Marketplace, so the workspace must subscribe to the model offer, which also accepts its terms, before the endpoint can be created. Each workspace has its own subscription to an offer.",
+   "Step 3: az ml serverless-endpoint create provisions the endpoint from endpoint.yml. Microsoft hosts the model on managed infrastructure, so the deployment needs no compute quota from your subscription.",
+   "Step 4: the endpoint uses key authentication. get-credentials returns the primary and secondary keys that App1 sends with its requests, so it can run only after the endpoint exists.",
+   "Incorrect: az ml online-endpoint create makes a managed online endpoint, which hosts model weights on dedicated VMs that you size and pay for per hour. Use it for managed compute deployments of catalog models, not for serverless API deployments.",
+   "Incorrect: serverless deployments always deploy the latest available version, so Learn says to copy the model ID without the version. A versioned registry model ID is what you use for managed compute deployments."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-deploy-models-serverless?view=azureml-api-2"
+ },
+ {
+  "id": "3.2.1-02",
+  "obj": "3.2.1",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Contoso, Ltd. needs a new Microsoft Foundry resource named ai-contoso in an existing resource group named rg-genai in the East US 2 region. On the new resource, you must deploy the Microsoft model Phi-4-mini-instruct as a Global Standard deployment named phi-mini by using a model version and SKU that the resource offers. A script must then confirm that the deployment is ready before App1 uses it. The Azure CLI is installed and signed in to the correct subscription.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`az cognitiveservices account create -n ai-contoso -g rg-genai --custom-domain ai-contoso --location eastus2 --kind AIServices --sku S0`",
+   "`az cognitiveservices account list-models -n ai-contoso -g rg-genai`",
+   "`az cognitiveservices account deployment create -n ai-contoso -g rg-genai --deployment-name phi-mini --model-name Phi-4-mini-instruct --model-version 1 --model-format Microsoft --sku-name GlobalStandard --sku-capacity 1`",
+   "`az cognitiveservices account deployment show -n ai-contoso -g rg-genai --deployment-name phi-mini --query properties.provisioningState`",
+   "`az cognitiveservices account create -n ai-contoso -g rg-genai --custom-domain ai-contoso --location eastus2 --kind OpenAI --sku S0`",
+   "`az extension add -n ml`",
+   "`az ml serverless-endpoint create -f endpoint.yml`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "On a Foundry resource, a Serverless API deployment is a child resource of the Cognitive Services account. You create the account with the kind AIServices, list the models, versions, and SKUs that it offers, create the deployment with the SKU code of the deployment type, and check provisioningState. All these commands are part of the core Azure CLI.",
+  "rationale": [
+   "Step 1: a Foundry resource is a Cognitive Services account of the kind AIServices. It must exist before you can list the models that it offers or add a deployment to it.",
+   "Step 2: list-models returns the name, format, version, and SKU of each model that the resource can deploy. You use it to confirm the version and the GlobalStandard SKU before you create the deployment.",
+   "Step 3: deployment create adds phi-mini with the format Microsoft and the SKU name GlobalStandard, the code of the Global Standard deployment type. Applications call it by passing phi-mini as the model.",
+   "Step 4: deployment show returns the deployment, and properties.provisioningState must be Succeeded before the model is ready for App1. It can run only after the deployment exists.",
+   "Incorrect: an account of the kind OpenAI is an Azure OpenAI resource, which offers only Azure OpenAI models for deployment. Phi-4-mini-instruct needs a Foundry resource, which gives access to the full set of Foundry Models.",
+   "Incorrect: the az cognitiveservices commands are part of the core Azure CLI, so no extension is required. The ml extension is needed for Azure Machine Learning commands such as az ml serverless-endpoint.",
+   "Incorrect: az ml serverless-endpoint belongs to the ml extension and creates a serverless endpoint in an Azure Machine Learning workspace. A deployment on a Foundry resource is a child resource of the Cognitive Services account and is created with az cognitiveservices account deployment create."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/how-to/create-model-deployments"
+ },
+ {
+  "id": "3.2.1-03",
+  "obj": "3.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys wants to use an open-source Qwen model from the Hugging Face collection in the Microsoft Foundry model catalog. Microsoft must own and operate the GPU infrastructure that runs the model, and the team does not want to manage virtual machines or serving runtimes.\n\nWhich deployment option should you use?",
+  "choices": [
+   "Serverless API deployment with the Global Standard type",
+   "Serverless API deployment with the Global Provisioned type",
+   "Managed compute deployment on dedicated GPU capacity",
+   "Foundry Local on Azure Local deployment to a cluster"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Foundry offers three deployment options: Serverless API for Foundry Models sold by Azure and selected partner models, managed compute for open-source, partner, and custom models on GPU capacity that Microsoft manages, and Foundry Local on Azure Local for clusters that you own. Deployment types such as Global Standard and Global Provisioned belong to the Serverless API option only.",
+  "rationale": [
+   "Incorrect: Global Standard is a Serverless API deployment type for Foundry Models sold by Azure and selected partner models. Learn lists the Hugging Face collection under managed compute, and managed compute does not use these deployment types.",
+   "Incorrect: Global Provisioned reserves PTU capacity for Serverless API models, such as Azure OpenAI models. It belongs to the Serverless API option, while Hugging Face models are deployed with managed compute.",
+   "Correct: models from the Hugging Face collection are deployed with managed compute. Foundry sizes and provisions the GPU capacity and keeps the runtime patched, so the team manages no virtual machines, and Microsoft owns the infrastructure.",
+   "Incorrect: Foundry Local on Azure Local runs eligible models on Azure Arc-enabled Kubernetes clusters that you own and operate. The requirement that Microsoft owns the GPU infrastructure rules it out; use it when models must run on your own hardware."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/deployments-overview"
+ },
+ {
+  "id": "3.2.1-04",
+  "obj": "3.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. deploys an Azure OpenAI chat model in Microsoft Foundry for an internal tool that employees use only a few hours each week. The company wants to pay only for the tokens that the tool consumes and not for idle capacity. Data can be processed in any Azure region.\n\nWhich deployment should you create?",
+  "choices": [
+   "A Serverless API deployment that uses the Regional Provisioned type",
+   "A managed compute deployment that has one model instance",
+   "A Serverless API deployment that uses the Global Provisioned type",
+   "A Serverless API deployment that uses the Global Standard type"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Serverless API deployments bill either per token (standard and batch types) or per provisioned throughput unit per hour (provisioned types), while managed compute bills per accelerator per hour. For sporadic or bursty traffic, a pay-per-token type such as Global Standard avoids paying for idle capacity.",
+  "rationale": [
+   "Incorrect: Regional Provisioned is also billed per PTU per hour regardless of traffic, and it keeps processing in one Azure geography. Use it when geography-level residency and reserved throughput are both required.",
+   "Incorrect: managed compute is billed hourly per accelerator while the deployment exists, and it hosts open-source, partner, and custom models rather than Azure OpenAI models. Use it for models such as those in the Hugging Face collection.",
+   "Incorrect: Global Provisioned reserves PTUs that are billed per hour from creation until deletion, whether or not requests arrive. Use it for predictable, high-volume traffic that needs consistent latency, not for a tool used a few hours a week.",
+   "Correct: Global Standard bills per token, so the company pays only when the tool sends requests. Learn recommends it as the starting point for most workloads, with the lowest price and the broadest regions when data can be processed anywhere."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/deployment-types"
+ },
+ {
+  "id": "3.2.1-05",
+  "obj": "3.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Alpine Ski House deploys an Azure OpenAI chat model in a Microsoft Foundry resource in the West Europe region. Prompts and responses must be processed only within the EU. The company wants pay-per-token billing and the highest default quota that is possible within that constraint.\n\nWhich deployment type should you use?",
+  "choices": [
+   "Data Zone Provisioned",
+   "Global Standard",
+   "Standard",
+   "Data Zone Standard"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Deployment types combine a processing scope (global, data zone, or Azure geography) with a billing model (pay-per-token, provisioned, or batch). A wider scope gives a higher default quota and broader model availability, so Data Zone Standard is the pay-per-token type with the most quota that still keeps data inside the EU or US data zone.",
+  "rationale": [
+   "Incorrect: Data Zone Provisioned keeps data in the EU zone but bills per PTU per hour for reserved capacity, not per token. Use it when a workload needs both data zone residency and predictable throughput.",
+   "Incorrect: Global Standard has the highest default quota and the lowest price, but it can process prompts and responses in any Azure region. It fails the EU-only requirement; use it when there is no residency constraint.",
+   "Incorrect: Standard processes data within the Azure geography of the resource and bills per token, so it meets the residency rule, but its quota and model availability are more limited. Use it for lower-volume workloads that need geography-level residency.",
+   "Correct: Data Zone Standard bills per token and processes data only within the Microsoft-defined data zone, here the EU. It offers higher default quotas than the geography-based Standard type while it keeps processing inside the zone."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/deployment-types"
+ },
+ {
+  "id": "3.2.1-06",
+  "obj": "3.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud has two Global Standard deployments of the same Azure OpenAI model in the same region and subscription. The quota for the model is fully assigned. Deployment1 holds most of the tokens per minute (TPM) but receives little traffic, and Deployment2 returns HTTP 429 responses during peak hours. The company does not want to wait for a quota increase.\n\nWhat should you do?",
+  "choices": [
+   "Reduce the TPM of Deployment1 and assign the freed TPM to Deployment2",
+   "Change Deployment2 to the Global Batch deployment type",
+   "Submit the quota request form to raise the TPM quota for the model",
+   "Add a third Global Standard deployment of the model in the region"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "For pay-per-token deployments, quota is a pool of TPM per subscription, region, model, and deployment type. Each deployment gets part of the pool, and its TPM sets both its token and request rate limits, so one deployment can return 429 responses while another deployment of the same model holds unused quota. You rebalance allocations on the Quota page of the Foundry portal.",
+  "rationale": [
+   "Correct: the TPM that you assign to a deployment sets its TPM and RPM limits. Moving unused TPM from Deployment1 raises the limits of Deployment2 without a quota request; an allocation change can take up to 15 minutes to propagate.",
+   "Incorrect: Global Batch processes asynchronous requests from a file with a 24-hour target turnaround and its own enqueued token quota. It suits large offline jobs, not the interactive peak traffic that Deployment2 serves.",
+   "Incorrect: a quota increase request raises the total TPM that you can assign, but approval takes time and the company does not want to wait. Request more quota when every deployment really needs its current allocation.",
+   "Incorrect: a new deployment draws TPM from the same quota, which is already fully assigned, so it gets capacity only after you free TPM elsewhere. Add deployments when you need separate rate limits or configurations, such as different content filters."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/quota"
+ },
+ {
+  "id": "3.2.1-07",
+  "obj": "3.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. deploys an open-source model from the Hugging Face collection to managed compute (preview) in Microsoft Foundry on the H100 accelerator family. The deployment fails with a quota exceeded error. The subscription has a large unused Azure VM quota for H100-based virtual machine sizes in the same region, and the selected deployment template lists the H100 family.\n\nWhat should you do to resolve the error?",
+  "choices": [
+   "Redeploy the model by using the Azure Machine Learning shared quota pool for the region",
+   "Submit the provisioned throughput quota request form for the region of the resource",
+   "Request a higher Azure VM quota for the H100-based virtual machine family in a support request",
+   "Request managed compute quota for the H100 family from the Quota page in the Foundry portal"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Managed compute in Foundry is a platform service: Foundry chooses the GPUs for each model instance, and quota is approved per accelerator family (A100, H100, or MI300X) per region through the Foundry quota process. Common causes of failed deployments are missing managed compute quota and a deployment template that does not match the model version or accelerator family.",
+  "rationale": [
+   "Incorrect: the shared quota pool lets you test catalog models on Azure Machine Learning endpoints for a limited time and is meant for temporary test endpoints. Managed compute deployments in Foundry get their quota from the Foundry quota process.",
+   "Incorrect: the provisioned throughput form requests PTU quota for provisioned Serverless API deployments such as Global Provisioned. PTU quota does not cover models that run on managed compute accelerators.",
+   "Incorrect: Learn states that existing Azure VM quota cannot be applied to a managed compute deployment. Raise VM quota when you deploy catalog models to managed online endpoints in Azure Machine Learning, which run on VM sizes that you choose.",
+   "Correct: managed compute quota is granted per accelerator family per region through the Foundry quota process, on the Managed compute tab of the Quota page. It is separate from Azure VM quota, which is why the unused VM quota does not help."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/deploy-models-managed"
+ },
+ {
+  "id": "3.2.1-08",
+  "obj": "3.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery tested a Llama model from the model catalog on a managed online endpoint in Azure Machine Learning. Because the subscription had no quota for the required GPU virtual machine size, the studio used the shared quota pool for the deployment. The team now needs to run the endpoint in production.\n\nWhat should you do?",
+  "choices": [
+   "Submit the provisioned throughput quota request form for the workspace region",
+   "Request dedicated quota for the virtual machine family by filing a support request",
+   "Keep the endpoint on the shared quota pool and redeploy it when the time limit ends",
+   "Request managed compute quota for the accelerator family in the Foundry portal"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Deploying a catalog model to managed compute in Azure Machine Learning places the model weights on the dedicated VMs of a managed online endpoint, so you need VM quota for the SKU. The shared quota pool lets you test such a model for a short time without your own quota, but production endpoints need dedicated quota.",
+  "rationale": [
+   "Incorrect: PTU quota covers provisioned Serverless API deployments, such as Data Zone Provisioned deployments of Azure OpenAI models. It does not provide VM capacity for a managed online endpoint.",
+   "Correct: managed compute deployments in Azure Machine Learning need VM quota in your subscription for the required SKU. For production endpoints, Learn says to request dedicated quota by filing a support ticket; billing is usage-based like any dedicated VM family.",
+   "Incorrect: shared quota is available only for a limited time and depends on availability. Learn says to use it only for temporary test endpoints, not production endpoints, so redeploying on it leaves production without dependable capacity.",
+   "Incorrect: the managed compute tab of the Foundry Quota page grants accelerator quota for managed compute deployments in Foundry. The Azure Machine Learning endpoint runs on VM sizes and needs VM family quota."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-quotas?view=azureml-api-2"
+ },
+ {
+  "id": "3.2.1-09",
+  "obj": "3.2.1",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Northwind Traders deploys an open-source chat model to managed compute (preview) in Microsoft Foundry. The deployment is named nemo-chat. Its deployment template specifies one H100 accelerator per model instance, and the Model instances value is set to 2. App1 calls the deployment through the /openai/v1/ route of the Foundry endpoint.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Requests to nemo-chat pass through the built-in Foundry content filters before they reach the model.",
+   "nemo-chat uses two H100 accelerators in total.",
+   "App1 must pass the registry model ID of the model in the model field of each request."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Managed compute deployments are sized in model instances rather than VM sizes: the deployment template defines the runtime and the accelerators per instance, and the capacity sets the number of instances. Applications call them through the same Foundry endpoint as other deployments, by deployment name, but filtering must be added with Azure AI Content Safety while the feature is in preview.",
+  "rationale": [
+   "No: in the public preview, built-in content filtering is not part of the managed compute data path. If you need request-level or response-level filtering, call the Azure AI Content Safety APIs from the application.",
+   "Yes: Model instances is the capacity value of the deployment SKU, and each instance consumes the accelerator count that the template defines. One H100 per instance with two instances uses two H100 accelerators.",
+   "No: the model field takes the deployment name, here nemo-chat, not the azureml://registries/... model ID. A name that does not match a deployment is a common cause of 404 responses from the /openai/v1/ route."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/deploy-models-managed"
+ },
+ {
+  "id": "3.2.1-10",
+  "obj": "3.2.1",
+  "difficulty": "easy",
+  "type": "dragdrop",
+  "stem": "Adventure Works Cycles plans three workloads that use Azure OpenAI models in Microsoft Foundry. None of the workloads has data residency requirements.\n\nWhich deployment type SKU should you use for each workload? To answer, drag the appropriate SKU codes to the correct workloads. Each SKU code may be used once, more than once, or not at all.",
+  "choices": [
+   "GlobalStandard",
+   "GlobalBatch",
+   "DeveloperTier",
+   "DataZoneStandard",
+   "GlobalProvisionedManaged"
+  ],
+  "targets": [
+   "Workload1: rewrite two million product descriptions submitted in a file; a turnaround of up to 24 hours is acceptable and cost must be as low as possible",
+   "Workload2: test a fine-tuned model for one day before deciding whether to promote it; no SLA is needed",
+   "Workload3: a new customer chatbot with bursty, unpredictable traffic that must use pay-per-token billing at the lowest price per token"
+  ],
+  "answer": [
+   1,
+   2,
+   0
+  ],
+  "rationale": [
+   "Workload1 is a large asynchronous job from a file that can wait up to a day. Global Batch targets a 24-hour turnaround at 50 percent less cost than Global Standard, and its separate enqueued token quota does not disturb online traffic.",
+   "Workload2 evaluates a fine-tuned model temporarily without an SLA. The Developer type exists for exactly that: low cost, a fixed 24-hour lifetime after which it is deleted, and no SLA or data residency guarantee.",
+   "Workload3 has variable, bursty traffic and needs pay-per-token billing with no residency limit. Global Standard is the recommended default: it has the lowest price, the highest default quota, and the broadest model availability."
+  ],
+  "notes": [
+   "Global Standard: pay-per-token, processing in any Azure region, the highest default quota, and new models first. Use it as the default for interactive workloads without residency limits.",
+   "Global Batch: asynchronous requests submitted in a file, a 24-hour target turnaround, and 50 percent less cost than Global Standard. Use it for large jobs that are not time-sensitive.",
+   "Developer: pay-per-token deployment for evaluating fine-tuned models. It is deleted after 24 hours and has no SLA, so use it only for short tests before you promote a model.",
+   "Data Zone Standard: pay-per-token processing within the US, EU, or APAC data zone. Use it when data must stay in a data zone; these workloads have no residency requirement, and Global Standard is cheaper.",
+   "Global Provisioned: reserved PTU capacity billed per hour, with low latency variance. Use it for predictable high-volume traffic, not for bursty or one-off workloads."
+  ],
+  "explanation": "Each deployment type has a SKU code that you pass in the Azure CLI, Bicep, or the REST API. Choose standard types for interactive pay-per-token traffic, batch types for large asynchronous jobs, provisioned types for predictable high-volume traffic, and the Developer type only for short evaluations of fine-tuned models.",
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/deployment-types"
+ },
+ {
+  "id": "3.2.1-11",
+  "obj": "3.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lucerne Publishing has an Azure Machine Learning workspace named Workspace1. A partner model offered through Azure Marketplace is not available for serverless deployment in the region of Workspace1. App1 runs against Workspace1 and its connections. The company wants a serverless deployment of the model with pay-per-token billing and without compute quota.\n\nWhat should you do?",
+  "choices": [
+   "Create the marketplace subscription in Workspace1, and then create the serverless endpoint in Workspace1",
+   "Deploy the model to a managed online endpoint in Workspace1 by using managed compute",
+   "Request quota for the model in the region of Workspace1 by filing a support request",
+   "Deploy the model in a workspace in a supported region, and then create a connection to it in Workspace1"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Serverless deployments of models offered through Azure Marketplace are limited to specific regions, but they can be consumed across workspaces. You deploy in a workspace in a supported region and create a connection to the endpoint in the workspace that the application uses. A connection is also required to use the deployment from prompt flow, even in the same workspace.",
+  "rationale": [
+   "Incorrect: the marketplace subscription and the serverless endpoint must be created in a workspace whose region supports serverless deployment of that model. Creating them in Workspace1 fails because the model is not offered there.",
+   "Incorrect: a managed online endpoint hosts the model weights on dedicated VMs that need VM quota and are billed per hour. It breaks the pay-per-token and no-quota requirements, although it is the route for models that support only managed compute.",
+   "Incorrect: serverless deployments do not use compute quota from your subscription, so a quota request does not change where the model is offered. Region availability for serverless deployment is set per model.",
+   "Correct: Learn recommends deploying to a workspace in a supported region and then consuming the serverless deployment from a different workspace through a connection. App1 keeps using Workspace1, and billing stays pay-per-token without quota."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-deploy-models-serverless?view=azureml-api-2"
+ },
+ {
+  "id": "3.2.1-12",
+  "obj": "3.2.1",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "case": "C-e",
+  "stem": "You need to create the kb-chat deployment for App2.\n\nHow should you complete the command? To answer, select the appropriate options in the answer area.\n\n```azurecli\naz cognitiveservices account deployment create \\\n  -n ai-woodgrove-prod -g rg-assist-prod \\\n  --deployment-name kb-chat \\\n  --model-name <chat-model> --model-version <validated-version> \\\n  --model-format [[1]] \\\n  --sku-name [[2]] \\\n  --sku-capacity [[3]]\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "OpenAI",
+     "Microsoft",
+     "AIServices"
+    ],
+    "why": [
+     "Correct: --model-format names the provider of the model, as list-models reports it. chat-dzs runs an Azure OpenAI chat model, and kb-chat must run the same model, so the format is OpenAI.",
+     "Incorrect: Microsoft is the format of models that Microsoft provides, such as Phi models. kb-chat must run the same Azure OpenAI chat model and version as chat-dzs.",
+     "Incorrect: AIServices is the --kind value that you pass to az cognitiveservices account create to make a Foundry resource. It is not a model format."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "DataZoneStandard",
+     "GlobalStandard",
+     "Standard",
+     "DataZoneProvisionedManaged"
+    ],
+    "why": [
+     "Correct: Data Zone Standard bills per token, keeps processing within the EU data zone, and offers higher default quotas than the geography-based Standard type, which meets every App2 requirement.",
+     "Incorrect: GlobalStandard has the highest quota overall, but it can process prompts in any Azure region, which breaks the requirement that App2 data stays in the EU data zone.",
+     "Incorrect: Standard keeps processing in the geography of the resource and bills per token, but its quota is lower than Data Zone Standard, so it fails the highest-default-quota requirement.",
+     "Incorrect: DataZoneProvisionedManaged keeps data in the zone but bills per PTU per hour for reserved capacity, and kb-chat must use pay-per-token billing."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "50",
+     "50000",
+     "1"
+    ],
+    "why": [
+     "Correct: chat-dzs runs the same model with a capacity of 30 for 30,000 TPM, so one unit of this model equals 1,000 TPM. A capacity of 50 therefore sets the 50,000 TPM rate limit that App2 requires.",
+     "Incorrect: --sku-capacity counts capacity units, not tokens. For this model, 50000 units would request 50 million TPM, a thousand times the 50,000 TPM that App2 needs.",
+     "Incorrect: 1 is a single unit, which is 1,000 TPM for this model. It is the value that Learn uses for a small test deployment, far below the 50,000 TPM that App2 needs."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0
+  ],
+  "explanation": "az cognitiveservices account deployment create takes the model name, version, and format (the provider, such as OpenAI or Microsoft), the SKU name of the deployment type, and the capacity. For standard types, capacity is set in units whose TPM and RPM values depend on the model: one unit is 1,000 TPM for older chat models, but 10,000 TPM for o3-mini, for example, so check the ratio for the model before you deploy programmatically.",
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/how-to/create-model-deployments"
+ },
+ {
+  "id": "3.2.2-01",
+  "obj": "3.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee is choosing a chat model in the Microsoft Foundry model catalog for a customer-facing assistant. The procurement team requires that the model is billed through the Azure subscription, is covered by Azure service-level agreements, and is supported directly by Microsoft.\n\nWhich category of model should you select?",
+  "choices": [
+   "An open model from the Hugging Face collection",
+   "A Foundry Model sold by Azure",
+   "A custom model from an Azure Machine Learning registry",
+   "A Foundry Model from partners and community"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The Foundry model catalog has two categories. Models sold by Azure are hosted, billed, and supported by Microsoft under Azure SLAs; models from partners and community are supported by their providers and are often billed through Azure Marketplace. Choose by support expectations, SLA needs, and how specialized the capability must be.",
+  "rationale": [
+   "Incorrect: Hugging Face creates and maintains the models in its collection, and help comes from the Hugging Face forum or Hugging Face support. Choose them when you need a specific open model on managed compute, not Microsoft model support.",
+   "Correct: models sold by Azure, which include all Azure OpenAI models and selected models from top providers, are billed through your Azure subscription, covered by Azure SLAs, and supported by Microsoft, which meets all three procurement rules.",
+   "Incorrect: a registry stores and shares your own model assets across workspaces; you remain responsible for the model's quality and support. Use registries to distribute your models, not to obtain a Microsoft-supported model.",
+   "Incorrect: partner and community models are supported by their providers, with varying levels of SLA and support, and many are billed through Azure Marketplace. Choose them for specialized or innovation-led capabilities when provider support is acceptable."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/foundry-models-overview"
+ },
+ {
+  "id": "3.2.2-02",
+  "obj": "3.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A. Datum Corporation shortlists language models for a public chatbot by using the safety leaderboard in the Microsoft Foundry portal. The team wants the model that is most robust against prompts that try to elicit harmful content.\n\nWhich result should you look for?",
+  "choices": [
+   "The lowest attack success rate on HarmBench",
+   "The highest accuracy on the WMDP benchmark",
+   "The highest attack success rate on HarmBench",
+   "The highest quality index on the quality leaderboard"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Model leaderboards compare models on quality, safety, performance, and cost. In the safety leaderboards, a lower attack success rate indicates a more robust model, while a higher WMDP accuracy indicates more knowledge of dangerous capabilities. Benchmarks use public datasets, so confirm a shortlist with your own evaluations.",
+  "rationale": [
+   "Correct: HarmBench sends prompts designed to elicit unsafe responses and reports the attack success rate. A lower rate means that fewer prompts produced harmful output, so the model is more robust.",
+   "Incorrect: WMDP measures knowledge in sensitive domains such as biosecurity and cybersecurity, and a higher score means more knowledge of dangerous capabilities, which is worse from a safety standpoint.",
+   "Incorrect: a higher attack success rate means that more harmful prompts succeeded, which indicates a less robust model. Higher is better only for metrics such as accuracy, the F1 score, or the quality index.",
+   "Incorrect: the quality index averages accuracy on reasoning, knowledge, math, and coding datasets. Learn suggests weighing it alongside safety scores, but it does not measure robustness against harmful prompts."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/model-benchmarks"
+ },
+ {
+  "id": "3.2.2-03",
+  "obj": "3.2.2",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Graphic Design Institute needs a chat model for an agent. In the Microsoft Foundry model catalog, the team wants to list only models that support tool calling and that are available through the Serverless API deployment option, so that the team does not pay for dedicated GPU accelerators.\n\nWhich two catalog filters should you use? Each correct answer presents part of the solution.",
+  "choices": [
+   "Industry",
+   "Supported features",
+   "Collections",
+   "Inference tasks",
+   "Deployment options"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "The model catalog filters include Collections, Region, Deployment options, Deployment SKU, Lifecycle, Industry, Supported features, and Inference tasks. Combine the filters that express each hard requirement, and then open the model card to review details such as the Benchmarks and License tabs.",
+  "rationale": [
+   "Incorrect: Industry filters models trained on industry-specific data, such as health, retail, or manufacturing. Use it for domain models; it does not select tool calling or the deployment option.",
+   "Correct: the Supported features filter selects unique model features such as reasoning and tool calling, so it narrows the catalog to models that can call tools for the agent.",
+   "Incorrect: Collections filters by model provider collection, such as Hugging Face. A provider collection says nothing about tool calling; use it when you need models from one provider.",
+   "Incorrect: Inference tasks filters by task type, such as chat completion, audio generation, or embeddings. It finds chat models but does not show whether a model supports tool calling or how it can be deployed.",
+   "Correct: the Deployment options filter selects managed compute or Serverless API. Selecting Serverless API keeps only models that Microsoft hosts behind an API and bills by tokens or PTUs, instead of the hourly per-accelerator billing of managed compute."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/foundry-models-overview"
+ },
+ {
+  "id": "3.2.2-04",
+  "obj": "3.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Trey Research is choosing a model for a code review assistant that suggests fixes in pull requests. In the model leaderboards of the Microsoft Foundry portal, a data scientist wants to start with the comparison that best reflects coding ability.\n\nWhich comparison should the data scientist use first?",
+  "choices": [
+   "The scenario leaderboard for coding",
+   "The throughput metrics of the performance leaderboard",
+   "The safety leaderboard for copyright violations",
+   "The quality index of the quality leaderboard"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Leaderboards compare models on quality, safety, performance, and cost, and scenario leaderboards aggregate the public datasets that match a use case, such as coding, math, or reasoning. Start with the scenario that matches the task, weigh safety, latency, and cost, and then evaluate the shortlist on your own data.",
+  "rationale": [
+   "Correct: scenario leaderboards group benchmark datasets by real-world goals. Learn recommends starting with the scenario leaderboard when a use case maps to a scenario such as coding, instead of relying only on the overall quality index.",
+   "Incorrect: throughput metrics such as generated tokens per second show how fast a model produces output, not how well it writes code. Use them after quality filtering, when responsiveness matters.",
+   "Incorrect: the copyright violations leaderboard reports attack success rates for prompts that try to elicit copyrighted content. It is a safety signal, not a measure of coding accuracy.",
+   "Incorrect: the quality index averages accuracy across reasoning, knowledge, math, coding, and other datasets, so strong scores elsewhere can hide weaker coding results. Use it to compare models for general-purpose tasks."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/model-benchmarks"
+ },
+ {
+  "id": "3.2.2-05",
+  "obj": "3.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Bellows College is selecting a model from the Microsoft Foundry model catalog for a production application. The college does not want to build on a model that is still in preview or that is already deprecated.\n\nWhich catalog filter should you use?",
+  "choices": [
+   "Lifecycle",
+   "Deployment SKU",
+   "Collections",
+   "Supported features"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Every generally available model has a retirement date, and deprecated models are on their way to retirement. Filtering the catalog by lifecycle stage before you compare quality and cost keeps production workloads off preview and deprecated models.",
+  "rationale": [
+   "Correct: the Lifecycle filter selects models by lifecycle stage: Preview, Generally available, or Deprecated. Filtering on Generally available excludes both preview models and deprecated models.",
+   "Incorrect: Deployment SKU filters by the deployment types available for the Serverless API option, such as Global Standard or Data Zone Provisioned. It describes how a model can be deployed, not its lifecycle stage.",
+   "Incorrect: Collections filters by model provider collection. A collection can contain preview, generally available, and deprecated models, so it does not express the lifecycle requirement.",
+   "Incorrect: Supported features filters by capabilities such as reasoning and tool calling. Use it when the model must support a feature; it does not show whether the model is generally available."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/foundry-models-overview"
+ },
+ {
+  "id": "3.2.2-06",
+  "obj": "3.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Humongous Insurance shortlists three models for summarizing insurance claims by using the quality leaderboard in the Microsoft Foundry portal. The claims contain domain-specific terminology, and the final choice must reflect how each model performs on the company's own claims and summary rubric.\n\nWhat should you do next?",
+  "choices": [
+   "Evaluate the three models on a dataset of the company's own claims",
+   "Compare the three models in the scenario leaderboard for groundedness",
+   "Select the model that has the highest quality index on the leaderboard",
+   "Select the model that has the lowest cost in the cost benchmarks"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Leaderboards give standardized comparisons on public datasets, which can saturate over time and do not reflect your domain. Use them to shortlist, and then evaluate the candidates on your own data and success criteria, measuring quality, latency, and cost on the same dataset.",
+  "rationale": [
+   "Correct: leaderboard benchmarks use public datasets, so Learn recommends treating them as a filter and evaluating the shortlist on your own data. An evaluation with the company's claims and rubric shows which model handles its terminology best.",
+   "Incorrect: the groundedness scenario uses the public TruthfulQA dataset. It is still a public benchmark and does not measure performance on the company's claims or its summary rubric.",
+   "Incorrect: the quality index averages accuracy on public reasoning, knowledge, math, and coding datasets. It cannot show how a model handles the company's claims vocabulary, so it is a shortlisting signal, not the final choice.",
+   "Incorrect: the cost benchmarks reflect the cost of running the public quality datasets. Cost matters for the final choice, but the cheapest model on public benchmarks might fail the company's quality rubric."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/model-benchmarks"
+ },
+ {
+  "id": "3.2.2-07",
+  "obj": "3.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Wide World Importers classifies millions of short customer emails each day with a model in Microsoft Foundry. Most emails are simple, but a few need a more capable model. The company wants a single deployment that uses the cheapest suitable model for each email and still escalates complex emails to a larger model.\n\nWhat should you deploy?",
+  "choices": [
+   "A model router deployment with the Quality routing mode",
+   "A model router deployment with the Cost routing mode",
+   "A Global Standard deployment of the most capable reasoning model",
+   "A Global Standard deployment of the smallest chat model"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Model router is a deployable model that routes each prompt to an underlying chat model based on its complexity, reasoning needs, and task type. The routing mode sets the trade-off: Balanced (the default) picks the most cost-effective model within a small quality band, Cost accepts a wider band, and Quality ignores cost.",
+  "rationale": [
+   "Incorrect: Quality mode always picks the highest-quality model for each prompt, regardless of cost. It suits critical tasks such as legal review, not millions of simple, budget-sensitive classifications.",
+   "Correct: model router analyzes each prompt and picks an underlying model. Cost mode accepts a wider quality band and favors smaller, cheaper models, escalating to larger models only when a prompt needs it, which fits high-volume classification.",
+   "Incorrect: sending every email to the most capable reasoning model handles the complex cases, but it pays frontier prices and adds latency for the many simple emails that a smaller model handles well.",
+   "Incorrect: a single small model is cheap, but every email goes to the same model, so the few complex emails never reach a more capable one. A fixed deployment cannot escalate per prompt."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/model-router"
+ },
+ {
+  "id": "3.2.2-08",
+  "obj": "3.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Consolidated Messenger uses a model router deployment with the Balanced routing mode in Microsoft Foundry. Requests that contain long contract documents fail with context exceeded errors, although several models in the routing pool support the required context length.\n\nWhat should you do?",
+  "choices": [
+   "Configure a model subset of the models that support the required context length",
+   "Set a separate tokens-per-minute rate limit for each underlying model",
+   "Increase the tokens-per-minute rate limit of the model router deployment",
+   "Change the routing mode of the deployment from Balanced to Quality"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Model router routes only to models in its pool, so its limits follow the pool: the smallest model sets the effective context window. A custom deployment with a model subset controls which models are eligible; the subset also acts as a compliance gate and, with at least two models, as the failover set.",
+  "rationale": [
+   "Correct: the effective context window of model router is limited by the smallest underlying model. Learn recommends a model subset that includes only models that support your context length, which removes the small-context models from routing.",
+   "Incorrect: the TPM rate limit applies to all activity of the model router deployment, and Learn says not to set rate limits for each underlying model. Rate limits do not affect the context length either.",
+   "Incorrect: the TPM rate limit controls how many tokens per minute the deployment accepts, which addresses 429 responses. It does not change the context window that a single request can use.",
+   "Incorrect: Quality mode picks the highest-quality model for each prompt, but the effective context window is still limited by the smallest model in the pool. Changing the mode does not raise that limit."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/model-router"
+ },
+ {
+  "id": "3.2.2-09",
+  "obj": "3.2.2",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Margie's Travel compares models in the performance leaderboard of the Microsoft Foundry portal for three applications.\n\nWhich metric should you compare for each application? To answer, drag the appropriate metrics to the correct applications. Each metric may be used once, more than once, or not at all.",
+  "choices": [
+   "Latency TTFT",
+   "Throughput GTPS",
+   "Latency P99",
+   "Latency mean",
+   "Quality index"
+  ],
+  "targets": [
+   "App1: a streaming voice assistant in which users must hear the start of each answer as quickly as possible",
+   "App2: a content generator that must produce long outputs at the highest rate of output tokens per second",
+   "App3: a service level objective that requires 99 percent of requests to complete within a fixed time"
+  ],
+  "answer": [
+   0,
+   1,
+   2
+  ],
+  "rationale": [
+   "App1 depends on how soon the first token of a streamed response arrives. Time to first token measures exactly that when streaming is enabled, so it reflects how quickly users hear the start of an answer.",
+   "App2 cares about the rate at which output is produced. Generated tokens per second counts output tokens per second from the moment the request is sent, which reflects generation speed for long outputs.",
+   "App3 is defined by the 99th percentile. P99 latency is the time within which 99 percent of requests complete, so it maps directly to the service level objective."
+  ],
+  "notes": [
+   "Latency TTFT: the time until the first token of a streamed response is returned. Use it for interactive, streaming experiences in which perceived responsiveness matters.",
+   "Throughput GTPS: generated output tokens per second. Use it to compare generation speed for long outputs; total tokens per second (TTPS) also counts the input tokens.",
+   "Latency P99: the time within which 99 percent of requests complete. Use percentiles such as P90, P95, and P99 for tail latency targets.",
+   "Latency mean: the average time to process a request. It hides the slow tail, so it cannot show whether 99 percent of requests stay within a limit.",
+   "Quality index: the average accuracy across the quality benchmark datasets. It measures quality, not speed, so it does not answer any of these performance questions."
+  ],
+  "explanation": "The performance leaderboard reports latency (mean, percentiles, and time to first token) and throughput (generated and total tokens per second). Learn notes that time to first token and generated tokens per second give the best overall sense of typical performance, while percentiles express tail latency targets.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/model-benchmarks"
+ },
+ {
+  "id": "3.2.2-10",
+  "obj": "3.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "First Up Consultants builds a retrieval-augmented generation (RAG) solution and must choose an embedding model from the Microsoft Foundry model catalog. The most relevant passages must appear at the top of the search results.\n\nWhat should you do to compare the candidate models?",
+  "choices": [
+   "Compare the generated tokens per second of the models in the performance leaderboard",
+   "Filter on the chat completion task and compare the quality index of the models",
+   "Compare the attack success rates of the models in the safety leaderboard",
+   "Filter on the embeddings task and compare NDCG at 10 in the embedding benchmarks"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Foundry benchmarks embedding models separately, with quality metrics such as accuracy, F1, mean average precision, NDCG at 10, Spearman correlation, and V measure across retrieval, clustering, and summarization tasks. Pick the metric that matches the job: for ranking in search, NDCG and mean average precision are the most direct signals.",
+  "rationale": [
+   "Incorrect: generated tokens per second measures the output speed of language models. Embedding models return vectors rather than generated text, and speed does not show retrieval quality.",
+   "Incorrect: the quality index of language models averages accuracy on reasoning, knowledge, math, and coding datasets for chat models. It does not measure how well an embedding model ranks passages for search.",
+   "Incorrect: attack success rates measure how often harmful prompts succeed against language models. They matter for public chat apps, not for how well an embedding model ranks relevant passages.",
+   "Correct: the Inference tasks filter finds embedding models, and the embedding benchmarks report retrieval metrics. NDCG at 10 measures how well the top 10 results are ordered by relevance, which matches the requirement."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/model-benchmarks"
+ },
+ {
+  "id": "3.2.2-11",
+  "obj": "3.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "case": "C-e",
+  "stem": "You need to configure the model deployment that App3 uses.\n\nWhat should you deploy?",
+  "choices": [
+   "A model router deployment with the Balanced routing mode and no model subset",
+   "A model router deployment with the Quality routing mode and a model subset of the three approved models",
+   "A model router deployment with the Balanced routing mode and a model subset of the three approved models",
+   "A model router deployment with the Cost routing mode and a model subset of the three approved models"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Model router supports Global Standard and Data Zone Standard deployments and honors data zone boundaries. A custom deployment sets the routing mode (Balanced, Cost, or Quality) and a model subset; with at least two models in the subset, automatic failover stays within the approved models, and new models are added only when you include them.",
+  "rationale": [
+   "Incorrect: without a model subset, the deployment routes across all supported models, including models that the compliance team did not approve. A model subset is how you restrict routing and its failover set.",
+   "Incorrect: Quality mode always picks the highest-quality model for each prompt and ignores cost, so it fails the requirement to minimize cost when a cheaper approved model is already within the quality margin.",
+   "Correct: Balanced mode considers the models within a small quality range of the best model for each prompt and picks the most cost-effective one. The subset of the three approved models blocks other models and keeps failover between the approved ones.",
+   "Incorrect: Cost mode considers a larger quality band and favors cheaper models, accepting lower quality on complex prompts. App3 must keep quality within a narrow margin of the best approved model, which is what Balanced mode targets."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/model-router"
+ },
+ {
+  "id": "3.2.3-01",
+  "obj": "3.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Southridge Video has a Global Standard deployment of an Azure OpenAI model that the team uses for early testing. The team wants the deployment to move to each new default model version automatically, without waiting for the current version to retire.\n\nWhich version upgrade option should you set?",
+  "choices": [
+   "No value, so that the option stays null",
+   "NoAutoUpgrade",
+   "OnceNewDefaultVersionAvailable",
+   "OnceCurrentVersionExpired"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "versionUpgradeOption controls automatic upgrades of Standard-type deployments: OnceNewDefaultVersionAvailable follows each new default version, OnceCurrentVersionExpired upgrades only at retirement, and NoAutoUpgrade never upgrades and stops working at retirement. Provisioned deployments are not upgraded automatically at all.",
+  "rationale": [
+   "Incorrect: a null value is equivalent to OnceCurrentVersionExpired, so the deployment would stay on its version until retirement instead of following each new default version.",
+   "Incorrect: NoAutoUpgrade never upgrades the deployment, and the deployment stops working when its model version retires. Use it only when you manage every version change yourself before retirement.",
+   "Correct: with OnceNewDefaultVersionAvailable, the deployment upgrades to the new default version within two weeks after a version is designated as the default. Learn recommends auto-update to default during early testing.",
+   "Incorrect: OnceCurrentVersionExpired keeps the current version until its retirement date and only then upgrades to the default version. Use it to stay on a validated version for as long as possible."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/working-with-models"
+ },
+ {
+  "id": "3.2.3-02",
+  "obj": "3.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Blue Yonder Airlines has a Data Zone Standard deployment of an Azure OpenAI model in production. The deployment must stay on its validated model version for as long as possible. If the version reaches its retirement date before a replacement is validated, the deployment must keep serving requests.\n\nWhich configuration should you use?",
+  "choices": [
+   "Set versionUpgradeOption to OnceCurrentVersionExpired",
+   "Remove the model version from the deployment definition",
+   "Set versionUpgradeOption to OnceNewDefaultVersionAvailable",
+   "Set versionUpgradeOption to NoAutoUpgrade"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Choose versionUpgradeOption by how much control you need and how much outage risk you accept. OnceCurrentVersionExpired is also the behavior when the property is null, so deployments without an explicit value upgrade at retirement. For full control, migrate deliberately to a validated version before the retirement date.",
+  "rationale": [
+   "Correct: OnceCurrentVersionExpired keeps the deployment on its current version until the retirement date and then upgrades it to the current default version, so it stays on the validated version as long as possible and never stops serving.",
+   "Incorrect: when a deployment omits the model version, a default version is assigned, and the default can change when a new version is available. That gives up control of the validated version.",
+   "Incorrect: OnceNewDefaultVersionAvailable upgrades the deployment within two weeks after a new default version is designated, which can move production to an unvalidated version long before retirement.",
+   "Incorrect: NoAutoUpgrade keeps the version, but at the retirement date the deployment stops working until you point your code to a nonexpired deployment, which breaks the requirement to keep serving."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/working-with-models"
+ },
+ {
+  "id": "3.2.3-03",
+  "obj": "3.2.3",
+  "difficulty": "medium",
+  "type": "dropdown",
+  "stem": "School of Fine Art deploys an Azure OpenAI chat model by using Bicep. The deployment must meet the following requirements:\n\n- Use pay-per-token billing for a long-running production workload, with processing allowed in any Azure region.\n- Run the model version that the team validated, which the template receives in the validatedVersion parameter.\n- Upgrade automatically only when that version reaches its retirement date.\n\nHow should you complete the Bicep code? To answer, select the appropriate options in the answer area.\n\n```bicep\nresource chat 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = {\n  parent: account\n  name: 'chat-prod'\n  sku: {\n    name: '[[1]]'\n    capacity: 100\n  }\n  properties: {\n    model: {\n      format: 'OpenAI'\n      name: modelName\n      version: [[2]]\n    }\n    versionUpgradeOption: '[[3]]'\n  }\n}\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "GlobalStandard",
+     "DeveloperTier",
+     "GlobalProvisionedManaged"
+    ],
+    "why": [
+     "Correct: GlobalStandard is the SKU code of Global Standard, which bills per token and can process requests in any Azure region. It is the recommended default for production workloads without residency limits.",
+     "Incorrect: DeveloperTier bills per token, but it is meant only for evaluating fine-tuned models, is deleted after 24 hours, and has no SLA, so it cannot host a long-running production workload.",
+     "Incorrect: GlobalProvisionedManaged reserves PTUs that are billed per hour whether or not requests arrive. It suits predictable high-volume traffic, not a pay-per-token requirement."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "validatedVersion",
+     "null"
+    ],
+    "why": [
+     "Correct: version takes the model version string, and passing validatedVersion pins the deployment to the version that the team tested.",
+     "Incorrect: null omits the version, so a default version is assigned. The default differs per model and can change when a new version becomes available, which gives up control of the validated version."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "OnceCurrentVersionExpired",
+     "OnceNewDefaultVersionAvailable",
+     "NoAutoUpgrade"
+    ],
+    "why": [
+     "Correct: OnceCurrentVersionExpired keeps the deployment on its version until the retirement date and then upgrades it to the current default version.",
+     "Incorrect: OnceNewDefaultVersionAvailable upgrades the deployment within two weeks after a new default version is designated, long before retirement and without validation.",
+     "Incorrect: NoAutoUpgrade never upgrades the deployment, so it stops working at the retirement date instead of upgrading automatically."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0
+  ],
+  "explanation": "In Bicep, a model deployment is a Microsoft.CognitiveServices/accounts/deployments child resource: sku.name is the deployment type code and sku.capacity its capacity, properties.model sets the format, name, and version, and properties.versionUpgradeOption controls automatic version upgrades for standard deployment types.",
+  "ref": "https://learn.microsoft.com/azure/templates/microsoft.cognitiveservices/accounts/deployments?pivots=deployment-language-bicep"
+ },
+ {
+  "id": "3.2.3-04",
+  "obj": "3.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wingtip Toys runs an Azure OpenAI model on a Global Provisioned deployment. The model version that the deployment uses has an announced retirement date, and a replacement version is available.\n\nWhat should you plan?",
+  "choices": [
+   "Set the version upgrade option of the deployment to OnceCurrentVersionExpired",
+   "Set the version upgrade option of the deployment to OnceNewDefaultVersionAvailable",
+   "Enable spillover so that requests move to the new version after retirement",
+   "Migrate the provisioned deployment to the new version yourself before retirement"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Standard, Global Standard, and Data Zone Standard deployments are upgraded automatically on a rolling schedule that versionUpgradeOption controls, while provisioned deployments must be migrated manually and batch deployments side by side. In every case, plan the migration before the retirement date.",
+  "rationale": [
+   "Incorrect: OnceCurrentVersionExpired upgrades Standard deployments at retirement. Learn describes provisioned deployments as having no such safety net, so relying on it leaves the deployment on a retiring version.",
+   "Incorrect: automatic model updates are supported only for Standard deployment types, so this option does not upgrade a provisioned deployment. It is the right choice for a Standard deployment that should follow each new default.",
+   "Incorrect: spillover routes overflow requests from a provisioned deployment to a standard deployment in the same resource when the provisioned deployment returns errors such as 429. It manages bursts, not version migration.",
+   "Correct: provisioned deployments are not auto-upgraded. You migrate them yourself, either in place (same name and size, traffic moves over 20 to 30 minutes) or side by side with a new deployment, before the retirement date."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/model-migration"
+ },
+ {
+  "id": "3.2.3-05",
+  "obj": "3.2.3",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Contoso Pharmaceuticals runs a Global Provisioned deployment named chat-ptu-v1 of an Azure OpenAI model on a Foundry resource named ai-contoso in a resource group named rg-ai. An existing Global Provisioned reservation covers the 100 PTUs of chat-ptu-v1. The company must move to a newer version of the model and wants to control how fast traffic moves to it. The PTU quota can hold both deployments at the same time, and App1 reads the deployment name from its configuration.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az cognitiveservices account deployment create -n ai-contoso -g rg-ai --deployment-name chat-ptu-v2 --model-name <model> --model-version <new-version> --model-format OpenAI --sku-name GlobalProvisionedManaged --sku-capacity 100`.",
+   "Run `az cognitiveservices account deployment show -n ai-contoso -g rg-ai --deployment-name chat-ptu-v2 --query properties.provisioningState`.",
+   "Shift App1 traffic from chat-ptu-v1 to chat-ptu-v2 step by step until chat-ptu-v1 receives no requests.",
+   "Confirm that the Azure OpenAI Requests metric shows no calls to chat-ptu-v1 for 5 to 10 minutes.",
+   "Run `az cognitiveservices account deployment delete -n ai-contoso -g rg-ai --deployment-name chat-ptu-v1`.",
+   "Set the version upgrade option of chat-ptu-v1 to OnceNewDefaultVersionAvailable.",
+   "Purchase an additional Global Provisioned reservation that covers chat-ptu-v2."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "Provisioned deployments are not upgraded automatically. A multi-deployment migration creates a new provisioned deployment, shifts traffic at your own pace, confirms with the Azure OpenAI Requests metric that the old deployment is idle, and then deletes it. An in-place migration instead keeps the name and size and moves the traffic for you over 20 to 30 minutes.",
+  "rationale": [
+   "Step 1: a multi-deployment migration starts with a new provisioned deployment of the target version. It keeps the Global Provisioned type, and the quota can hold both deployments while traffic moves.",
+   "Step 2: properties.provisioningState must be Succeeded before chat-ptu-v2 can take traffic, so you confirm the new deployment right after you create it.",
+   "Step 3: with both deployments running, you control the pace by moving traffic gradually, which is the main reason to choose a multi-deployment migration over an in-place one.",
+   "Step 4: Learn says to validate that the old deployment processes no inference requests by checking that the Azure OpenAI Requests metric shows no calls within 5 to 10 minutes after the traffic moves.",
+   "Step 5: after you confirm that no calls reach chat-ptu-v1, you delete it. Deleting stops its hourly billing and returns its PTUs to the quota.",
+   "Incorrect: automatic version upgrades are supported only for Standard deployment types. Provisioned deployments are migrated in place or with multiple deployments, so this setting does not move chat-ptu-v1 to the new version.",
+   "Incorrect: reservations match deployments by deployment type, region, and scope, not by model or deployment, so the existing Global reservation covers chat-ptu-v2 once chat-ptu-v1 is gone. PTUs above the reservation during the overlap are billed hourly."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/working-with-models"
+ },
+ {
+  "id": "3.2.3-06",
+  "obj": "3.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. has a Global Provisioned deployment named support-ptu that serves an Azure OpenAI model. The company must move support-ptu to a different model family. Client applications must keep using the name support-ptu, the PTU count must stay the same, and there must be no downtime.\n\nWhat should you do?",
+  "choices": [
+   "Create a new provisioned deployment of the new model family, and then delete support-ptu",
+   "Set the spillover deployment of support-ptu to a standard deployment of the new family",
+   "Send a PUT request for support-ptu with the new model name and version and the same SKU",
+   "Edit support-ptu in the Foundry portal and select the new model family in Update deployment"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Provisioned deployments support two migration approaches: in-place, which keeps the deployment name, type, and size while Azure moves the traffic and the deployment shows an Updating state, and multi-deployment, in which you create a second provisioned deployment and move traffic yourself. Validate capacity for the target model before either approach.",
+  "rationale": [
+   "Incorrect: a multi-deployment migration gives you control over the traffic, but the new deployment has a different name, so client applications would have to change. It fits when you want to move traffic at your own pace.",
+   "Incorrect: spillover sends requests to a standard deployment only when the provisioned deployment returns errors such as 429. Most traffic would stay on the old model family, so it is not a migration.",
+   "Correct: an in-place migration keeps the deployment name and size and moves traffic over a 20 to 30 minute window while the deployment stays usable. Learn supports a family change in place through the REST API and the Azure CLI, by updating the model name and version.",
+   "Incorrect: the Foundry portal supports in-place migration for a model version update within the same family. Learn states that a family change in place uses the REST API or the Azure CLI."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/working-with-models"
+ },
+ {
+  "id": "3.2.3-07",
+  "obj": "3.2.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Fabrikam, Inc. serves App1 from a Global Standard deployment named chat-v1 that runs a validated model version. The company wants to expose a newer model version to 10 percent of production traffic first, and it must be able to send all traffic back to the old version immediately if quality drops.\n\nWhich two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Create a second deployment named chat-v2 that runs the newer model version",
+   "Route a weighted share of requests to chat-v2 in the API gateway or the application",
+   "Set the version upgrade option of chat-v1 to OnceNewDefaultVersionAvailable",
+   "Change the model version of chat-v1 to the newer version in the deployment settings",
+   "Set chat-v2 as the spillover deployment of chat-v1"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "A staged rollout of a new model version uses two deployments, a weighted split that you implement in an API gateway, such as Azure API Management, or in the application, live monitoring against the baseline, and a rollback corridor in which the old deployment stays warm until the new version proves itself.",
+  "rationale": [
+   "Correct: you can deploy the same model several times under different deployment names. A second deployment of the newer version leaves chat-v1 unchanged, so the old version stays available as an immediate rollback path.",
+   "Correct: Learn notes that weighted routing between two deployments is implemented in your own gateway or application layer. Sending 10 percent of requests to chat-v2 creates the canary, and setting its weight to zero rolls back.",
+   "Incorrect: this option moves the whole deployment to each new default version within two weeks of the designation. It gives no control over the share of traffic and no way to keep 90 percent on the old version.",
+   "Incorrect: changing the version of chat-v1 moves all its traffic to the new version at once, and the old version is no longer deployed for an immediate rollback. Use it for a simple upgrade after validation.",
+   "Incorrect: spillover is configured on provisioned deployments to send overflow requests to a standard deployment after errors such as 429. chat-v1 is a Standard deployment, and spillover is not a weighted traffic split."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/model-migration"
+ },
+ {
+  "id": "3.2.3-08",
+  "obj": "3.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys serves a customer app from a Global Standard deployment in a Foundry resource in one region. The company wants requests to move automatically to a duplicate deployment in a second Foundry resource in another region if the first region becomes unavailable.\n\nWhat should you implement?",
+  "choices": [
+   "A model router deployment that has automatic failover for its model subset",
+   "A change of the first deployment to the Data Zone Standard deployment type",
+   "Spillover from the first deployment to the deployment in the second region",
+   "A generative AI gateway with load balancing and a circuit breaker for both resources"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Global Standard and Data Zone Standard deployments route processing within their scope, yet an interruption in the primary region still affects the traffic that is routed to it, and Foundry itself provides no automatic failover. For resilient production deployments, duplicate the deployments in a second region and put a gateway with load balancing and circuit breaking in front of them.",
+  "rationale": [
+   "Incorrect: model router failover redirects a request to the next suitable model when a single underlying model has a transient issue. It works inside one deployment and does not move traffic to another regional resource.",
+   "Incorrect: Data Zone Standard routes processing within a data zone, but Learn notes that this routing does not replace application-level regional failover. Traffic routed to a primary region that has an interruption is still affected.",
+   "Incorrect: spillover works from a provisioned deployment to a standard deployment in the same Foundry resource, and it reacts to errors such as 429. It cannot fail over to a resource in another region.",
+   "Correct: Foundry does not provide automatic failover between regions. A generative AI gateway such as Azure API Management load-balances across both regional endpoints and uses the circuit-breaker pattern to route around the unhealthy one."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/high-availability-resiliency"
+ },
+ {
+  "id": "3.2.3-09",
+  "obj": "3.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. processes regulated financial transactions with a model in Microsoft Foundry and plans to move to a newer model. Compliance rules do not allow the new model to affect any customer before it is approved, but the team wants to compare its outputs on real production inputs.\n\nWhich rollout approach should you use?",
+  "choices": [
+   "Shadow mode that runs the new model on production inputs offline",
+   "An in-place migration of the deployment during a quiet period",
+   "A canary that sends a small share of customer traffic to the new model",
+   "Automatic upgrade with the OnceNewDefaultVersionAvailable option"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A rollout moves from non-production to a canary or weighted share and then to full exposure, with live monitoring and a preserved rollback path. Regulated flows that cannot expose real users use shadow or mirror mode instead, comparing the outputs of the new model on production inputs offline.",
+  "rationale": [
+   "Correct: when you cannot canary, Learn recommends shadow or mirror mode: run the new model on production inputs offline and compare its outputs with the old model without affecting users. That meets the compliance rule and still uses real inputs.",
+   "Incorrect: an in-place migration moves all traffic of a provisioned deployment to the new model over 20 to 30 minutes, so every customer reaches the new model before it is approved.",
+   "Incorrect: a canary exposes real customers to the new model, even if only a small share. It is the usual staged rollout, but the compliance rules forbid any customer impact before approval.",
+   "Incorrect: automatic upgrade moves the whole deployment to the new default version within two weeks of its designation, without any approval gate, so all customers reach the new model at once."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/model-migration"
+ },
+ {
+  "id": "3.2.3-10",
+  "obj": "3.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Coho Winery runs a Global Standard deployment of an Azure OpenAI model version that retires in six weeks. The deployment uses NoAutoUpgrade because every model change needs sign-off after a quality evaluation. A release freeze makes any production change impossible during the week of the retirement date.\n\nWhat should you do?",
+  "choices": [
+   "Keep NoAutoUpgrade so that the deployment stays on its version after retirement",
+   "Request an extension of the retirement date for the deployment from Microsoft",
+   "Deploy the replacement model now, evaluate it, and switch traffic before the freeze",
+   "Change the version upgrade option to OnceCurrentVersionExpired and wait"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Every generally available model has a retirement date that cannot be extended. Auto-upgrade is only a safety net for pay-as-you-go deployments, so a deliberate migration (discover, assess, adapt, validate, roll out, and retire) should start as soon as the replacement is available, well before the date.",
+  "rationale": [
+   "Incorrect: with NoAutoUpgrade, the deployment stops working when the version retires; it does not keep serving the retired version. You must point the code to a nonexpired deployment before that date.",
+   "Incorrect: Learn states that retirement dates are not extendable and that there is no exception process. Planning around an extension leaves the deployment without a supported model version.",
+   "Correct: the replacement model is typically available about 90 days before retirement in Global Standard, which leaves time to evaluate it on a frozen dataset and switch traffic deliberately. Migrating early keeps the sign-off and avoids the freeze.",
+   "Incorrect: OnceCurrentVersionExpired upgrades the deployment to the default version on the retirement date, during the freeze and without the required sign-off. It is a safety net, not a migration plan."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/model-migration"
+ },
+ {
+  "id": "3.2.3-11",
+  "obj": "3.2.3",
+  "difficulty": "hard",
+  "type": "yesno",
+  "case": "C-e",
+  "stem": "You review the model lifecycle settings for the Woodgrove Bank deployments.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "chat-dzs currently stays on its model version until the retirement date and then upgrades to the default version.",
+   "After the planned provisioned deployment for App1 is created, it upgrades automatically at retirement in the same way as chat-dzs.",
+   "The platform team can set the version upgrade option of chat-dzs by adding an az cognitiveservices command to its existing pipeline."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "versionUpgradeOption applies to Standard-type deployments: null behaves like OnceCurrentVersionExpired, OnceNewDefaultVersionAvailable follows each new default version, and NoAutoUpgrade stops working at retirement. Provisioned deployments are migrated manually, and the option can be changed through the REST API, Azure PowerShell, or the portal, but not through the Azure CLI.",
+  "rationale": [
+   "Yes: the version upgrade option of chat-dzs returns null, and null is equivalent to OnceCurrentVersionExpired. The deployment stays on its validated version and upgrades to the default version only when the retirement date is reached, so it keeps serving if validation is late.",
+   "No: automatic model updates are supported only for Standard deployment types. The provisioned deployment must be migrated in place or side by side before the retirement date, so the platform team must plan that work.",
+   "No: the Azure CLI can read the version upgrade option but currently cannot update it. The team must use the REST API, Azure PowerShell, or the Foundry portal to change the setting."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/working-with-models"
+ },
+ {
+  "id": "3.2.4-01",
+  "obj": "3.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud runs a customer support copilot with steady, predictable traffic of millions of tokens per hour during business hours. Users complain about variable response times, and the company needs consistently low latency.\n\nWhich deployment category should you use?",
+  "choices": [
+   "Global Batch",
+   "Global Standard",
+   "Provisioned throughput",
+   "Data Zone Standard"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Standard deployments share capacity and suit variable traffic, batch deployments suit bulk asynchronous work, and provisioned deployments reserve capacity, measured in PTUs, for predictable, latency-sensitive, high-volume workloads in which per-token billing becomes expensive.",
+  "rationale": [
+   "Incorrect: Global Batch processes asynchronous requests from a file with a 24-hour target turnaround and no latency SLA. It suits bulk jobs, not an interactive copilot.",
+   "Incorrect: Global Standard shares capacity across customers, and customers with high consistent volume can see greater latency variability. It fits variable or unpredictable traffic, development, and testing.",
+   "Correct: a provisioned deployment holds a fixed amount of processing capacity exclusively for your deployment, with a defined latency target per model. It suits predictable, latency-sensitive, production-scale traffic such as a support copilot.",
+   "Incorrect: Data Zone Standard keeps processing in a data zone but is still pay-per-token on shared capacity, with the same latency variability at high consistent volume. Use it for residency without reserved capacity."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/provisioned-throughput"
+ },
+ {
+  "id": "3.2.4-02",
+  "obj": "3.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing created a Regional Provisioned deployment to benchmark a model for one week. The benchmark is finished, and the company must stop paying for the PTUs of the deployment.\n\nWhat should you do?",
+  "choices": [
+   "Delete the provisioned deployment",
+   "Set the deployment state of the deployment to Paused",
+   "Stop sending requests to the provisioned deployment",
+   "Disable public network access on the Foundry resource"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Provisioned capacity is held for a deployment whether or not it receives requests, so you pay per deployed PTU per hour. Hourly billing suits short benchmarks; delete the deployment when you are done, and remember that deleting a deployment does not cancel a reservation.",
+  "rationale": [
+   "Correct: provisioned deployments are billed per PTU per hour from creation until deletion, regardless of the tokens consumed. Billing stops only when the deployment is deleted, and a partial hour is prorated.",
+   "Incorrect: the deployment template reference lists a deploymentState property with the values Running and Paused, but notes that pause operations are supported only on the Standard, DataZoneStandard, and GlobalStandard SKUs, and the PTU billing page states that provisioned deployments cannot be paused. Use pausing to stop inference on a pay-per-token deployment.",
+   "Incorrect: PTU billing is based on deployed capacity, not on usage, so an idle provisioned deployment is still billed for all its PTUs every hour.",
+   "Incorrect: disabling public network access blocks clients from reaching the resource, but the deployment and its reserved PTUs still exist and are billed every hour."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/provisioned-throughput-billing"
+ },
+ {
+  "id": "3.2.4-03",
+  "obj": "3.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adventure Works Cycles needs a Data Zone Provisioned deployment today for a workload whose data must stay in the EU data zone. The subscription has enough Data Zone Provisioned quota in Sweden Central and in Germany West Central, with a Foundry resource in each region. Creating the deployment on the Sweden Central resource fails because there is not enough capacity for the model.\n\nWhat should you do?",
+  "choices": [
+   "Submit the quota request form for more Data Zone Provisioned quota in Sweden Central",
+   "Purchase a Data Zone Provisioned reservation to secure capacity in Sweden Central",
+   "Create a Global Provisioned deployment on the Sweden Central resource instead",
+   "Deploy on the Germany West Central resource if the deployment experience lists capacity there"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "PTU quota (per subscription, region, and deployment type) and capacity (the PTUs that are actually free for a model in a region) are separate. Having quota does not guarantee capacity, so check capacity in the Foundry deployment experience or the model capacities API, and consider other regions, fewer PTUs, or retrying later.",
+  "rationale": [
+   "Incorrect: the subscription already has enough quota; the deployment fails on capacity. The form can request more quota or capacity, but approval might take several days, and the deployment is needed today. Use it when quota is too low or no region has capacity.",
+   "Incorrect: reservations are a billing discount and do not guarantee capacity. Learn says to create the deployment first to confirm capacity, and only then purchase a reservation that matches it.",
+   "Incorrect: Global Provisioned can process requests in any Azure region, which breaks the EU data zone requirement. Use it for the broadest availability when the processing location is not constrained.",
+   "Correct: the Foundry deployment experience shows whether capacity is available and lists alternative regions that have it. Germany West Central has quota and a resource, and a Data Zone deployment there keeps data in the EU data zone."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/provisioned-throughput"
+ },
+ {
+  "id": "3.2.4-04",
+  "obj": "3.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "case": "C-e",
+  "stem": "You need to respond to the proposal of the finance team for the App1 provisioned deployment.\n\nWhat should you recommend?",
+  "choices": [
+   "Keep the deployment at its business-hours size and let the existing reservation cover it",
+   "Delete the deployment at 18:00 and re-create it at 08:00 from the pipeline",
+   "Exchange the reservation for fewer PTUs and scale the deployment down each night",
+   "Scale the deployment down at 18:00 and up at 08:00 from a scheduled pipeline run"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn advises against scaling provisioned deployments up and down with traffic: capacity might not be available when you scale back up, and reservation-covered capacity is usually cheaper than continuous hourly billing. Reservations are independent of deployments and are not affected by resizing.",
+  "rationale": [
+   "Correct: the reservation discount applies to the deployed PTUs in scope up to its quantity, whatever the time of day, so scaling down saves nothing on reserved PTUs. A constant size also avoids the risk of finding no capacity when App1 needs it at 08:00.",
+   "Incorrect: deleting releases all the capacity and requires a new deployment every morning, which fails when the region has no free capacity. The reservation is still charged for its full quantity, so this adds risk without savings.",
+   "Incorrect: an exchange resets the reservation term and can incur fees, and with fewer reserved PTUs the daytime PTUs above the new quantity are billed at the hourly rate. The nightly scale-down still carries the capacity risk.",
+   "Incorrect: scaling down releases capacity to the region, with no guarantee that it is available again at 08:00. The reservation continues at its original quantity, so the evening scale-down only leaves reserved PTUs unused."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/provisioned-throughput-billing"
+ },
+ {
+  "id": "3.2.4-05",
+  "obj": "3.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Proseware, Inc. has Global Provisioned deployments in one subscription: 100 PTUs in East US, 150 PTUs in West Europe, and 50 PTUs in Australia East. The company wants a reservation discount for all 300 PTUs with the fewest reservations to manage.\n\nWhat should you purchase?",
+  "choices": [
+   "Three Global Provisioned reservations, one per region, for 100, 150, and 50 PTUs",
+   "One Global Provisioned reservation for 300 PTUs",
+   "Three Regional Provisioned reservations, one per region, for 100, 150, and 50 PTUs",
+   "One Data Zone Provisioned reservation for 300 PTUs"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A reservation discount applies when the deployment type matches, the region matches (for Data Zone and Regional types only), and the reservation scope includes the subscription or resource group of the deployment. Matching is not by model or deployment, so one Global reservation can consolidate Global deployments in several regions.",
+  "rationale": [
+   "Incorrect: three Global reservations also cover the deployments, and Learn allows one per region for a one-to-one mapping, but the company wants the fewest reservations to manage.",
+   "Correct: Global reservations are not region-specific, so a single Global reservation covers Global PTU deployments across regions up to its quantity. One reservation for 300 PTUs, scoped to the subscription, covers all three deployments.",
+   "Incorrect: Regional Provisioned reservations apply to Regional Provisioned deployments in the matching region. A Global Provisioned deployment is not covered by a reservation for another deployment type.",
+   "Incorrect: reservations are purchased per deployment type, so a Data Zone Provisioned reservation does not cover Global Provisioned deployments. Use it for Data Zone deployments in the matching region."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/provisioned-throughput-billing"
+ },
+ {
+  "id": "3.2.4-06",
+  "obj": "3.2.4",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Northwind Traders has a Global Provisioned deployment named orders-ptu and a Global Standard deployment named orders-std of the same model and version in the same Foundry resource. The spilloverDeploymentName property of orders-ptu is set to orders-std. Some client requests also include the x-ms-spillover-deployment header.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "When orders-ptu returns HTTP 429 because its PTUs are fully used, the request is processed by orders-std.",
+   "For requests that include the x-ms-spillover-deployment header, the header value overrides the spilloverDeploymentName property.",
+   "Requests that orders-std serves through spillover are included in the hourly PTU charge of orders-ptu."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Spillover routes overflow from a provisioned deployment to a standard deployment in the same Foundry resource, either for all requests (the spilloverDeploymentName property) or per request (the x-ms-spillover-deployment header). Responses that spilled over carry the x-ms-spillover-from-deployment header, and the IsSpillover split in Azure Monitor shows them on the standard deployment.",
+  "rationale": [
+   "Yes: spillover starts when the provisioned deployment returns a non-200 code, such as 429 for exhausted PTUs, 400 for a context length that the provisioned deployment does not support, or 500 or 503 for server errors. The standard deployment then processes the request.",
+   "No: when spillover is enabled both by the deployment property and by the request header, the system uses the deployment property. To control spillover per request, leave spilloverDeploymentName unset and rely only on the header.",
+   "No: requests that the provisioned deployment serves cost only its hourly PTU charge. Requests routed to orders-std are billed at the input, cached, and output token rates of the standard deployment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/spillover-traffic-management"
+ },
+ {
+  "id": "3.2.4-07",
+  "obj": "3.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. runs a Data Zone Provisioned deployment. Azure Monitor shows that the deployment returns HTTP 429 responses even though the tokens that it actually generates are far below what its PTUs should handle. The client code does not set max_tokens in its requests, and most responses are about 200 tokens long.\n\nWhat should you do to increase the number of concurrent requests that the deployment accepts?",
+  "choices": [
+   "Increase the max_retries setting of the OpenAI client for 429 responses",
+   "Purchase a Data Zone Provisioned reservation for the deployed PTUs",
+   "Set max_tokens in each request close to the expected response length",
+   "Enable spillover to a Data Zone Standard deployment in the resource"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Provisioned deployments use a variation of the leaky bucket algorithm: each request adds its estimated cost (prompt tokens less cached tokens, plus max_tokens) to utilization, the estimate is corrected when the request finishes, and utilization drains at a rate proportional to the deployed PTUs. At 100 percent utilization, the service returns 429 immediately with retry-after headers.",
+  "rationale": [
+   "Incorrect: more retries make the client wait for the retry-after time and try again, which hides some errors but does not raise how many requests the deployment accepts at once. Tune retries when you can tolerate added latency.",
+   "Incorrect: a reservation is a billing discount on the PTU meter and does not change capacity or utilization. It lowers the cost of a long-running deployment, not the number of accepted requests.",
+   "Correct: the service estimates each request's cost from its prompt tokens and max_tokens. When max_tokens is missing, the service estimates a value, which can lower concurrency; setting max_tokens close to the true generation size gives the highest concurrency.",
+   "Incorrect: spillover sends requests that the provisioned deployment rejects to a standard deployment, which keeps users served but bills them per token. It does not let the provisioned deployment accept more concurrent requests."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/provisioned-get-started"
+ },
+ {
+  "id": "3.2.4-08",
+  "obj": "3.2.4",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Litware, Inc. needs a Data Zone Provisioned deployment named support-ptu of an Azure OpenAI model on a Foundry resource named ai-litware in a resource group named rg-ai. The subscription has enough PTU quota. You know the expected requests per minute and the average prompt and response sizes, but not the PTU count. The deployment will run for at least a year, so it must be covered by a discounted reservation, and the company must not commit to PTUs that it cannot deploy.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Estimate the PTU count with the capacity calculator in the Foundry portal from the request rate and token sizes.",
+   "Run `az cognitiveservices account deployment create -n ai-litware -g rg-ai --deployment-name support-ptu --model-name <model> --model-version <version> --model-format OpenAI --sku-name DataZoneProvisionedManaged --sku-capacity <ptus>`.",
+   "Run `az cognitiveservices account deployment show -n ai-litware -g rg-ai --deployment-name support-ptu --query properties.provisioningState -o tsv`.",
+   "Purchase a one-year Data Zone Provisioned reservation for the deployed PTUs in the region and subscription of ai-litware.",
+   "Purchase a one-year Global Provisioned reservation for the deployed PTUs, scoped to the subscription.",
+   "Run `az cognitiveservices account deployment create -n ai-litware -g rg-ai --deployment-name support-ptu --model-name <model> --model-version <version> --model-format OpenAI --sku-name DataZoneStandard --sku-capacity <ptus>`.",
+   "Submit the quota request form to request more PTU quota for the region of ai-litware."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "The recommended order for provisioned throughput is to size the workload, create the deployment (which confirms that capacity exists), verify it, and then buy a reservation that matches the deployment type, region, and scope. A reservation is a billing discount that never guarantees capacity, so buying it first risks paying for PTUs that you cannot deploy.",
+  "rationale": [
+   "Step 1: the PTU count depends on requests per minute, prompt and response sizes, the output-to-input ratio, and the cache rate. The capacity calculator turns these values into the PTU estimate that the deployment command needs.",
+   "Step 2: DataZoneProvisionedManaged is the SKU name of the Data Zone Provisioned type, and --sku-capacity is the number of PTUs. Creating the deployment confirms that capacity is available before any financial commitment.",
+   "Step 3: the deployment is ready when properties.provisioningState is Succeeded. Confirming it before the purchase makes sure that the reservation matches PTUs that are actually deployed.",
+   "Step 4: Learn says to purchase the reservation after the deployment exists, matching its deployment type, its region (for Data Zone and Regional types), and its scope. A one-year term gives the discounted rate for the long-running deployment.",
+   "Incorrect: reservations are purchased per deployment type, and a Global Provisioned reservation does not cover a Data Zone Provisioned deployment. Buy it for Global Provisioned deployments, which it covers across regions.",
+   "Incorrect: DataZoneStandard is a pay-per-token type, so its --sku-capacity is a tokens-per-minute allocation in capacity units instead of PTUs, and it has no reserved throughput for a reservation to cover. Use it for data zone workloads without reserved capacity.",
+   "Incorrect: the subscription already has enough PTU quota, so a quota request only adds days of waiting. Use the form when the quota for the deployment type and region is too low for the deployment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/provisioned-get-started"
+ },
+ {
+  "id": "3.2.4-09",
+  "obj": "3.2.4",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Wingtip Toys uses the Azure SDK for Python to create a deployment of an Azure OpenAI model on a Foundry resource. The deployment must use reserved capacity of 100 PTUs, must keep processing within the EU data zone, and must let the service route requests dynamically to datacenters anywhere in that zone.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nfrom azure.identity import DefaultAzureCredential\nfrom azure.mgmt.cognitiveservices import CognitiveServicesManagementClient\nfrom azure.mgmt.cognitiveservices.models import Deployment, DeploymentModel, DeploymentProperties, Sku\n\nclient = CognitiveServicesManagementClient(DefaultAzureCredential(), \"<subscription-id>\")\ndeployment = client.[[1]].begin_create_or_update(\n    \"rg-ai\", \"ai-wingtip\", \"chat-ptu\",\n    Deployment(\n        properties=DeploymentProperties(\n            model=DeploymentModel(format=[[2]], name=\"<model>\", version=\"<version>\")\n        ),\n        sku=Sku(name=[[3]], capacity=100),\n    ),\n).result()\nprint(deployment.properties.provisioning_state)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "deployments",
+     "managed_compute_deployments",
+     "accounts"
+    ],
+    "why": [
+     "Correct: client.deployments manages the model deployments of a Foundry resource, including provisioned ones. begin_create_or_update takes the resource group, the account name, the deployment name, and a Deployment object.",
+     "Incorrect: managed_compute_deployments creates managed compute deployments of open-source models on GPU accelerators, with a deployment template and an accelerator type. It does not create PTU deployments.",
+     "Incorrect: client.accounts manages the Foundry resource itself, such as its properties and keys. Model deployments are child resources that you manage through client.deployments."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "\"OpenAI\"",
+     "\"Microsoft\"",
+     "\"AIServices\""
+    ],
+    "why": [
+     "Correct: format names the provider of the model, and Azure OpenAI models use the format OpenAI, as the CLI and REST examples on Learn show.",
+     "Incorrect: Microsoft is the format for models that Microsoft provides, such as Phi models. This deployment runs an Azure OpenAI model.",
+     "Incorrect: AIServices is the kind of a Foundry resource, which you set when you create the account. It is not a model format."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "\"DataZoneProvisionedManaged\"",
+     "\"ProvisionedManaged\"",
+     "\"GlobalProvisionedManaged\"",
+     "\"DataZoneStandard\""
+    ],
+    "why": [
+     "Correct: DataZoneProvisionedManaged is the SKU name of Data Zone Provisioned, which reserves PTUs and dynamically routes traffic within the data zone, here the EU; capacity=100 sets the PTU count.",
+     "Incorrect: ProvisionedManaged is the SKU name of Regional Provisioned. It reserves PTUs but keeps processing in the Azure geography of the resource instead of routing across the data zone. Use it when data must stay in that geography.",
+     "Incorrect: GlobalProvisionedManaged reserves PTUs but routes traffic across Azure regions globally, so requests can be processed outside the EU data zone. Use it when the processing location is not constrained.",
+     "Incorrect: DataZoneStandard keeps data in the zone but is pay-per-token on shared capacity; its capacity is a tokens-per-minute allocation, not reserved PTUs. Use it for data zone workloads without reserved throughput."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0
+  ],
+  "explanation": "With azure-mgmt-cognitiveservices, client.deployments.begin_create_or_update creates or updates a model deployment from a Deployment object: properties.model sets the format, name, and version, and sku sets the deployment type code and the capacity, which is a PTU count for provisioned types.",
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/healthcare-ai/fine-tune-premium-healthcare-models#deploy-the-fine-tuned-model"
+ },
+ {
+  "id": "3.2.4-10",
+  "obj": "3.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee runs three provisioned deployments in one Foundry resource. The operations team must see how much of its deployed capacity each deployment consumes over time, to decide whether a deployment is oversized.\n\nWhat should the team use?",
+  "choices": [
+   "The Azure OpenAI Requests metric, split by status code",
+   "The Provisioned-managed utilization V2 metric, split by deployment",
+   "The reservation utilization percentage on the Reservations page",
+   "The PTU quota usage on the Quota page of the Foundry portal"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "For provisioned deployments, utilization is the ratio of consumed to deployed PTUs, which the Provisioned-managed utilization V2 metric in Azure Monitor reports. Sustained low utilization suggests an oversized deployment, while utilization at 100 percent means that the service returns 429 responses.",
+  "rationale": [
+   "Incorrect: Azure OpenAI Requests counts calls, and splitting by status code shows successes and 429 responses. It shows load and throttling but not what share of the deployed PTUs is consumed.",
+   "Correct: Provisioned-managed utilization V2 is PTUs consumed divided by PTUs deployed over time. Applying splitting by deployment shows how much of its capacity each provisioned deployment uses, which reveals an oversized deployment.",
+   "Incorrect: reservation utilization shows how much of a reservation's PTU quantity is matched by running deployments, which is a billing view. A fully covered deployment can still use only a small share of its capacity.",
+   "Incorrect: the Quota page shows how many PTUs of your quota are deployed per subscription and region. It reports allocation, not how much of the allocated capacity the traffic consumes."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/provisioned-get-started"
+ },
+ {
+  "id": "3.2.4-11",
+  "obj": "3.2.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "case": "C-e",
+  "stem": "You need to configure the App1 deployments to meet the App1 requirements and the data residency requirements.\n\nWhich two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Create a Data Zone Provisioned deployment for App1 on ai-woodgrove-prod",
+   "Create a Regional Provisioned deployment for App1 on ai-woodgrove-prod",
+   "Set the spilloverDeploymentName property of the provisioned deployment to chat-dzs",
+   "Add the x-ms-spillover-deployment header with the value chat-dzs to App1 requests",
+   "Create a Global Provisioned deployment for App1 on ai-woodgrove-prod"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "A common pattern is provisioned capacity for the baseline plus a standard deployment for spikes, connected by spillover. The provisioned deployment type must fit the residency rule and match the reservation type, and spillover set on the deployment needs no client change, while the request header gives per-request control.",
+  "rationale": [
+   "Correct: a Data Zone Provisioned deployment reserves PTUs for consistent low latency, keeps processing in the EU data zone, and matches the deployment type, region, and scope of the existing reservation, so its PTUs receive the reservation discount.",
+   "Incorrect: Regional Provisioned keeps processing in the Azure geography of the resource, which meets residency, but the existing reservation is for Data Zone Provisioned and does not cover a Regional deployment, so its PTUs would be billed at the hourly rate.",
+   "Correct: spilloverDeploymentName sends requests that the provisioned deployment cannot serve, such as 429 responses during bursts, to chat-dzs, a standard deployment of the same model and version in the same resource. App1 does not change, and overflow is billed per token.",
+   "Incorrect: the request header enables spillover per request, but adding it changes the App1 code, which the App1 requirements do not allow. Use the header when only some requests should spill over.",
+   "Incorrect: Global Provisioned can process requests in any Azure region, which breaks the EU data zone requirement, and the existing Data Zone reservation would not cover it because reservations are purchased per deployment type."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/spillover-traffic-management"
+ }
+]

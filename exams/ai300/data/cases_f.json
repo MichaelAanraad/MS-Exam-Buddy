@@ -1,0 +1,24 @@
+[
+ {
+  "id": "C-f",
+  "title": "Margie's Travel",
+  "sections": [
+   [
+    "Overview",
+    "Margie's Travel is a travel agency that has offices in Lisbon, Dublin, and Toronto. The company sells package holidays, flights, and hotel bundles through its website and a call center. A legacy chatbot that a vendor built in 2024 answers customer questions on the website.\n\nAn AI team of four people builds a replacement named TripAgent in Microsoft Foundry. TripAgent will answer questions about bookings, changes, and refunds, and it can start refund requests. Before TripAgent goes live, the team must set up repeatable quality and safety evaluations."
+   ],
+   [
+    "Existing environment",
+    "**Azure environment**\n\n- The company has a Microsoft Entra ID tenant and an Azure subscription named Sub1.\n- A Foundry resource named fr-margies in the East US 2 region contains a project named proj-tripagent. An Application Insights resource is connected to the project, and tracing is enabled for all agents.\n- proj-tripagent has two model deployments: agent-main, which TripAgent uses, and judge-mini, which the team uses as the judge model for AI-assisted evaluators. Both deployments have a small tokens-per-minute (TPM) quota that the team cannot increase this quarter.\n- TripAgent is a prompt agent in Foundry Agent Service. Version 3 is the current version. TripAgent uses two Azure tools: an Azure AI Search tool that retrieves passages from an index of refund and change policies, and an Azure Functions tool that calls a function app to create refund requests in the booking system. TripAgent does not use client-side function calling.\n\n**Legacy data**\n\n- The team exported 1,200 historical conversations from the legacy chatbot to a CSV file and uploaded the file to proj-tripagent as a dataset named legacy-chats.\n- Each row of legacy-chats has four columns: question (the customer question), bot_answer (the answer of the legacy chatbot), kb_passages (the knowledge base passages that the legacy chatbot retrieved), and agent_reference_answer (an answer that a senior human agent wrote for the same question).\n\n**GitHub environment**\n\n- A GitHub repository named margies/tripagent stores the instructions of TripAgent in a file named prompts/tripagent.md.\n- Changes reach the main branch only through pull requests. Branch protection requires all status checks to pass before a merge.\n- External contributors from a translation agency open pull requests from forks of the repository to update the files in the translations folder.\n- The call center uses Dynamics 365 Contact Center, and the marketing website runs on Azure App Service."
+   ],
+   [
+    "Requirements",
+    "**Quality requirements**\n\n- The answers that the current version of TripAgent generates for the legacy-chats questions must be compared with the answers that senior human agents wrote.\n- Each answer must be checked for information that is not in the policy passages retrieved for it. The check must be strict, must return a pass or fail result for each answer, and must not consume TPM quota of agent-main or judge-mini.\n\n**Safety requirements**\n\n- Before each release, the team must test whether TripAgent can be manipulated into creating a refund request without the human approval step that the refund policy requires.\n- Before each release, the team must test whether TripAgent can be manipulated into revealing personal data of other customers, such as passport numbers or payment details.\n- Business stakeholders review the safety test results. They must not see the adversarial prompts that the tests generate.\n\n**Automation requirements**\n\n- Every pull request that changes prompts/tripagent.md must run the release evaluation and must block the merge when the pass rate of the test cases is below 85 percent.\n- No client secret, password, or other long-lived Azure credential can be stored in GitHub.\n- The workflow identity must have only the privileges that it requires.\n- Pull requests from forks must not be able to request Azure access tokens."
+   ],
+   [
+    "Planned changes",
+    "Margie's Travel plans the following changes:\n\n- Add a German-language version of TripAgent in the second half of next year.\n- Move the frequently asked questions pages of the website to a new content management system.\n- Replace the call center phone menu with a voice bot after TripAgent is live."
+   ]
+  ]
+ }
+]

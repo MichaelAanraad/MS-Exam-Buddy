@@ -1,0 +1,743 @@
+[
+ {
+  "id": "1.1.1-01",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lamna Healthcare Company is creating an Azure Machine Learning workspace by using the Python SDK v2. Compliance requires that the workspace limits the data that Microsoft collects about the workspace. The setting must be part of the initial workspace definition because it cannot be changed after the workspace is created.\n\nWhich Workspace parameter should you set?",
+  "choices": [
+   "hbi_workspace=True",
+   "enable_data_isolation=True",
+   "public_network_access=\"Disabled\"",
+   "customer_managed_key=CustomerManagedKey(...)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A high business impact workspace (hbi_workspace in the SDK and YAML, High business impact workspace in the portal) limits the data that Microsoft collects about the workspace. You can select it only when you create the workspace, so it belongs in the initial Workspace definition. Data isolation, network access, and customer-managed keys answer other requirements: shared-resource isolation, network exposure, and control of the encryption key.",
+  "rationale": [
+   "Correct: hbi_workspace marks the workspace as high business impact, which limits the data that Microsoft collects on the workspace. Learn notes that you can select high business impact only when you create the workspace, which matches the requirement.",
+   "Incorrect: enable_data_isolation prefixes container, secret, and image names with the workspace GUID so that workspaces that share a storage account, key vault, or registry stay separated. It is also a create-time setting, but it does not limit what Microsoft collects.",
+   "Incorrect: public_network_access set to Disabled rejects requests from the public internet, so clients must connect through a private endpoint. Use it to restrict network access to the workspace, not to limit the data that Microsoft collects.",
+   "Incorrect: a customer-managed key encrypts the workspace metadata with your own key, and Azure Machine Learning then creates the Azure Cosmos DB instance for the metadata in your subscription. Use it when compliance requires control of the encryption key."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-workspace"
+ },
+ {
+  "id": "1.1.1-02",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Alpine Ski House has an Azure Machine Learning workspace. User1 develops training code in Visual Studio Code on a local computer and downloads the config.json file of the workspace into the project folder. User1 must connect to the workspace by using the Python SDK v2 without writing the subscription ID, resource group, or workspace name in the code.\n\nWhich code should User1 use?",
+  "choices": [
+   "`MLClient.from_config(credential=DefaultAzureCredential())`",
+   "`MLClient(DefaultAzureCredential(), subscription_id, resource_group)`",
+   "`Workspace.from_config()` from the azureml-core package",
+   "`ml_client.workspaces.get(\"<workspace-name>\")`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "An MLClient object is the connection to a workspace in the Python SDK v2. You can build it from parameters (subscription, resource group, workspace name) or with MLClient.from_config(), which reads config.json from the current directory, a .azureml subdirectory, or a parent directory. A compute instance already stores this file for you.",
+  "rationale": [
+   "Correct: MLClient.from_config() reads the subscription, resource group, and workspace name from config.json, so none of them appear in the code. It prompts for sign-in if the credential is not yet authenticated.",
+   "Incorrect: this MLClient has no workspace name, so it targets the resource group. That form is used for workspace management, such as creating or listing workspaces, and it also puts the subscription and resource group in the code.",
+   "Incorrect: Workspace.from_config() also reads config.json, but it belongs to the azureml-core package, which is the older, deprecated SDK v1. The requirement is the Python SDK v2 (azure-ai-ml).",
+   "Incorrect: workspaces.get() returns the properties of a workspace, but it needs an existing MLClient and the workspace name in the code. Use it to inspect a workspace, for example its location or resource group."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-workspace"
+ },
+ {
+  "id": "1.1.1-03",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Contoso Pharmaceuticals deletes an Azure Machine Learning workspace named mlw-research by using the default delete behavior. The workspace contains a compute cluster and registered models. An administrator had added role assignments on the workspace for User1 and User2. Two days later, the team wants the workspace back.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Before mlw-research is recovered or permanently deleted, you can create a new workspace named mlw-research in the same resource group.",
+   "After you recover mlw-research, you must recreate the compute cluster.",
+   "After you recover mlw-research, the role assignments for User1 and User2 are restored automatically."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The default delete is a soft delete. Service-side data such as models, run history, data, environments, and datastores is kept for a retention period of 14 days by default, while compute instances, compute clusters, inference endpoints, and queued or running jobs are hard deleted. During the retention period you can only recover or permanently delete the workspace, and its name stays reserved.",
+  "rationale": [
+   "No: the name of a soft-deleted workspace stays reserved until the retention period (14 days by default) ends or until you permanently delete the workspace. Permanently delete it when you need the name immediately, for example in dev/test.",
+   "Yes: soft delete hard deletes compute clusters, compute instances, and inference endpoints, so recovery does not bring them back. Registered models are soft deleted and return with the workspace, but you must recreate the cluster.",
+   "No: recovery restores the Azure RBAC role assignments of the workspace identity, but not the role assignments that you added on the workspace. Re-create the assignments for User1 and User2 after the workspace is recovered."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-soft-delete"
+ },
+ {
+  "id": "1.1.1-04",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys has a dev/test Azure Machine Learning workspace named mlw-dev. The workspace uses a storage account that other teams also use. You need to delete mlw-dev and create a new workspace that has the same name today. The storage account must remain.\n\nWhich code should you run?",
+  "choices": [
+   "`ml_client.workspaces.begin_delete(name=\"mlw-dev\", permanently_delete=True, delete_dependent_resources=False)`",
+   "`ml_client.workspaces.begin_delete(name=\"mlw-dev\", permanently_delete=True, delete_dependent_resources=True)`",
+   "`ml_client.workspaces.begin_delete(name=\"mlw-dev\", permanently_delete=False, delete_dependent_resources=False)`",
+   "`ml_client.workspaces.begin_delete(name=\"mlw-dev\", permanently_delete=False, delete_dependent_resources=True)`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "begin_delete has two independent switches. permanently_delete chooses between the default soft delete, which keeps the workspace and reserves its name during the retention period, and an immediate permanent delete. delete_dependent_resources chooses whether the associated storage account, key vault, container registry, and Application Insights are deleted too. Permanent deletion fits compliance requests and dev/test cases where you reuse a name immediately.",
+  "rationale": [
+   "Correct: permanently_delete=True skips the soft-delete state, so the workspace data is deleted immediately and the name mlw-dev can be reused right away. delete_dependent_resources=False keeps the shared storage account and the other associated resources.",
+   "Incorrect: the permanent delete frees the name, but delete_dependent_resources=True also deletes the storage account, key vault, container registry, and Application Insights. Use it to clean up a workspace whose associated resources nothing else uses.",
+   "Incorrect: this is the default soft delete. The workspace stays in a soft-deleted state for the retention period and its name stays reserved, so you cannot create mlw-dev again today. Use it when you might need to recover the workspace.",
+   "Incorrect: this soft deletes the workspace, so the name stays reserved, and it also deletes the shared storage account. It fails both requirements."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-soft-delete"
+ },
+ {
+  "id": "1.1.1-05",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Woodgrove Bank accidentally deleted an Azure Machine Learning workspace named mlw-risk five days ago by using the default delete behavior. The key vault of the workspace, kv-mlrisk, was deleted at the same time and is in a soft-deleted state. The storage account and Application Insights resource of the workspace still exist. You need to restore the workspace so that the team can run training jobs again on a compute cluster that is defined in the cluster.yml file.\n\nWhich three actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az keyvault recover -n kv-mlrisk`.",
+   "In the Azure portal, open Azure Machine Learning, select Recently deleted, and recover mlw-risk.",
+   "Run `az ml compute create --file cluster.yml --workspace-name mlw-risk --resource-group rg-risk`.",
+   "Run `az ml workspace create -n mlw-risk -g rg-risk` to create the workspace again.",
+   "Run `az ml workspace sync-keys -n mlw-risk -g rg-risk`."
+  ],
+  "answer": [
+   0,
+   1,
+   2
+  ],
+  "explanation": "Azure Machine Learning stores workspace metadata in its associated resources, so a deleted key vault or storage account must be recovered before the workspace. Then recover the workspace from Recently deleted during the retention period. Hard-deleted resources such as compute clusters, compute instances, and endpoints are not part of the recovery and must be recreated.",
+  "rationale": [
+   "Step 1: Learn says that you must recover the dependencies of a workspace first, because a missing dependency can prevent a correct recovery. az keyvault recover restores the soft-deleted key vault before the workspace recovery starts.",
+   "Step 2: soft-deleted workspaces are listed under Recently deleted during the retention period. Recover restores the workspace state, which depends on the key vault that step 1 restored.",
+   "Step 3: compute clusters are hard deleted when a workspace is soft deleted, so recovery does not bring them back. You recreate the cluster from cluster.yml in the recovered workspace before the team runs jobs.",
+   "Incorrect: during the retention period the name mlw-risk stays reserved, so creation fails, and a new workspace would not contain the soft-deleted models, data, and run history. Create a new workspace only when you do not need recovery.",
+   "Incorrect: sync-keys makes the workspace use new access keys after you regenerate a key of its storage account. No key changed here. Run it after a key rotation so that you do not wait about an hour for the automatic sync."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-soft-delete"
+ },
+ {
+  "id": "1.1.1-06",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A. Datum Corporation plans to create three Azure Machine Learning workspaces of the default kind by using YAML files and the az ml workspace create command. To reduce costs, the workspaces must share one existing storage account, one key vault, and one container registry. The managed identity of each workspace must be able to access only the storage containers of its own workspace, and secrets or Docker images that have the same name in different workspaces must not conflict.\n\nWhich property should you add to each YAML file?",
+  "choices": [
+   "enable_data_isolation: true",
+   "primary_user_assigned_identity: <identity-resource-id>",
+   "image_build_compute: cpu-cluster",
+   "public_network_access: Disabled"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When several workspaces share a storage account, key vault, or container registry, data isolation prevents naming conflicts and restricts each workspace identity to its own data. You can choose it only when you create a workspace. It is enabled by default for hub and project workspaces and disabled by default for workspaces of the default kind, so default workspaces need enable_data_isolation set explicitly.",
+  "rationale": [
+   "Correct: data isolation prefixes container names, secret names, and Docker image names with the workspace GUID, and it gives the workspace identity a role assignment with an ABAC condition that limits it to its own containers. For default workspaces you must set it at creation.",
+   "Incorrect: primary_user_assigned_identity selects which user-assigned identity the workspace uses as its primary identity. Learn recommends a user-assigned identity together with data isolation for workspaces that share resources, but the identity alone neither prefixes secret and image names nor limits it to its own containers.",
+   "Incorrect: image_build_compute names the compute cluster that builds Docker images for environments, which you set when the container registry is behind a virtual network. It does not change image names or access to data.",
+   "Incorrect: public_network_access set to Disabled blocks requests from the public internet, so clients must use private endpoints. It controls network exposure, not how workspaces that share resources are separated from each other."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-identity-based-service-authentication"
+ },
+ {
+  "id": "1.1.1-07",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fourth Coffee creates an Azure Machine Learning workspace by using a YAML file and the az ml workspace create command. The workspace must use an existing storage account as its default storage. The following storage accounts are available:\n\n- Storage1: kind StorageV2, SKU Standard_LRS, hierarchical namespace enabled\n- Storage2: kind BlockBlobStorage, SKU Premium_LRS\n- Storage3: kind StorageV2, SKU Standard_GRS, hierarchical namespace disabled\n- Storage4: kind FileStorage, SKU Premium_LRS\n\nWhich storage account should you specify for the storage_account property?",
+  "choices": [
+   "Storage1",
+   "Storage2",
+   "Storage3",
+   "Storage4"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "An existing storage account that serves as the default storage of a workspace must not use a Premium SKU, must have both Azure Blob and Azure Files capabilities, and must have hierarchical namespace disabled. The workspace creates blob containers and file shares in it for its default datastores, such as workspaceblobstore and workspaceworkingdirectory. Accounts that do not qualify can still be connected later as extra datastores.",
+  "rationale": [
+   "Incorrect: Storage1 has hierarchical namespace enabled, the Azure Data Lake Storage Gen2 feature, which Azure Machine Learning does not support for the default storage account. You can still connect such an account as an ADLS Gen2 datastore.",
+   "Incorrect: Storage2 is a premium block blob account. The default storage account cannot be Premium_LRS or Premium_GRS, and a block blob account offers no Azure Files capability, which the workspace also needs.",
+   "Correct: Storage3 is a standard general-purpose v2 account, so it offers both Blob and Files, uses a standard SKU, and has hierarchical namespace disabled. It meets all three requirements for an existing default storage account.",
+   "Incorrect: Storage4 is a premium file share account. It uses a Premium SKU and offers no Blob storage, which the workspace needs for containers such as workspaceblobstore."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-workspace-cli"
+ },
+ {
+  "id": "1.1.2-01",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Bellows College uses an Azure Machine Learning workspace. Students write notebooks on compute instances. An administrator needs to find the default datastore that stores the data for the notebooks and compute instances.\n\nWhich datastore should the administrator inspect?",
+  "choices": [
+   "workspaceblobstore",
+   "workspacefilestore",
+   "workspaceartifactstore",
+   "workspaceworkingdirectory"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Every workspace has four default datastores in its default storage account: workspaceblobstore (data uploads, job code snapshots, pipeline data cache), workspaceartifactstore (metrics, models, components), workspacefilestore (an alternative file share for uploads), and workspaceworkingdirectory (notebooks, compute instances, prompt flow). Knowing which one is a blob container and which one is a file share helps when you look for missing files.",
+  "rationale": [
+   "Incorrect: workspaceblobstore is a blob container named azureml-blobstore-{workspace-id} that stores data uploads, job code snapshots, and pipeline data cache. Look there for uploaded data and code snapshots, not for the notebooks of compute instances.",
+   "Incorrect: workspacefilestore is a file share named azureml-filestore-{workspace-id} that serves as an alternative container for data upload. It does not hold the notebook files of compute instances.",
+   "Incorrect: workspaceartifactstore is the blob container named azureml that stores assets such as metrics, models, and components. Look there for job artifacts, not for notebooks.",
+   "Correct: workspaceworkingdirectory is a file share named code-{GUID} that stores data for notebooks, compute instances, and prompt flow, so it holds the notebooks that the students write."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-data"
+ },
+ {
+  "id": "1.1.2-02",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery registers a datastore named sales_ds in an Azure Machine Learning workspace. The datastore points to a blob container named sales in a storage account named cohosales and stores a SAS token. A command job must read the 2026 folder of the container. The job must authenticate by using the credential that is stored in sales_ds, and the training script must not contain any storage secret.\n\nWhich path should you use for the job input?",
+  "choices": [
+   "azureml://datastores/sales_ds/paths/2026/",
+   "wasbs://sales@cohosales.blob.core.windows.net/2026/",
+   "abfss://sales@cohosales.dfs.core.windows.net/2026/",
+   "https://cohosales.blob.core.windows.net/sales/2026/"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A job input can reference storage directly (wasbs, abfss, or https URIs) or through a datastore (azureml://datastores/<name>/paths/<path>). Direct storage URIs use identity-based authentication with your Microsoft Entra ID or a managed identity. Datastore URIs can also use the credential that the datastore stores, such as an account key, a SAS token, or a service principal, without exposing it in code.",
+  "rationale": [
+   "Correct: an azureml://datastores/<name>/paths/<path> URI resolves through sales_ds, so the job can use the SAS token that the datastore stores without exposing it in the script. Datastore URIs support both credential-based and identity-based authentication.",
+   "Incorrect: a wasbs:// URI points directly to the blob container and uses identity-based authentication, not the SAS token in sales_ds. Use it when the identity that runs the job already has a data role on the storage account.",
+   "Incorrect: an abfss:// URI addresses an Azure Data Lake Storage Gen2 file system directly with identity-based authentication. It bypasses sales_ds and its stored credential.",
+   "Incorrect: an https:// path does not reference sales_ds, so the job cannot use the stored SAS token. Use an https path for data on a publicly available server."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-data"
+ },
+ {
+  "id": "1.1.2-03",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Humongous Insurance has an Azure Machine Learning workspace that contains a datastore named claims_ds. The datastore points to a blob container and stores a SAS token. An audit shows that business analysts who have the Reader role on the workspace can view the SAS token. The analysts must keep read-only access to the workspace, and the workspace must not hold any storage secret for claims_ds.\n\nWhat should you do?",
+  "choices": [
+   "Re-create claims_ds with identity-based access and no stored credential.",
+   "Re-create claims_ds with the storage account key as the credential.",
+   "Re-create claims_ds with a service principal secret as the credential.",
+   "Assign the AzureML Data Scientist role to the analysts instead of Reader."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Credential-based datastores (account key, SAS token, or service principal) cache the secret in the key vault of the workspace, and users with Reader access to the workspace can view datastore credentials. An identity-based datastore stores only the storage account information. Each request then uses the Microsoft Entra identity of the user or the compute, so access is controlled by RBAC roles such as Storage Blob Data Reader on the storage account.",
+  "rationale": [
+   "Correct: an identity-based datastore stores only the location of the storage, so there is no secret in the workspace to view. Access to the data then depends on storage RBAC roles, such as Storage Blob Data Reader for the users or compute identities that read claims.",
+   "Incorrect: an account key is still a credential that the datastore caches, so Readers can still view it, and it grants full access to the storage account. Use a key only when neither identity-based access nor a SAS token is an option.",
+   "Incorrect: service principal information such as the client ID, tenant ID, and secret is also stored through credential-based authentication, so Readers can still retrieve it. Use a service principal when a nonhuman identity must own the access.",
+   "Incorrect: AzureML Data Scientist grants write actions in the workspace, which breaks the read-only requirement, and the SAS token stays stored in the workspace. Assign it to users who run experiments."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-data"
+ },
+ {
+  "id": "1.1.2-04",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. has a legacy application that writes CSV files to an Azure file share named exports in a storage account named stlegacy. You need to register the share as a datastore in an Azure Machine Learning workspace by using the Python SDK v2. Security policy states that the storage account key must not be stored in the workspace and that the stored credential must expire automatically.\n\nWhich datastore definition should you use?",
+  "choices": [
+   "`AzureFileDatastore(name=\"exports\", account_name=\"stlegacy\", file_share_name=\"exports\", credentials=SasTokenConfiguration(sas_token=token))`",
+   "`AzureFileDatastore(name=\"exports\", account_name=\"stlegacy\", file_share_name=\"exports\", credentials=AccountKeyConfiguration(account_key=key))`",
+   "`AzureFileDatastore(name=\"exports\", account_name=\"stlegacy\", file_share_name=\"exports\")`",
+   "`AzureBlobDatastore(name=\"exports\", account_name=\"stlegacy\", container_name=\"exports\", credentials=SasTokenConfiguration(sas_token=token))`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Choose the datastore class by storage type (AzureBlobDatastore for a blob container, AzureDataLakeGen2Datastore for an ADLS Gen2 file system, AzureFileDatastore for a file share) and then the authentication. Azure file shares support credential-based access only, so the choice is between an account key, which grants full access to the account, and a SAS token, which limits the permissions and how long the access is valid.",
+  "rationale": [
+   "Correct: Azure file shares support credential-based datastores, and a SAS token defines which permissions the holder has and how long it is valid, so no account key is stored. SasTokenConfiguration is the credential class for a SAS token.",
+   "Incorrect: AccountKeyConfiguration stores the storage account key in the workspace key vault, which the policy forbids, and an account key grants full access until someone rotates it. Use it only when a SAS token is not an option.",
+   "Incorrect: omitting credentials creates an identity-based datastore, but identity-based access supports Azure Blob Storage and Azure Data Lake Storage Gen1 and Gen2, not Azure file shares. Use this form for a blob container or an ADLS Gen2 file system.",
+   "Incorrect: AzureBlobDatastore connects to a blob container by using container_name. exports is a file share, which needs AzureFileDatastore with file_share_name. Use AzureBlobDatastore when the data is in a container."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-datastore"
+ },
+ {
+  "id": "1.1.2-05",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud has a datastore named finance_ds that was created with the storage account key of a blob container. Data scientists submit command jobs to a compute cluster with `identity: type: user_identity` so that storage access is authorized per user. A review of the storage logs shows that every request is authorized with the shared key, and that User2, who has no data role on the storage account, can read the data. User2 must continue to submit jobs.\n\nWhat should you do?",
+  "choices": [
+   "Update finance_ds so that it stores no credentials.",
+   "Regenerate the account key, and then update finance_ds with the new key.",
+   "Change the job identity to `type: managed` for the jobs that User2 submits.",
+   "Remove the AzureML Data Scientist role assignment of User2."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "User identity data access on a compute cluster needs three things: the user has a data role or ACL permissions on the storage, the datastore has no cached credentials, and the job sets identity to user_identity (UserIdentityConfiguration in the SDK). If the datastore stores an account key, a SAS token, or a service principal, those credentials are used instead of the user identity, and every user gets the same access.",
+  "rationale": [
+   "Correct: when a datastore has cached credentials such as a storage account key, those credentials are used instead of the user identity. Without stored credentials, the job presents the token of the submitting user, so storage RBAC applies and User2 is denied.",
+   "Incorrect: a new key is still a cached credential, so jobs keep authorizing with the shared key and User2 keeps access. Rotate a key when it might be compromised, not to switch to per-user authorization.",
+   "Incorrect: the compute managed identity is one identity for all users of the cluster, so access would not be authorized per user, and finance_ds would still hold the account key. Use the compute identity when users must not need their own data roles.",
+   "Incorrect: removing the role prevents User2 from submitting jobs, which breaks the requirement, and other users still read the data through the shared key. Workspace roles control workspace actions, not storage authorization."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-identity-based-service-authentication"
+ },
+ {
+  "id": "1.1.2-06",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Trey Research stores research data in an Azure Data Lake Storage Gen2 account. Each project team has POSIX ACL permissions on its own folders. You need to create an Azure Machine Learning datastore for the account. Training jobs on compute clusters must access only the folders that the submitting user can access, and the storage logs must show which user read the data.\n\nWhich configuration should you use?",
+  "choices": [
+   "An ADLS Gen2 datastore without credentials, and jobs that set the identity to user_identity",
+   "An ADLS Gen2 datastore with service principal credentials, and jobs that set no identity",
+   "An ADLS Gen2 datastore without credentials, and jobs that run as the cluster managed identity",
+   "An ADLS Gen2 datastore with service principal credentials, and jobs that set the identity to user_identity"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The identity that reaches storage decides which ACLs and RBAC roles apply and what the storage logs record. A credential-based datastore always presents its stored credential, a compute managed identity is shared by all users of the cluster, and user identity (a datastore without credentials plus identity type user_identity on the job) presents the token of each submitting user, which allows fine-grained permissions per user and auditing of storage access.",
+  "rationale": [
+   "Correct: with no stored credentials and user_identity on the job, storage access uses the Microsoft Entra token of the submitting user. The folder ACLs then apply per user, and storage logs show which identity accessed the data, which Learn lists as benefits of this mode.",
+   "Incorrect: a service principal is one shared identity whose secret is cached in the workspace, so every user reaches the same folders and the logs show the service principal. Use it when a nonhuman identity must own the access.",
+   "Incorrect: the cluster managed identity is shared by all users of the cluster, so the ACLs would be evaluated for the compute identity and the logs would not identify the user. Use it when data scientists must not have direct access to the data.",
+   "Incorrect: when a datastore has cached credentials, those credentials are used instead of the user identity, so the jobs would still authorize as the service principal. Remove the credentials when you want user identity access."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-identity-based-service-authentication"
+ },
+ {
+  "id": "1.1.2-07",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Wide World Importers has a datastore named sales_ds in an Azure Machine Learning workspace. sales_ds connects to a blob container in a storage account named stsales by using the primary account key. stsales is not the default storage account of the workspace. Security requires you to regenerate the primary key of stsales. Jobs must keep using the datastore name sales_ds. Soft delete is enabled on the key vault of the workspace.\n\nWhich three actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az storage account keys renew --resource-group rg-sales --account-name stsales --key primary`.",
+   "Run `az storage account keys list --resource-group rg-sales --account-name stsales` and copy the new primary key.",
+   "Run `ml_client.create_or_update(store)`, where store is an AzureBlobDatastore named sales_ds that uses `AccountKeyConfiguration(account_key=new_key)`.",
+   "Run `ml_client.datastores.delete(\"sales_ds\")`, and then register a new datastore named sales_ds that uses the new key.",
+   "Run `ml_client.create_or_update(store)`, where store is an AzureBlobDatastore named sales_ds that uses `SasTokenConfiguration(sas_token=new_key)`."
+  ],
+  "answer": [
+   0,
+   1,
+   2
+  ],
+  "explanation": "After you regenerate a storage account key, every credential-based datastore that uses the key must be updated: identify the affected datastores, regenerate the key, and re-register each datastore under its existing name with create_or_update and the new key. az ml workspace sync-keys is a separate step for the dependent resources of the workspace itself, such as its default storage account; without it the workspace picks up a new key of those resources after about an hour. stsales is not a dependent resource of the workspace, so only sales_ds needs the new key.",
+  "rationale": [
+   "Step 1: regenerating the key comes first because the next steps use the new key value. From this moment the old primary key stops working, so sales_ds fails until it is updated.",
+   "Step 2: keys list returns the current key values of stsales, including the regenerated primary key that the datastore needs. You can also copy the key from the Access keys page of the storage account in the Azure portal.",
+   "Step 3: create_or_update with the existing name updates the registration of sales_ds, and the new key replaces the cached credential. Learn uses this re-registration to update datastores after a key change.",
+   "Incorrect: when soft delete is enabled on the workspace key vault, re-registering a datastore under the same name after you unregister it fails, so the jobs that reference sales_ds would break. Update the existing registration instead.",
+   "Incorrect: SasTokenConfiguration expects a SAS token, not an account key, so authentication with the key value would fail. Use it when you generate a SAS token for the container."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-change-storage-access-key"
+ },
+ {
+  "id": "1.1.3-01",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel runs a few training jobs each week in an Azure Machine Learning workspace. The team does not want to create, scale, patch, or delete any compute resources. For each job, the team wants to specify only the VM size and the number of nodes.\n\nWhat should the team do?",
+  "choices": [
+   "Omit the compute property of each job and set resources on the job.",
+   "Create a compute cluster with min_instances set to 0 and reference it in each job.",
+   "Create a compute instance for each data scientist and reference it in each job.",
+   "Attach an Azure Kubernetes Service cluster as Kubernetes compute and reference it in each job."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Serverless compute is the target when a job has no compute property: Azure Machine Learning creates, scales, and manages the nodes for you. You can override the default VM size and node count with resources (instance_type and instance_count) and choose dedicated or spot VMs with queue_settings. Serverless jobs consume the same Azure Machine Learning compute quota as compute clusters.",
+  "rationale": [
+   "Correct: when compute is not specified, command, sweep, AutoML, and parallel jobs run on serverless compute, which Azure Machine Learning creates, scales, and manages. resources with instance_type and instance_count sets the VM size and node count of each job.",
+   "Incorrect: a compute cluster with min_instances 0 avoids idle charges, but the team still creates, configures, and eventually deletes the cluster. Use a named cluster when you want reusable compute with fixed settings, such as a virtual network or a managed identity.",
+   "Incorrect: a compute instance is a managed development workstation for one user that you create and manage. It can run jobs for development and testing, but it is not the option without compute management for scheduled training.",
+   "Incorrect: Kubernetes compute requires a cluster that you operate, with the Azure Machine Learning extension deployed in it. Use it when you already run Kubernetes and want to reuse it for training or inference."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-serverless-compute"
+ },
+ {
+  "id": "1.1.3-02",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Blue Yonder Airlines has an Azure Machine Learning workspace in the West Europe region. The subscription has no quota for the required GPU VM family in West Europe, but it has enough quota in East US. You need to run GPU training jobs from the existing workspace on compute that scales automatically.\n\nWhich compute should you create?",
+  "choices": [
+   "A compute cluster that has its location set to East US",
+   "A compute instance that has its location set to East US",
+   "A compute cluster in West Europe that uses the dedicated tier",
+   "A new workspace in East US that contains a compute cluster"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Compute clusters can be created in a different region than their workspace by setting location (in the SDK, the CLI YAML, or the studio form). This lets a workspace use quota in another region without moving assets or job history. Expect extra network latency and data transfer costs when the cluster, the workspace, and the datastores are in different regions.",
+  "rationale": [
+   "Correct: a compute cluster can run in a different region than the workspace, so a cluster with location set to East US uses the GPU quota there while jobs are still submitted from the existing workspace. It also autoscales between min_instances and max_instances.",
+   "Incorrect: creating compute in a different region than the workspace is available only for compute clusters, not compute instances. A compute instance is also a single-user workstation that does not scale out.",
+   "Incorrect: a cluster in West Europe uses the West Europe quota for the VM family, which is zero, so nodes cannot be allocated. Keep compute in the workspace region when that region has enough quota, to avoid cross-region latency.",
+   "Incorrect: a new workspace would solve the quota issue, but jobs would no longer run from the existing workspace with its assets and history. Create a separate regional workspace only when you need a separate environment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-attach-compute-cluster"
+ },
+ {
+  "id": "1.1.3-03",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "City Power & Light reaches the dedicated core quota for a VM family in the region of an Azure Machine Learning workspace. The workspace contains Cluster1, which uses the VM family, has min_instances set to 0, and has not run a job for two months. The workspace also contains two running compute instances, CI1 and CI2, that use the same VM family. The users must keep CI1 and CI2. You need to free quota for a new compute cluster without requesting a quota increase.\n\nWhat should you do?",
+  "choices": [
+   "Delete Cluster1.",
+   "Stop CI1 and CI2.",
+   "Set idle_time_before_scale_down for Cluster1 to 60.",
+   "Delete CI1 and CI2."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Compute instances and compute clusters share the same dedicated core quota per VM family and region. A cluster that has scaled down to zero nodes still counts its unprovisioned nodes against quota, and a stopped compute instance keeps its quota so that it can restart. Deleting compute is the way to release quota without a quota increase request.",
+  "rationale": [
+   "Correct: a cluster that scales down to zero nodes still counts its unprovisioned nodes against quota. Deleting Cluster1 removes the compute target from the workspace and releases that quota for the new cluster.",
+   "Incorrect: stopping a compute instance does not release quota, so that the instance can restart later. Stop instances to stop compute charges, not to free quota.",
+   "Incorrect: idle_time_before_scale_down controls how long idle nodes stay before the cluster scales down. Cluster1 already has zero nodes, and its unprovisioned nodes still count against quota, so the setting frees nothing.",
+   "Incorrect: deleting the instances would release their quota, but the users must keep CI1 and CI2. Delete compute instances only when nobody needs them anymore."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-attach-compute-cluster"
+ },
+ {
+  "id": "1.1.3-04",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "dropdown",
+  "stem": "Graphic Design Institute needs a compute cluster for nightly batch training in an Azure Machine Learning workspace. The cluster must meet the following requirements:\n\n- Be shared by all users of the workspace and scale out to four nodes.\n- Incur no node charges when no jobs run.\n- Release idle nodes five minutes after the last job finishes.\n- Use the lowest-cost VMs. Jobs can be restarted if nodes are preempted.\n\nHow should you complete the YAML file? To answer, select the appropriate options in the answer area.\n\n```yaml\n$schema: https://azuremlschemas.azureedge.net/latest/amlCompute.schema.json\nname: nightly-cluster\ntype: [[1]]\nsize: STANDARD_DS3_v2\nmin_instances: [[2]]\nmax_instances: 4\nidle_time_before_scale_down: [[3]]\ntier: [[4]]\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "amlcompute",
+     "computeinstance",
+     "kubernetes"
+    ],
+    "why": [
+     "Correct: amlcompute is the required type value of a compute cluster (AmlCompute), the managed, autoscaling, multinode compute that all users of the workspace can share.",
+     "Incorrect: computeinstance is the type of a compute instance, a single-user development workstation that does not autoscale to four nodes. Use it for notebooks and interactive development.",
+     "Incorrect: kubernetes is the type of an attached Kubernetes cluster that you operate yourself. Use it when you want to reuse an existing Azure Arc-enabled or AKS cluster for training or inference."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "0",
+     "1",
+     "4"
+    ],
+    "why": [
+     "Correct: min_instances 0 lets the cluster scale down to zero nodes when it is not in use, so no nodes are billed while no jobs run. 0 is also the default value.",
+     "Incorrect: a value of 1 keeps one node running even when the cluster is not in use, so it incurs charges. Use it only when jobs must start without waiting for a node to be allocated.",
+     "Incorrect: a value of 4 keeps all four nodes running permanently, which creates a fixed-size cluster. Use it only for a steady workload that keeps every node busy."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "300",
+     "5",
+     "PT5M"
+    ],
+    "why": [
+     "Correct: idle_time_before_scale_down is an integer number of seconds, so 300 releases idle nodes five minutes after the last job finishes. The default value is 120 seconds.",
+     "Incorrect: the value is in seconds, so 5 releases idle nodes after five seconds, not five minutes. The next job would then often wait for new nodes to be allocated.",
+     "Incorrect: PT5M is an ISO 8601 duration, the format that the REST API and ARM templates use for the idle shutdown of a compute instance. The cluster YAML property takes an integer number of seconds."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "low_priority",
+     "dedicated"
+    ],
+    "why": [
+     "Correct: low_priority VMs use spare Azure capacity at a reduced cost, and Azure can preempt them. The jobs can be restarted, so the lower price fits the requirements.",
+     "Incorrect: dedicated is the default tier, with nodes that are not preempted, at a higher price. Use it when jobs cannot tolerate interruption."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "explanation": "A compute cluster (type amlcompute) autoscales between min_instances and max_instances. Set min_instances to 0 to avoid charges while idle, use idle_time_before_scale_down (in seconds) to control how long idle nodes stay, and choose tier low_priority for cheaper, preemptible nodes or dedicated for nodes that are not preempted.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-compute-aml"
+ },
+ {
+  "id": "1.1.3-05",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Lucerne Publishing has an Azure Machine Learning workspace that contains the following compute:\n\n- Cluster1: a compute cluster that uses the dedicated tier, has min_instances set to 2, and runs production retraining jobs that must not be interrupted.\n- CI1: a compute instance that User1 uses at irregular hours, including late evenings, and often leaves running after work is finished.\n\nYou need to reduce compute costs for the time when the resources are not in use.\n\nWhich two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Set min_instances for Cluster1 to 0.",
+   "Enable idle shutdown on CI1 with an idle period of 30 minutes.",
+   "Change the tier of Cluster1 to low_priority.",
+   "Add a schedule that stops CI1 every day at 6:00 PM.",
+   "Change the VM size of CI1 to a smaller size."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Idle cost has a different fix for each compute type. A compute cluster scales down to zero nodes only when min_instances is 0. A compute instance stops on inactivity with idle shutdown, or at fixed times with up to four start and stop schedules. A low-priority tier saves money only when jobs can tolerate preemption.",
+  "rationale": [
+   "Correct: with min_instances set to 2, two nodes stay allocated and billed even when no job runs. Setting it to 0 lets Cluster1 scale down to zero nodes when idle, while jobs still get dedicated nodes when they run.",
+   "Correct: idle shutdown stops CI1 after the set period without Jupyter kernels, terminals, jobs, VS Code connections, or custom applications, so it works for irregular hours. The idle period can be between 15 minutes and three days.",
+   "Incorrect: low-priority VMs cost less but can be preempted, which breaks the requirement that retraining jobs are not interrupted. Use low_priority for jobs that can be restarted.",
+   "Incorrect: a fixed stop time does not fit irregular working hours. CI1 still runs idle during the day, and the shutdown can arrive while User1 works late. Use schedules when working hours are predictable.",
+   "Incorrect: the VM size of a compute instance cannot be changed after the instance is created, and a smaller instance would still run idle. Choose the size when you create the instance."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-compute-instance"
+ },
+ {
+  "id": "1.1.3-06",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Southridge Video has an Azure Machine Learning compute cluster named gpu-cluster that has min_instances set to 0. Since last week, jobs stay queued and the node state of the cluster shows resizing from 0 to 0 nodes. The subscription has enough quota for the VM family, and the VM size is available in the region. Last week, an administrator applied a CanNotDelete lock to the resource group that contains the workspace.\n\nWhat should you do to resolve the issue?",
+  "choices": [
+   "Move the lock from the resource group to individual resources.",
+   "Change the lock on the resource group from CanNotDelete to ReadOnly.",
+   "Set min_instances for gpu-cluster to 1 so that one node stays allocated.",
+   "Recreate gpu-cluster in a different region by setting its location."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Azure resource locks can block operations that do not look like changes. A delete or read-only lock on the resource group that contains the workspace, or on the resource group of its virtual network, can prevent compute cluster creation, scaling, and deletion, which often appears as a cluster stuck at resizing. Lock individual resources instead, but not the network security group, public IP address, and load balancer that the cluster uses for scaling.",
+  "rationale": [
+   "Correct: a delete lock on the resource group of the workspace prevents the scaling operations of compute clusters, which appears as resizing from 0 to 0. Learn recommends removing the lock from the resource group and applying it to individual resources instead.",
+   "Incorrect: a ReadOnly lock is stricter than CanNotDelete, and Learn warns that both lock types on the resource group can prevent cluster creation, scaling, and deletion. Use ReadOnly only on resources that must not change.",
+   "Incorrect: allocating a node is itself a scaling operation, which the lock still blocks, and an always-allocated node adds cost. Set min_instances above 0 only to keep warm nodes for jobs that must start quickly.",
+   "Incorrect: quota and VM availability are fine, so the region is not the cause, and a cluster in another region adds latency and data transfer costs. Use a different region when the workspace region lacks quota."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-attach-compute-cluster"
+ },
+ {
+  "id": "1.1.3-07",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Wingtip Toys has a compute instance named CI1 in an Azure Machine Learning workspace. CI1 has a system-assigned managed identity that has the Storage Blob Data Reader role on a storage account. Idle shutdown on CI1 is set to 30 minutes. Users report that CI1 keeps running overnight, although no notebooks, terminals, jobs, VS Code connections, or custom applications are active.\n\nWhat should you do?",
+  "choices": [
+   "Assign the Contributor role on the workspace to the managed identity of CI1.",
+   "Assign the Storage Blob Data Contributor role on the storage account to the managed identity of CI1.",
+   "Assign the AzureML Compute Operator role on the workspace to the user of CI1.",
+   "Reduce the idle shutdown period of CI1 from 30 minutes to 10 minutes."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Idle shutdown stops a compute instance after it has no Jupyter kernels, terminals, Azure Machine Learning jobs, VS Code connections, or custom applications for the configured period, which must be between 15 minutes and three days. If the compute instance has a managed identity, that identity also needs contributor access to the workspace, or the instance does not shut down due to inactivity.",
+  "rationale": [
+   "Correct: when a compute instance with a managed identity is configured for idle shutdown, it does not shut down due to inactivity unless the managed identity has contributor access to the workspace. The Contributor role on the workspace removes that blocker.",
+   "Incorrect: Storage Blob Data Contributor lets the identity write blob data. It controls what the identity can do with data, not whether the instance can shut itself down. Assign it when code on CI1 must write to the storage account.",
+   "Incorrect: AzureML Compute Operator lets a person create, manage, and delete compute, but idle shutdown depends on the access of the managed identity of CI1, not on the role of a user. Assign it to people who administer compute.",
+   "Incorrect: a compute instance must be inactive for at least 15 minutes, so 10 minutes is below the allowed range, and the instance would still not stop without the role assignment. Choose a value between 15 minutes and three days."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-compute-instance"
+ },
+ {
+  "id": "1.1.4-01",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "series": "S-ws",
+  "stem": "Proseware, Inc. has an Azure Machine Learning workspace named mlw-sales. User1 must be able to create, start, stop, and delete compute instances and compute clusters, submit training jobs, and register models in mlw-sales. User1 must not be able to change the workspace settings, delete the workspace, or manage role assignments. You need to grant access by following the principle of least privilege.\n\nSolution: You assign the AzureML Data Scientist role on mlw-sales to User1.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "AzureML Data Scientist covers experimentation (jobs, models, data, environments) but not creating or deleting compute or changing the workspace. AzureML Compute Operator covers compute resources only. Assigning both gives self-service compute plus experimentation without rights on the workspace resource or on access management, which is narrower than Contributor or Owner.",
+  "rationale": [
+   "Incorrect: AzureML Data Scientist allows all actions in the workspace except creating or deleting compute resources and modifying the workspace itself. User1 could submit jobs and register models but could not create or delete compute instances and clusters.",
+   "Correct: the solution does not meet the goal because the compute requirement is missing. Add AzureML Compute Operator, or assign AzureML Data Scientist alone to users who only use compute that already exists."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-assign-roles"
+ },
+ {
+  "id": "1.1.4-02",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "series": "S-ws",
+  "stem": "Proseware, Inc. has an Azure Machine Learning workspace named mlw-sales. User1 must be able to create, start, stop, and delete compute instances and compute clusters, submit training jobs, and register models in mlw-sales. User1 must not be able to change the workspace settings, delete the workspace, or manage role assignments. You need to grant access by following the principle of least privilege.\n\nSolution: You assign the AzureML Data Scientist role and the AzureML Compute Operator role on mlw-sales to User1.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "AzureML Data Scientist covers experimentation (jobs, models, data, environments) but not creating or deleting compute or changing the workspace. AzureML Compute Operator covers compute resources only. Assigning both gives self-service compute plus experimentation without rights on the workspace resource or on access management, which is narrower than Contributor or Owner.",
+  "rationale": [
+   "Correct: Learn suggests combining AzureML Data Scientist and AzureML Compute Operator so that a user can run experiments while creating compute in a self-service manner. Neither role allows modifying or deleting the workspace or changing role assignments.",
+   "Incorrect: the solution meets the goal. No would be right if User1 also had to grant other users access to the workspace, which requires the Owner role or a role that allows role assignment changes."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-assign-roles"
+ },
+ {
+  "id": "1.1.4-03",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "series": "S-ws",
+  "stem": "Proseware, Inc. has an Azure Machine Learning workspace named mlw-sales. User1 must be able to create, start, stop, and delete compute instances and compute clusters, submit training jobs, and register models in mlw-sales. User1 must not be able to change the workspace settings, delete the workspace, or manage role assignments. You need to grant access by following the principle of least privilege.\n\nSolution: You assign the Contributor role on mlw-sales to User1.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "AzureML Data Scientist covers experimentation (jobs, models, data, environments) but not creating or deleting compute or changing the workspace. AzureML Compute Operator covers compute resources only. Assigning both gives self-service compute plus experimentation without rights on the workspace resource or on access management, which is narrower than Contributor or Owner.",
+  "rationale": [
+   "Incorrect: Contributor allows User1 to create compute, submit jobs, and register models, but the Azure built-in Contributor role grants full access to manage all resources except role assignments, so User1 could also change and delete the workspace resource itself, which the requirements forbid and which exceeds least privilege.",
+   "Correct: the solution does not meet the goal because Contributor grants more than User1 needs. The built-in AzureML roles, AzureML Data Scientist with AzureML Compute Operator, cover the requirements more narrowly."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-assign-roles"
+ },
+ {
+  "id": "1.1.4-04",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "VanArsdel, Ltd. adds four users to an Azure Machine Learning workspace. Each user must receive the built-in role that meets the requirement with the least privilege.\n\nWhich role should you assign to each user? To answer, drag the appropriate roles to the correct users. Each role may be used once, more than once, or not at all.",
+  "choices": [
+   "AzureML Compute Operator",
+   "AzureML Data Scientist",
+   "AzureML Registry User",
+   "Contributor",
+   "Owner",
+   "Reader"
+  ],
+  "targets": [
+   "User1: creates, stops, and deletes compute instances and compute clusters, and does nothing else in the workspace",
+   "User2: submits training jobs and registers models by using existing compute",
+   "User3: reviews jobs, models, and other assets without changing them",
+   "User4: grants and removes workspace access for other users"
+  ],
+  "answer": [
+   0,
+   1,
+   5,
+   4
+  ],
+  "rationale": [
+   "User1 needs only compute management. AzureML Compute Operator can create, manage, delete, and access compute resources in a workspace and nothing else, which is narrower than Contributor.",
+   "User2 runs experiments on existing compute. AzureML Data Scientist allows all workspace actions except creating or deleting compute and modifying the workspace, so it fits without extra rights.",
+   "User3 needs read-only access. Reader can list and view assets in the workspace but cannot create or update them. Reader can also view datastore credentials, which matters for credential-based datastores.",
+   "User4 must change role assignments, which among these roles only Owner allows. Contributor can create and delete assets but cannot change role assignments."
+  ],
+  "notes": [
+   "AzureML Compute Operator: creates, manages, deletes, and accesses compute resources in a workspace. Use it for people who administer compute, alone or together with AzureML Data Scientist.",
+   "AzureML Data Scientist: all actions in a workspace except creating or deleting compute and modifying the workspace. Use it for data scientists who run jobs and manage assets.",
+   "AzureML Registry User: reads, writes, and deletes assets in Azure Machine Learning registries, without creating or deleting registries. Assign it on a registry resource, not on a workspace.",
+   "Contributor: views, creates, edits, or deletes assets in a workspace, including compute and deployments, but cannot change role assignments. Use it for workspace administrators.",
+   "Owner: full access to the workspace, including changing role assignments. Use it for the people who manage access to the workspace.",
+   "Reader: read-only actions in the workspace, including viewing datastore credentials. Use it for reviewers who must not change anything."
+  ],
+  "explanation": "The built-in workspace roles range from Reader (view only) through AzureML Data Scientist (experimentation without compute or workspace changes) and AzureML Compute Operator (compute only) to Contributor (all assets, including compute) and Owner (adds role assignments). Pick the narrowest role for each task, and combine two narrow roles when one user needs both scopes. Registries have their own AzureML Registry User role.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-assign-roles"
+ },
+ {
+  "id": "1.1.4-05",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Contoso, Ltd. stores confidential training data in a blob container. A datastore named conf_ds in an Azure Machine Learning workspace points to the container and stores no credentials. Data scientists must not have any role on the storage account, but their training jobs must read conf_ds. You need to create a compute cluster named cpu-cluster and run the training job that is defined in the job.yml file. job.yml targets cpu-cluster, references conf_ds, and has no identity property. The Azure CLI defaults for the workspace and resource group are configured.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az ml compute create --file cluster.yml`, where cluster.yml defines cpu-cluster with `identity: type: system_assigned`.",
+   "Run `az ml compute show --name cpu-cluster --query identity` and note the principal ID.",
+   "Run `az role assignment create --assignee <principal-id> --role \"Storage Blob Data Reader\" --scope <storage-account-id>`.",
+   "Run `az ml job create --file job.yml`.",
+   "Add `identity: type: user_identity` to job.yml, and then run `az ml job create --file job.yml`.",
+   "Run `az role assignment create --assignee <principal-id> --role \"AzureML Data Scientist\" --scope <workspace-id>`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "To let jobs read data that users cannot read directly, enable a managed identity on the compute, grant that identity a storage data role such as Storage Blob Data Reader, and use an identity-based datastore. When a job sets no identity and the datastore has no cached credentials, the compute managed identity is used for data access.",
+  "rationale": [
+   "Step 1: the cluster needs a managed identity before you can grant it access. A system-assigned identity is created with the cluster and appears in Microsoft Entra ID as <workspace-name>/computes/cpu-cluster.",
+   "Step 2: az ml compute show with --query identity returns the identity configuration of the cluster, including the principal ID that the role assignment in the next step needs.",
+   "Step 3: identity-based data access requires at least Storage Blob Data Reader on the storage account. Granting it to the cluster identity instead of the users keeps the data scientists without any storage role.",
+   "Step 4: when the job sets no identity and conf_ds has no cached credentials, the compute managed identity is used, so the job reads conf_ds through the role from step 3.",
+   "Incorrect: user_identity makes the job use the token of the submitting data scientist, who has no role on the storage account, so data access fails. Use user identity when each user has their own data permissions.",
+   "Incorrect: AzureML Data Scientist is a workspace role for people who run experiments. It grants no access to blob data in the storage account, so the job still cannot read conf_ds. Grant storage data roles for data access."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-identity-based-service-authentication"
+ },
+ {
+  "id": "1.1.4-06",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Consolidated Messenger creates an Azure Machine Learning workspace and, on the same day, a compute cluster named train-cluster that has a system-assigned managed identity. The container registry of the workspace is created later, when the first training job that uses a custom environment builds an image. To comply with company policy, an administrator then disables the admin user of the registry. The next training job fails because train-cluster cannot pull the image from the registry.\n\nWhat should you do?",
+  "choices": [
+   "Assign the AcrPull role on the workspace container registry to the managed identity of train-cluster.",
+   "Assign the AcrPull role on the workspace container registry to the user who submits the job.",
+   "Assign the Storage Blob Data Reader role on the workspace storage account to the managed identity of train-cluster.",
+   "Assign the AzureML Compute Operator role on the workspace to the managed identity of train-cluster."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Compute clusters use their managed identity to pull Docker images from the container registry of the workspace, which matters when the registry admin user is disabled. The compute identity gets the AcrPull role automatically when the registry already exists. If the compute was created before the workspace registry existed, or the image is in a separate private registry, assign AcrPull to the compute identity yourself.",
+  "rationale": [
+   "Correct: with the admin user disabled, the cluster pulls images by using its managed identity. That identity normally receives AcrPull on the workspace registry automatically, but train-cluster existed before the registry, so you must assign AcrPull manually.",
+   "Incorrect: the image pull runs on the cluster nodes with the compute identity, not with the identity of the user who submits the job. Grant registry roles to users only when they pull images themselves.",
+   "Incorrect: Storage Blob Data Reader lets the cluster identity read blob data, for example through an identity-based datastore. It grants no access to images in the container registry.",
+   "Incorrect: AzureML Compute Operator is a workspace role that allows managing compute resources. It grants no permission on the container registry, so the image pull still fails."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-identity-based-service-authentication"
+ },
+ {
+  "id": "1.1.4-07",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "First Up Consultants created an Azure Machine Learning workspace named mlw-ops in 2023. The system-assigned managed identity of mlw-ops has the Contributor role on the resource group of the workspace. A security review requires the identity to use the narrower built-in role that new workspaces assign to their identity, without breaking the workspace.\n\nWhich command should you run?",
+  "choices": [
+   "`az ml workspace update --name mlw-ops --resource-group rg-ops --allow-roleassignment-on-rg true`",
+   "`az ml workspace update --name mlw-ops --resource-group rg-ops --update-dependent-resources`",
+   "`az role assignment create --role \"AzureML Data Scientist\" --assignee <identity-id> --resource-group rg-ops`",
+   "`az role assignment create --role \"Reader\" --assignee <identity-id> --resource-group rg-ops`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The system-assigned managed identity of a workspace accesses the associated storage account, key vault, container registry, and Application Insights resource. Workspaces created after 2024-11-19 assign it the Azure AI Administrator role, which is narrower than the Contributor role on the resource group that older workspaces received. Convert an older workspace with --allow-roleassignment-on-rg in the CLI or allow_roleassignment_on_rg in the Python SDK.",
+  "rationale": [
+   "Correct: for workspaces created before 2024-11-19, az ml workspace update with --allow-roleassignment-on-rg true converts the workspace identity to the Azure AI Administrator role, the narrower role that new workspaces use. It requires ml extension 2.27.0 or later.",
+   "Incorrect: --update-dependent-resources gives your consent to update the dependent resources of the workspace, such as its container registry or Application Insights resource. It does not change the role of the workspace identity.",
+   "Incorrect: adding a role leaves the Contributor assignment in place, so the identity is not narrowed. AzureML Data Scientist is also a role for people who run experiments, not for the identity that manages the associated resources.",
+   "Incorrect: adding Reader leaves the Contributor assignment in place, and Reader alone would not let the identity manage the associated resources. Use Reader for people who only review resources."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-assign-roles"
+ }
+]

@@ -1,0 +1,1261 @@
+[
+ {
+  "id": "3.1.1-01",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "order",
+  "stem": "Trey Research needs a Microsoft Foundry project named proj-research for a new agent prototype. Azure CLI version 2.80.0 is installed, and you are signed in to Azure. No resource group exists yet. You must create the environment by using only Azure CLI commands and confirm that the project is provisioned.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az group create --name rg-research --location eastus`.",
+   "Run `az cognitiveservices account create --name foundry-research --resource-group rg-research --kind AIServices --sku S0 --location eastus --custom-domain foundry-research --assign-identity --allow-project-management true`.",
+   "Run `az cognitiveservices account project create --name foundry-research --resource-group rg-research --project-name proj-research --location eastus`.",
+   "Run `az cognitiveservices account project show --name foundry-research --resource-group rg-research --project-name proj-research --query properties.provisioningState --output tsv`.",
+   "Run `az extension add --name ml`.",
+   "Run `az cognitiveservices account create --name foundry-research --resource-group rg-research --kind OpenAI --sku S0 --location eastus --custom-domain foundry-research`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A Foundry project is a child resource (Microsoft.CognitiveServices/accounts/projects) of a Foundry resource of kind AIServices. The resource needs a managed identity and project management before az cognitiveservices account project create can succeed. Checking provisioningState on the project is the documented way to confirm the setup.",
+  "rationale": [
+   "Step 1: the Foundry resource and its project are created inside a resource group, so the group must exist before any resource command can target it. Learn creates the group first and verifies that its provisioning state is Succeeded.",
+   "Step 2: a Foundry resource has the kind AIServices. --assign-identity creates the managed identity that project management requires, --allow-project-management enables projects, and --custom-domain sets the globally unique subdomain for Microsoft Entra ID authentication.",
+   "Step 3: az cognitiveservices account project create adds the project as a child resource of the Foundry resource, which must already exist. The first project on a resource becomes its default project.",
+   "Step 4: az cognitiveservices account project show with --query properties.provisioningState returns Succeeded when the project is provisioned, which confirms that the environment is ready.",
+   "Incorrect: the ml extension adds the az ml commands for Azure Machine Learning workspaces and hub-based projects. The az cognitiveservices account project commands are part of the core Azure CLI from version 2.80.0, so no extension is needed.",
+   "Incorrect: the kind OpenAI creates a standalone Azure OpenAI resource. Learn's upgrade path to a Foundry resource changes the kind from OpenAI to AIServices and enables project management, so projects need AIServices. This command also creates no managed identity."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/create-projects"
+ },
+ {
+  "id": "3.1.1-02",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "dropdown",
+  "stem": "Fabrikam, Inc. automates environment setup with the azure-mgmt-cognitiveservices package. A Python script must create a Microsoft Foundry resource and then its first project. Project creation must not fail because the resource lacks a managed identity, and the script must not depend on a separately created identity resource.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nresource = client.accounts.begin_create(\n    resource_group_name=rg_name,\n    account_name=foundry_name,\n    account={\n        \"location\": location,\n        \"kind\": [[1]],\n        \"sku\": {\"name\": \"S0\"},\n        \"identity\": {\"type\": [[2]]},\n        \"properties\": {\n            [[3]]: True,\n            \"customSubDomainName\": foundry_name,\n        },\n    },\n)\nresource.result()\n\nproject = client.[[4]].begin_create(\n    resource_group_name=rg_name,\n    account_name=foundry_name,\n    project_name=project_name,\n    project={\"location\": location, \"identity\": {\"type\": \"SystemAssigned\"}, \"properties\": {}},\n)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "\"OpenAI\"",
+     "\"AIServices\"",
+     "\"CognitiveServices\""
+    ],
+    "why": [
+     "Incorrect: the OpenAI kind creates a standalone Azure OpenAI resource. Learn upgrades such a resource to a Foundry resource by changing the kind to AIServices and enabling project management, so projects need AIServices. Use OpenAI only for a standalone Azure OpenAI resource.",
+     "Correct: a Foundry resource is a Cognitive Services account of kind AIServices. Only this kind supports allowProjectManagement and hosts Foundry projects as child resources.",
+     "Incorrect: CognitiveServices is the older multi-service kind. Learn creates every Foundry resource, the parent of Foundry projects, with the kind AIServices, so use AIServices when the resource must host projects."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "\"None\"",
+     "\"UserAssigned\"",
+     "\"SystemAssigned\""
+    ],
+    "why": [
+     "Incorrect: without a managed identity on the resource, project creation fails with an error that a managed identity must be enabled. None suits resources that never call other services.",
+     "Incorrect: UserAssigned needs a userAssignedIdentities map that names an existing identity resource, which the script must not depend on. Use it when one identity must be created and authorized in advance, for example for customer-managed keys.",
+     "Correct: SystemAssigned creates the managed identity together with the resource, which project management requires. Learn uses this identity type in its Python sample."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "\"allowProjectManagement\"",
+     "\"disableLocalAuth\"",
+     "\"restrictOutboundNetworkAccess\""
+    ],
+    "why": [
+     "Correct: allowProjectManagement set to True enables Foundry projects on the resource, so the projects.begin_create call that follows can succeed.",
+     "Incorrect: disableLocalAuth turns off API key authentication. It is a good production setting, but it does not enable projects, so project creation would still fail.",
+     "Incorrect: restrictOutboundNetworkAccess restricts outbound network access from the account. It is a network control and does not enable project management."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "accounts",
+     "projects"
+    ],
+    "why": [
+     "Incorrect: client.accounts manages the Foundry resource itself, which the first call already created. Projects are child resources with their own operations group.",
+     "Correct: client.projects.begin_create creates a project under the account named in account_name. The first project on the resource becomes the default project."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   2,
+   0,
+   1
+  ],
+  "explanation": "The management SDK mirrors the resource model: client.accounts creates the Foundry resource (kind AIServices, a managed identity, allowProjectManagement, and a custom subdomain), and client.projects creates projects under it. Missing the identity or project management makes project creation fail.",
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/create-projects"
+ },
+ {
+  "id": "3.1.1-03",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Wingtip Toys has a Microsoft Foundry resource named Foundry1. The first project that was created on Foundry1 is named Project1. A second project named Project2 was created later on Foundry1.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Developers can run OpenAI fine-tuning jobs in Project2.",
+   "Developers can build agents and run evaluations in Project2.",
+   "If Project1 is deleted, the next project that is created on Foundry1 becomes the default project."
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "The first project on a Foundry resource is its default project. Agent, evaluation, tracing, dataset, and index features work in every project, but OpenAI Batch, fine-tuning, and stored completions work only in the default project. When the default project is deleted, the next project you create becomes the default.",
+  "rationale": [
+   "No: OpenAI Batch, fine-tuning, and stored completions are available only in the default project, which is the first project on the resource. Run fine-tuning in Project1, or use a separate Foundry resource when a team needs its own fine-tuning.",
+   "Yes: agents, evaluations, tracing, datasets, indexes, and connections are supported in every project on a Foundry resource, not only in the default project.",
+   "Yes: Learn states that if you delete the default project of a Foundry resource, the next project created becomes the default project. Plan the order in which you create projects when a team needs default-project features."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/create-projects"
+ },
+ {
+  "id": "3.1.1-04",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. creates a Microsoft Foundry resource by running az cognitiveservices account create with --custom-domain contoso-ai. The command fails with the error CustomDomainInUse. Developers must authenticate to the resource by using Microsoft Entra ID.\n\nWhat should you do?",
+  "choices": [
+   "Run the command again in a different Azure region",
+   "Run the command again with a different --name value only",
+   "Run the command again with a different --custom-domain value",
+   "Run the command again without the --custom-domain parameter"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The custom subdomain becomes part of the endpoint of the Foundry resource and must be globally unique. Microsoft Entra ID token authentication requires a custom subdomain, so the fix for CustomDomainInUse is to pick another subdomain, not to drop it.",
+  "rationale": [
+   "Incorrect: the custom subdomain must be globally unique, not unique per region, so the same value fails in every region. Choose a region for model or feature availability, not to resolve a name conflict.",
+   "Incorrect: the error refers to the custom domain, which is the CNAME source of the endpoint. Changing only the resource name keeps the conflicting --custom-domain value, so the command fails again.",
+   "Correct: --custom-domain must be globally unique. If the value is taken, the command fails with CustomDomainInUse, and Learn says to choose a different name and run the command again.",
+   "Incorrect: token-based Microsoft Entra ID authentication requires a custom subdomain on the Foundry resource, so omitting it breaks the authentication requirement."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/create-projects"
+ },
+ {
+  "id": "3.1.1-05",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A data scientist at Adventure Works Cycles runs az cognitiveservices account project create to add a project to an existing Microsoft Foundry resource. The command fails with the message 'project' is misspelled or not recognized by the system. The user is signed in and has the Contributor role on the resource group.\n\nWhat should you do first?",
+  "choices": [
+   "Upgrade the Azure CLI to version 2.80.0 or later",
+   "Install the ml extension by running az extension add --name ml",
+   "Register the Microsoft.CognitiveServices resource provider",
+   "Sign in again by running az login --use-device-code"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The az cognitiveservices account project command group was added in Azure CLI 2.80.0. A parser message that a command is not recognized points to the local CLI version, not to permissions or the subscription.",
+  "rationale": [
+   "Correct: version 2.80.0 of the Azure CLI added the az cognitiveservices account project commands. Earlier versions fail with unrecognized arguments or a message that project is not recognized. Check with az version and run az upgrade.",
+   "Incorrect: the ml extension provides az ml commands for Azure Machine Learning workspaces and hub-based projects. Foundry projects are managed by the core az cognitiveservices command group, so the extension does not add the missing command.",
+   "Incorrect: registering a resource provider fixes deployment errors that say the subscription is not registered for a namespace. This message comes from the CLI before any request reaches Azure.",
+   "Incorrect: a missing or expired sign-in produces an authentication error, not a parser message about an unknown command. Use az login when commands fail with credential errors."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/tutorials/quickstart-create-foundry-resources"
+ },
+ {
+  "id": "3.1.1-06",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Northwind Traders has a Microsoft Foundry resource named foundry-nw that a script created with project management enabled but without any identity settings. When you run az cognitiveservices account project create for foundry-nw, the command fails with an error that a managed identity must be enabled on the resource.\n\nWhat should you do before you run the command again?",
+  "choices": [
+   "Add the --assign-identity parameter to the project create command",
+   "Run az cognitiveservices account identity assign for foundry-nw",
+   "Assign the Foundry Account Owner role to your account on foundry-nw",
+   "Upgrade the Azure CLI to version 2.80.0 or later"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Project management needs a managed identity on the parent Foundry resource. For a new resource, add --assign-identity to az cognitiveservices account create; for an existing resource, az cognitiveservices account identity assign generates a system-assigned identity. Project management itself cannot be changed after the resource is created, so it must be set at creation.",
+  "rationale": [
+   "Incorrect: --assign-identity on project create controls the identity of the project itself. The error refers to the parent Foundry resource, which still has no managed identity, so project creation fails again.",
+   "Correct: project management requires a managed identity on the Foundry resource. az cognitiveservices account identity assign generates and assigns a system-assigned identity to an existing resource.",
+   "Incorrect: a missing role causes an authorization error, not a message about a managed identity. Foundry Account Owner lets a user create resources and projects, which helps when the error is AuthorizationFailed.",
+   "Incorrect: an old CLI version fails with an unrecognized command or argument. This error comes from the service after it accepted the request, so the CLI version is not the cause."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/create-projects"
+ },
+ {
+  "id": "3.1.1-07",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud runs a shared Microsoft Foundry resource that has one project per team for experimentation. A customer service agent is moving to production. The production workload must have independent access control and its own quota and cost boundary, and quota exhaustion by the experimentation teams must not affect it.\n\nWhat should you do?",
+  "choices": [
+   "Create a new project for the agent on the shared Foundry resource and assign roles at the project scope",
+   "Move the project of the agent to a new resource group in the same subscription",
+   "Create a hub-based project for the agent that connects to the shared Foundry resource",
+   "Create a dedicated Foundry resource for the production workload that has one primary project"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "One Foundry resource with many projects (co-location) suits experimentation and shared deployments, but every project shares the blast radius and quota of the parent. For production, Learn treats isolation as the default: one Foundry resource per production workload boundary.",
+  "rationale": [
+   "Incorrect: projects give project-level RBAC and organize assets, but they share deployments, quota, and the blast radius of the parent resource. Co-location fits experimentation, not a workload that needs its own quota boundary.",
+   "Incorrect: a project is a child resource of its Foundry resource, so it stays tied to the shared resource and its quota. Resource groups organize resources and permissions; they do not separate quota.",
+   "Incorrect: a hub-based project that connects to the shared resource still uses the deployments and quota of that resource. Hub-based projects are the classic project type; use one only for capabilities that still require a hub.",
+   "Correct: Learn recommends one Foundry resource per production workload boundary when a workload needs operational containment, independent access control, and independent quota or cost boundaries. The tradeoff is more resources to manage."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/planning"
+ },
+ {
+  "id": "3.1.1-08",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lucerne Publishing uses the standard agent setup. The Foundry resource has capability settings that point to a storage account named st1, and a project named Project1 inherits them. You change the capability settings of the account to point to a new storage account named st2. Agents in Project1 must store files in st2.\n\nWhat should you do?",
+  "choices": [
+   "Redeploy Project1 with capabilitySettings that reference st2 in the Bicep file",
+   "Edit the storage connection that Agent Service created in Project1 to target st2",
+   "Delete Project1 and create it again so that it resolves the new settings",
+   "Redeploy the Foundry resource so that Project1 picks up the new defaults"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Capability settings on the account are defaults that a project inherits when it is created. Changing the account later does not update existing projects, project capability settings can be set only at create time, and the connections they create are immutable while in use. To switch a store, recreate the project.",
+  "rationale": [
+   "Incorrect: project capabilitySettings are settable only at create time, and updating capability settings on an existing project is not supported. A redeploy of the existing project cannot switch it to st2.",
+   "Incorrect: connections that capability settings create are immutable while in use, so you cannot edit or delete them directly. Edit ordinary project connections only when capability settings do not manage them.",
+   "Correct: changing account defaults does not update existing projects, and capability settings of a project cannot be updated. Delete the project and recreate it, so that it inherits st2 or overrides the store explicitly.",
+   "Incorrect: a project inherits account defaults when it is created. Redeploying the account later does not update projects that already exist, so Project1 keeps using st1."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/standard-agent-setup"
+ },
+ {
+  "id": "3.1.1-09",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys has a Microsoft Foundry resource that contains five projects. Agents in every project must query the same Azure AI Search service. You need to configure access to the search service and minimize administrative effort as new projects are added.\n\nWhat should you do?",
+  "choices": [
+   "Create one connection to the search service on the Foundry resource",
+   "Create one connection to the search service in each of the projects",
+   "Create one connection to the search service in the default project",
+   "Create a hub that holds one shared connection to the search service"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Connections can live on the parent Foundry resource or on a single project, depending on the isolation scope you need. Parent-level connections are available to all projects, so a shared dependency is configured once.",
+  "rationale": [
+   "Correct: connections can be created at the parent Foundry resource level or at the project level. Connections at the parent level are available to all projects, including projects that are added later.",
+   "Incorrect: project-level connections work, but you repeat the setup in five projects and again for every new project. Use project connections when only one project may use the target resource.",
+   "Incorrect: a connection in the default project is scoped to that project and is not shared with the other projects. The default project differs only in the OpenAI and fine-tuning features it supports.",
+   "Incorrect: a hub shares its connections with the hub-based projects under it, but Learn states that a Foundry project does not use a hub. The five projects are child resources of the Foundry resource, so a hub connection does not reach them."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/planning"
+ },
+ {
+  "id": "3.1.1-10",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank has a Microsoft Foundry resource that contains two projects. The projects already use connections to Azure Storage, Azure AI Search, and an API key target. A new policy requires connection secrets to be stored in a company key vault named kv-wgb instead of the managed key vault. You add an Azure Key Vault connection for kv-wgb to the Foundry resource.\n\nWhat should you do next?",
+  "choices": [
+   "Add an Azure Key Vault connection for kv-wgb to each of the projects as well",
+   "Re-create the existing connections so that their secrets are stored in kv-wgb",
+   "Rotate the keys of the connected resources so that new secrets move to kv-wgb",
+   "Delete the managed key vault from the subscription to force a secret migration"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Foundry stores connection secrets in a managed key vault unless you add your own Azure Key Vault connection. Only one Key Vault connection is allowed per Foundry resource, and existing secrets are not migrated, so connections must be re-created after you attach the vault.",
+  "rationale": [
+   "Incorrect: a Foundry resource supports only one Azure Key Vault connection at a time, and its projects use that connection. Adding more Key Vault connections is not supported.",
+   "Correct: secret migration from the managed key vault is not supported. After you attach your own key vault, re-create the connections so that their secrets are written to kv-wgb.",
+   "Incorrect: rotating keys on the target resources does not move existing connection secrets, because Foundry does not migrate secrets between vaults. Rotate keys when a credential is exposed.",
+   "Incorrect: the managed key vault that Foundry uses is not shown in your subscription, so you cannot delete it. Deleting a key vault that connections depend on breaks the Foundry resource."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/connections-add"
+ },
+ {
+  "id": "3.1.1-11",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "case": "C-d",
+  "stem": "You need to recommend how Fraud-Analysts should run fine-tuning. The solution must meet the fraud analytics requirements.\n\nWhat should you recommend?",
+  "choices": [
+   "Create a project named proj-fraud on foundry-claims and assign Fraud-Analysts the Foundry User role on it",
+   "Create proj-fraud on foundry-claims before the other projects so that it becomes the default project",
+   "Create a hub-based project for Fraud-Analysts that fine-tunes through a connection to foundry-claims",
+   "Create a separate Foundry resource for the fraud workload and fine-tune in its default project"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Fine-tuning and OpenAI batch processing operate at the Foundry resource scope and run only in the default project, so separate projects on one resource do not isolate their files. When workloads need independent access to files of resource-scoped capabilities, use separate Foundry resources.",
+  "rationale": [
+   "Incorrect: OpenAI fine-tuning is available only in the default project of a Foundry resource, so a third project on foundry-claims cannot run it. Project-level roles also do not isolate files of resource-scoped capabilities.",
+   "Incorrect: as the default project, proj-fraud could run fine-tuning, but fine-tuning files are resource-scoped. Separate projects on foundry-claims do not provide file isolation from the triage and intake workloads.",
+   "Incorrect: Learn states that fine-tuning jobs in a hub-based project run implicitly on the connected Foundry resource, in its default project context. The training files would still land in foundry-claims, which the triage and intake workloads share. Hub-based projects are the classic project type.",
+   "Correct: fine-tuning operates at the Foundry resource scope and runs only in the default project. When workloads need independent access to such files, Learn says to use separate Foundry resources instead of separate projects."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/planning"
+ },
+ {
+  "id": "3.1.2-01",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Litware, Inc. must create a Microsoft Foundry resource named foundry-lit that encrypts data at rest with a customer-managed key named cmk1 in a key vault named kv-lit. kv-lit uses the Azure role-based access control permission model and has soft delete and purge protection enabled. foundry-lit must use its system-assigned managed identity to access the key.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az cognitiveservices account create --name foundry-lit --resource-group rg-lit --location westeurope --kind AIServices --sku S0 --assign-identity`.",
+   "Run `principalId=$(az cognitiveservices account show --name foundry-lit --resource-group rg-lit --query identity.principalId -o tsv)`.",
+   "Run `az role assignment create --role \"Key Vault Crypto User\" --assignee-object-id $principalId --assignee-principal-type ServicePrincipal --scope <kv-lit-resource-id>`.",
+   "Run `az cognitiveservices account update --name foundry-lit --resource-group rg-lit --encryption '{\"keySource\":\"Microsoft.KeyVault\",\"keyVaultProperties\":{\"keyVaultUri\":\"https://kv-lit.vault.azure.net\",\"keyName\":\"cmk1\"}}'`.",
+   "Run `az keyvault set-policy --name kv-lit --object-id $principalId --key-permissions get wrapKey unwrapKey`.",
+   "Run `az role assignment create --role \"Key Vault Secrets User\" --assignee-object-id $principalId --assignee-principal-type ServicePrincipal --scope <kv-lit-resource-id>`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A system-assigned identity exists only after its resource is provisioned, so customer-managed key encryption with that identity is a two-step process: create the resource without encryption, grant the identity access to the key, and then enable encryption. A user-assigned identity can be authorized in advance, so one deployment is enough.",
+  "rationale": [
+   "Step 1: with a system-assigned identity, the identity does not exist until the resource is created. Create foundry-lit with --assign-identity and without encryption settings first.",
+   "Step 2: the principal ID of the system-assigned identity is known only after provisioning. Read it from identity.principalId so that the role assignment can target it; if the assignment fails, wait for the identity to propagate and retry.",
+   "Step 3: kv-lit uses Azure RBAC, so the identity needs the Key Vault Crypto User role on the vault. Grant access before you enable the key, because enabling customer-managed keys fails when the identity cannot reach the key.",
+   "Step 4: update the resource with keySource Microsoft.KeyVault, the vault URI, and the key name. Omitting keyVersion lets the resource use the latest key version automatically when the key rotates.",
+   "Incorrect: set-policy grants get, wrapKey, and unwrapKey in the vault access policy model. kv-lit uses the Azure RBAC permission model, so grant a role instead. Use set-policy only for vaults that use access policies.",
+   "Incorrect: Key Vault Secrets User reads secret contents, not keys, so the identity still cannot wrap and unwrap with the encryption key. Use it for apps that read connection strings or passwords from a vault."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/encryption-keys-portal"
+ },
+ {
+  "id": "3.1.2-02",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Proseware, Inc. shares one Microsoft Foundry resource across several teams. You must assign the least privileged built-in role to each persona.\n\nWhich role should you assign to each persona? To answer, drag the appropriate roles to the correct personas. Each role may be used once, more than once, or not at all.",
+  "choices": [
+   "Foundry Agent Consumer",
+   "Foundry User",
+   "Foundry Project Manager",
+   "Foundry Account Owner",
+   "Foundry Owner",
+   "Azure AI Developer"
+  ],
+  "targets": [
+   "Persona1: developers who build and test agents with models that are already deployed",
+   "Persona2: a team lead who builds agents, publishes them, and assigns the Foundry User role to team members",
+   "Persona3: administrators who deploy models and create projects but must not build in projects",
+   "Persona4: the service principal of a web app that only sends requests to agent endpoints"
+  ],
+  "answer": [
+   1,
+   2,
+   3,
+   0
+  ],
+  "explanation": "The Foundry roles split control-plane and data-plane rights: Foundry User builds, Foundry Project Manager builds and onboards users, Foundry Account Owner manages resources and models without building, Foundry Owner does both, and Foundry Agent Consumer only calls agents. The roles were renamed from Azure AI User, Azure AI Project Manager, Azure AI Account Owner, and Azure AI Owner; the role IDs did not change.",
+  "rationale": [
+   "Persona1 needs data actions to build in a project plus reader access, which is exactly Foundry User, the least-privilege role for developers who build and test agents.",
+   "Persona2 needs to build, publish agents, and assign only the Foundry User role. Foundry Project Manager grants these rights; Foundry Owner would add full resource management and the right to assign ACR and monitoring roles.",
+   "Persona3 needs control-plane rights to create projects and manage models without data actions. Foundry Account Owner grants exactly that combination; Foundry Owner would add building in projects.",
+   "Persona4 only interacts with agent endpoints. Foundry Agent Consumer is the least-privilege role for principals that call agents without creating or changing them."
+  ],
+  "notes": [
+   "Grants access to interact with agent endpoints only, at the account, project, or agent scope. Use it for apps and users that call agents but never build them.",
+   "Grants reader access plus the data actions to build and develop in a project. Use it for developers; it does not create projects or manage models.",
+   "Grants building in projects, publishing agents, and assigning only the Foundry User role to others. Use it for team leads who onboard team members.",
+   "Grants creating accounts and projects, managing models, and assigning the Foundry User, ACR, and monitoring roles, but no data actions to build in projects.",
+   "Combines full management with building and publishing in projects. Use it for self-serve users who need both planes; it is broader than any single persona here needs.",
+   "Scoped to Azure Machine Learning workspaces and Foundry hubs, not Foundry projects. Learn says not to use it for Foundry project work; use Foundry User instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry"
+ },
+ {
+  "id": "3.1.2-03",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "A data scientist at Contoso Pharmaceuticals must fine-tune a model in a Microsoft Foundry project and then deploy the fine-tuned model. You need to grant the required permissions by using built-in roles.\n\nWhich two role assignments should you use? Each correct answer presents a complete solution.",
+  "choices": [
+   "Contributor only",
+   "Foundry Owner",
+   "Foundry Account Owner only",
+   "Foundry User and Foundry Account Owner",
+   "Foundry User and Foundry Agent Consumer"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "Running a fine-tuning job is a data-plane operation, while deploying the fine-tuned model is a control-plane operation. A user needs both kinds of permission: either Foundry Owner alone, or a data-plane role such as Foundry User combined with a control-plane role such as Foundry Account Owner.",
+  "rationale": [
+   "Incorrect: Contributor grants control-plane actions, so the user can deploy models, but it has no data actions. Fine-tuning jobs are data-plane operations, so the training step fails.",
+   "Correct: fine-tuning needs data-plane permissions and deploying the result needs control-plane permissions. Learn names Foundry Owner as the only built-in role that grants both in one assignment.",
+   "Incorrect: Foundry Account Owner manages models and deployments on the control plane but has no data actions to build in a project, so it cannot run the fine-tuning job itself.",
+   "Correct: Learn documents this pair as the alternative to Foundry Owner. Foundry User supplies the data-plane permission for the fine-tuning job, and Foundry Account Owner supplies the control-plane permission to deploy.",
+   "Incorrect: neither role grants the control-plane permission to deploy a model. Foundry User adds reader access and the data actions for the training job, and Foundry Agent Consumer only calls agent endpoints. Use Foundry Agent Consumer for principals that only call agents."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry"
+ },
+ {
+  "id": "3.1.2-04",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "case": "C-d",
+  "stem": "You need to configure access for AI-Devs and Claims-Reviewers. The solution must meet the access requirements.\n\nWhich two role assignments should you create? Each correct answer presents part of the solution.",
+  "choices": [
+   "Foundry User for AI-Devs at the scope of foundry-claims",
+   "Foundry User for AI-Devs at the scope of proj-triage",
+   "Azure AI Developer for AI-Devs at the scope of proj-triage",
+   "Foundry Agent Consumer for Claims-Reviewers at the scope of proj-triage",
+   "Foundry Agent Consumer for Claims-Reviewers at the scope of the ClaimsHelper agent"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "Foundry role assignments can target the Foundry resource, a project, or a single agent, and assignments at a parent scope are inherited by its children. Least privilege means the narrowest role at the narrowest scope: Foundry User on one project for builders, and Foundry Agent Consumer on one agent for callers. Agent-scope assignments are evaluated only for agent endpoint access.",
+  "rationale": [
+   "Incorrect: an assignment at the Foundry resource scope is inherited by every project on foundry-claims, so AI-Devs would also get data actions in proj-intake. Assign at resource scope only when a group must work in all projects.",
+   "Correct: Foundry User grants the data actions to build and test agents, and the project scope limits them to proj-triage. Learn maps developers to Foundry User at project scope, usually with Reader on the resource.",
+   "Incorrect: despite its name, Azure AI Developer is scoped to Azure Machine Learning workspaces and Foundry hubs, not to Foundry projects. Learn says to use Foundry User or Foundry Owner for project access instead.",
+   "Incorrect: Foundry Agent Consumer at project scope grants access to every agent endpoint in proj-triage. That breaks the requirement that Claims-Reviewers can reach ClaimsHelper only.",
+   "Correct: an agent-scope assignment grants endpoint access to that one agent. The Azure portal assigns Foundry Agent Consumer only at account scope, so create this assignment by using the Azure CLI."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry"
+ },
+ {
+  "id": "3.1.2-05",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery runs App1 in Azure Container Apps. App1 uses DefaultAzureCredential with a user-assigned managed identity and acquires a token for the scope https://ai.azure.com/.default. Requests to the endpoint of a Microsoft Foundry project return HTTP 403 Forbidden.\n\nWhat should you do?",
+  "choices": [
+   "Assign the Foundry User role to the identity on the project",
+   "Configure a custom subdomain on the Foundry resource of the project",
+   "Regenerate the API keys of the Foundry resource of the project",
+   "Request the token for the endpoint URL of the project instead"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "With Microsoft Entra ID, 401 Unauthorized means the token is missing, expired, or for the wrong scope, while 403 Forbidden means the token is valid but the principal has no role that allows the operation. Fix a 403 with a role assignment, such as Foundry User at the resource or project scope.",
+  "rationale": [
+   "Correct: a 403 Forbidden response means the token is valid but the principal has no role assignment that allows the operation. Assign a role such as Foundry User at the resource or project scope.",
+   "Incorrect: a missing custom subdomain produces a custom subdomain required error, because token-based authentication needs one. App1 already reaches the project endpoint and gets past authentication.",
+   "Incorrect: API keys apply to key-based authentication, and an invalid key returns 401. App1 uses Microsoft Entra ID, so the keys play no part in this request.",
+   "Incorrect: Foundry tokens must be requested for https://ai.azure.com/.default. A wrong or missing token produces 401 Unauthorized, while App1 already has a valid token and receives 403."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/authentication-authorization-foundry"
+ },
+ {
+  "id": "3.1.2-06",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee runs App2 in Azure App Service. App2 creates and runs agents in Foundry Agent Service by sending an API key in each request, and the calls fail. Security policy forbids storing secrets in application settings.\n\nWhich authentication configuration should you use for App2?",
+  "choices": [
+   "An API key stored in Azure Key Vault that App2 reads at startup",
+   "A system-assigned managed identity that has the Reader role on the project",
+   "A system-assigned managed identity that has the Foundry User role on the project",
+   "A system-assigned managed identity that has the Cognitive Services User role"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Basic model inference accepts API keys and Microsoft Entra ID, but Foundry Agent Service and evaluations accept only Microsoft Entra ID. A managed identity with a data-plane role such as Foundry User removes stored secrets and satisfies the agent requirement.",
+  "rationale": [
+   "Incorrect: Foundry Agent Service does not accept API keys; agents support only Microsoft Entra ID authentication. Keys in Key Vault suit basic model inference, which accepts both methods.",
+   "Incorrect: Reader grants control-plane read access only. Creating and running agents needs data actions, so App2 would receive authorization errors.",
+   "Correct: agents support only Microsoft Entra ID, and a managed identity removes stored secrets. Foundry User grants the data actions to create and run agents in the project.",
+   "Incorrect: Learn advises against roles that start with Cognitive Services for Foundry work, except Cognitive Services Usages Reader. Those roles target AI Services resources directly, not Foundry projects."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/authentication-authorization-foundry"
+ },
+ {
+  "id": "3.1.2-07",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Developers at Graphic Design Institute have the Foundry User role on a Microsoft Foundry project. In the Foundry portal, they cannot see available quota, and deployment validation does not show quota information. You need to fix the issue by following the principle of least privilege.\n\nWhat should you do?",
+  "choices": [
+   "Assign Cognitive Services Usages Reader to the developers at the subscription scope",
+   "Assign Cognitive Services Usages Reader to the developers at the resource group scope",
+   "Assign Foundry Account Owner to the developers at the Foundry resource scope",
+   "Assign Reader to the developers at the Foundry resource scope"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Quota and usage data comes from the subscription-level Usages API. Only a subscription-scoped assignment authorizes it, and Cognitive Services Usages Reader is the least-privilege built-in role for that access. It is the one Cognitive Services role that Learn recommends for Foundry users.",
+  "rationale": [
+   "Correct: quota and usage data is subscription-level information. Cognitive Services Usages Reader at the subscription scope is the least-privilege assignment that grants it.",
+   "Incorrect: the Usages API requires a subscription-scoped role assignment. Resource group, Foundry resource, and project assignments do not authorize access to subscription-level quota information.",
+   "Incorrect: Foundry Account Owner grants model management and project creation, which is far more than viewing quota, and a resource-scope role still does not authorize subscription-level usage data.",
+   "Incorrect: Reader on the Foundry resource gives read access to the resource and its projects, but not to the subscription-level usages that quota views and deployment validation need."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry"
+ },
+ {
+  "id": "3.1.2-08",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An administrator at Margie's Travel assigned the Azure AI Developer role to User1 at the scope of a Microsoft Foundry project. User1 cannot build agents in the project. You need to grant User1 the least privileged built-in role that allows building agents.\n\nWhich role should you assign?",
+  "choices": [
+   "Foundry Owner",
+   "Contributor",
+   "Foundry Account Owner",
+   "Foundry User"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Azure AI Developer belongs to Azure Machine Learning workspaces and Foundry hubs. For Foundry projects, Foundry User is the least-privilege role for building and testing agents, and management roles such as Contributor or Foundry Account Owner lack the data actions that building needs.",
+  "rationale": [
+   "Incorrect: Foundry Owner can build agents, but it also grants full management of resources, models, and role assignments. It is broader than needed when User1 only builds agents.",
+   "Incorrect: Contributor can create projects and deploy models but grants no data actions. Management roles alone are not sufficient to build or chat with agents.",
+   "Incorrect: Foundry Account Owner manages resources and models on the control plane but has no data actions to build in projects, so User1 still cannot build agents.",
+   "Correct: Azure AI Developer applies to Azure Machine Learning workspaces and Foundry hubs, not Foundry projects. Foundry User, formerly Azure AI User, is the least-privilege role for building and testing agents."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry"
+ },
+ {
+  "id": "3.1.2-09",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Consolidated Messenger creates an Azure Blob Storage account named stdocs outside Microsoft Foundry. The Foundry resource must read documents from stdocs by using its managed identity. You need to grant access by following the principle of least privilege.\n\nWhich role assignment should you create on stdocs?",
+  "choices": [
+   "Reader for the managed identity of the Foundry resource",
+   "Storage Blob Data Contributor for the managed identity of the Foundry resource",
+   "Foundry User for the managed identity of the Foundry resource",
+   "Storage Blob Data Reader for the managed identity of the Foundry resource"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Foundry gets access to its own resource through built-in RBAC, but resources created outside Foundry need explicit permissions for the Foundry identity. The data role on the target service decides what the identity can do, so read-only access to blobs needs Storage Blob Data Reader.",
+  "rationale": [
+   "Incorrect: Reader is a control-plane role that shows the storage account but grants no blob data actions, so reads of the documents fail.",
+   "Incorrect: Storage Blob Data Contributor allows reading but also writing and deleting blobs. It is more than read access needs; use it when the identity must write blobs.",
+   "Incorrect: Foundry User grants data actions on Foundry resources and projects, not on Azure Storage. Access to blobs in stdocs must come from a storage data role.",
+   "Correct: Learn gives this example for resources created outside Foundry: add the managed identity of the Foundry resource to the Storage Blob Data Reader role on the new storage account."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry"
+ },
+ {
+  "id": "3.1.2-10",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "City Power & Light deploys a standard agent setup to a resource group named rg-agents from a GitHub Actions workflow. The workflow identity has the Contributor role on rg-agents. The Bicep file sets capability settings that reference an existing storage account, Azure AI Search service, and Azure Cosmos DB account in a shared resource group named rg-data. The deployment fails before any resource is provisioned.\n\nWhat should you do?",
+  "choices": [
+   "Grant the workflow identity Storage Blob Data Contributor on the storage account and Cosmos DB Operator on the Azure Cosmos DB account",
+   "Grant the project managed identity Storage Blob Data Contributor on the storage account and Cosmos DB Operator on the Azure Cosmos DB account",
+   "Grant the workflow identity Search Index Data Contributor on the Azure AI Search service that the capability settings reference",
+   "Grant the workflow identity the Owner role on rg-agents so that it can create role assignments during the deployment"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Capability settings that you submit through ARM or Bicep run as the caller, so the deploying identity needs Storage Blob Data Contributor and Cosmos DB Operator on the referenced resources. The project managed identity needs separate data roles for runtime access after the deployment; one set does not replace the other.",
+  "rationale": [
+   "Correct: the caller of a capability settings deployment needs Storage Blob Data Contributor on each storage account and Cosmos DB Operator on each Azure Cosmos DB account. Contributor on rg-agents grants neither, so provisioning fails before any resource is created.",
+   "Incorrect: these roles on the project managed identity govern runtime access for running agents. Provisioning through Bicep uses the caller identity, and the project does not exist yet when the deployment fails.",
+   "Incorrect: Azure AI Search does not require a caller role for capability settings provisioning. The project managed identity needs search roles later, at runtime.",
+   "Incorrect: Owner on rg-agents adds role assignment rights there, but it grants no data actions and no access to the accounts in rg-data. Grant a role-assignment role only when the template itself must create role assignments."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/standard-agent-setup"
+ },
+ {
+  "id": "3.1.2-11",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "User1 at Alpine Ski House has the Foundry Account Owner role on a Microsoft Foundry resource. User1 must assign the Foundry Agent Consumer role to service principals at the scope of individual agents. You need to grant User1 the least privileged built-in role that allows these assignments without adding management rights over the Foundry resource.\n\nWhich role should you assign to User1?",
+  "choices": [
+   "Owner",
+   "Foundry Owner",
+   "User Access Administrator",
+   "Foundry Project Manager"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Assigning roles requires Microsoft.Authorization role assignment permissions, which Owner and User Access Administrator have for any role. The Foundry management roles can assign only a fixed set of roles: Foundry Account Owner and Foundry Owner can assign Foundry User, ACR, and monitoring roles, and Foundry Project Manager only Foundry User.",
+  "rationale": [
+   "Incorrect: Owner can assign any role to any user, but it also grants full management of every resource in its scope. It is broader than a role that only manages role assignments.",
+   "Incorrect: Foundry Owner can conditionally assign only the Foundry User, ACR, and monitoring roles, the same set as Foundry Account Owner, so it cannot assign Foundry Agent Consumer.",
+   "Correct: Learn names Owner or User Access Administrator as the roles that can assign roles at a scope. Of the listed roles, only User Access Administrator can assign Foundry Agent Consumer without adding management rights over the Foundry resource itself.",
+   "Incorrect: Foundry Project Manager can assign only the Foundry User role. Use it for team leads who onboard developers to a project."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/authentication-authorization-foundry"
+ },
+ {
+  "id": "3.1.3-01",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Blue Yonder Airlines creates a new Microsoft Foundry resource named foundry-byl by using Azure CLI 2.86.0. Outbound traffic from agents must use a Microsoft-managed virtual network that allows only approved destinations. Agents must call an external API at api.blueyonderairlines.com over HTTPS. The company does not want to manage its own virtual network.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az rest --method PUT` against the foundry-byl account URI with a body that sets a SystemAssigned identity, allowProjectManagement, customSubDomainName, and networkInjections with useMicrosoftManagedNetwork set to true.",
+   "Run `az cognitiveservices account show --resource-group rg-byl --name foundry-byl --query identity.principalId -o tsv`.",
+   "Run `az role assignment create --assignee-object-id <principal-id> --assignee-principal-type ServicePrincipal --role \"b556d68e-0be0-4f35-a333-ad7ee1ce17ea\" --scope <rg-byl-resource-id>`.",
+   "Run `az cognitiveservices account managed-network create --resource-group rg-byl --name foundry-byl --managed-network allow_only_approved_outbound --firewall-sku Standard`.",
+   "Run `az cognitiveservices account managed-network outbound-rule set --resource-group rg-byl --name foundry-byl --rule allow-api --type fqdn --destination \"api.blueyonderairlines.com\"`.",
+   "Run `az network vnet subnet update --resource-group rg-byl --vnet-name VNet1 --name snet-agents --delegations Microsoft.App/environments`.",
+   "Run `az cognitiveservices account managed-network create --resource-group rg-byl --name foundry-byl --managed-network allow_internet_outbound`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "A managed virtual network is requested at account creation through networkInjections with useMicrosoftManagedNetwork set to true. The account identity then needs the Azure AI Enterprise Network Connection Approver role so that Foundry can create and approve managed private endpoints, after which you create the managed network with its isolation mode and add outbound rules. The managed-network command group is in preview.",
+  "rationale": [
+   "Step 1: networkInjections, customSubDomainName, and allowProjectManagement must be set when the account is created and cannot be added later. Learn uses az rest because the Azure CLI does not yet create a Foundry resource with network injection.",
+   "Step 2: the account has a system-assigned identity once it is provisioned. Read its principal ID so that you can grant the identity the role it needs to create and approve managed private endpoints.",
+   "Step 3: the role ID belongs to Azure AI Enterprise Network Connection Approver. Assigned to the account identity, it lets Foundry create and auto-approve the private endpoints of the managed network, including the endpoint to the Foundry resource.",
+   "Step 4: the managed network child resource sets the isolation mode. allow_only_approved_outbound restricts egress to service tags, private endpoints, and FQDN rules, which meets the approved-destinations requirement. The az cognitiveservices account managed-network command group is in preview and might change.",
+   "Step 5: an FQDN outbound rule allows the external API on ports 80 and 443; creating outbound rules needs Azure CLI 2.86.0 or later. The first FQDN rule in approved-only mode provisions a managed Azure Firewall, which adds firewall costs.",
+   "Incorrect: delegating a subnet to Microsoft.App/environments prepares a customer-managed (BYO) virtual network for agent injection. With a managed virtual network, Microsoft handles subnets and delegation, and the company does not want its own network.",
+   "Incorrect: allow_internet_outbound permits all outbound internet traffic, which breaks the approved-destinations requirement. Use it when unrestricted outbound access is acceptable."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/managed-virtual-network"
+ },
+ {
+  "id": "3.1.3-02",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Fabrikam Residences has a Microsoft Foundry resource. Public network access is set to Disabled, and an approved private endpoint connects the resource to a virtual network named VNet1.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Clients in VNet1 use the same endpoint URL for the Foundry resource as clients that connect over the public endpoint.",
+   "If you remove the private endpoint, the Foundry resource becomes publicly accessible.",
+   "If you set public network access to All networks, the private endpoint is removed."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A private endpoint changes name resolution, not the connection string: the endpoint name resolves to a private IP inside the virtual network and to the public endpoint outside it. Public network access and private endpoints are independent settings, so changing one never silently changes the other.",
+  "rationale": [
+   "Yes: Azure updates the CNAME record of the resource to a privatelink alias, and the private DNS zone resolves it to the private IP inside VNet1. Clients keep the same connection string; only name resolution differs.",
+   "No: removing a private endpoint removes the resource from that virtual network but does not make it publicly accessible. To allow public access, change the public network access setting explicitly.",
+   "No: enabling public access keeps existing private endpoints, and traffic through them stays private. It only adds public access in addition to the private access."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/configure-private-link"
+ },
+ {
+  "id": "3.1.3-03",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Wide World Importers secures a Microsoft Foundry standard agent setup with private endpoints. The virtual network uses Azure private DNS zones. You must create the private DNS zone that each endpoint requires.\n\nWhich private DNS zone should you create for each endpoint? To answer, drag the appropriate zones to the correct endpoints. Each zone may be used once, more than once, or not at all.",
+  "choices": [
+   "privatelink.services.ai.azure.com",
+   "privatelink.openai.azure.com",
+   "privatelink.cognitiveservices.azure.com",
+   "privatelink.search.windows.net",
+   "privatelink.documents.azure.com",
+   "privatelink.blob.core.windows.net"
+  ],
+  "targets": [
+   "foundry-wwi.services.ai.azure.com, the endpoint that the Foundry project APIs use",
+   "foundry-wwi.openai.azure.com, used by apps that call the OpenAI-compatible APIs",
+   "srch-wwi.search.windows.net, the Azure AI Search service that stores vector indexes",
+   "cosmos-wwi.documents.azure.com, the Azure Cosmos DB account that stores threads"
+  ],
+  "answer": [
+   0,
+   1,
+   3,
+   4
+  ],
+  "explanation": "Each private endpoint needs a private DNS zone that matches the public suffix of the FQDN it replaces. A Foundry resource exposes three FQDNs (services.ai.azure.com, openai.azure.com, and cognitiveservices.azure.com), so configure DNS for each one your workload uses, plus the zones of the dependent Search, Cosmos DB, and Storage resources.",
+  "rationale": [
+   "The services.ai.azure.com FQDN of the Foundry resource resolves through privatelink.services.ai.azure.com, one of the three zones that the account subresource uses.",
+   "The openai.azure.com FQDN resolves through privatelink.openai.azure.com. A Foundry resource exposes this FQDN in addition to services.ai.azure.com and cognitiveservices.azure.com.",
+   "The searchService subresource of Azure AI Search uses privatelink.search.windows.net, so agents can query vector indexes over the private endpoint.",
+   "The Sql subresource of Azure Cosmos DB uses privatelink.documents.azure.com, which the agent runtime needs to reach thread storage privately."
+  ],
+  "notes": [
+   "Private DNS zone for the {custom-domain}.services.ai.azure.com FQDN of a Foundry resource, which the Foundry project and agent APIs use.",
+   "Private DNS zone for the {custom-domain}.openai.azure.com FQDN of a Foundry or Azure OpenAI resource, which the OpenAI-compatible APIs use.",
+   "Private DNS zone for the {custom-domain}.cognitiveservices.azure.com FQDN, the third FQDN that a Foundry resource exposes. The account subresource uses it with the other two Foundry zones, but none of the listed endpoints uses this FQDN.",
+   "Private DNS zone for Azure AI Search (searchService subresource). Needed when agents or indexers reach a search service through a private endpoint.",
+   "Private DNS zone for Azure Cosmos DB for NoSQL (Sql subresource). Needed for thread storage in a network-secured standard agent setup.",
+   "Private DNS zone for the blob subresource of Azure Storage. The storage account of a standard setup needs it, but none of the listed endpoints does."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/virtual-networks"
+ },
+ {
+  "id": "3.1.3-04",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "yesno",
+  "case": "C-d",
+  "stem": "You plan the network configuration for foundry-claims.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "You must delegate snet-agents to Microsoft.App/environments before you deploy foundry-claims.",
+   "A managed virtual network in Allow only approved outbound mode meets the outbound requirement for the agents.",
+   "Server1 must forward queries for the privatelink DNS zones to 168.63.129.16.",
+   "Deploying foundry-claims creates private endpoints for stclaims, srch-claims, and cosmos-claims."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Agent egress through a customer firewall requires virtual network injection into a customer subnet delegated to Microsoft.App/environments, because a managed virtual network uses its own managed firewall. Private endpoints for dependent resources are created separately, and custom DNS servers must forward the privatelink zones to the Azure DNS virtual server.",
+  "rationale": [
+   "Yes: virtual network injection for agents requires a subnet delegated to Microsoft.App/environments with a size of /27 or larger. snet-agents is a /24 without delegation, so delegate it before the deployment references it.",
+   "No: a managed virtual network creates its own managed firewall, and you cannot bring your own Azure Firewall to it. The requirement sends agent egress through FW1, so it needs virtual network injection into VNet1.",
+   "Yes: VNet1 uses Server1 as a custom DNS server. A custom DNS server must forward the privatelink zones to the Azure DNS virtual server at 168.63.129.16, or the names resolve to public addresses.",
+   "No: private endpoints to Azure AI Search, Azure Storage, and Azure Cosmos DB are not created automatically with the Foundry resource. Create them separately, for example in snet-endpoints, with the matching DNS zones."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/virtual-networks"
+ },
+ {
+  "id": "3.1.3-05",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A network engineer at Southridge Video creates a private endpoint for the company Microsoft Foundry resource. The engineer has the Network Contributor role on the virtual network but no role on the Foundry resource. The private endpoint connection stays in the Pending state, and clients cannot connect.\n\nWhat should you do?",
+  "choices": [
+   "Assign the Private DNS Zone Contributor role to the engineer on the private DNS zone",
+   "Ask a user who has the Contributor or Owner role on the Foundry resource to approve it",
+   "Set the public network access setting of the Foundry resource to Selected networks",
+   "Recreate the private endpoint in a subnet that has more available IP addresses"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Creating a private endpoint needs Network Contributor on the virtual network, but approving the connection needs Contributor or Owner on the Foundry resource. Only private endpoints in the Approved state can send traffic to the resource.",
+  "rationale": [
+   "Incorrect: Private DNS Zone Contributor lets the engineer manage records in the zone. DNS settings matter after approval; they do not move a connection out of the Pending state.",
+   "Correct: without Contributor or Owner permissions on the Foundry resource, a private endpoint connection stays Pending until the resource owner approves it. Only Approved endpoints can send traffic.",
+   "Incorrect: Selected networks opens the public endpoint to specified IP addresses and virtual networks. It does not approve the private endpoint, and it weakens the isolation the private endpoint provides.",
+   "Incorrect: a full subnet makes private endpoint creation fail. Here the endpoint exists and waits for approval, so a new endpoint would also stay Pending."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/configure-private-link"
+ },
+ {
+  "id": "3.1.3-06",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Vineyard must allow a partner office to call the company Microsoft Foundry resource from a fixed public IP address range. All other internet traffic must be blocked, and the partner cannot connect through a VPN or ExpressRoute.\n\nWhat should you configure on the Foundry resource?",
+  "choices": [
+   "Public network access set to Disabled with a private endpoint",
+   "Public network access set to All networks with Microsoft Entra ID authentication",
+   "Virtual network injection with a delegated agent subnet",
+   "Public network access set to Enabled from selected IP addresses"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The public network access flag controls inbound access: Disabled requires a private endpoint, All networks allows any address, and Enabled from selected IP addresses allows only the ranges you list. Virtual network injection is an outbound control for agents.",
+  "rationale": [
+   "Incorrect: with public access disabled, clients must come through a private endpoint, which the partner could reach only over a VPN, ExpressRoute, or a jump box. Use it when every client is on a connected network.",
+   "Incorrect: All networks accepts traffic from any internet address. Microsoft Entra ID controls who can authenticate, not which networks can reach the endpoint.",
+   "Incorrect: virtual network injection controls outbound traffic from agents into your subnet. It does not filter inbound requests from the partner office.",
+   "Correct: between public and private, the public network access flag offers Enabled from selected IP addresses, which allows only the IP ranges you specify and blocks other internet traffic."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/configure-private-link"
+ },
+ {
+  "id": "3.1.3-07",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Nod Publishers plans virtual network injection for Foundry Agent Service in a virtual network that the company manages. You must prepare the subnet for the agent client.\n\nWhich subnet configuration should you use?",
+  "choices": [
+   "A /27 or larger subnet that is delegated to Microsoft.App/environments",
+   "A /29 subnet that is delegated to Microsoft.App/environments",
+   "A /27 or larger subnet that is delegated to Microsoft.Web/serverFarms",
+   "A /27 or larger subnet that has no delegation and a network security group"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The agent client is injected through Azure Container Apps infrastructure, so its subnet must be delegated to Microsoft.App/environments and be /27 or larger. Each Foundry resource needs its own agent subnet, and production workloads should start at /24.",
+  "rationale": [
+   "Correct: the agent client is injected into a subnet delegated to Microsoft.App/environments, and the subnet must be /27 or larger. Learn suggests /24 or larger as a starting point for production.",
+   "Incorrect: the delegation is right, but /29 is smaller than the /27 minimum that agent injection requires, so the deployment fails.",
+   "Incorrect: Microsoft.Web/serverFarms is the delegation for App Service virtual network integration. Agent injection needs a subnet delegated to Microsoft.App/environments.",
+   "Incorrect: injection requires the Microsoft.App/environments delegation, so an undelegated subnet fails. Network security groups are optional and need outbound rules for required dependencies."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/virtual-networks"
+ },
+ {
+  "id": "3.1.3-08",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A. Datum Corporation creates a private endpoint for its Microsoft Foundry resource in VNet1, and the connection is Approved. VNet1 uses Azure-provided DNS. A script created the privatelink DNS zones in a shared resource group. From a VM in VNet1, nslookup for the Foundry endpoint returns a public IP address.\n\nWhat should you do?",
+  "choices": [
+   "Set public network access on the Foundry resource to Disabled",
+   "Add the private IP address to the hosts file of each VM in VNet1",
+   "Link the privatelink DNS zones to VNet1",
+   "Create a second private endpoint in another subnet of VNet1"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A private DNS zone answers queries only from the virtual networks it is linked to. When a name resolves to a public IP from inside the network, confirm that the privatelink zone exists and is linked to that virtual network, or that a custom DNS server forwards the zone to 168.63.129.16.",
+  "rationale": [
+   "Incorrect: public network access controls whether the public endpoint accepts traffic. It does not change how VNet1 resolves the name, so clients would fail instead of using the private IP.",
+   "Incorrect: overriding DNS in the hosts file is recommended only for testing and does not scale. A linked private DNS zone resolves the name for every client in the network.",
+   "Correct: when DNS returns a public IP address, confirm that a private DNS zone exists for the privatelink subdomain and is linked to the virtual network. Without a link, VMs in VNet1 do not see its records.",
+   "Incorrect: another private endpoint adds IP addresses but relies on the same unlinked zones, so resolution still returns the public address."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/configure-private-link"
+ },
+ {
+  "id": "3.1.3-09",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Bellows College has two Microsoft Foundry resources named foundry-dev and foundry-prod in the same region. Both use a network-secured standard agent setup. You need to plan the agent subnets. The solution must use a single virtual network and minimize network resources.\n\nWhat should you do?",
+  "choices": [
+   "Create one delegated agent subnet that both Foundry resources share",
+   "Create a separate virtual network with a delegated subnet for each Foundry resource",
+   "Use the private endpoint subnet as the agent subnet for both Foundry resources",
+   "Create one delegated agent subnet for each Foundry resource in the same virtual network"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Several Foundry resources can reuse one virtual network, but each needs a dedicated agent subnet that no other Foundry resource uses. The private endpoint subnet is a separate subnet for endpoints.",
+  "rationale": [
+   "Incorrect: the agent subnet cannot be shared by multiple Foundry resources. Each Foundry resource must use a dedicated agent subnet.",
+   "Incorrect: separate networks meet the subnet rule but add virtual networks, peering, and DNS links, which breaks the single virtual network requirement. Use them when environments must be network-isolated from each other.",
+   "Incorrect: the agent subnet must be delegated to Microsoft.App/environments and dedicated to one Foundry resource. The private endpoint subnet hosts private endpoints and is a different subnet.",
+   "Correct: multiple Foundry resources can reuse the same virtual network, but each needs its own dedicated agent subnet. This keeps a single virtual network while meeting the exclusivity rule."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/virtual-networks"
+ },
+ {
+  "id": "3.1.3-10",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. builds agents in Microsoft Foundry. The company has no network team to manage virtual networks, subnets, or IP address ranges. Outbound traffic from agents must be limited to approved destinations to minimize the risk of data exfiltration.\n\nWhat should you configure for the Foundry resource?",
+  "choices": [
+   "A managed virtual network in Allow internet outbound mode",
+   "Virtual network injection into a company subnet with Azure Firewall",
+   "Public network access set to Disabled with a private endpoint",
+   "A managed virtual network in Allow only approved outbound mode"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Outbound isolation for agents uses either a managed virtual network or injection into your own virtual network. A managed network removes subnet and IP planning, and its Allow only approved outbound mode limits egress to service tags, private endpoints, and FQDN rules; a custom network gives full control at the cost of managing it.",
+  "rationale": [
+   "Incorrect: Allow internet outbound permits all outbound internet traffic, so it does not limit agents to approved destinations. Use it when broad connectivity is acceptable.",
+   "Incorrect: a customer-managed network gives full control, including your own firewall and routes, but requires subnet delegation, IP planning, and capability host setup that the company cannot manage.",
+   "Incorrect: disabling public network access with a private endpoint secures inbound access to the resource. It does not control where agents send outbound traffic.",
+   "Correct: a managed virtual network removes the need to manage subnets, IP ranges, and delegation. Allow only approved outbound restricts egress to service tags, private endpoints, and FQDN rules to minimize exfiltration."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/managed-virtual-network"
+ },
+ {
+  "id": "3.1.3-11",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Trey Research has a Microsoft Foundry resource in production that has a private endpoint for inbound access and no outbound network configuration. Agents must now reach private data sources in the company virtual network through virtual network injection into a company subnet.\n\nWhat should you do?",
+  "choices": [
+   "Update the networkInjections property of the existing resource by using az rest with a PATCH request",
+   "Delegate a subnet to Microsoft.App/environments and attach it to the existing resource as its agent subnet",
+   "Deploy a new Foundry resource that sets virtual network injection at creation and move the workloads to it",
+   "Enable a managed virtual network on the existing resource and add private endpoint outbound rules to it"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Outbound network settings of a Foundry resource are fixed at creation: networkInjections must be set when the account is created, the delegated subnet cannot be changed later, and outbound injection cannot be added to an existing deployment. Adding outbound isolation therefore means redeploying Foundry.",
+  "rationale": [
+   "Incorrect: outbound networking settings cannot be updated, and you cannot add outbound virtual network injection to an existing Foundry deployment. networkInjections must be set when the account is created.",
+   "Incorrect: a delegated subnet is required, but it is set only when the Foundry resource is created. You also cannot change a delegated subnet to a new one later.",
+   "Correct: Learn states that you must redeploy Foundry to add outbound networking. Create a new resource with network injection configured at creation, then move the projects, agents, and connections.",
+   "Incorrect: the managed network option is also part of networkInjections, which is set at account creation, so the existing resource cannot switch to it. The requirement also asks for injection into a company subnet."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/configure-private-link"
+ },
+ {
+  "id": "3.1.4-01",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "order",
+  "stem": "Contoso Suites has a main.bicep file that declares a Microsoft Foundry resource named foundry-test and a project named proj-test. The file has a parameter named env. You must deploy the file to a new resource group named rg-foundry-test, preview the changes before anything is deployed, and then confirm that the project is provisioned.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az group create --name rg-foundry-test --location swedencentral`.",
+   "Run `az deployment group what-if --resource-group rg-foundry-test --template-file main.bicep --parameters env=test`.",
+   "Run `az deployment group create --resource-group rg-foundry-test --template-file main.bicep --parameters env=test`.",
+   "Run `az cognitiveservices account project show --name foundry-test --resource-group rg-foundry-test --project-name proj-test --query properties.provisioningState --output tsv`.",
+   "Run `az deployment sub create --location swedencentral --template-file main.bicep --parameters env=test`.",
+   "Run `az cognitiveservices account project create --name foundry-test --resource-group rg-foundry-test --project-name proj-test --location swedencentral`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A Foundry resource and its projects are resource group level resources, so you create the target resource group and use the az deployment group commands. The what-if operation predicts the changes without making them, and az deployment group create then deploys the same file and parameters.",
+  "rationale": [
+   "Step 1: a resource group deployment targets an existing resource group, so create rg-foundry-test first. The Foundry resource and its project are deployed into it.",
+   "Step 2: az deployment group what-if predicts the changes that the template makes without changing any resources, and it also validates the file. Running it before the deployment meets the preview requirement.",
+   "Step 3: az deployment group create deploys the Bicep file to the resource group. Inline KEY=VALUE pairs supply the env parameter; a parameters file works as well.",
+   "Step 4: az cognitiveservices account project show with --query properties.provisioningState returns Succeeded when the project from the template is provisioned.",
+   "Incorrect: az deployment sub create deploys at subscription scope. The accounts/projects resource type deploys to resource groups, and main.bicep targets a resource group, so use the group commands.",
+   "Incorrect: the template already declares the project, so a separate CLI step is not needed and is not part of a repeatable deployment. Use project create when you create projects without infrastructure as code."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/deploy-what-if"
+ },
+ {
+  "id": "3.1.4-02",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "First Up Consultants deploys a standard agent setup to a resource group named rg-agents by using a main.bicep file and a prod.bicepparam file. main.bicep sets capability settings on the Foundry account that reference an existing storage account, Azure AI Search service, and Azure Cosmos DB account in a shared resource group named rg-data, and it creates a project. A service principal named sp-deploy runs the deployment and has only the Contributor role on rg-agents. Agents must be able to use all three resources after the deployment.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az role assignment create` for sp-deploy to assign Storage Blob Data Contributor on the storage account and Cosmos DB Operator on the Azure Cosmos DB account.",
+   "Run `az deployment group create --resource-group rg-agents --parameters prod.bicepparam`.",
+   "Retrieve the principal ID of the system-assigned managed identity of the new project.",
+   "Assign the runtime roles to the project managed identity, for example `az role assignment create --assignee-object-id <project-principal-id> --assignee-principal-type ServicePrincipal --role \"Search Index Data Contributor\" --scope <search-service-id>`.",
+   "Run `az role assignment create` for sp-deploy to assign Search Index Data Contributor on the Azure AI Search service.",
+   "Run `az deployment group create --resource-group rg-agents --template-file main.bicep --parameters prod.bicepparam`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "Provisioning and runtime permissions are separate. The identity that runs a capability settings deployment needs Storage Blob Data Contributor and Cosmos DB Operator on the referenced resources, while running agents use the project managed identity, which exists only after the deployment and needs its own data roles.",
+  "rationale": [
+   "Step 1: capability settings that you submit through Bicep run as the caller. sp-deploy needs Storage Blob Data Contributor and Cosmos DB Operator on the referenced accounts before the deployment; Contributor on rg-agents grants neither, so capability settings provisioning fails.",
+   "Step 2: with the caller roles in place, the deployment creates the account settings and the project. A .bicepparam file with a using statement needs no --template-file switch.",
+   "Step 3: the project managed identity exists only after the project is created, so its principal ID becomes available after the deployment.",
+   "Step 4: running agents use the project managed identity to reach the resources. Grant it data roles such as Search Index Data Contributor and Search Service Contributor, plus the storage and Cosmos DB roles, and then test an agent.",
+   "Incorrect: Azure AI Search does not require a caller role for capability settings provisioning. The search roles belong to the project managed identity for runtime access.",
+   "Incorrect: when --parameters names a .bicepparam file, adding --template-file causes the error Only a .bicep file is allowed with a .bicepparam file. The using statement in the parameters file already points to main.bicep."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/create-resource-template"
+ },
+ {
+  "id": "3.1.4-03",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Best For You Organics Company deploys a Microsoft Foundry resource (symbolic name account) and a project (symbolic name project) with system-assigned identities in main.bicep. The project managed identity must get the Foundry User role on the Foundry resource. The role definition ID of Foundry User is 53ca6127-db72-4b80-b1b0-d745d6d5456d.\n\nHow should you complete the Bicep code? To answer, select the appropriate options in the answer area.\n\n```bicep\nresource foundryUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {\n  scope: [[1]]\n  name: '53ca6127-db72-4b80-b1b0-d745d6d5456d'\n}\n\nresource projectFoundryUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {\n  scope: account\n  name: guid(account.id, project.id, foundryUser.id)\n  properties: {\n    roleDefinitionId: [[2]]\n    principalId: [[3]]\n    principalType: 'ServicePrincipal'\n  }\n}\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "resourceGroup()",
+     "subscription()",
+     "account"
+    ],
+    "why": [
+     "Incorrect: built-in role definitions are subscription-scoped resources. Scoping the existing reference to the resource group does not return the subscription-level role definition ID that Learn uses for built-in roles.",
+     "Correct: built-in role definition IDs are subscription-scoped resources, so Learn references them as existing resources with scope: subscription(). The .id property then returns the fully qualified ID.",
+     "Incorrect: account is the scope of the role assignment, not of the role definition. Built-in role definitions are subscription-scoped resources, so Learn references them with scope: subscription(), not a resource scope."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "foundryUser.id",
+     "foundryUser.name",
+     "'Foundry User'"
+    ],
+    "why": [
+     "Correct: roleDefinitionId must be the fully qualified resource ID of the role definition, which the .id property of the existing resource returns.",
+     "Incorrect: .name returns only the GUID of the role. A role assignment needs the fully qualified role definition ID, so the deployment fails.",
+     "Incorrect: roleDefinitionId does not accept a display name. The Foundry role names also changed recently, which is why Learn recommends the role GUID in code."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "project.id",
+     "account.identity.principalId",
+     "project.identity.principalId"
+    ],
+    "why": [
+     "Incorrect: project.id is an Azure resource ID. principalId must be the Microsoft Entra object ID of the principal, not a resource ID.",
+     "Incorrect: this is the managed identity of the Foundry resource. The requirement grants the role to the project managed identity, which is a separate identity.",
+     "Correct: the system-assigned identity of the project exposes its Microsoft Entra object ID in identity.principalId, which is the value that principalId expects."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   0,
+   2
+  ],
+  "explanation": "A role assignment is an extension resource: scope selects the resource that grants access, the name must be a deterministic GUID, roleDefinitionId must be the fully qualified ID of the role, and principalId is a Microsoft Entra object ID. Learn lists Foundry User on the Foundry resource for the project managed identity as a minimum assignment.",
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/scenarios-rbac"
+ },
+ {
+  "id": "3.1.4-04",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Proseware, Inc. deploys main.bicep from a pipeline. The file creates a Microsoft Foundry project and a role assignment for the project managed identity. The name of the role assignment comes from a parameter whose default value is newGuid(), and its properties set only roleDefinitionId and principalId. Some runs fail intermittently right after the project is created, and every rerun fails with the error RoleAssignmentExists.\n\nWhich two changes should you make? Each correct answer presents part of the solution.",
+  "choices": [
+   "Scope the role assignment to the resource group instead of the Foundry resource",
+   "Set principalType to 'ServicePrincipal' in the role assignment",
+   "Add the project to the dependsOn list of the role assignment",
+   "Generate the name with guid() from the scope, the project resource ID, and the role definition ID",
+   "Pass the display name of the role in the roleDefinitionId property"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "Repeatable role assignments in Bicep need a deterministic name that can be calculated when the deployment starts, because a new name for the same principal, role, and scope causes RoleAssignmentExists. Setting principalType tells Azure what kind of principal to expect, which Learn says prevents intermittent errors with service principals and managed identities.",
+  "rationale": [
+   "Incorrect: a broader scope grants more access than needed and does not fix either error. Learn recommends the smallest scope that meets the requirements.",
+   "Correct: managed identities are a form of service principal. Learn states that you should set principalType, or you might get intermittent deployment errors, especially with service principals and managed identities.",
+   "Incorrect: referencing project.identity.principalId already creates an implicit dependency, so the assignment waits for the project. An explicit dependsOn does not address either error.",
+   "Correct: role assignment names must be deterministic, and newGuid() creates a new name for the same assignment on every run, which causes RoleAssignmentExists. The principal ID of a new identity is not known when the name is calculated, so Learn seeds guid() with its resource ID instead.",
+   "Incorrect: roleDefinitionId requires the fully qualified role definition ID, not a display name. Learn recommends an existing roleDefinitions reference and its .id property."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/scenarios-rbac"
+ },
+ {
+  "id": "3.1.4-05",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Southridge Video has a main.bicep file that declares a Microsoft Foundry resource and two projects. The file has no targetScope statement. A resource group named rg-ai already exists.\n\nWhich command should you use to deploy the file?",
+  "choices": [
+   "az deployment sub create --location westeurope --template-file main.bicep",
+   "az deployment group create --resource-group rg-ai --template-file main.bicep",
+   "az deployment mg create --management-group-id mg1 --location westeurope --template-file main.bicep",
+   "az deployment tenant create --location westeurope --template-file main.bicep"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The deployment command must match the target scope of the Bicep file. A file without targetScope targets a resource group, and Foundry accounts and projects are resource group level resources, so you deploy them with az deployment group create.",
+  "rationale": [
+   "Incorrect: subscription deployments suit files with targetScope set to subscription, for example to create resource groups or subscription-level role assignments. Foundry accounts and projects deploy to resource groups.",
+   "Correct: a Bicep file without a targetScope statement targets a resource group, and the accounts/projects resource type deploys to resource groups. az deployment group create deploys the file to rg-ai.",
+   "Incorrect: management group deployments target resources such as policy and role assignments that span subscriptions. main.bicep deploys resource group resources, so this scope does not match.",
+   "Incorrect: tenant deployments create tenant-level resources such as management groups. Foundry resources and projects are resource group level resources."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/deploy-to-resource-group"
+ },
+ {
+  "id": "3.1.4-06",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel deploys the basic Bicep sample for Microsoft Foundry to a resource group in West Europe. The engineer runs az deployment group create with --parameters aiFoundryName=mtravel aiProjectName=mtravel-proj. The resources are created in East US 2 instead of West Europe.\n\nWhat should you do?",
+  "choices": [
+   "Run az configure --defaults location=westeurope before the deployment",
+   "Add location=westeurope to the list of values for --parameters",
+   "Create the resource group again in the West Europe region",
+   "Run the deployment by using az deployment sub create --location westeurope"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Resources in a Bicep file are created in the location that their location property receives, which is often a parameter with a default value. The resource group region does not override the template, so pass the location parameter explicitly.",
+  "rationale": [
+   "Incorrect: az configure sets default values for CLI arguments such as --location. It does not set template parameters, so the template still uses its own default value.",
+   "Correct: the location parameter of the sample template defaults to eastus2, whatever the region of the resource group. Pass the parameter explicitly, for example location=westeurope.",
+   "Incorrect: the resource group is already in West Europe. The location parameter of the template decides where the resources are created, not the region of the resource group.",
+   "Incorrect: --location on a subscription deployment sets where the deployment data is stored, and the template targets a resource group. It does not change the location parameter of the resources."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/create-resource-template"
+ },
+ {
+  "id": "3.1.4-07",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An engineer at Wide World Importers deploys a Microsoft Foundry environment from main.bicep by hand. Before each deployment, the engineer must review the predicted changes and then confirm or cancel the deployment, by using a single command.\n\nWhich command should the engineer run?",
+  "choices": [
+   "az deployment group what-if --resource-group rg1 --template-file main.bicep",
+   "az deployment group what-if --resource-group rg1 --template-file main.bicep --no-pretty-print",
+   "az deployment group create --resource-group rg1 --template-file main.bicep --confirm-with-what-if",
+   "az deployment group create --resource-group rg1 --template-file main.bicep --validation-level Template"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The what-if operation predicts resource changes without deploying. On its own it only reports; combined with a deployment through --confirm-with-what-if, it shows the changes and asks whether to continue, which gives a reviewed deployment in one command.",
+  "rationale": [
+   "Incorrect: what-if previews the changes but never deploys, so the engineer must run a second command to deploy. Use it on its own, for example in pull request checks.",
+   "Incorrect: --no-pretty-print returns the what-if result as JSON for programmatic evaluation, for example in a pipeline. It neither deploys nor prompts.",
+   "Correct: --confirm-with-what-if, or -c, runs what-if first, shows the predicted changes, and prompts to acknowledge them before the deployment continues, all in one command.",
+   "Incorrect: Template performs static validation only and skips preflight and permission checks. It neither shows predicted changes nor asks for confirmation."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/deploy-what-if"
+ },
+ {
+  "id": "3.1.4-08",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The Phone Company deploys a Bicep sample that creates a Microsoft Foundry resource, a project, and a model deployment. The deployment fails with the error ServiceModelDeprecating.\n\nWhat should you do?",
+  "choices": [
+   "Update the model name and version in the modelDeployment resource",
+   "Run the deployment again with --validation-level Template to skip the preflight checks",
+   "Upgrade the Azure CLI to a version later than 2.75 and run the deployment again",
+   "Run the deployment again in Complete mode to replace the existing deployment"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Templates that include model deployments age as model versions retire. ServiceModelDeprecating means the template references a retired or deprecating model version; the fix is in the template, not in deployment switches.",
+  "rationale": [
+   "Correct: the error means the template references a retired or deprecating model version. Update the model name and version, or comment out the block; az cognitiveservices model list shows generally available models.",
+   "Incorrect: Template validation skips preflight and permission checks, but the deployment still requests a deprecating model version and fails when the resource is created.",
+   "Incorrect: Azure CLI versions 2.74 to 2.75 can mask the real error behind a message that the content was already consumed. This error is explicit, so the CLI version is not the cause.",
+   "Incorrect: Complete mode deletes resources in the resource group that the template does not define. It does not change which model version the deployment requests."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/create-resource-template"
+ },
+ {
+  "id": "3.1.4-09",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An engineer at Northwind Traders runs az deployment group create for a Microsoft Foundry Bicep file by using Azure CLI 2.75. The deployment fails, and the only message is The content for this response was already consumed.\n\nWhat should you do to find the cause of the failure?",
+  "choices": [
+   "Run az deployment group what-if with the --no-pretty-print switch",
+   "Rerun the deployment with --debug and search for Exception Details",
+   "Run az bicep build to compile main.bicep to an ARM JSON template",
+   "Run the deployment again with the --confirm-with-what-if switch"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Azure CLI versions 2.74 to 2.75 have a known bug that replaces the real deployment error with a message that the content was already consumed. The debug output still contains the actual exception, so rerun the command with --debug and search for Exception Details.",
+  "rationale": [
+   "Incorrect: what-if predicts changes, and --no-pretty-print returns them as JSON. It does not reveal the real error of a deployment that already failed.",
+   "Correct: Azure CLI 2.74 to 2.75 masks the actual deployment error with this message. Run the command again with --debug and search the output for Exception Details to find the real error.",
+   "Incorrect: az bicep build compiles the file to JSON and catches syntax errors, but the masked error comes from the deployment in Azure, which compilation does not run.",
+   "Incorrect: --confirm-with-what-if previews changes and prompts before the deployment. The masking bug still hides the real error when the deployment fails."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/create-resource-template"
+ },
+ {
+  "id": "3.1.4-10",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "case": "C-d",
+  "stem": "You need to complete the properties section of foundry-claims in main.bicep. The solution must meet the security requirements.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```bicep\nproperties: {\n  allowProjectManagement: true\n  customSubDomainName: 'foundry-claims'\n  [[1]]: true\n  publicNetworkAccess: [[2]]\n  networkInjections: [\n    {\n      scenario: 'agent'\n      subnetArmId: [[3]]\n      useMicrosoftManagedNetwork: [[4]]\n    }\n  ]\n}\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "restrictOutboundNetworkAccess",
+     "disableLocalAuth",
+     "dynamicThrottlingEnabled"
+    ],
+    "why": [
+     "Incorrect: restrictOutboundNetworkAccess restricts outbound network access from the account. It does not turn off key-based authentication, so API keys would keep working.",
+     "Correct: disableLocalAuth set to true turns off key-based authentication, so every client must use Microsoft Entra ID, which meets the requirement that no client uses an API key.",
+     "Incorrect: dynamicThrottlingEnabled is a throughput setting of the account. It does not change which authentication methods are allowed, so API keys would keep working."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "'Disabled'",
+     "'Enabled'"
+    ],
+    "why": [
+     "Correct: Disabled requires clients to connect through a private endpoint, which the offices reach over ExpressRoute and VNet1, so the public internet cannot reach foundry-claims.",
+     "Incorrect: Enabled keeps the public endpoint reachable. The requirements state that foundry-claims must not accept traffic from the public internet."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "snetEndpoints.id",
+     "snetAgents.id",
+     "''"
+    ],
+    "why": [
+     "Incorrect: snet-endpoints hosts the private endpoints. The agent client needs its own dedicated subnet delegated to Microsoft.App/environments.",
+     "Correct: subnetArmId names the subnet that the agent client is injected into. snet-agents is the dedicated agent subnet in VNet1, where user-defined routes send outbound traffic through FW1; delegate it to Microsoft.App/environments first.",
+     "Incorrect: an empty subnetArmId is used together with useMicrosoftManagedNetwork set to true for a managed virtual network, which cannot send egress through FW1."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "false",
+     "true"
+    ],
+    "why": [
+     "Correct: false keeps the injection in the customer subnet that subnetArmId names, so agent egress follows the routes of VNet1 through FW1.",
+     "Incorrect: true selects a Microsoft-managed virtual network with its own managed firewall. You cannot bring your own Azure Firewall to it, so traffic would not pass through FW1."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   0,
+   1,
+   0
+  ],
+  "explanation": "Key-based authentication, inbound access, and outbound agent networking are all account properties. disableLocalAuth removes API keys, publicNetworkAccess Disabled forces private endpoints, and networkInjections with a customer subnet and useMicrosoftManagedNetwork false injects agents into your own virtual network. networkInjections must be set when the account is created.",
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/managed-virtual-network"
+ },
+ {
+  "id": "3.1.4-11",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "case": "C-d",
+  "stem": "You need to configure encryption for foundry-claims in main.bicep. The solution must meet the security requirements.\n\nWhat should you do?",
+  "choices": [
+   "Use the system-assigned identity, grant it Key Vault Crypto User in a module, and omit keyVersion",
+   "Use id-foundry-cmk, set identityClientId to its client ID, and set keyVersion to the current version",
+   "Use id-foundry-cmk, set identityClientId to its client ID, and omit the keyVersion property",
+   "Use id-foundry-cmk, grant it get, wrapKey, and unwrapKey in a vault access policy, and omit keyVersion"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The identity must be able to use the key before encryption is enabled. A user-assigned identity can be authorized in advance, so a single deployment can create the resource with encryption already set; a system-assigned identity forces a create-then-update sequence. Omitting keyVersion makes the resource follow key rotations automatically.",
+  "rationale": [
+   "Incorrect: a system-assigned identity exists only after the resource is created, so Learn creates the resource without encryption first and applies the key in a second step. foundry-claims would briefly exist without the customer-managed key.",
+   "Incorrect: a fixed keyVersion pins the resource to one key version, so you must update the resource after each rotation. That breaks the requirement that rotations take effect without changes to main.bicep.",
+   "Correct: id-foundry-cmk already has Key Vault Crypto User on kv-claims, so one deployment can set encryption at creation. identityClientId selects the identity, and omitting keyVersion uses the latest key version after a rotation.",
+   "Incorrect: kv-claims uses the Azure RBAC permission model, so vault access policies are not used, and id-foundry-cmk already has Key Vault Crypto User. Use access policies only for vaults that use that permission model."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/encryption-keys-portal"
+ }
+]

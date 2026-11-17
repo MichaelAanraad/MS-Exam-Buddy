@@ -1,0 +1,28 @@
+[
+ {
+  "id": "C-c",
+  "title": "Wide World Importers",
+  "sections": [
+   [
+    "Overview",
+    "Wide World Importers is a freight forwarding company that has logistics hubs in Rotterdam, Singapore, and Chicago. Customers track their shipments in a web portal. A data science team of four people trained a classification model that predicts whether a shipment will arrive more than one day late. An MLOps team of two engineers deploys and operates the models in Azure Machine Learning.\n\nWide World Importers plans to replace the manual nightly scoring process, to secure the real-time endpoint that the portal uses, and to roll out a new version of the model without disrupting customers."
+   ],
+   [
+    "Existing environment",
+    "**Azure Machine Learning**\n\n- An Azure Machine Learning workspace named mlw-shipping-prod is in the West Europe region. The workspace does not use network isolation.\n- The model is registered in the workspace as delay-model. Version 3 was logged by using mlflow.sklearn and is registered in MLflow format with a signature. Version 4 was registered last week, also in MLflow format.\n- A compute cluster named cpu-cluster uses Standard_DS3_v2 nodes and scales between 0 and 8 nodes.\n- A datastore named shipments points to an Azure Blob Storage container. Every night at 01:00, the warehouse management system exports all open shipments to a new folder in the datastore as about 5,000 CSV files.\n\n**Real-time scoring**\n\n- A managed online endpoint named delay-online uses key-based authentication.\n- delay-online has one deployment named blue. blue serves delay-model version 3 by using no-code deployment, with the Standard_DS3_v2 instance type, an instance count of 2, and the default request settings. blue receives 100 percent of the traffic.\n- The customer portal is an Azure App Service app named App1. App1 calls the scoring URI of delay-online and sends the primary key of the endpoint, which is stored in an app setting.\n\n**Nightly scoring**\n\nEvery morning, a data scientist runs a notebook on a personal compute instance to score the exported files. The notebook fails when the compute instance is stopped, and the results are often late.\n\n**Problem statements**\n\nEvery weekday between 08:00 and 10:00, App1 receives HTTP 429 responses from delay-online. Scoring one request takes about 300 milliseconds, and the CPU use of the blue instances stays below 40 percent."
+   ],
+   [
+    "Requirements",
+    "**Real-time requirements**\n\n- App1 will sign in to Azure by using a system-assigned managed identity. After the change, no key, token, or other secret for delay-online can be stored in the configuration of App1.\n- Each scoring request to delay-online must be authorized by Azure RBAC based on the identity of the caller.\n- delay-online must keep serving requests when an instance is lost during system maintenance. Use the instance count that Microsoft recommends for high availability.\n\n**Nightly scoring requirements**\n\n- All exported files must be scored every night by 05:00 without manual steps.\n- The predictions of each night must be written to one CSV file.\n- The compute that runs the nightly scoring must not incur cost between runs.\n- The amount of custom code that the team must maintain must be minimized."
+   ],
+   [
+    "Rollout requirements",
+    "**Rollout of delay-model version 4**\n\n- Version 4 must be deployed to delay-online as a deployment named green.\n- Before any customer receives a prediction from version 4, the team must compare the latency and the error rate of green with those of blue by using copies of 20 percent of the production requests for one week. The responses that customers receive must not change during this stage.\n- After that stage, green must answer 10 percent of the production requests.\n- The QA team must be able to send test requests to green from a REST client at any stage, without changing the traffic settings.\n- If the error rate of green increases, all requests must return to blue within minutes, and green must stay available for investigation."
+   ],
+   [
+    "Other information",
+    "Hub managers view weekly delay reports in Power BI. The company plans to replace the warehouse management system in 2027; the export format will stay the same."
+   ]
+  ]
+ }
+]

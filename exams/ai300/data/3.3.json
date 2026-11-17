@@ -1,0 +1,906 @@
+[
+ {
+  "id": "3.3.1-01",
+  "obj": "3.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. builds a ticket-routing app that calls a gpt-4.1 deployment through the Chat Completions API. The system message describes the task. You want to add three solved examples so that the model treats them as earlier turns of the conversation and copies their answer style.\n\nHow should you add the examples to the messages array?",
+  "choices": [
+   "As additional system messages placed after the real user message at the end of the array",
+   "As pairs of user and assistant messages after the system message and before the real user message",
+   "As assistant messages only, placed before the system message at the start of the array",
+   "As one user message, placed after the real user message, that lists all three examples"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Few-shot learning conditions the model with input and output examples for the current inference only; the model is not retrained. In the Chat Completions API, instructions go in the system message and examples go in the messages array as user and assistant pairs after the system message, followed by the real user input. Choose and order the examples carefully, because models can show recency bias.",
+  "rationale": [
+   "Incorrect: the system message carries the instructions and context, and it typically appears first as the highest-level set of instructions. Late system messages do not present the examples as solved user and assistant turns. Use the system message for role, scope, and output rules.",
+   "Correct: with the Chat Completions API, few-shot examples are typically added to the messages array as example user and assistant interactions after the initial system message. The model reads them as prior turns and conditions its next answer on them, which is what the stem asks for.",
+   "Incorrect: assistant messages without matching user messages show only answers, not input and output pairs, and the system message is expected first. Use assistant messages as the answer half of each example pair, placed after the system message.",
+   "Incorrect: the model answers the last user message, so a block of examples after the real question becomes the input it responds to, instead of priming it. Put examples before the real user message, as separate user and assistant turns."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "3.3.1-02",
+  "obj": "3.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. uses a gpt-4.1 deployment to draft clauses for standard contracts. The current request uses temperature 1.0 and top_p 1.0, and the drafts vary too much between runs. You need more focused and concrete output, and you must follow the Microsoft guidance for these sampling parameters.\n\nWhat should you do?",
+  "choices": [
+   "Leave temperature at 1.0 and raise max_tokens.",
+   "Set temperature to 1.6 and leave top_p at 1.0.",
+   "Set temperature to 0.2 and set top_p to 0.2.",
+   "Set temperature to 0.2 and leave top_p at 1.0."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Temperature and top_p both control the randomness of the sampled tokens. A low temperature gives focused, concrete output for factual or legal text, and a high temperature gives divergent output for creative work. The general recommendation is to change one of the two parameters at a time, not both. Most reasoning models do not accept these sampling parameters at all.",
+  "rationale": [
+   "Incorrect: max_tokens limits how long a response can be. It does not change how random the token choices are, so the drafts would still vary between runs. Raise it when answers are cut off before they finish.",
+   "Incorrect: temperature can be set between 0 and 2, and a higher value makes the output more random and divergent. High values suit creative tasks such as a fictional story, not standard contract clauses that must stay consistent.",
+   "Incorrect: top_p also controls randomness, but in a different way. The general recommendation is to change temperature or top_p, not both at once. Lowering top_p alone is an alternative when you keep temperature unchanged.",
+   "Correct: a lower temperature, such as 0.2, makes the output more focused and concrete, which is recommended for legal documents. Changing only temperature follows the guidance to alter one of the two sampling parameters at a time, not both."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "3.3.1-03",
+  "obj": "3.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys has an internal assistant that answers questions about a returns policy. The full policy text is included in each prompt. When the answer is not in the policy text, the model still produces a confident answer that the text does not support.\n\nWhich change to the prompt should you make?",
+  "choices": [
+   "Place --- separators and the heading POLICY around the policy text in the prompt.",
+   "End the prompt with the cue \"Answer:\" so that the model starts its response directly.",
+   "Tell the model to respond with \"not found\" when the policy text does not contain the answer.",
+   "Tell the model to take a step-by-step approach before it gives the final answer."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "When a model has no permitted way to say that it lacks information, it tends to produce the most likely answer anyway. Give it an out, such as responding 'not found', and make the fallback behavior explicit in the system message. Cues, separators, and chain-of-thought shape format and reasoning, but they do not replace an explicit fallback.",
+  "rationale": [
+   "Incorrect: separators and uppercase headings make the prompt easier to parse and can act as stop sequences, but they give the model no alternative when the answer is missing. Use them to separate sources or steps clearly.",
+   "Incorrect: a cue primes the start and format of the output, for example a bulleted list or a single answer. It does not tell the model what to do when the source text lacks the answer. Use a cue to steer format or focus.",
+   "Correct: giving the model an out, an alternative path when it cannot complete the task, helps it avoid generating false responses. An explicit fallback such as 'not found' is also part of the system message checklist as a when-unsure policy.",
+   "Incorrect: step-by-step (chain-of-thought) prompting helps non-reasoning models on multistep problems and makes answers easier to assess. It supplies no fallback path, so the model can still reason its way to an unsupported answer."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "3.3.1-04",
+  "obj": "3.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank summarizes call transcripts with a gpt-4.1 deployment. The prompt starts with the instruction \"Summarize the call in exactly three bullet points\", followed by the transcript. Tests show that the model follows the instruction for short transcripts but often writes paragraphs for transcripts of several thousand tokens. Each transcript must be summarized in one request.\n\nWhat should you try first?",
+  "choices": [
+   "Repeat the instruction after the transcript at the end of the prompt.",
+   "Add the instruction \"Take a step-by-step approach\" before the transcript.",
+   "Split the transcript into three parts and send each part separately.",
+   "Set both temperature and top_p to 0 in the request for the summary."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The order of information in a prompt matters. With long primary content, an instruction that appears only at the start can lose influence because of recency bias, so Microsoft suggests repeating the instruction at the end and evaluating the effect. Start with clear instructions, and double down by stating them before and after the content.",
+  "rationale": [
+   "Correct: models can show recency bias, so information at the end of a long prompt can influence the output more than information at the beginning. Repeating the instruction after the transcript is the documented experiment for this problem, and it keeps everything in one request.",
+   "Incorrect: a step-by-step instruction is chain-of-thought prompting, which helps non-reasoning models with multistep reasoning. Placed before a long transcript, it has the same distance problem and does not restate the format. Use it for reasoning tasks such as calculations.",
+   "Incorrect: separate requests break the one-request requirement and produce three partial summaries. Breaking a task down helps when one prompt asks for several different steps, not when an instruction loses influence in long content.",
+   "Incorrect: temperature and top_p control the randomness of token sampling, and the guidance is to change only one of them. Less randomness does not make the model weigh an early instruction more heavily. Use a low temperature for focused, consistent wording."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "3.3.1-05",
+  "obj": "3.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud moves a classification prompt from a gpt-4.1 deployment to an o4-mini deployment. The Chat Completions request contains a system message, a user message, max_completion_tokens set to 800, and temperature set to 0.2. After the move, the request fails with an unsupported parameter error. You still need a setting to trade answer quality against latency.\n\nWhat should you do?",
+  "choices": [
+   "Replace temperature with top_p set to 0.2 in the request.",
+   "Remove temperature from the request and tune the reasoning_effort parameter.",
+   "Change the role of the system message to developer in the request.",
+   "Replace max_completion_tokens with max_tokens set to 800."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Reasoning models such as o4-mini and the GPT-5 reasoning series accept a different parameter set from earlier chat models. Sampling parameters such as temperature and top_p, and the max_tokens parameter, are unsupported; you use max_completion_tokens (Chat Completions) or max_output_tokens (Responses API) and tune reasoning_effort. Prompts for reasoning models work best with a clear goal, firm constraints, and an explicit output contract.",
+  "rationale": [
+   "Incorrect: top_p is in the same list of parameters that reasoning models do not support, so the request would still fail. top_p is an alternative to temperature only on non-reasoning models such as gpt-4.1.",
+   "Correct: reasoning models do not support temperature, top_p, and several other sampling parameters, so temperature causes the error. reasoning_effort (for example low, medium, or high) controls how long the model thinks, which is the setting for quality versus latency.",
+   "Incorrect: developer messages are functionally the same as system messages, and o4-mini treats a system message as a developer message, so the role is not the cause. Do not send both a developer message and a system message in one request.",
+   "Incorrect: in the Chat Completions API, reasoning models work only with max_completion_tokens, and max_tokens is unsupported. The change would add a second error instead of fixing the first. Use max_output_tokens with the Responses API."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning"
+ },
+ {
+  "id": "3.3.1-06",
+  "obj": "3.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank runs one prompt agent in Foundry Agent Service for 40 branch offices. The agent instructions must contain the branch name and its opening hours, which the calling app knows for each request. The team must not create or maintain a separate agent version for each branch, because versions are used to track and evaluate instruction changes.\n\nWhat should you use?",
+  "choices": [
+   "Two variants of an LLM node in a prompt flow, one variant for each group of branches",
+   "One agent version for each branch, created with create_version and that branch's values",
+   "Metadata key-value pairs on the agent version that store the values for every branch",
+   "Structured inputs with {{branchName}} placeholders in the instructions, filled at runtime"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Structured inputs parameterize a prompt agent with handlebar templates such as {{variableName}} in agent instructions, response-level instructions, system or developer message content, and some tool properties. You declare each input in the agent definition with a description, schema, and optional default, and pass actual values in each request. Do not pass secrets as structured inputs, because logs or traces can capture them.",
+  "rationale": [
+   "Incorrect: prompt flow variants compare prompt alternatives inside a flow, and prompt flow will be retired on April 20, 2027 and is no longer recommended for new development. Variants also do not personalize one agent per request. Use prompt flow only for existing flows that you migrate.",
+   "Incorrect: every create_version call produces a new immutable version, so 40 branches would mean 40 versions to maintain, which the stem forbids. Create a new version when the instructions themselves change and you want to track or evaluate that change.",
+   "Incorrect: metadata is a set of up to 16 key-value pairs for storing extra information about the version and querying it through the API. The structured inputs feature, not metadata, fills placeholders in the instructions. Use metadata for labels such as a commit ID.",
+   "Correct: structured inputs are handlebar placeholders in the agent definition. The app supplies the values in each Responses API request, so the instructions are customized at runtime without creating separate agent versions for each configuration."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/structured-inputs"
+ },
+ {
+  "id": "3.3.1-07",
+  "obj": "3.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. migrates a claims-review app to a gpt-5 deployment and calls it through the Responses API. Auditors want to see how the model reached each decision. The current prompt ends with \"Think step by step and print your full reasoning before the final answer.\" You must give the auditors insight into the reasoning in a supported way.\n\nWhat should you do?",
+  "choices": [
+   "Move the instruction into a developer message so that it has the priority of a system message.",
+   "Keep the instruction and set reasoning_effort to high so that more reasoning is written out.",
+   "Remove the instruction and request a reasoning summary with the reasoning summary parameter.",
+   "Store the reasoning token count from the usage details of each response for the audit trail."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Reasoning models think with hidden reasoning tokens that are not returned as message content. The supported way to expose their thinking is the reasoning summary parameter of the Responses API; chain-of-thought prompts are meant for non-reasoning models, and extracting raw reasoning by other methods is unsupported and can violate the Acceptable Use Policy. Tune the depth of reasoning with reasoning_effort, not with prompt instructions.",
+  "rationale": [
+   "Incorrect: developer messages are functionally the same as system messages, so moving the instruction changes nothing. Extracting raw reasoning through prompts remains unsupported and can lead to throttling or suspension when detected.",
+   "Incorrect: reasoning_effort controls how much the model thinks before it answers, which mainly changes the number of hidden reasoning tokens. It does not make extracting raw reasoning through a prompt supported. Raise it when hard tasks need deeper reasoning.",
+   "Correct: with the latest reasoning models and the Responses API, the reasoning summary parameter returns summaries of the model's chain-of-thought reasoning. Other attempts to extract raw reasoning are not supported. Summaries are not guaranteed for every request, so the audit process must allow for gaps.",
+   "Incorrect: reasoning models report how many hidden reasoning tokens they used, for example reasoning_tokens in completion_tokens_details. The count helps with cost and latency analysis, but it shows nothing about how a decision was reached."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning"
+ },
+ {
+  "id": "3.3.1-08",
+  "obj": "3.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam, Inc. extracts contact details from email text with a gpt-4.1 deployment and the Chat Completions API. The request sets response_format to {\"type\": \"json_object\"}, and the system message says to return JSON with the keys name, company, and phone_number. The responses are always valid JSON, but some omit or rename keys, which breaks the parser. You must guarantee that every response follows the schema.\n\nWhat should you do?",
+  "choices": [
+   "Set response_format to json_schema with strict set to true and a schema that marks every key as required",
+   "Keep json_object and add three user and assistant example pairs that show the exact JSON keys",
+   "Keep json_object, set temperature to 0, and repeat the key names at the end of the system message",
+   "Switch to the Responses API and keep JSON mode by setting text.format to the json_object type"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "JSON mode guarantees syntactically valid JSON only. Structured outputs (type json_schema with strict set to true) make the model follow your JSON Schema; in Chat Completions the schema goes in response_format, and in the Responses API it goes in text.format. Strict schemas use a subset of JSON Schema: all fields required, additionalProperties set to false, and limits on nesting.",
+  "rationale": [
+   "Correct: structured outputs make the model follow the JSON Schema that you supply, which JSON mode cannot ensure. With strict enabled, every field must be listed as required and additionalProperties must be false; you can emulate an optional value with a union type that includes null.",
+   "Incorrect: few-shot examples make the expected keys more likely, but they condition the model rather than constrain it, so a response can still drift from the schema. Use examples to teach style or labels when exact schema adherence is not required.",
+   "Incorrect: a lower temperature and repeated instructions reduce variation, but JSON mode still guarantees only valid JSON, not your keys. A system message influences the model but does not guarantee compliance.",
+   "Incorrect: json_object in text.format is the same older JSON mode, which ensures valid JSON but not a schema, and it is not recommended for gpt-4o and newer models. In the Responses API, set text.format to the json_schema type for structured outputs."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/structured-outputs"
+ },
+ {
+  "id": "3.3.1-09",
+  "obj": "3.3.1",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Woodgrove Bank creates a prompt agent whose instructions include the name of a branch office. The calling app passes the branch name with each request. When a request does not include a branch name, the agent must use the value Head office.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nfrom azure.ai.projects.models import PromptAgentDefinition, StructuredInputDefinition\n\nagent = project.agents.create_version(\n    agent_name=\"branch-assistant\",\n    definition=PromptAgentDefinition(\n        model=\"gpt-5-mini\",\n        instructions=\"You help customers of the [[1]] branch.\",\n        structured_inputs={\n            \"branchName\": StructuredInputDefinition(\n                description=\"Name of the branch office\",\n                [[2]],\n                schema={\"type\": \"string\"},\n            ),\n        },\n    ),\n)\n\nwith project.get_openai_client(agent_name=agent.name) as openai:\n    conversation = openai.conversations.create()\n    response = openai.responses.create(\n        conversation=conversation.id,\n        input=\"When do you open on Saturday?\",\n        [[3]],\n    )\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "{branchName}",
+     "{{branchName}}",
+     "${branchName}",
+     "{% branchName %}"
+    ],
+    "why": [
+     "Incorrect: single braces are Python str.format syntax. In this plain string they are sent as literal text, so the model would read {branchName} instead of the branch. Use single braces only when Python formats the string itself.",
+     "Correct: structured inputs use handlebar template syntax, {{variableName}}, in the agent instructions. Foundry replaces the placeholder with the runtime value before the model processes the request.",
+     "Incorrect: ${VAR_NAME} is the azd substitution syntax in azure.yaml, resolved from the azd environment at deploy time. It is not the placeholder syntax that structured inputs fill in for each request.",
+     "Incorrect: {% ... %} marks a control statement in a Jinja2 template, such as a loop or condition, not a variable. Structured inputs use Handlebars syntax, where conditions are written as {{#if}} blocks."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "default_value=\"Head office\"",
+     "required=True"
+    ],
+    "why": [
+     "Correct: default_value supplies the value that the placeholder uses when the request does not provide one, which meets the Head office requirement for requests without a branch name.",
+     "Incorrect: required=True makes callers supply a branch name in every request, which contradicts the requirement that requests without a branch name still work. Use it when no sensible default exists, such as for a user's name."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "metadata={\"branchName\": \"Utrecht\"}",
+     "extra_body={\"structured_inputs\": {\"{{branchName}}\": \"Utrecht\"}}",
+     "extra_body={\"structured_inputs\": {\"branchName\": \"Utrecht\"}}"
+    ],
+    "why": [
+     "Incorrect: metadata is a general set of key-value pairs for tagging objects. The structured inputs feature reads runtime values from the structured_inputs field, so the placeholder would fall back to its default.",
+     "Incorrect: the keys in structured_inputs are the input names declared in the agent definition, such as branchName, without the handlebar braces. The braces belong only in the template text.",
+     "Correct: runtime values go in the structured_inputs object of the Responses API request, keyed by input name. With the Python OpenAI client, you pass this field through extra_body, as the Foundry samples show."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   0,
+   2
+  ],
+  "explanation": "A structured input is declared once in the agent definition, with a description, a schema, and an optional default_value or required flag, and is referenced in the instructions with handlebar syntax. Each request passes actual values in structured_inputs, so one agent version serves many configurations. Handlebars also supports {{#if}} and {{#each}} for conditional and repeated instruction text.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/structured-inputs"
+ },
+ {
+  "id": "3.3.1-10",
+  "obj": "3.3.1",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Tailspin Toys builds four features on a gpt-4.1 deployment and must choose one prompt technique for each feature.\n\nWhich technique should you use for each feature? To answer, drag the appropriate techniques to the correct features. Each technique may be used once, more than once, or not at all.",
+  "choices": [
+   "Grounding context",
+   "Clear syntax with separators",
+   "Few-shot examples",
+   "Chain-of-thought instructions",
+   "Prime the output with a cue"
+  ],
+  "targets": [
+   "Feature1: label tickets with the company's own category names; a few correctly labeled tickets exist, but no written category definitions",
+   "Feature2: answer questions about an internal policy that was published last week and was never part of the training data",
+   "Feature3: make every answer start as a bulleted list, without adding example pairs to the prompt",
+   "Feature4: solve multistep pricing questions and show each intermediate step so that a reviewer can check the result"
+  ],
+  "answer": [
+   2,
+   0,
+   4,
+   3
+  ],
+  "rationale": [
+   "Feature1 needs a labeling pattern that exists only as labeled tickets, so few-shot examples that pair inputs with the company's labels condition the model for the request; the documented headline example shows a model inferring categories this way.",
+   "Feature2 depends on facts the model has never seen, so the prompt must supply grounding data. Grounding is the documented way to get reliable, up-to-date answers in scenarios that are not purely creative.",
+   "Feature3 only needs the answer to start in a fixed form, so a cue at the end of the prompt, such as a heading followed by a dash, primes the model to continue as a bulleted list without example pairs.",
+   "Feature4 needs visible intermediate steps on a non-reasoning model, so chain-of-thought instructions ask gpt-4.1 to work step by step and show the steps, which reduces errors and makes the answer easier to assess."
+  ],
+  "notes": [
+   "Supplies source data, such as documents or search results, for the model to draw its answer from. Use it whenever answers must be reliable and current rather than creative.",
+   "Uses separators such as --- and uppercase section headings to mark sources and steps, and lets you use a separator as a stop sequence. Use it to make complex prompts and outputs easier to parse.",
+   "Adds input and output pairs, as user and assistant messages in chat, that condition the model for the current request. Use it when the model must copy a pattern, label set, or style.",
+   "Tells a non-reasoning model to work step by step and show its steps before the final answer. Use it for multistep reasoning; reasoning models reason internally and expose it only through reasoning summaries.",
+   "Ends the prompt with the first words of the desired answer, such as a list heading, so the model continues in that form. Use it to steer the format or to get a single output."
+  ],
+  "explanation": "Pick the technique by what is missing: examples teach a pattern, grounding supplies facts, a cue fixes the start and format of the answer, and chain-of-thought exposes intermediate steps on non-reasoning models. Clear syntax with separators improves parsing but adds no knowledge, pattern, or reasoning.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "3.3.1-11",
+  "obj": "3.3.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Contoso, Ltd. has an HR assistant built on a prompt agent. Reviews show three problems: the assistant answers questions about topics outside HR, it invents answers when the HR policies do not cover a question, and a downstream app cannot parse its replies because the format changes between responses.\n\nWhich three changes should you make to the agent instructions? Each correct answer presents part of the solution.",
+  "choices": [
+   "Define the HR topics that the assistant handles and list the topics that it must decline.",
+   "Move the rules into the user message of each request so that they override the instructions.",
+   "State what the assistant does when the policies do not cover a question or a request is unclear.",
+   "Add an example for every edge case found in the reviews so that the instructions cover each one.",
+   "Specify a small, stable output contract, such as JSON with fixed keys, for every reply."
+  ],
+  "answer": [
+   0,
+   2,
+   4
+  ],
+  "explanation": "A maintainable system message states the assistant's job, its boundaries, the output format, and a when-unsure policy, without conflicting or hidden requirements. It influences the model but does not guarantee compliance, so test with realistic and adversarial prompts and layer it with other mitigations such as structured outputs, filtering, and evaluation.",
+  "rationale": [
+   "Correct: role and scope define what the assistant is allowed to do. Listing the topics to handle and the topics to avoid addresses the off-topic answers, and scope statements matter most for domain-specific assistants.",
+   "Incorrect: the system message, which holds the agent instructions, is the highest-level set of instructions for the conversation. Moving the rules into user messages mixes them with user content that can conflict with them. Keep the rules in the instructions.",
+   "Correct: a when-unsure policy makes the fallback behavior explicit, for example to ask a clarifying question or to say that it does not know, which addresses the invented answers.",
+   "Incorrect: overly long system messages consume context window and can overfit to specific examples while still failing on new edge cases. Test with realistic and adversarial prompts and iterate instead of adding an example for every case.",
+   "Correct: when an app needs structured output, an explicit output contract with fixed keys, kept small and stable, addresses the changing format. For a hard guarantee, combine it with structured outputs."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/advanced-prompt-engineering"
+ },
+ {
+  "id": "3.3.2-01",
+  "obj": "3.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys has a draft system prompt for a product-question bot. Before the team writes any code or creates an agent, it wants to send the same prompt and system message to three model deployments at the same time and compare the responses, latency, and token use side by side.\n\nWhich feature should the team use?",
+  "choices": [
+   "Version history comparison of chat output in the Agents playground",
+   "Compare models mode in the model playground of the Foundry portal",
+   "Side-by-side comparison of evaluation runs on the evaluation page",
+   "Variants of an LLM node in a flow in the Foundry (classic) portal"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The model playground is the fastest place to compare a prompt across models: compare mode sends the same prompt context, system message, and parameters to up to three deployments and streams the results side by side. When a candidate looks good, you can open it in VS Code for the Web or save it as an agent and move on to versioned, measured comparison.",
+  "rationale": [
+   "Incorrect: version history compares saved versions of one existing agent, including chat output for identical inputs. The team has not created an agent yet. Use it to compare two saved versions of an agent's instructions.",
+   "Correct: compare mode runs up to three models in parallel with a synchronized prompt, system message, and parameter configuration, so differences in response quality, latency, and token throughput show side by side. No code or agent is needed.",
+   "Incorrect: comparing evaluation runs needs completed runs over a test dataset and gives statistical results per metric. It suits a measured decision later, not a quick side-by-side look at three deployments before any code exists.",
+   "Incorrect: prompt flow variants compare prompt alternatives inside a flow, but prompt flow will be retired on April 20, 2027 and is no longer recommended for new development. Use it only to maintain flows that you migrate to Microsoft Agent Framework."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/concept-playgrounds"
+ },
+ {
+  "id": "3.3.2-02",
+  "obj": "3.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Relecloud edits the instructions of a prompt agent in the Agents playground and tests the unsaved changes. The developer now wants to compare the new instructions with the YAML definition of the previous version and run a full evaluation of the change.\n\nWhat should the developer do first?",
+  "choices": [
+   "Open the agent code in VS Code for the Web.",
+   "Publish the agent as an agent application.",
+   "Edit the current version so it keeps its number.",
+   "Save the changes as a new version of the agent."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Prompt agent versions are the unit of comparison in Foundry. Each save creates an immutable version, and the version history lets you compare agent setup, chat output for identical inputs, and YAML definitions. Evaluations, traces, and conversation history attach to saved versions, not to unsaved playground drafts.",
+  "rationale": [
+   "Incorrect: Open in VS Code for the Web brings a code snippet that references the agent into a cloud development environment. It helps you continue in code, but it does not save the playground edits as a version.",
+   "Incorrect: publishing creates an agent application with a stable endpoint that you can share and integrate. It comes after you have a version that you are happy with, and it is not needed to compare or evaluate versions.",
+   "Incorrect: each saved version is immutable, so you cannot change an existing version in place. Any modification creates a new version, which prevents accidental overwrites and keeps versions comparable.",
+   "Correct: unsaved changes are temporary. To view conversation history, compare versions, or run full evaluations, you save the changes, which creates a new immutable version that you can compare with earlier versions."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/development-lifecycle"
+ },
+ {
+  "id": "3.3.2-03",
+  "obj": "3.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. evaluates version 4 and version 5 of a prompt agent with the same 12-row test dataset and the groundedness evaluator. In the comparison view, with the version 4 run as the baseline, the groundedness cell for version 5 shows Inconclusive.\n\nWhat should you do to get a reliable decision?",
+  "choices": [
+   "Rerun both versions on the same 12 rows, and then compare all four runs together.",
+   "Set the version 5 run as the baseline instead, and then compare the two runs again.",
+   "Rerun both versions on a larger dataset with the same evaluator, and then compare again.",
+   "Treat the result as a regression, and keep version 4 as the version for production."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Foundry comparison view applies a t-test per metric and marks each cell as improved, degraded, changed, or inconclusive, with strong and weak levels by p-value. Inconclusive points to too few samples or no significant difference. Compare prompt versions on a test set that is large enough to reach significance, and keep the dataset and evaluators identical across runs.",
+  "rationale": [
+   "Incorrect: repeating the same 12 inputs adds no new cases, so the comparison still rests on a very small and identical set of examples. Repeat runs help to gauge run-to-run variation, not to cover more scenarios.",
+   "Incorrect: changing the baseline only flips the direction of the comparison. The same 12 samples still give the same weak statistical evidence, so the result stays inconclusive.",
+   "Correct: Inconclusive means too few examples or a p-value of 0.05 or higher. A larger test set with the same evaluator gives the t-test more samples, so a real difference between the instructions is more likely to reach significance.",
+   "Incorrect: Inconclusive is not a degraded result. DegradedStrong and DegradedWeak mark a statistically significant move in the wrong direction. Keeping version 4 might be right later, but this result does not show a regression."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluate-results"
+ },
+ {
+  "id": "3.3.2-04",
+  "obj": "3.3.2",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. has evaluation runs for three versions of a prompt agent in a Foundry project. A user selects the three runs on the evaluation detail page, selects Compare, and sets the version 1 run as the baseline.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Hovering over a cell in the comparison view shows the sample size and the p-value for that metric.",
+   "The comparison view is saved, so the user can reopen it later from the list of evaluation runs.",
+   "Each cell shows how that run deviates from the version 1 run, which acts as the reference point."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Comparing evaluation runs is the measured way to compare prompt variants in Foundry. Select two or more runs, choose a baseline, and read the t-test results per metric with their color-coded significance levels. The view is regenerated on demand rather than stored.",
+  "rationale": [
+   "Yes: each cell shows the statistical significance result with a color code, and hovering over the cell shows the sample size and p-value, which helps you judge how strong the evidence is.",
+   "No: the comparison view is not saved. If you leave the page, you reselect the runs and select Compare again to regenerate the view, so keep track of which runs you compared.",
+   "Yes: a baseline run is the reference point, and the view shows how each other selected run deviates from it, with labels such as ImprovedStrong, DegradedWeak, or Inconclusive."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluate-results"
+ },
+ {
+  "id": "3.3.2-05",
+  "obj": "3.3.2",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Woodgrove Bank has a prompt agent named Agent1 that does not use the Microsoft Copilot harness. You want Foundry to generate improved instructions for the current version, score each candidate against that version on a registered dataset whose columns already match the evaluators, and make the best candidate a new agent version.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "On the Optimize tab of Agent1, create an optimization run and select the baseline version, optimization model, and evaluation model.",
+   "In the Dataset step, select the registered evaluation dataset.",
+   "In the Criteria step, select the built-in or custom evaluators that score each response.",
+   "On the Review step, check the estimated cost range and submit the run.",
+   "Compare the candidates with the baseline, and then select Promote candidate for the best candidate.",
+   "In the Dataset step, map the dataset columns to the inputs of the selected evaluators.",
+   "Add two variants of the LLM node in a prompt flow and submit a batch run with both variants."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "The prompt agent optimizer generates candidate instructions, function-tool descriptions, or model choices, scores the baseline and every candidate with the same dataset and evaluators, and lets you promote the winner as a new version. If every candidate scores lower than the baseline, keep the current version and revise the dataset, evaluators, or settings before you run it again.",
+  "rationale": [
+   "Step 1: the wizard starts on the Optimize tab with Create optimization run. The Target step sets the baseline agent version (the latest by default), the optimization model, the maximum number of candidates, and the evaluation model.",
+   "Step 2: the optimizer scores the baseline and each candidate with the same dataset. You can generate one from agent traces, select a dataset registered in the project, or upload a JSONL file.",
+   "Step 3: evaluators define how each response is scored. You can select built-in evaluators, an existing custom evaluator, or a new custom rubric evaluator, as long as each one is compatible with the dataset schema.",
+   "Step 4: the Review step summarizes the target, dataset, and evaluators and shows a modeled cost range (minimum, estimated, and maximum) before you submit. The estimate is not a spending limit or a final charge.",
+   "Step 5: after the run succeeds, compare candidate scores, instruction changes, and token usage with the baseline. Promote candidate creates a new agent version with the optimized configuration.",
+   "Incorrect: the wizard does not support column mapping, which is why the dataset must already use the column names that the selected evaluators require. Use an evaluation with a data mapping when your column names differ.",
+   "Incorrect: prompt flow variants were the classic way to compare prompts, but prompt flow will be retired on April 20, 2027 and is no longer recommended for new development. It also cannot promote a result to a prompt agent version."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent"
+ },
+ {
+  "id": "3.3.2-06",
+  "obj": "3.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. runs the prompt agent optimizer for Agent1 and promotes the best candidate. The promotion succeeds and creates version 9. A week later, traces show that version 7 still serves all user traffic, and version 8, which a developer saved earlier, was never used either. No errors were reported.\n\nWhat should you do so that users get the optimized instructions?",
+  "choices": [
+   "Set version 9 as the active version in the details of Agent1.",
+   "Promote the same candidate again from the completed optimization run.",
+   "Run the optimizer again with version 9 selected as the baseline.",
+   "Save Agent1 again in the Agents playground to create a newer version."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Creating, saving, or promoting a version does not by itself route traffic to it. When an agent is pinned to a specific version, you switch traffic by making the new version active, and you roll back by pointing back to the last good version. Directing requests to specific versions is what enables controlled deployment and rollback.",
+  "rationale": [
+   "Correct: the agent is pinned to a specific version, version 7, so new versions do not receive traffic until you set one as the active version in the agent's details. The promotion created version 9 but did not change the pin.",
+   "Incorrect: promoting again only creates another version with the same configuration. While the agent stays pinned to version 7, that version would not receive traffic either.",
+   "Incorrect: a new optimization run generates and scores more candidates against version 9. It does not change which version serves traffic, and the optimized instructions are already in version 9.",
+   "Incorrect: saving creates yet another immutable version, and the pin keeps traffic on version 7, as version 8 already showed. Saving captures edits; it does not switch the version that serves users."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent"
+ },
+ {
+  "id": "3.3.2-07",
+  "obj": "3.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud uses the microsoft/ai-agent-evals GitHub Action. Version 3 of a Foundry agent named support-agent serves users, and version 4 contains new instructions. One workflow run must evaluate both versions on the same queries and report a pairwise statistical comparison of version 4 against version 3 as the baseline.\n\nWhich inputs should you configure for the action?",
+  "choices": [
+   "agent-ids set to support-agent:4,support-agent:3 and no value set for baseline-agent-id",
+   "agent-ids set to support-agent:3,support-agent:4 and baseline-agent-id set to support-agent:3",
+   "agent-ids set to support-agent and deployment-name set to the model deployments of both versions",
+   "Two workflow runs, the first with agent-ids set to support-agent:3 and the second with support-agent:4"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The ai-agent-evals action invokes each listed agent version with the queries in the data file, runs the listed evaluators, and writes a summary with confidence intervals. With several agent IDs, the report adds a pairwise significance test against the baseline, which is the first ID unless baseline-agent-id is set. To control cost, do not run it on every commit.",
+  "rationale": [
+   "Incorrect: when baseline-agent-id is not provided, the first agent in agent-ids is used as the baseline. Listing version 4 first makes the new version the baseline, which reverses the comparison that the stem requires.",
+   "Correct: agent-ids takes one or more agents in agent-name:version format, separated by commas, and multiple agents are compared with statistical tests. baseline-agent-id names the reference, so version 4 is compared against version 3.",
+   "Incorrect: deployment-name is the one model deployment that the action uses for evaluation, not a way to select agent versions. An agent name without a version does not identify the two versions to compare.",
+   "Incorrect: separate runs each produce a report for one agent version, so no single report contains the pairwise statistical comparison between the versions. List both IDs in agent-ids in one run instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluation-github-action"
+ },
+ {
+  "id": "3.3.2-08",
+  "obj": "3.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys measures a prompt agent with an azd evaluation that reads the agent's production traces. The team ran azd ai eval run start on Monday, deployed new instructions with azd deploy on Tuesday, invoked the agent, and ran the evaluation again on Wednesday. The scores differ, but the team cannot tell whether the difference comes from the new instructions or from different user traffic.\n\nWhat should the team do for the next prompt change?",
+  "choices": [
+   "Keep the trace-sourced evaluation, and compare the Monday and Wednesday runs in the Foundry comparison view.",
+   "Keep the trace-sourced evaluation, and add --fail-on with a pass-rate threshold to both runs around azd deploy.",
+   "Keep the trace-sourced evaluation, and send more test requests to the updated agent before the second run starts.",
+   "Use a dataset-sourced evaluation with pinned dataset and evaluator versions, and run a named baseline before azd deploy."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Trace-sourced evaluations measure what happened in real use, which suits monitoring but not a controlled comparison of prompts. For a prompt change, use a fixed dataset, pin dataset and evaluator versions, keep grading thresholds unchanged, and name a baseline run before you deploy the change, because azd ai eval run start does not pin an agent version.",
+  "rationale": [
+   "Incorrect: the comparison view runs statistical tests between runs, but these runs scored different interactions, so a difference can still come from the traffic instead of the instructions. A comparison is only as controlled as its inputs.",
+   "Incorrect: --fail-on gates a run on a threshold, such as a pass rate, which suits CI quality gates. It does not make two trace-sourced runs comparable, because each run still reads different user interactions.",
+   "Incorrect: invoking the updated agent is needed so that a trace-sourced evaluation has new traces to read, but those traces still come from different interactions than Monday's. Trace-sourced runs do not guarantee an identical set of cases.",
+   "Correct: a dataset-sourced evaluation runs a fixed set of cases, so both runs score the same inputs. Pinning dataset and evaluator versions and naming a baseline run before azd deploy gives a controlled comparison, because run start does not pin an agent version."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/azure-developer-cli-evaluation"
+ },
+ {
+  "id": "3.3.2-09",
+  "obj": "3.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud has a prompt agent named Agent1 in a Microsoft Foundry project. Version 6 serves all users. A developer saved version 7 with rewritten instructions. Before traffic moves to version 7, you must determine whether version 7 improves groundedness and task adherence compared with version 6, backed by a statistical significance test, by using tooling that is not scheduled for retirement.\n\nSolution: You evaluate both versions with the same test dataset and evaluators, select both evaluation runs, select Compare, and set the version 6 run as the baseline.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Comparing evaluation runs against a baseline is the current, statistically backed way to compare prompt versions in Foundry. Keep the dataset and evaluators identical so that the instructions are the only difference between the runs.",
+  "rationale": [
+   "Correct: both versions are scored on the same dataset with the same evaluators, and the comparison with version 6 as the baseline gives per-metric t-test results, such as ImprovedStrong or Inconclusive, which is the statistical evidence the goal requires.",
+   "Incorrect: the solution does meet the goal. No would be right if the runs used different datasets or evaluators, because then a difference could come from the inputs instead of the instructions."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluate-results",
+  "series": "S-prompt"
+ },
+ {
+  "id": "3.3.2-10",
+  "obj": "3.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud has a prompt agent named Agent1 in a Microsoft Foundry project. Version 6 serves all users. A developer saved version 7 with rewritten instructions. Before traffic moves to version 7, you must determine whether version 7 improves groundedness and task adherence compared with version 6, backed by a statistical significance test, by using tooling that is not scheduled for retirement.\n\nSolution: You copy the instructions of both versions into a prompt flow as two variants of an LLM node and run a batch run with both variants.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Prompt flow, including its variants feature, will be retired on April 20, 2027. For new prompt comparisons, use saved agent versions with evaluation run comparison, the prompt agent optimizer, or the evaluation GitHub Action.",
+  "rationale": [
+   "Incorrect: prompt flow variants can compare prompt alternatives, but prompt flow in Microsoft Foundry and Azure Machine Learning will be retired on April 20, 2027 and is no longer recommended for new development, which violates the tooling constraint.",
+   "Correct: the solution does not meet the goal. Prompt flow is the right tool only for maintaining existing flows while you migrate them to Microsoft Agent Framework before the retirement date."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry-classic/concepts/prompt-flow",
+  "series": "S-prompt"
+ },
+ {
+  "id": "3.3.2-11",
+  "obj": "3.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud has a prompt agent named Agent1 in a Microsoft Foundry project. Version 6 serves all users. A developer saved version 7 with rewritten instructions. Before traffic moves to version 7, you must determine whether version 7 improves groundedness and task adherence compared with version 6, backed by a statistical significance test, by using tooling that is not scheduled for retirement.\n\nSolution: You open the version history of Agent1 and compare the chat output of version 6 and version 7 by sending the same inputs to both versions.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Version history comparisons (agent setup, chat output, and YAML definition) show what changed between versions. Measured claims such as better groundedness need evaluation runs on a shared dataset and a statistical comparison.",
+  "rationale": [
+   "Incorrect: the chat output comparison shows response differences between versions for identical inputs, which is useful for a quick qualitative check. It produces no evaluator scores and no significance test, so it cannot show that groundedness and task adherence improved.",
+   "Correct: the solution does not meet the goal. Chat output comparison is the right choice for spotting behavior changes quickly before you invest in a full evaluation."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/development-lifecycle",
+  "series": "S-prompt"
+ },
+ {
+  "id": "3.3.3-01",
+  "obj": "3.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. deploys a prompt agent with the Azure Developer CLI (azd). The team wants every change to the agent instructions to be reviewed in a GitHub pull request, with a line-by-line history of who changed what.\n\nWhich location should the team use for the agent instructions?",
+  "choices": [
+   "A secret in Azure Key Vault that a project connection exposes to the agent when it runs",
+   "Saved agent versions in the Foundry portal, edited and saved directly in the Agents playground",
+   "The agent definition in the azure.yaml file of the repository, deployed with azd deploy",
+   "The flow.dag.yaml file of a prompt flow folder that is downloaded and checked in to the repository"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Treat prompts as code: keep the agent definition, including its instructions, in the Git repository, review changes through pull requests, and deploy from the repository. With azd, the azure.ai.agent service in azure.yaml holds the definition inline or through a $ref to a separate file, and azd deploy creates the agent version in Foundry, where each version is immutable.",
+  "rationale": [
+   "Incorrect: Key Vault and project connections hold secrets such as keys and tokens, not instructions that reviewers must read and diff. Keep secrets out of prompts, and keep prompts out of secret stores.",
+   "Incorrect: Foundry versions are immutable and comparable, but edits saved in the portal do not pass through a pull request and leave no Git history. Use playground edits for quick experiments, then move the final text into the repository.",
+   "Correct: with azd, the prompt agent definition, including its instructions, is stored in azure.yaml (inline, or in a separate YAML file that the azure.ai.agent service references), so pull requests show every diff and Git keeps the history. azd deploy then creates the agent version in Foundry.",
+   "Incorrect: flow.dag.yaml was how prompt flow definitions were kept in Git, but prompt flow will be retired on April 20, 2027 and is no longer recommended for new development. Use it only while you migrate existing flows."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/prompt-agents"
+ },
+ {
+  "id": "3.3.3-02",
+  "obj": "3.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. prepares the first commit of an azd agent project to a shared GitHub repository. The project folder contains azure.yaml, an agents folder with a direct agent definition, an infra folder with Bicep files that azd ai agent init --infra ejected, and a .azure folder.\n\nWhich item should you exclude from the commit?",
+  "choices": [
+   "The .azure folder",
+   "The azure.yaml file",
+   "The agents folder",
+   "The infra folder"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "In an azd agent project, commit what defines the solution (azure.yaml, agent definitions, source code, and infrastructure files) and exclude environment state and secrets (.azure, credentials, and Terraform state). Environment-specific values are supplied per azd environment instead of being hardcoded in committed files.",
+  "rationale": [
+   "Correct: the .azure folder holds the azd environment configuration, including values that the CLI prompts for, such as tokens or endpoints. The guidance is not to commit credentials or the .azure directory.",
+   "Incorrect: azure.yaml is the project manifest that declares the Foundry project, model deployments, and agent services. Teammates and CI need it to provision and deploy, so it belongs in source control.",
+   "Incorrect: the agents folder contains the agent definition with the instructions, which is exactly what you want versioned and reviewed through pull requests.",
+   "Incorrect: the infra folder holds the Bicep or Terraform files that you eject with --infra. Commit the infrastructure configuration with the application code; exclude state such as Terraform state, .terraform/, and saved plans."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/set-up-ci-cd-cli"
+ },
+ {
+  "id": "3.3.3-03",
+  "obj": "3.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. releases a reviewed set of prompt changes from the main branch of its repository. The release marker must record who created it, when it was created, and a message that describes the prompt changes.\n\nWhich command should you run?",
+  "choices": [
+   "git tag prompts-v2.1",
+   "git tag -a prompts-v2.1 -m \"Refund tone and escalation rules\"",
+   "git branch prompts-v2.1",
+   "git commit --amend -m \"prompts-v2.1 refund tone and escalation\""
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Tags mark specific commits, such as a release of a prompt set. Annotated tags store the tagger, date, and message and suit releases; lightweight tags are plain pointers to a commit. Tag names cannot contain spaces, tildes, or colons, and a common convention is lowercase words separated by hyphens.",
+  "rationale": [
+   "Incorrect: without -a and a message, git tag creates a lightweight tag, which is only a pointer to a commit with no tagger, date, or message. Use it for private or temporary markers.",
+   "Correct: git tag -a with -m creates an annotated tag, which stores the tagger, the date, and a message in addition to the commit it points to. Push the tag so that the rest of the team can see the release marker.",
+   "Incorrect: a branch is a movable line of development that advances with each new commit, so it does not stay fixed on the released commit. Use a branch for ongoing work, such as fixes for a release.",
+   "Incorrect: --amend replaces the last commit with a new one, which rewrites history that might already be shared, and it creates no release marker. Use it only to fix your own latest commit before you push it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/devops/repos/git/git-tags?view=azure-devops"
+ },
+ {
+  "id": "3.3.3-04",
+  "obj": "3.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank deploys the same prompt agent to dev, staging, and production azd environments from one Git branch. The model deployment name differs in each environment. The team wants one azure.yaml file in source control for all three environments.\n\nWhat should the team do?",
+  "choices": [
+   "Hardcode the production name in azure.yaml and edit the file before each dev or staging deployment.",
+   "Keep one branch for each environment, each with its own azure.yaml and model deployment name.",
+   "Define the model deployment name as a structured input and pass it in each Responses API request.",
+   "Use a ${MODEL_DEPLOYMENT} placeholder in azure.yaml and set its value in each azd environment."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Keep one environment-neutral definition in Git and supply environment-specific values per azd environment. azd resolves ${VAR_NAME} placeholders in azure.yaml from the selected environment's .env file under .azure, which stays out of source control.",
+  "rationale": [
+   "Incorrect: editing the committed file before each deployment creates unreviewed, uncommitted changes and makes deployments hard to reproduce. Keep environment-specific values out of the file with substitution instead.",
+   "Incorrect: a branch per environment duplicates azure.yaml, lets the environments drift apart, and breaks the one-branch requirement. Use branches for development work that merges back, not to hold environment configuration.",
+   "Incorrect: structured inputs fill handlebar placeholders in instructions, messages, and certain tool properties for each request. The model is not among the properties that support them. Use them for per-request values such as a customer name.",
+   "Correct: azure.yaml supports ${VAR_NAME} substitution. The placeholder resolves from .azure/<env>/.env at deploy or run time, so the same file works for dev, staging, and production, and you set each value with azd env set."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/cli-agent-development"
+ },
+ {
+  "id": "3.3.3-05",
+  "obj": "3.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A commit on the main branch of Tailspin Toys changed agents/support.yaml and evals/data.json. The commit was pushed, and other team members already pulled it. The prompt change must be undone in both files, and the local and remote histories of main must continue to match.\n\nWhich command should you run before you push?",
+  "choices": [
+   "git checkout <commit ID> agents/support.yaml",
+   "git reset --hard <commit ID>",
+   "git revert <commit ID>",
+   "git reset --mixed HEAD"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Undo pushed, shared commits with git revert, which adds a commit that reverses the changes instead of rewriting history. Reserve git reset for local commits that nobody else has, and use git checkout <commit ID> <file> to restore one file. For prompts, a revert also leaves an auditable record of the rollback.",
+  "rationale": [
+   "Incorrect: this restores one file to the version stored in a specific commit. It leaves evals/data.json unchanged and creates an uncommitted change. Use it to recover the earlier content of a single file.",
+   "Incorrect: git reset --hard moves the branch to an earlier commit and discards later changes. On a pushed, shared branch, your local history then differs from the remote, and publishing it needs a force push.",
+   "Correct: git revert creates a new commit that reverses the changes of the selected commit in every file it touched. The original commit stays in history, so local and remote histories continue to match for everyone who pulled.",
+   "Incorrect: git reset --mixed HEAD only unstages staged changes and keeps the file contents. It does not undo a commit that is already in the history of main."
+  ],
+  "ref": "https://learn.microsoft.com/azure/devops/repos/git/undo?view=azure-devops"
+ },
+ {
+  "id": "3.3.3-06",
+  "obj": "3.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A developer at Relecloud adds the API key of a partner service to the agent definition file in the repository so that a tool of the prompt agent can call the service. A reviewer blocks the pull request.\n\nWhat should the developer do with the key?",
+  "choices": [
+   "Store the key in a project connection and reference the connection instead of the key.",
+   "Remove the key from the file and pass it as a structured input in each request instead.",
+   "Keep the key in the file and add the agent definition file to the .gitignore file instead.",
+   "Remove the key from the file and store it in the metadata of the agent version instead."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Prompts and agent definitions live in source control, so they must never contain secrets. Reference keys through project connections backed by a managed secret store, which can be your own Key Vault, and keep secrets out of structured inputs, metadata, and logs.",
+  "rationale": [
+   "Correct: Foundry guidance is to store secrets in a managed secret store and reference them through connections instead of hardcoding them in code, configuration files, or prompts. The connection keeps the key out of the repository and the instructions.",
+   "Incorrect: application logs or tracing can capture structured input values as part of the request, so the guidance is not to pass secrets, tokens, or credentials as structured inputs. Use them for nonsecret values such as a branch name.",
+   "Incorrect: ignoring the file removes the agent definition from version control, so the prompt is no longer reviewed or versioned, and the key still sits in a plain file. Use .gitignore for local state such as the .azure folder.",
+   "Incorrect: version metadata is a set of key-value pairs returned with the version object through the API, useful for descriptive information such as a commit ID. It is plain data, not a secret store, so the key would still be exposed."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/development-lifecycle"
+ },
+ {
+  "id": "3.3.3-07",
+  "obj": "3.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. keeps agent instructions in agents/support.yaml. A reviewer wants to see, in a terminal, every change on the prompt/refund-tone branch compared with the main branch before approving the pull request.\n\nWhich command should the reviewer run?",
+  "choices": [
+   "git diff HEAD agents/support.yaml",
+   "git diff main prompt/refund-tone",
+   "git log --oneline main",
+   "git status --untracked"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Because prompts are plain text in Git, the usual diff tools work for prompt review: git diff with two branch names shows the changes between the branches, and git diff HEAD with a file name shows local edits. Pull requests show the same diff in the browser, which is where reviewers approve prompt changes.",
+  "rationale": [
+   "Incorrect: git diff HEAD with a file name compares the working copy of one file with the last commit on the current branch. It shows local uncommitted edits, not the changes between two branches.",
+   "Correct: git diff with two branch names compares the tips of the two branches, so the reviewer sees every line that differs between them, in the instructions and in any other file.",
+   "Incorrect: git log --oneline lists abbreviated commit IDs and messages for a branch. It shows which commits exist, not the content changes to the instructions.",
+   "Incorrect: git status lists changed and untracked files in the local working tree, without their content. Use it to check what you are about to stage, not to review another branch."
+  ],
+  "ref": "https://learn.microsoft.com/azure/devops/repos/git/command-prompt?view=azure-devops"
+ },
+ {
+  "id": "3.3.3-08",
+  "obj": "3.3.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. runs a GitHub Actions workflow that creates a new version of a prompt agent from the main branch after each merge. Auditors must be able to read the exact Git commit of any agent version from the version object that the Foundry API returns. The model must not receive the commit ID, and the agent name must stay the same.\n\nWhat should the workflow do when it creates each version?",
+  "choices": [
+   "Create an annotated Git tag that records the new agent version on the commit.",
+   "Append the commit SHA as the final line of the instructions of the new version.",
+   "Create the version under a new agent name that ends with the short commit SHA.",
+   "Add the commit SHA as a key-value pair in the metadata of the new agent version."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Link Git and Foundry in both directions: Git history shows what changed in a prompt, and each Foundry agent version can carry metadata, such as the commit SHA, so that you can trace a running version back to its source. Versions are immutable, so the metadata recorded at creation stays with that exact definition.",
+  "rationale": [
+   "Incorrect: a tag maps the commit to a version number on the Git side, but auditors who start from the Foundry version object would find nothing there. Tags complement version metadata; they do not replace it.",
+   "Incorrect: everything in the instructions is sent to the model, which breaks the requirement, and every version would differ in prompt text even when the instructions did not change.",
+   "Incorrect: an agent's name cannot be changed after creation, and a new name creates a separate agent instead of a new version of the same agent. Callers that refer to agent_name:version would also break.",
+   "Correct: an agent version accepts metadata, a set of up to 16 key-value pairs (keys up to 64 and values up to 512 characters) for structured information that you can query through the API, without changing the definition that the model receives."
+  ],
+  "ref": "https://learn.microsoft.com/rest/api/microsoft-foundry/aiproject"
+ },
+ {
+  "id": "3.3.3-09",
+  "obj": "3.3.3",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Fabrikam, Inc. keeps its prompt agent definition in agents/support.yaml in a GitHub repository. Your local main branch is up to date. Team policy says that nothing is ever staged or committed on main, and every change reaches main through a reviewed pull request. You need to change the instructions and request a review.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `git checkout -b prompt/refund-tone`.",
+   "Edit the instructions, and then run `git add agents/support.yaml`.",
+   "Run `git commit -m \"Tighten refund tone in support instructions\"`.",
+   "Run `git push -u origin prompt/refund-tone`.",
+   "Open a pull request from prompt/refund-tone into main.",
+   "Run `git push --force -u origin main`.",
+   "Run `git reset --hard HEAD`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "A prompt change follows the normal Git feature-branch flow: create a branch, stage and commit the edited definition, publish the branch, and open a pull request so reviewers see the diff before the change reaches main. Avoid working directly in main, and never rewrite shared history with a force push.",
+  "rationale": [
+   "Step 1: git checkout -b creates the feature branch and switches to it, so the later staging and commit happen on the branch and not on main, as the policy requires.",
+   "Step 2: after you edit the file, git add stages that file for the next commit. Staging must come before the commit, and doing it on the feature branch respects the policy.",
+   "Step 3: git commit -m records the staged change with a message that reviewers see in the pull request and in the file history.",
+   "Step 4: git push -u publishes the local branch to the remote and sets upstream tracking, so the branch exists on GitHub and can be the source of a pull request.",
+   "Step 5: a pull request from the feature branch into main lets reviewers see the diff of the instructions and approve it before the change reaches main.",
+   "Incorrect: a force push rewrites the remote branch history with your local history, and pushing main directly also bypasses the pull request. Force pushes fit only your own unshared branches.",
+   "Incorrect: git reset --hard HEAD discards all uncommitted changes, so it would throw away the edited instructions. Use it only when you want to abandon local edits."
+  ],
+  "ref": "https://learn.microsoft.com/azure/devops/repos/git/command-prompt?view=azure-devops"
+ },
+ {
+  "id": "3.3.3-10",
+  "obj": "3.3.3",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Contoso, Ltd. has an azd project whose azure.yaml declares one azure.ai.project service for an existing Foundry project. A teammate committed a direct agent definition in YAML to ./agents/support.yaml. On a new workstation, you cloned the repository, configured and selected an azd environment for the existing project, and signed in with azd auth login. No azd extensions are installed. You must add the definition as a service named support-agent, create the agent version in Foundry, and confirm the persisted definition of the agent, which is the only agent in the project.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `azd ext install microsoft.foundry`.",
+   "Run `azd ai agent add support-agent --file ./agents/support.yaml`.",
+   "Run `azd deploy support-agent`.",
+   "Run `azd ai agent show --output json`.",
+   "Run `azd ext install azure.ai.evaluations`.",
+   "Run `azd ai agent init --template ./agents/support.yaml --src .`.",
+   "Run `azd ai agent init --kind prompt --agent-name support-agent --model gpt-5-mini`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "With azd, a committed direct agent definition becomes a Foundry agent version in two moves: agent add wires the file into azure.yaml locally, and azd deploy creates the version remotely. The agent commands come from the Foundry extensions, so install them first, and verify the result with agent show.",
+  "rationale": [
+   "Step 1: the azd ai agent command group comes from the azure.ai.agents extension, which the microsoft.foundry meta-package installs with the other core Foundry extensions. No azd ai agent command works before this step.",
+   "Step 2: agent add adds the support-agent service to azure.yaml with a root $ref to the YAML file, and it requires exactly one azure.ai.project service, which this project has. It validates locally only; it does not authenticate, create remote resources, or deploy.",
+   "Step 3: azd deploy for the service creates the agent version in the Foundry project from the referenced definition. This is the first step that changes anything in Foundry.",
+   "Step 4: agent show reads the deployed agent and, with --output json, returns its persisted definition, which confirms that the definition from the file arrived in Foundry.",
+   "Incorrect: azure.ai.evaluations provides the azd ai eval commands for evaluations and quality gates. It is installed separately and does not provide the azd ai agent commands.",
+   "Incorrect: --template adopts a full azure.yaml project document, and that workflow does not accept standalone agent definitions. Use agent add --file to attach a direct definition to an existing project.",
+   "Incorrect: init --kind prompt scaffolds a new prompt agent project from command-line values, so the definition would not come from the committed file. Use it to start a new prompt agent project, not to adopt an existing definition file."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/init-agent-project"
+ },
+ {
+  "id": "3.3.3-11",
+  "obj": "3.3.3",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Tailspin Toys keeps prompt agent definitions in the agents folder of a GitHub repository. A workflow must deploy a candidate version and run an evaluation gate for pull requests that target main, but only when files in the agents folder change. The workflow must sign in to Azure with OpenID Connect (OIDC), must not store a client secret, and must follow the Microsoft guidance for evaluation gates on pull requests.\n\nHow should you complete the workflow? To answer, select the appropriate options in the answer area.\n\n```yaml\non:\n  [[1]]:\n    branches: [ main ]\n    paths:\n      - [[2]]\n\npermissions:\n  id-token: [[3]]\n  contents: read\n\njobs:\n  prompt-gate:\n    if: github.event.pull_request.head.repo.full_name == github.repository\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: azure/login@v2\n        with:\n          [[4]]\n          tenant-id: ${{ vars.AZURE_TENANT_ID }}\n          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}\n      # deploy the candidate version and run the evaluation gate\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "pull_request_target",
+     "pull_request",
+     "push"
+    ],
+    "why": [
+     "Incorrect: the Microsoft guidance for an OIDC evaluation gate says that the workflow must not use pull_request_target and that fork pull requests must skip the protected job. Use pull_request with a same-repository check, as the if condition of the job does here.",
+     "Correct: the pull_request event runs the workflow for pull requests, and branches: [ main ] limits it to pull requests that target main, so the gate runs before a prompt change merges.",
+     "Incorrect: push with branches: [ main ] runs after a change lands on main, so the gate would evaluate prompts that were already merged. Use push for deployment after merge, not for pull request gating."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "'agents/**'",
+     "'**.yaml'",
+     "'.github/workflows/**'"
+    ],
+    "why": [
+     "Correct: agents/** matches every file at any depth under the agents folder, so the workflow runs only when a prompt definition changes, which also keeps evaluation costs down.",
+     "Incorrect: **.yaml matches YAML files anywhere in the repository, such as azure.yaml, so the gate would also run for changes outside the agents folder.",
+     "Incorrect: .github/workflows/** matches only workflow files, so changes to the prompt definitions would not trigger the gate. Add it next to the agents path when edits to the workflow must be tested too."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "none",
+     "write"
+    ],
+    "why": [
+     "Incorrect: none removes the permission, so the job cannot request an OIDC token and the Azure sign-in fails. Use none for jobs that do not call Azure.",
+     "Correct: id-token: write lets the job request the OIDC token that azure/login exchanges with Microsoft Entra ID, and contents: read covers the checkout."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "client-id: ${{ vars.AZURE_CLIENT_ID }}",
+     "creds: ${{ secrets.AZURE_CREDENTIALS }}"
+    ],
+    "why": [
+     "Correct: with OIDC, azure/login needs the client ID of the Microsoft Entra application or user-assigned managed identity that has the federated credential, plus the tenant and subscription IDs. No secret is stored.",
+     "Incorrect: creds passes service principal credentials, including a secret, stored in GitHub secrets, which the no-secret requirement rules out. Use it only where federated credentials are not available."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   0,
+   1,
+   0
+  ],
+  "explanation": "A prompt gate in GitHub Actions runs on pull_request for the target branch with a paths filter, so it fires only when prompt files change and evaluation costs stay low. OIDC sign-in needs id-token: write and the client, tenant, and subscription IDs with no stored secret, and fork pull requests must not reach the protected job.",
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluation-github-action"
+ }
+]

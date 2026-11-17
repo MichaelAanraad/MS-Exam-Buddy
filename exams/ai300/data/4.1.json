@@ -1,0 +1,1058 @@
+[
+ {
+  "id": "4.1.1-01",
+  "obj": "4.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. has a JSONL file that contains 800 test cases written by subject matter experts. Each line has query, response, and ground_truth fields. The team will run cloud evaluations in Microsoft Foundry against this file from several pipelines, and every run must use the same versioned copy of the data.\n\nHow should you provide the test data to the evaluation runs?",
+  "choices": [
+   "Upload it with datasets.upload_file and pass its ID as a file_id source",
+   "Embed the rows in each run request as a file_content source",
+   "Generate queries during each run by using the synthetic data generation source",
+   "Build a dataset from recent agent traces on the Data Generation tab"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A cloud evaluation run reads its rows either from a dataset that you upload to the Foundry project (referenced by file_id) or from rows sent inline with the request (file_content). Uploaded datasets are versioned and reusable across runs, which makes them the choice for CI/CD and regression testing; inline data is meant for small experiments. Synthetic generation and traces-to-dataset create data when you do not have curated cases yet.",
+  "rationale": [
+   "Correct: uploading the JSONL file creates a versioned dataset in the Foundry project. Each run references it by ID through a file_id source, so every pipeline evaluates the same version, which is the approach Learn recommends for production testing and CI/CD.",
+   "Incorrect: a file_content source sends the rows inline with the run request. It suits quick experiments with a few rows, but it creates no versioned dataset, so the pipelines cannot share one reviewed copy of the 800 test cases.",
+   "Incorrect: the synthetic data generation source creates new queries from a prompt and sends them to a target during the run. Use it when you have no test data; here it would replace the expert-written cases and their ground truth with generated queries.",
+   "Incorrect: a trace-based dataset is built from the real production traffic of an agent. Use it to capture how users actually interact with a deployed agent; it does not contain the expert-written test cases that the team already has."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/cloud-evaluation-datasets"
+ },
+ {
+  "id": "4.1.1-02",
+  "obj": "4.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. exports test data from a legacy help desk as JSONL. Each line has the fields question and answer. You configure a cloud evaluation in Microsoft Foundry that scores the stored answers with the builtin.relevance evaluator, which requires query and response inputs.\n\nWhich data_mapping entry should you add for the query input?",
+  "choices": [
+   "\"query\": \"{{item.question}}\"",
+   "\"query\": \"{{sample.question}}\"",
+   "\"question\": \"{{item.query}}\"",
+   "\"query\": \"{{sample.output_text}}\""
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "In a Foundry cloud evaluation, data_mapping connects each evaluator input (the key) to your data (the value) with template syntax: {{item.field}} reads a field from the dataset row, and {{sample.output_text}} or {{sample.output_items}} reads what a model or agent target generated during the run. Add a mapping whenever your column names differ from the evaluator inputs, for example question instead of query.",
+  "rationale": [
+   "Correct: data_mapping keys are evaluator inputs and the values point to dataset fields. {{item.question}} reads the question field of each row, so the relevance evaluator receives that text as its query input.",
+   "Incorrect: the sample namespace holds output that a model or agent target generates during the run. Use {{sample.*}} for generated responses; the question field is part of the dataset, so it is read through {{item.*}}.",
+   "Incorrect: this entry is reversed. The key must be the evaluator input name (query), and the value must reference the dataset field. A key named question is not an input of the relevance evaluator, so the query input stays empty.",
+   "Incorrect: {{sample.output_text}} is the text response that a model or agent target generates at run time. Map it to the response input in target evaluations; it never contains the user question, and this dataset run has no target at all."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/evaluation-dataset-schema"
+ },
+ {
+  "id": "4.1.1-03",
+  "obj": "4.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys evaluates a Foundry agent named Agent1. The evaluation run uses the azure_ai_target_completions data source, so each query in the dataset is sent to Agent1 at run time. The run must include builtin.task_adherence, which needs the full structured interaction, including the tool calls that Agent1 makes.\n\nWhich value should you map to the response input of builtin.task_adherence?",
+  "choices": [
+   "{{sample.output_items}}",
+   "{{sample.output_text}}",
+   "{{item.response}}",
+   "{{item.tool_definitions}}"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When an evaluation run calls a model or agent target, the generated output is exposed through the sample namespace: {{sample.output_text}} for the plain text response and {{sample.output_items}} for the structured output, including tool calls. Dataset fields such as query or ground_truth still come from {{item.*}}. Pick the mapping that matches what each evaluator needs: text evaluators take output_text, agent evaluators such as Task Adherence take output_items.",
+  "rationale": [
+   "Correct: {{sample.output_items}} contains the structured output that Agent1 generates during the run, including its tool calls. Task Adherence needs this full interaction to judge whether the agent followed its instructions and constraints.",
+   "Incorrect: {{sample.output_text}} is only the plain text answer of the agent. It is the right mapping for evaluators that expect a string, such as coherence or violence, but it drops the tool calls that Task Adherence needs.",
+   "Incorrect: {{item.response}} reads a response that is stored in the dataset. In a target evaluation the agent generates a new response for each query and any stored response is ignored, so this would not score the output of Agent1.",
+   "Incorrect: tool_definitions describes the tools that are available to an agent (names, descriptions, and parameter schemas). It is an extra input for some agent evaluators, not the response that the agent produced during the run."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/cloud-evaluation-targets"
+ },
+ {
+  "id": "4.1.1-04",
+  "obj": "4.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud is about to launch a Foundry agent that answers insurance questions. The agent has no production traffic yet. The team has a 40-page policy document and needs single-turn questions with reference answers that are grounded in that document. The team must be able to review the generated rows before any evaluation runs.\n\nWhat should you do?",
+  "choices": [
+   "Submit a Simple QnA generation job with a prompt source and the policy document as a file source",
+   "Submit a trace-based dataset generation job for the agent with a seven-day date range",
+   "Generate queries inside the evaluation run by using the azure_ai_synthetic_data_gen_preview source",
+   "Submit a simulation seed generation job with the policy document as a reference file"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Foundry data generation builds an evaluation dataset when real data is missing. Simple QnA jobs create single-turn query and ground_truth pairs, simulation seed jobs create multi-turn scenario descriptions for conversation simulation, and trace-based jobs convert production traffic. Sources are an agent definition or a prompt, optionally grounded by a reference file that must be processed and contain at least 1 KB of content.",
+  "rationale": [
+   "Correct: a Simple QnA job produces a versioned dataset of single-turn query and ground_truth rows. The file source grounds the questions in the policy document, the prompt source steers them, and you can preview the rows on the Data tab before you evaluate.",
+   "Incorrect: trace-based generation turns the production traces of an agent into a dataset. Use it when an agent already serves real users; this agent has no traffic yet, so the date range contains no traces to convert.",
+   "Incorrect: this source generates queries during the evaluation run, sends them to the target, and scores the responses in one workflow. The queries are saved as a dataset for reuse, but only as part of the run, so the team cannot review them before the evaluation.",
+   "Incorrect: a simulation seed job produces scenario descriptions (test_case_description) that drive multi-turn conversation simulation. Use it for conversation-level testing, not for single-turn question and answer pairs with reference answers."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/evaluation-dataset-synthetic"
+ },
+ {
+  "id": "4.1.1-05",
+  "obj": "4.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank runs a Foundry agent named Agent1 in production. Version 3 and version 4 of Agent1 are both active and emit traces to the Application Insights resource that is connected to the project. You need to build an evaluation dataset from the last seven days of traces. The dataset must reflect only the behavior of version 4 and contain a representative subset of at most 500 rows that the service selects.\n\nWhat should you configure on the trace-based dataset generation job?",
+  "choices": [
+   "Pin the agent version to 4 and set max_samples to 500",
+   "Pin the agent version to 4 and omit max_samples",
+   "Set max_samples to 500 and set write_mode to merge",
+   "Set max_samples to 500 and leave the agent version unset"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A trace-based dataset generation job reads the spans of a deployed agent from the connected Application Insights resource. max_samples (1 through 1,000) turns on intelligent sampling and acts as a ceiling, omitting it turns sampling off, and trace_ids selects specific traces. Pin agent_version so that the job does not mix versions; write_mode overwrite (the default) or merge controls how the next dataset version is built.",
+  "rationale": [
+   "Correct: pinning agent_version limits the job to spans from version 4. Setting max_samples to 500 turns on intelligent sampling, which filters low-intent traffic and selects a diverse, representative subset with 500 rows as the ceiling.",
+   "Incorrect: omitting max_samples turns sampling off, so the job processes every matching trace in the window instead of a service-selected subset of at most 500 rows. Omit it when you want all traces from the window.",
+   "Incorrect: merge combines the new rows with the latest existing dataset version and removes duplicate trace rows. It does not filter by agent version, so spans from version 3 would still end up in the dataset.",
+   "Incorrect: without a pinned agent_version, the job mixes spans from every active version, which brings in the behavior of version 3 and weakens the evaluation signal. Learn recommends pinning the version for trace jobs."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/traces-to-dataset"
+ },
+ {
+  "id": "4.1.1-06",
+  "obj": "4.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. has the IDs of 300 responses that a Foundry agent produced in production. You upload a JSONL file that contains the response IDs as a dataset, and you create an evaluation run that uses the azure_ai_responses data source with a file_id source. The run request fails with HTTP 400 Bad Request. The evaluation must score the stored responses, not new ones.\n\nWhat should you do?",
+  "choices": [
+   "Provide the response IDs inline by using a file_content source",
+   "Convert the file to CSV and set the data source type to csv",
+   "Switch to the azure_ai_target_completions data source with an agent target",
+   "Set include_sample_schema to True in the data source configuration"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Foundry can evaluate data where it already exists: stored agent responses by response ID (azure_ai_responses) or Application Insights traces, besides uploaded datasets and targets that generate new responses. Each data source type supports specific source types. Agent response evaluations accept the response IDs only inline through file_content; a file_id source returns HTTP 400 Bad Request.",
+  "rationale": [
+   "Correct: agent response evaluations (azure_ai_responses) accept only inline data. Passing the response IDs in a file_content source resolves the 400 error, and the service retrieves and scores the responses that the agent already produced.",
+   "Incorrect: the csv data source type evaluates precomputed query and response columns in a CSV dataset. It does not retrieve stored agent responses by ID, so the run would no longer evaluate the production responses.",
+   "Incorrect: a target completions run sends each query to the agent and scores the newly generated responses. Use it to test a new agent version; here the requirement is to score the responses that were stored in production.",
+   "Incorrect: include_sample_schema exposes the output of a target through {{sample.*}} variables. It changes the schema of the evaluation, not the source type of the run, so the file_id source would still be rejected."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/cloud-evaluation-deployed-interactions"
+ },
+ {
+  "id": "4.1.1-07",
+  "obj": "4.1.1",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "case": "C-f",
+  "stem": "You need to configure the evaluation that compares TripAgent answers with the reference answers. The run uses the legacy-chats dataset as input and sends each question to the current version of TripAgent.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\ndata_source_config = DataSourceConfigCustom(\n    type=\"custom\",\n    item_schema=legacy_schema,\n    include_sample_schema=[[1]],\n)\n\ntesting_criteria = [\n    {\n        \"type\": \"azure_ai_evaluator\",\n        \"name\": \"similarity\",\n        \"evaluator_name\": \"builtin.similarity\",\n        \"initialization_parameters\": {\"deployment_name\": \"judge-mini\"},\n        \"data_mapping\": {\n            \"query\": [[2]],\n            \"response\": [[3]],\n            \"ground_truth\": [[4]],\n        },\n    },\n]\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "True",
+     "False"
+    ],
+    "why": [
+     "Correct: include_sample_schema=True exposes the output that TripAgent generates during the run through the {{sample.*}} variables, which the response mapping in Box 3 depends on.",
+     "Incorrect: with False, only the dataset fields declared in item_schema are available to the mappings. Use False for dataset-only runs that score stored responses, not for runs in which an agent generates new answers."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "{{item.question}}",
+     "{{item.query}}",
+     "{{sample.output_text}}"
+    ],
+    "why": [
+     "Correct: the legacy-chats dataset stores the customer question in the question column, so the query input of the evaluator reads {{item.question}}.",
+     "Incorrect: {{item.query}} works only when the dataset has a column named query. The legacy export names this column question, so this mapping would find no value in any row.",
+     "Incorrect: {{sample.output_text}} is the answer that TripAgent generates during the run. It belongs in the response input of the evaluator, not in the query input."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "{{sample.output_text}}",
+     "{{item.bot_answer}}",
+     "{{sample.output_items}}"
+    ],
+    "why": [
+     "Correct: Similarity expects a text response, and {{sample.output_text}} is the plain text answer that the current TripAgent version generates for each question.",
+     "Incorrect: bot_answer holds the answers of the legacy chatbot. Mapping it would score the old chatbot, while the requirement is to score the answers of the current TripAgent version.",
+     "Incorrect: {{sample.output_items}} is the structured agent output, including tool calls. Use it for agent evaluators such as Task Adherence; Similarity compares response text with the ground truth."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "{{item.agent_reference_answer}}",
+     "{{item.kb_passages}}",
+     "{{item.bot_answer}}"
+    ],
+    "why": [
+     "Correct: agent_reference_answer contains the answers that senior human agents wrote, which is the reference that the quality requirement says TripAgent answers must be compared with.",
+     "Incorrect: kb_passages contains retrieved policy text. It is the context input for a groundedness check, not a reference answer for a similarity comparison.",
+     "Incorrect: bot_answer is the output of the legacy chatbot, not a human-written reference. Using it as ground truth would measure how closely TripAgent copies the old chatbot."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "explanation": "builtin.similarity compares a response with a ground truth answer in the context of the query and needs a judge model deployment. In a target run, the query and the ground truth come from the dataset through {{item.*}}, and the response comes from the agent through {{sample.output_text}}, which requires include_sample_schema=True in the data source configuration.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/cloud-evaluation-targets"
+ },
+ {
+  "id": "4.1.1-08",
+  "obj": "4.1.1",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Adatum Corporation has a Foundry prompt agent named Agent1 and an existing evaluation object named Eval1 that defines the testing criteria. You need to generate a synthetic question and answer dataset from the instructions of Agent1, and then run Eval1 with that dataset as the input to Agent1. The code already creates an AIProjectClient named project_client and an OpenAI client named openai_client.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Call `project_client.datasets.begin_create_generation_job(job=job)` with an `AgentDataGenerationJobSource` for Agent1.",
+   "Call `poller.result()` and read the name and version from the `DatasetDataGenerationJobOutput`.",
+   "Call `project_client.datasets.get(name=output_name, version=output_version)` to get the dataset ID.",
+   "Call `openai_client.evals.runs.create()` with an `azure_ai_target_completions` data source whose `file_id` source is the dataset ID.",
+   "Poll `openai_client.evals.runs.retrieve()` until the run status is completed.",
+   "Call `project_client.datasets.upload_file()` with a local JSONL file.",
+   "Call `openai_client.files.create()` with `purpose=\"user_data\"` for a reference document.",
+   "Call `project_client.datasets.cancel_generation_job()` for the job."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "Synthetic evaluation data comes from a data generation job under project_client.datasets. The job is long-running, so you wait for its result, resolve the generated dataset by name and version, and pass the dataset ID to an evaluation run. A Simple QnA dataset uses the standard query and ground_truth schema, so it works directly as the input of a target evaluation; evaluation runs are asynchronous too and must be polled.",
+  "rationale": [
+   "Step 1: the generation job reads the instructions of Agent1 through the agent source and synthesizes single-turn query and ground_truth rows. The call returns a poller for the long-running job.",
+   "Step 2: the job runs asynchronously; poller.result() waits for it to finish and returns the outputs, including the name and version of the generated dataset.",
+   "Step 3: datasets.get() resolves the generated dataset by its name and version and returns the dataset ID, which the evaluation run needs as its file_id source.",
+   "Step 4: a target completions run sends each generated query to Agent1 and scores the responses with the testing criteria of Eval1. It cannot be created before the dataset ID is known.",
+   "Step 5: evaluation runs are processed asynchronously, so you poll runs.retrieve() until the status is completed before you read the output items or the report URL.",
+   "Incorrect: upload_file registers a local JSONL or CSV file as a dataset. Use it when you already have a test file; here the generation job creates the dataset inside the project.",
+   "Incorrect: files.create with purpose user_data uploads a reference document that can ground generation through a file source. The task generates from the instructions of Agent1 only, so no reference file is needed.",
+   "Incorrect: cancel_generation_job stops a running generation job. Use it to abandon a job that is no longer needed; here the job must finish so that its dataset can be evaluated."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/evaluation-dataset-synthetic"
+ },
+ {
+  "id": "4.1.1-09",
+  "obj": "4.1.1",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Northwind Traders prepares a JSONL evaluation file for a Foundry agent. Some rows use the messages column as input for the agent, and other rows describe scenarios for conversation simulation.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "When a run sends the messages of a row to an agent target, the messages array must end with a user message.",
+   "When a run calls an agent target, a response value that is stored in the row is scored instead of a newly generated response.",
+   "A simulation seed row needs only the test_case_description column."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The evaluation dataset schema depends on the scenario: messages for stored interactions or for target input, query and response for separate input and output, and test_case_description for simulated conversations. Columns such as ground_truth, context, and tool_definitions are added only when a selected evaluator needs them.",
+  "rationale": [
+   "Yes: for a model or agent target, Foundry sends the messages to the target and generates the next assistant response, so the array ends with a user message. A stored interaction that you want to score ends with an assistant message instead.",
+   "No: when an evaluation run calls a model or agent target, Foundry generates a new response for each input and ignores any response that is already stored in the row. To score stored responses, run a dataset evaluation without a target.",
+   "Yes: test_case_description is the only required column of a simulation seed. desired_num_turns, id, and category are optional; the simulator plays the user from the description, and conversation-level evaluators score the resulting conversation."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/evaluation-dataset-schema"
+ },
+ {
+  "id": "4.1.2-01",
+  "obj": "4.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. has a retrieval-augmented generation (RAG) application that answers employee questions from HR policy documents. Reviewers report that some answers include details that do not appear in the retrieved policy passages. You need a built-in evaluator that scores how well each response is supported by the retrieved context.\n\nWhich evaluator should you use?",
+  "choices": [
+   "Groundedness",
+   "Relevance",
+   "Coherence",
+   "Response Completeness"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Groundedness, relevance, and coherence answer different questions: is the response supported by the context, does it address the query, and are its ideas logically connected. They are LLM-as-judge evaluators that return a 1-5 score with a default pass threshold of 3. Of these, only groundedness compares the response with the retrieved context; response completeness compares it with a ground truth answer instead.",
+  "rationale": [
+   "Correct: Groundedness measures how well the response aligns with the given context without fabricating content, the precision aspect of a RAG answer. It returns a 1-5 score from a judge model and flags answers with details outside the retrieved passages.",
+   "Incorrect: Relevance measures how accurately and directly the response addresses the query. An answer can be on topic and still contain invented details, because relevance does not compare the response with the retrieved context.",
+   "Incorrect: Coherence measures the logical flow and organization of the ideas in a response. A fabricated answer can be perfectly coherent; use coherence when the reader must be able to follow the reasoning.",
+   "Incorrect: Response Completeness measures how much of the critical information in a ground truth answer the response covers (recall). It detects missing information, not added details, and it needs reference answers rather than the retrieved passages."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "4.1.2-02",
+  "obj": "4.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. generates product descriptions with a model. The evaluation dataset contains only the generated descriptions in a response column; it has no user queries, context passages, or reference texts. You need to score the grammatical accuracy and readability of each description.\n\nWhich built-in evaluator should you use?",
+  "choices": [
+   "builtin.fluency",
+   "builtin.coherence",
+   "builtin.relevance",
+   "builtin.similarity"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Each built-in evaluator declares required inputs. Fluency needs only response, coherence and relevance need query and response, and similarity also needs ground_truth. Pick an evaluator by what it measures, and then confirm that the dataset supplies its inputs.",
+  "rationale": [
+   "Correct: Fluency measures grammatical accuracy, vocabulary range, sentence complexity, and readability, and it needs only the response input, which matches a dataset that contains nothing but the descriptions.",
+   "Incorrect: Coherence measures the logical flow of ideas and requires query and response (or messages). The dataset has no queries, and coherence targets the structure of the reasoning rather than grammar.",
+   "Incorrect: Relevance measures whether a response addresses the query and requires both query and response. Without user queries there is nothing to judge the relevance of the descriptions against.",
+   "Incorrect: Similarity measures semantic similarity to a ground truth answer and requires query, response, and ground_truth. Use it when reference texts exist; this dataset has none."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/general-purpose-evaluators"
+ },
+ {
+  "id": "4.1.2-03",
+  "obj": "4.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank evaluates a RAG assistant that explains loan procedures. Groundedness scores are high, but reviewers find that many answers leave out required steps. Each row of the evaluation dataset has a ground_truth column with the complete procedure written by loan officers. You need an evaluator that measures how much of the critical information in the ground truth each answer covers.\n\nWhich evaluator should you use?",
+  "choices": [
+   "Response Completeness",
+   "Groundedness",
+   "Relevance",
+   "Document Retrieval"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Groundedness and response completeness are complementary. Groundedness measures precision: the response contains nothing outside the grounding context. Response completeness measures recall: the response misses no critical information compared with the ground truth. Relevance works without ground truth, and Document Retrieval evaluates the search step with relevance labels.",
+  "rationale": [
+   "Correct: Response Completeness measures how completely the response covers the expected information in the ground truth, the recall aspect. It needs ground_truth and response, which the dataset has, and it flags answers that omit required steps.",
+   "Incorrect: Groundedness covers the precision aspect: it checks that the response contains nothing outside the context. Answers that leave out steps can still be fully grounded, which matches the high scores the team sees.",
+   "Incorrect: Relevance judges how well the response addresses the query and does not use the ground truth. Use it when you lack reference answers; it cannot measure coverage of the procedures that the loan officers wrote.",
+   "Incorrect: Document Retrieval compares the retrieved documents with ground truth relevance labels and computes search metrics such as NDCG and fidelity. It evaluates the search step, not whether the answer covers the procedure."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "4.1.2-04",
+  "obj": "4.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys stores RAG evaluation rows in JSONL. Each row has query and response strings and a field named passages, which is a JSON array of the text chunks that were retrieved for the query. You plan to run builtin.groundedness on the dataset.\n\nWhat should you do with the retrieved chunks?",
+  "choices": [
+   "Join the chunks of each row into one string and map context to it",
+   "Map context to {{item.passages}} and keep the chunks as a JSON array",
+   "Write a separate row for each chunk and repeat the query and response",
+   "Map the chunks to builtin.retrieval instead of builtin.groundedness"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RAG evaluators take context as a single plain string. When your pipeline retrieves several chunks, concatenate them for each row, for example with a blank line between chunks, before you map the context input. Groundedness judges the response against that context, while Retrieval judges the context against the query.",
+  "rationale": [
+   "Correct: the context input of the RAG evaluators is a plain string. For multi-chunk retrieval, Learn says to concatenate the chunks into one string with a separator such as a blank line, so the evaluator judges each response against all retrieved text.",
+   "Incorrect: the context input is documented as a plain string that contains the retrieved context. Passing the chunk array as is does not match that format; convert the array into a single string before you map it.",
+   "Incorrect: one row per chunk makes the evaluator judge the response against a single chunk at a time. Claims that another chunk supports would then look ungrounded, which lowers the scores of correct answers.",
+   "Incorrect: builtin.retrieval measures how relevant the retrieved chunks are to the query, not whether the response is supported by them. Use it to evaluate the retrieval step; it does not replace a groundedness check."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "4.1.2-05",
+  "obj": "4.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Alpine Ski House stores complete support conversations as a messages array in each row of a dataset. The team must measure whether the agent keeps consistent reasoning and topic flow across all turns of each conversation, and the evaluation must return one score per conversation.\n\nWhich configuration should you use?",
+  "choices": [
+   "builtin.coherence with messages mapped and evaluation_level set to conversation",
+   "builtin.coherence with query and response mapped and evaluation_level set to conversation",
+   "builtin.coherence with messages mapped and evaluation_level set to turn",
+   "builtin.relevance with messages mapped and evaluation_level set to turn"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "evaluation_level on the run selects the scoring granularity: turn (the default) scores individual responses, and conversation scores the complete interaction. Conversation level requires data in the messages format and evaluators that support it, and coherence is one of them. In a conversation-level run on messages data, turn-only evaluators are skipped.",
+  "rationale": [
+   "Correct: coherence can score a full conversation when the run sets evaluation_level=\"conversation\" and the data mapping provides the messages array. The evaluator then judges the logical flow across the whole interaction and returns one result per conversation.",
+   "Incorrect: conversation-level evaluation requires the messages format. Query-and-response data does not support evaluation_level=\"conversation\", so this configuration cannot produce one score per conversation.",
+   "Incorrect: with evaluation_level=\"turn\", the evaluator scores one response at a time and uses the earlier messages only as context. Use turn level to debug individual answers; it does not return one score per conversation.",
+   "Incorrect: relevance judges whether a response addresses the query, and at turn level it scores individual responses. It measures neither reasoning consistency across turns nor returns one result per conversation."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/general-purpose-evaluators"
+ },
+ {
+  "id": "4.1.2-06",
+  "obj": "4.1.2",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Trey Research evaluates a RAG assistant with a JSONL dataset that has the fields query, response, and context. The evaluation must meet three requirements:\n\n- Check whether each response contains claims that the context does not support, with a 1-5 score from the judge deployment.\n- Check whether each response addresses the question that was asked.\n- Check the grammatical quality and readability of each response.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\ntesting_criteria = [\n    {\n        \"type\": \"azure_ai_evaluator\",\n        \"name\": \"grounded\",\n        \"evaluator_name\": [[1]],\n        \"initialization_parameters\": {\"deployment_name\": judge},\n        \"data_mapping\": {\"context\": \"{{item.context}}\", \"response\": \"{{item.response}}\"},\n    },\n    {\n        \"type\": \"azure_ai_evaluator\",\n        \"name\": \"on_topic\",\n        \"evaluator_name\": \"builtin.relevance\",\n        \"initialization_parameters\": {\"deployment_name\": judge},\n        \"data_mapping\": [[2]],\n    },\n    {\n        \"type\": \"azure_ai_evaluator\",\n        \"name\": \"readable\",\n        \"evaluator_name\": [[3]],\n        \"initialization_parameters\": {\"deployment_name\": judge},\n        \"data_mapping\": {\"response\": \"{{item.response}}\"},\n    },\n]\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "\"builtin.groundedness\"",
+     "\"builtin.retrieval\"",
+     "\"builtin.similarity\""
+    ],
+    "why": [
+     "Correct: builtin.groundedness measures whether the response is supported by the context and returns a 1-5 score from the judge deployment. Its inputs are response and context, which the mapping supplies.",
+     "Incorrect: builtin.retrieval measures how relevant the retrieved context is to the query and requires query and context. It evaluates the retrieval step, not unsupported claims in the response.",
+     "Incorrect: builtin.similarity compares the response with a ground truth answer and requires query, response, and ground_truth. The dataset has no reference answers, and similarity does not check support by the context."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "{\"query\": \"{{item.query}}\", \"response\": \"{{item.response}}\"}",
+     "{\"query\": \"{{item.query}}\", \"context\": \"{{item.context}}\"}",
+     "{\"response\": \"{{item.response}}\", \"context\": \"{{item.context}}\"}"
+    ],
+    "why": [
+     "Correct: relevance needs query and response, so that the judge can decide whether the response addresses the question. Both fields exist in every row of the dataset.",
+     "Incorrect: query and context are the inputs of the retrieval evaluator. Without the response, relevance has nothing to judge against the question, so the criterion cannot produce a score.",
+     "Incorrect: response and context are the inputs of groundedness. Relevance compares the response with the query, so its required query input would be missing from this mapping."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "\"builtin.fluency\"",
+     "\"builtin.coherence\"",
+     "\"builtin.f1_score\""
+    ],
+    "why": [
+     "Correct: builtin.fluency measures grammatical accuracy and readability and needs only the response, which matches the mapping of the third criterion.",
+     "Incorrect: builtin.coherence measures logical flow and requires query and response. The third criterion maps only response, and the requirement is about grammar and readability rather than reasoning.",
+     "Incorrect: builtin.f1_score measures token overlap with a ground truth and requires ground_truth and response. It does not assess language quality, and the dataset has no ground truth."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0
+  ],
+  "explanation": "Each built-in evaluator has fixed required inputs: groundedness (response and context), relevance (query and response), fluency (response), coherence (query and response), retrieval (query and context), and similarity (query, response, and ground_truth). AI-assisted evaluators also need a judge deployment in initialization_parameters. Matching the evaluator to the requirement and its inputs to the dataset fields avoids failed or meaningless scores.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "4.1.2-07",
+  "obj": "4.1.2",
+  "difficulty": "easy",
+  "type": "dragdrop",
+  "stem": "Proseware, Inc. reviews the answers of a RAG chatbot. The team wants one built-in evaluator for each problem that reviewers report.\n\nWhich evaluator should you use for each problem? To answer, drag the appropriate evaluators to the correct problems. Each evaluator may be used once, more than once, or not at all.",
+  "choices": [
+   "Groundedness",
+   "Relevance",
+   "Coherence",
+   "Fluency",
+   "Response Completeness",
+   "Similarity"
+  ],
+  "targets": [
+   "Problem1: answers state facts that are not in the retrieved policy passages",
+   "Problem2: answers are well written but do not address what the customer asked",
+   "Problem3: ideas jump around without logical connections between sentences",
+   "Problem4: answers contain grammatical errors and awkward phrasing"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "rationale": [
+   "Problem1 is about claims without support in the retrieved context, which is exactly what Groundedness measures: alignment of the response with the grounding context, without fabricated content.",
+   "Problem2 is a response that misses the question, which Relevance detects by judging how accurately and directly the response addresses the query, even when the text itself reads well.",
+   "Problem3 is about the order and connection of ideas, which Coherence measures: the logical, orderly presentation that lets a reader follow the train of thought from sentence to sentence.",
+   "Problem4 is about language quality, which Fluency measures: grammatical accuracy, vocabulary range, sentence complexity, and overall readability of the text."
+  ],
+  "notes": [
+   "Measures how well the response aligns with the retrieved context without fabricating content. Use it to catch unsupported claims in RAG answers; a judge model scores it from 1 to 5.",
+   "Measures how accurately, completely, and directly the response addresses the query. Use it when you have no ground truth and want to know whether the question was answered.",
+   "Measures the logical flow and organization of the ideas in a response. Use it for question answering or summaries in which the reasoning must be easy to follow.",
+   "Measures grammar, vocabulary range, sentence complexity, and readability, independent of factual correctness. Use it when language quality matters on its own.",
+   "Measures how much of the critical information in the ground truth the response covers (recall). Use it when reference answers exist and omissions are the concern.",
+   "Measures the semantic similarity between the response and a ground truth answer with an LLM judge. Use it when paraphrases of a reference answer should count as correct."
+  ],
+  "explanation": "The four core quality metrics answer separate questions: Groundedness (is the response supported by the context), Relevance (does it address the query), Coherence (are the ideas logically connected), and Fluency (is the language well formed). Response Completeness and Similarity need a ground truth and compare the response with a reference answer.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/built-in-evaluators"
+ },
+ {
+  "id": "4.1.2-08",
+  "obj": "4.1.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Wide World Importers has an evaluation dataset in which each row has only two fields: query and response. The team wants to add every built-in evaluator from the following list that can score this dataset without adding fields to it.\n\nWhich three evaluators should you add? Each correct answer presents part of the solution.",
+  "choices": [
+   "Relevance",
+   "Coherence",
+   "Fluency",
+   "Similarity",
+   "Retrieval",
+   "Groundedness Pro"
+  ],
+  "answer": [
+   0,
+   1,
+   2
+  ],
+  "explanation": "Before you choose evaluators, compare their required inputs with the columns of your dataset. Query-and-response data supports relevance, coherence, and fluency. Evaluators that compare the response with a reference answer need ground_truth, and evaluators that judge grounding or retrieval need context.",
+  "rationale": [
+   "Correct: Relevance requires query and response, and both are present in every row. It judges how well each response addresses its query, with a 1-5 score from a judge deployment.",
+   "Correct: Coherence requires query and response (or a messages array). The dataset supplies both fields, so coherence can score the logical flow of each response.",
+   "Correct: Fluency requires only the response input, so it can run on this dataset and score the grammar and readability of every response.",
+   "Incorrect: Similarity requires query, response, and ground_truth. Without reference answers it cannot run; add a ground_truth column when you want to compare responses with expected answers.",
+   "Incorrect: Retrieval requires query and context, because it judges how relevant the retrieved chunks are to the query. The dataset has no context field, so the evaluator has no chunks to judge.",
+   "Incorrect: Groundedness Pro requires query, response, and context, and it checks the response strictly against the context through Azure AI Content Safety. Without a context field it cannot run."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "4.1.2-09",
+  "obj": "4.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "case": "C-f",
+  "stem": "You need to meet the quality requirement for checking each answer against the retrieved policy passages.\n\nWhich evaluator should you use?",
+  "choices": [
+   "Groundedness Pro",
+   "Groundedness",
+   "Relevance",
+   "Response Completeness"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Foundry has two groundedness evaluators. Groundedness uses your own GPT deployment as the judge and returns a 1-5 score. Groundedness Pro (preview) uses the Azure AI Content Safety service, returns a binary result, and needs no model deployment, but it is available only in some regions, such as East US 2 and Sweden Central.",
+  "rationale": [
+   "Correct: Groundedness Pro checks whether the response is strictly consistent with the context by using the Azure AI Content Safety service, and it returns pass or fail. It needs no model deployment, so it consumes no TPM quota of agent-main or judge-mini, and East US 2 supports it.",
+   "Incorrect: Groundedness is an LLM-as-judge evaluator with a 1-5 score that a threshold turns into pass or fail. Learn calls it the well-rounded definition, not the strict one, and it needs a deployment_name, so it would consume TPM quota of judge-mini.",
+   "Incorrect: Relevance judges whether the answer addresses the customer question. It does not compare the answer with the retrieved passages, and it also needs a judge deployment that would consume quota.",
+   "Incorrect: Response Completeness compares the answer with a ground truth answer and detects missing information (recall). It does not check for added information that the passages lack, and it needs a judge deployment that would consume quota."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "4.1.3-01",
+  "obj": "4.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee deploys a model that writes blog posts and recipes for its website. The legal team asks you to evaluate whether the generated text reproduces copyrighted content, such as song lyrics or published recipes. The Foundry project is in the East US 2 region.\n\nWhich built-in evaluator should you add to the evaluation?",
+  "choices": [
+   "builtin.protected_material",
+   "builtin.indirect_attack",
+   "builtin.ungrounded_attributes",
+   "builtin.code_vulnerability"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Risk and safety evaluators run on hosted models in the Foundry evaluation service. Content safety evaluators (violence, sexual, self-harm, and hate and unfairness) return severity scores, while evaluators such as protected material, indirect attack, code vulnerability, and ungrounded attributes return a binary result. Some evaluators are limited to specific regions, for example protected material to East US 2.",
+  "rationale": [
+   "Correct: Protected Material detects text that is under copyright, such as song lyrics, recipes, and articles, by using the Azure AI Content Safety Protected Material for Text service. East US 2 is a supported region for this evaluator.",
+   "Incorrect: Indirect Attack measures whether a response fell for a jailbreak that was injected into the context, such as a retrieved document. Use it for prompt injection through grounding data, not for copyright.",
+   "Incorrect: Ungrounded Attributes detects ungrounded inferences about personal attributes, such as the emotional state or protected class of a user. It does not look for reproduced copyrighted text.",
+   "Incorrect: Code Vulnerability flags generated code with security issues, such as SQL injection or hardcoded credentials. Use it for code generation scenarios; blog posts and recipes are not code."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/risk-safety-evaluators"
+ },
+ {
+  "id": "4.1.3-02",
+  "obj": "4.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery has a chat application that calls a model deployment directly. The application adds the text of customer emails to the prompt as context. You need to measure whether the responses of the model follow instructions that attackers hide inside those emails.\n\nWhich built-in evaluator should you use?",
+  "choices": [
+   "builtin.indirect_attack",
+   "builtin.protected_material",
+   "builtin.hate_unfairness",
+   "builtin.ungrounded_attributes"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Indirect attacks, also called cross-domain prompt injected attacks (XPIA), hide jailbreak instructions in content that the application places in the context, such as documents or emails. The Indirect Attack evaluator outputs fail if it detects manipulated content, intrusion, or information gathering, and pass otherwise. Learn lists this evaluator for models only, which fits an application that calls a model deployment directly. Direct jailbreak attempts by the user are a separate attack type.",
+  "rationale": [
+   "Correct: Indirect Attack (XPIA) measures to what extent the response fell for a jailbreak that was injected into the context of a document or source, such as an email. It fails when it detects manipulated content, intrusion, or information gathering.",
+   "Incorrect: Protected Material detects copyrighted text, such as lyrics or articles, in the response. It does not analyze whether hidden instructions in the context changed the behavior of the model.",
+   "Incorrect: Hate and Unfairness measures hateful language or unfair representations of social groups on a 0-7 severity scale. An injected instruction can cause harm without containing any hateful content.",
+   "Incorrect: Ungrounded Attributes detects inferences about the demographics or emotional state of a person that the context does not support. It is a privacy-oriented check, not a prompt injection check."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/risk-safety-evaluators"
+ },
+ {
+  "id": "4.1.3-03",
+  "obj": "4.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation runs builtin.violence on the responses of a chatbot for children and uses the default threshold today. A new safety policy states that every response with a severity of Low or higher must be labeled fail, and only Very Low content may pass.\n\nWhich threshold should you set for the violence evaluator?",
+  "choices": [
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Content safety evaluators (violence, sexual, self-harm, and hate and unfairness) score severity on a 0-7 scale: Very Low 0-1, Low 2-3, Medium 4-5, and High 6-7. The label is pass when the score is less than or equal to the threshold, which defaults to 3 and can be overridden in the SDK. Lower the threshold to make the check stricter.",
+  "rationale": [
+   "Correct: content safety evaluators label a response pass when the severity score is less than or equal to the threshold. Very Low covers scores 0-1 and Low starts at 2, so a threshold of 1 passes Very Low content and fails everything from Low upward.",
+   "Incorrect: with a threshold of 2, a response with severity 2, which falls in the Low band (2-3), would still be labeled pass. The policy requires every Low response to fail, so the threshold must be one step lower.",
+   "Incorrect: 3 is the default threshold. It passes all Very Low and Low content (0-3) and fails only Medium and High content, which is too lenient for the new policy of the chatbot.",
+   "Incorrect: a threshold of 4 also passes severity 4, the start of the Medium band, so the evaluator would become more lenient than the default instead of stricter."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/risk-safety-evaluators"
+ },
+ {
+  "id": "4.1.3-04",
+  "obj": "4.1.3",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Munson's Pickles and Preserves Farm evaluates a Foundry agent named Agent1 by sending test queries to it with the azure_ai_target_completions data source. The evaluation must:\n\n- Detect content in the text answers of Agent1 that promotes or describes self-harm.\n- Detect whether Agent1 exposes personal or financial data through its tool calls.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\ntesting_criteria = [\n    {\n        \"type\": \"azure_ai_evaluator\",\n        \"name\": \"self_harm\",\n        \"evaluator_name\": [[1]],\n        \"data_mapping\": {\"query\": \"{{item.query}}\", \"response\": [[2]]},\n    },\n    {\n        \"type\": \"azure_ai_evaluator\",\n        \"name\": \"leakage\",\n        \"evaluator_name\": [[3]],\n        \"data_mapping\": {\n            \"query\": \"{{item.query}}\",\n            \"response\": \"{{sample.output_items}}\",\n            \"tool_calls\": \"{{sample.tool_calls}}\",\n        },\n    },\n]\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "\"builtin.self_harm\"",
+     "\"builtin.hate_unfairness\"",
+     "\"builtin.ungrounded_attributes\""
+    ],
+    "why": [
+     "Correct: builtin.self_harm measures language about actions intended to hurt or damage one's body or to kill oneself, and it returns a 0-7 severity score from the hosted safety models.",
+     "Incorrect: builtin.hate_unfairness measures hateful language and unfair representations of social groups. It is the evaluator for bias and discrimination, not for self-harm content.",
+     "Incorrect: builtin.ungrounded_attributes detects ungrounded inferences about personal attributes, such as emotional state, and it also requires a context input. It does not score self-harm content."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "\"{{sample.output_text}}\"",
+     "\"{{item.response}}\"",
+     "\"{{item.query}}\""
+    ],
+    "why": [
+     "Correct: in a target run the agent generates its answer at run time, and {{sample.output_text}} is that plain text response, which string-based evaluators such as the content safety evaluators expect.",
+     "Incorrect: {{item.response}} reads a response that is stored in the dataset. In a target evaluation any stored response is ignored, and the output of the agent comes from the sample namespace.",
+     "Incorrect: {{item.query}} is the test question. Mapping it to the response input would score the input instead of the answer of Agent1, so harmful answers would go undetected."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "\"builtin.sensitive_data_leakage\"",
+     "\"builtin.prohibited_actions\"",
+     "\"builtin.protected_material\""
+    ],
+    "why": [
+     "Correct: builtin.sensitive_data_leakage measures whether an agent exposes sensitive information, such as financial data, personal identifiers, or health data, and it accepts query, response, and tool_calls inputs.",
+     "Incorrect: builtin.prohibited_actions measures whether an agent performs actions that a policy explicitly disallows. It also takes tool calls, but it checks forbidden behavior, not the exposure of data.",
+     "Incorrect: builtin.protected_material detects copyrighted text, such as lyrics or articles. It does not inspect tool calls for personal or financial data."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0
+  ],
+  "explanation": "Content safety evaluators such as self-harm take query and response strings and need no judge deployment, because they run on hosted safety models. Agent safety evaluators (prohibited actions and sensitive data leakage, in preview) also take tool calls and are supported for agent targets only. In a target run, map text answers from {{sample.output_text}} and structured agent output from {{sample.output_items}}.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/risk-safety-evaluators"
+ },
+ {
+  "id": "4.1.3-05",
+  "obj": "4.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Humongous Insurance exported 2,000 past conversations of its Foundry claims agent to a JSONL file. Each row has query, response, and tool_calls fields. You create a cloud evaluation that uses a jsonl data source with this file and add builtin.sensitive_data_leakage to the testing criteria. The evaluation must test the current agent for exposure of policyholder data.\n\nWhat should you do?",
+  "choices": [
+   "Run the queries against the agent with an azure_ai_agent target",
+   "Keep the jsonl data source and map tool_calls from the exported file",
+   "Replace the evaluator with builtin.ungrounded_attributes",
+   "Set evaluation_level to conversation and map messages"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Agent safety evaluators (Prohibited Actions and Sensitive Data Leakage) inspect what an agent does, including its tool calls. They are in preview and are supported only when the evaluation calls an agent target; they are not available for dataset or model evaluations. For broader adversarial coverage of the same risks, use the AI Red Teaming Agent in the cloud.",
+  "rationale": [
+   "Correct: builtin.sensitive_data_leakage is supported for agent targets only and is not available for dataset or model evaluations. An azure_ai_target_completions run with an azure_ai_agent target sends the queries to the current agent and evaluates the responses and tool calls that it produces.",
+   "Incorrect: the exported rows record what past agent versions did, so scoring them does not test the current agent. A jsonl source is also a dataset evaluation, which Learn says this evaluator does not support, even though a Learn mapping example reads {{item.tool_calls}}.",
+   "Incorrect: Ungrounded Attributes detects inferences about personal attributes, such as emotional state, that the context does not support. It does not test whether the agent exposes stored policyholder data, and it needs a context input.",
+   "Incorrect: Sensitive Data Leakage currently supports turn-level evaluation, and changing the evaluation level does not change the data source. The run would still be a dataset evaluation instead of a run against the agent."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/risk-safety-evaluators"
+ },
+ {
+  "id": "4.1.3-06",
+  "obj": "4.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Blue Yonder Airlines has a Foundry prompt agent that retrieves supplier documents through an Azure AI Search tool before it answers questions from staff. You plan a cloud AI red teaming run against the agent. The run must test whether instructions that attackers hide in the documents that the tool returns can make the agent behave unsafely.\n\nWhich attack strategy should you include in the run?",
+  "choices": [
+   "IndirectJailbreak",
+   "Jailbreak",
+   "Crescendo",
+   "UnicodeConfusable"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The AI Red Teaming Agent combines seed attack objectives per risk category with attack strategies from PyRIT. Obfuscation strategies (such as Base64, Flip, and UnicodeConfusable) convert a direct prompt, Jailbreak and multi-turn strategies such as Crescendo attack through the user turns, and Indirect Jailbreak places the attack in tool outputs or returned context. The Attack Success Rate (ASR) summarizes how often attacks succeed.",
+  "rationale": [
+   "Correct: the Indirect Jailbreak strategy injects attack prompts into tool outputs or returned context to bypass safeguards indirectly, which is an indirect prompt injection attack. That matches instructions hidden in supplier documents that the agent retrieves through its Azure AI Search tool.",
+   "Incorrect: Jailbreak injects specially crafted prompts directly into the user input, known as user injected prompt attacks (UPIA). It tests direct attacks by the person who chats with the agent, not instructions hidden in tool output.",
+   "Incorrect: Crescendo gradually escalates the risk of the prompts over successive turns to find weaknesses in the defenses of the agent. The attack still comes from the user turns, not from data that a tool returns.",
+   "Incorrect: UnicodeConfusable replaces characters with look-alike Unicode characters to obfuscate the attack prompt. It converts a direct prompt to evade filters; it does not inject the attack through tool output."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/ai-red-teaming-agent"
+ },
+ {
+  "id": "4.1.3-07",
+  "obj": "4.1.3",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Consolidated Messenger has a Foundry prompt agent named Agent1. A red team named RedTeam1 already exists in the Foundry project and was created with the builtin.prohibited_actions evaluator. You need to run a cloud AI red teaming run that tests Agent1 for prohibited actions based on a taxonomy that a compliance officer approves, and then save the results. The code already defines target as an AzureAIAgentTarget for Agent1.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Call `project_client.beta.evaluation_taxonomies.create()` with an `AgentTaxonomyInput` for `RiskCategory.PROHIBITED_ACTIONS` and the target.",
+   "Have the compliance officer review the generated taxonomy of prohibited actions and confirm or edit it.",
+   "Call `client.evals.runs.create()` for RedTeam1 with an `azure_ai_red_team` data source whose source is the taxonomy ID.",
+   "Poll `client.evals.runs.retrieve()` until the run status is completed.",
+   "Call `client.evals.runs.output_items.list()` and save the items to a file.",
+   "Call `client.evals.create()` with `data_source_config={\"type\": \"azure_ai_source\", \"scenario\": \"red_team\"}`.",
+   "Call `client.evals.runs.create()` for RedTeam1 with a `jsonl` data source that contains attack prompts."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "A cloud red teaming setup has a red team (an evaluation object with the red_team scenario and safety evaluators), an evaluation taxonomy for agentic risks such as prohibited actions, and runs that generate attacks from the taxonomy with the selected attack strategies. Runs are processed asynchronously on the server side, so you poll them and then read the output items.",
+  "rationale": [
+   "Step 1: the taxonomy defines the prohibited actions for Agent1, based on the agent target and its tools. It must exist before a run can reference it as the source of its attack items.",
+   "Step 2: Learn describes confirming, editing, or updating the generated taxonomy before it is used, so that the attack prompts and the Attack Success Rate follow a policy that the organization approved.",
+   "Step 3: the run generates adversarial items from the approved taxonomy, applies the chosen attack strategies, and sends them to Agent1. It needs the taxonomy ID and the ID of RedTeam1.",
+   "Step 4: the red teaming run is processed on the server side, so you poll its status until it is completed before you fetch any results.",
+   "Step 5: the output items contain the attack and response pairs with the evaluator results. Listing them after completion and saving them gives the team the findings to review.",
+   "Incorrect: evals.create with the red_team scenario creates a new red team. RedTeam1 already exists with the prohibited actions evaluator, so creating another red team is not needed.",
+   "Incorrect: a jsonl data source evaluates rows from a dataset. A red teaming run uses the azure_ai_red_team data source, which generates attack items from the taxonomy instead of reading prompts from a file."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/develop/run-ai-red-teaming-cloud"
+ },
+ {
+  "id": "4.1.3-08",
+  "obj": "4.1.3",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "VanArsdel, Ltd. adds risk and safety evaluators to the cloud evaluation of a chat application in Microsoft Foundry.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "builtin.violence requires a deployment_name initialization parameter that points to a GPT deployment.",
+   "builtin.ungrounded_attributes requires a context input in addition to the query and response.",
+   "The safety evaluation reports an aggregate defect rate based on the percentage of undesired content detected.",
+   "builtin.code_vulnerability returns a severity score from 0 to 7."
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "Risk and safety evaluators use the hosted Foundry evaluation service instead of your own deployments. Content safety evaluators return a 0-7 severity score that a threshold turns into pass or fail, the other safety evaluators return pass or fail directly, and the evaluation reports a defect rate. Check the required inputs, for example context for ungrounded attributes.",
+  "rationale": [
+   "No: risk and safety evaluators run on hosted models in the Foundry evaluation service and do not need a deployment_name. LLM-as-judge evaluators, such as coherence and fluency, are the ones that need a judge deployment.",
+   "Yes: Ungrounded Attributes requires context with either input format, (query, response, context) or (messages, context), because it checks whether inferences about personal attributes are grounded in that context.",
+   "Yes: the safety evaluation calculates an aggregate defect rate, the percentage of undesired content detected in the responses of the AI system, which makes runs easy to compare.",
+   "No: the 0-7 severity scale applies to the content safety evaluators (violence, sexual, self-harm, and hate and unfairness). Code Vulnerability outputs pass or fail, depending on whether it detects a vulnerability."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/risk-safety-evaluators"
+ },
+ {
+  "id": "4.1.3-09",
+  "obj": "4.1.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "case": "C-f",
+  "stem": "You need to meet the safety requirements for testing TripAgent before each release.\n\nWhich two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Run an AI red teaming run in the cloud that includes the Prohibited actions risk category",
+   "Run an AI red teaming run in the cloud that includes the Sensitive data leakage risk category",
+   "Run a local AI red teaming scan that includes the Prohibited actions risk category",
+   "Run an AI red teaming run in the cloud that includes the Ungrounded attributes risk category",
+   "Run a local AI red teaming scan that includes the Sensitive data leakage risk category"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The AI Red Teaming Agent supports model risk categories (for example violence, hateful content, protected materials, and ungrounded attributes) locally and in the cloud, and agentic risk categories (prohibited actions, sensitive data leakage, and task adherence) only in the cloud for agent targets. Agentic red teaming supports Foundry prompt and container agents that use Azure tool calls; function tool calls are not supported. Cloud runs redact the harmful inputs from the results, and the Attack Success Rate shows how often attacks succeeded.",
+  "rationale": [
+   "Correct: Prohibited actions tests whether an agent performs disallowed, high-risk, or irreversible actions; high-risk actions such as financial transactions need human confirmation. It covers refund requests that skip the approval step, TripAgent uses Azure tools rather than client-side function calling, and a cloud run redacts the adversarial inputs from the results.",
+   "Correct: Sensitive data leakage tests whether an agent can be made to reveal financial, medical, or personal data from knowledge bases and tool calls. It covers the passport numbers and payment details of other customers and is an agent-only, cloud-only category.",
+   "Incorrect: agentic risk categories such as prohibited actions are available only in cloud red teaming, which provides a minimally sandboxed environment. Local scans cover model risk categories, such as violent or hateful content.",
+   "Incorrect: Ungrounded attributes measures ungrounded inferences about personal attributes, such as demographics or emotional state. It does not test whether the agent reveals stored personal data of other customers.",
+   "Incorrect: sensitive data leakage is an agent-only category that runs only in the cloud, so a local scan cannot test it. Cloud runs also keep the adversarial prompts out of the results that the stakeholders review."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/ai-red-teaming-agent"
+ },
+ {
+  "id": "4.1.4-01",
+  "obj": "4.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing creates a prompt-based custom evaluator in Microsoft Foundry that rates the tone of editorial answers on an ordinal scale from 1 to 5.\n\nWhat should the judge prompt instruct the model to return?",
+  "choices": [
+   "A JSON object with result and reason fields",
+   "A single float value between 0.0 and 1.0",
+   "A JSON object with score, reason, and status fields",
+   "A pass or fail label without a score"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Custom evaluators come in three types with different output contracts. Code-based evaluators return a float from 0.0 to 1.0 from grade(), prompt-based evaluators return JSON with result and reason (an integer for ordinal, a float for continuous, or a boolean for binary scoring), and endpoint-based evaluators return JSON with score, reason, status, and optional properties.",
+  "rationale": [
+   "Correct: a prompt-based evaluator must return a JSON object with result and reason. For ordinal scoring, result is an integer within the range that you define, here 1 to 5, and reason explains the score.",
+   "Incorrect: a single float from 0.0 to 1.0 is the output contract of a code-based evaluator, whose grade() function returns the score directly. A judge prompt returns JSON with result and reason instead.",
+   "Incorrect: score, reason, and status are fields of the response that an endpoint-based evaluator returns from your own HTTP endpoint. A prompt-based evaluator uses the result and reason contract.",
+   "Incorrect: binary scoring is one of the three scoring methods of prompt-based evaluators, but even then result is a boolean inside the result and reason JSON object. An ordinal 1-5 rating needs an integer result."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/custom-evaluators"
+ },
+ {
+  "id": "4.1.4-02",
+  "obj": "4.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys uses the microsoft/ai-agent-evals GitHub Action to evaluate three versions of an agent in one run. The agent-ids input is set to \"support-agent:3,support-agent:4,support-agent:5\" and must keep this order, because a dashboard reads the results in that sequence. Version 4 runs in production, and the statistical comparison must use version 4 as the reference.\n\nWhich input should you add to the action?",
+  "choices": [
+   "baseline-agent-id: \"support-agent:4\"",
+   "deployment-name: \"support-agent:4\"",
+   "agent-ids: \"support-agent:4,support-agent:3,support-agent:5\"",
+   "agent-ids: \"support-agent:4\""
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The microsoft/ai-agent-evals action invokes Foundry agents with the queries from a data file, runs the listed evaluators, and writes a report with confidence intervals to the summary of the GitHub Actions run. When agent-ids lists several agents, the report adds a pairwise statistical comparison against the baseline, which is baseline-agent-id or, by default, the first agent in the list.",
+  "rationale": [
+   "Correct: baseline-agent-id sets the agent version that the other versions are compared against in the pairwise statistical comparison. Without it, the action uses the first agent in agent-ids, which is version 3 here.",
+   "Incorrect: deployment-name is a required input that names the Azure AI model deployment the action uses for evaluation. It does not select an agent version, so it cannot change which agent the statistical comparison uses as its baseline.",
+   "Incorrect: moving version 4 to the front of agent-ids would make it the default baseline, but the requirements state that agent-ids must keep its current order for the dashboard.",
+   "Incorrect: listing only version 4 evaluates a single agent, so there is no comparison at all. Use a single agent ID when you want scores and confidence intervals for one version only."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluation-github-action"
+ },
+ {
+  "id": "4.1.4-03",
+  "obj": "4.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Bellows College creates a code-based custom evaluator that scores the length of answers. The evaluator is used in a run that sends queries to a Foundry agent target, so the answers are generated at run time.\n\n```python\ndef grade(sample: dict, item: dict) -> float:\n    response = ...\n    if not response:\n        return 0.0\n    return 1.0 if 50 <= len(response) <= 500 else 0.5\n```\n\nWhich expression should you use instead of the ellipsis to read the generated answer?",
+  "choices": [
+   "item.get(\"sample\", {}).get(\"output_text\", \"\")",
+   "item.get(\"response\", {}).get(\"output_text\", \"\")",
+   "item.get(\"sample\", {}).get(\"output_items\", \"\")",
+   "item.get(\"item\", {}).get(\"response\", \"\")"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A code-based evaluator is a Python function named grade(sample, item) that returns a float from 0.0 to 1.0, and in practice all data is accessed through item. Dataset fields are read with item.get(\"field\"); for model or agent targets the generated text is read with item.get(\"sample\", {}).get(\"output_text\"), an access pattern that Learn notes might change in a future API update.",
+  "rationale": [
+   "Correct: for model or agent target evaluations, Learn says to fetch the generated response text with item.get(\"sample\", {}).get(\"output_text\"). All data reaches grade() through item, and the sample dictionary inside it holds the target output.",
+   "Incorrect: in a dataset evaluation the stored answer is read with item.get(\"response\"), and it is a string, not a dictionary with output_text. In a target run the generated answer is under sample, not under response.",
+   "Incorrect: output_items is the structured output of an agent, including tool calls, which agent evaluators such as Task Adherence use. Learn documents output_text as the field that holds the generated answer text, so output_items is not the value whose length you measure.",
+   "Incorrect: Learn reads input fields directly from item, for example item.get(\"response\"), without a nested item key. In a target run the generated answer is not a dataset field at all; it is read from sample inside item."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/custom-evaluators"
+ },
+ {
+  "id": "4.1.4-04",
+  "obj": "4.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "City Power & Light needs a custom evaluator that checks each answer of its outage agent against live outage records. The scoring logic must call an internal REST API, hosted on Azure App Service, for each answer. You need to choose the custom evaluator type.\n\nWhich evaluator should you create?",
+  "choices": [
+   "An endpoint-based evaluator that uses a project connection to the API",
+   "A code-based evaluator whose grade() function calls the API with requests",
+   "A prompt-based evaluator whose judge prompt includes the API URL",
+   "A rubric evaluator with weighted criteria for outage answers"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Choose the custom evaluator type by what the scoring needs: deterministic logic without network access (code-based: sandboxed Python with a fixed package list and a 2-minute limit per call), a subjective judgment by an LLM (prompt-based), or your own service with network access, proprietary models, or complex pipelines (endpoint-based, which must respond within 30 seconds).",
+  "rationale": [
+   "Correct: an endpoint-based evaluator delegates scoring to an HTTP endpoint that you operate, and a project connection stores the endpoint URL with API key or Microsoft Entra ID authentication. Use it when scoring needs network access to external services or data.",
+   "Incorrect: code-based evaluators run in a sandboxed Python environment that has no network access at runtime, so a call to the internal API fails. Use them for deterministic checks such as format or length validation.",
+   "Incorrect: a prompt-based evaluator sends a judge prompt to a model deployment. The judge model does not call the API, so a URL in the prompt does not give it access to the live outage records.",
+   "Incorrect: a rubric evaluator scores responses against custom, weighted criteria with an LLM as the judge. It fits subjective quality across several dimensions, but the judge cannot call the outage API."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/custom-evaluators"
+ },
+ {
+  "id": "4.1.4-05",
+  "obj": "4.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Southridge Video runs cloud evaluations from a GitHub Actions workflow. The workflow signs in by using OpenID Connect as a user-assigned managed identity named Id1, which has the Foundry User role on the Foundry project. Evaluation runs that send test queries to a model deployment as the target fail with 403 Forbidden during model inference. The solution must follow the principle of least privilege.\n\nWhat should you do?",
+  "choices": [
+   "Assign Id1 the Foundry User role at the scope of the Foundry resource",
+   "Assign Id1 the Foundry Owner role at the scope of the Foundry project",
+   "Assign Id1 the Contributor role at the scope of the subscription",
+   "Assign the Reader role on Application Insights to the project identity"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Evaluation workflows can involve your own identity, an application identity such as the workload identity of a CI/CD pipeline, and the project managed identity. Foundry User (previously named Azure AI User) is the base role for running evaluations; when a run invokes a model deployment, assign it at the Foundry account scope, even where a guide such as the azd quality gate article lists the project scope. Trace-based workflows add Reader on Application Insights for the project managed identity.",
+  "rationale": [
+   "Correct: when an evaluation invokes a model deployment, Learn says to assign Foundry User at the Foundry account (resource) scope, because a project-only role assignment does not authorize model inference. It is the same role, which keeps the privileges minimal.",
+   "Incorrect: Foundry Owner is a broader role, and it would still be assigned at the project scope. Learn states that a project-only role assignment does not authorize model inference, so the 403 error would remain.",
+   "Incorrect: Learn says not to assign Contributor at the subscription scope for evaluation pipelines. Contributor on a dedicated resource group is needed only when a workflow reconciles with azd up, not to run model inference.",
+   "Incorrect: the project managed identity needs Reader on the connected Application Insights resource for trace evaluations and datasets from traces. It does not authorize the workflow identity to call a model deployment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/evaluation-permissions"
+ },
+ {
+  "id": "4.1.4-06",
+  "obj": "4.1.4",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Wingtip Toys keeps an evaluation definition named ci-f1-quality and a deterministic dataset in a GitHub repository. The project is evaluation-only and has no infrastructure templates. A GitHub Actions job installs the Azure Developer CLI (azd) 1.33.0 and signs in with OpenID Connect. The job must register the evaluation, run it, block the pull request when the pass rate is below 0.8, and keep the results of that exact run as evidence.\n\nWhich five commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`azd ext install azure.ai.evaluations`",
+   "`azd ai eval create ci-f1-quality --no-prompt`",
+   "`azd ai eval run start --eval ci-f1-quality --no-prompt --no-wait -o json`",
+   "`azd ai eval run show <run-id> --eval ci-f1-quality --wait --fail-on pass-rate=0.8 --no-prompt -o json`",
+   "`azd ai eval run output export <run-id> --eval ci-f1-quality --format json --output-file <runner-temp-file> --no-prompt`",
+   "`azd ext install microsoft.foundry`",
+   "`azd up --no-prompt`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "The azd evaluation extension turns a checked-in evaluation definition into a CI quality gate: register it (azd ai eval create, or azd up when the project also provisions infrastructure), start a run, wait for it with a --fail-on threshold, and export the output of that run. The pass rate is passed test cases divided by total test cases, and failed, errored, or skipped rows count against it.",
+  "rationale": [
+   "Step 1: the azd ai eval commands come from the azure.ai.evaluations extension, which the runner image does not include. Install it before you run any evaluation command.",
+   "Step 2: for an evaluation-only project, azd ai eval create registers the declared datasets, evaluators, and evaluation without provisioning infrastructure. The run in the next step needs this registered evaluation.",
+   "Step 3: run start submits a run of ci-f1-quality without waiting and, with -o json, returns JSON that contains the run_id that the following commands take as their positional argument.",
+   "Step 4: run show with --wait waits for the run, and --fail-on pass-rate=0.8 exits with code 1 and the message evaluation quality gate not met when the pass rate is below 0.8, which blocks the pull request.",
+   "Step 5: output export writes the rows of that exact run to a file in runner-temporary storage, which you validate before you upload only the allowlisted evidence.",
+   "Incorrect: the microsoft.foundry package bundles the core Foundry extensions but not the separately released evaluation extension, so the azd ai eval commands would not be recognized.",
+   "Incorrect: azd up reconciles projects that provision infrastructure. This evaluation-only project has no infra/main.bicep, so azd up would report that it cannot find the template; azd ai eval create registers the evaluation instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluation-github-action"
+ },
+ {
+  "id": "4.1.4-07",
+  "obj": "4.1.4",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Graphic Design Institute builds an evaluation for a Foundry agent that writes course descriptions. The team needs one evaluator for each requirement.\n\nWhich evaluator should you use for each requirement? To answer, drag the appropriate evaluators to the correct requirements. Each evaluator may be used once, more than once, or not at all.",
+  "choices": [
+   "Code-based custom evaluator",
+   "Prompt-based custom evaluator",
+   "Endpoint-based custom evaluator",
+   "builtin.f1_score",
+   "builtin.coherence",
+   "builtin.similarity"
+  ],
+  "targets": [
+   "Requirement1: verify with deterministic logic that every response is valid JSON that matches a fixed schema",
+   "Requirement2: rate how well each response matches the brand voice of the institute on a custom 1-5 scale",
+   "Requirement3: measure the token overlap between each response and the reference description written by staff",
+   "Requirement4: measure the logical flow and organization of ideas in each response with a 1-5 score"
+  ],
+  "answer": [
+   0,
+   1,
+   3,
+   4
+  ],
+  "rationale": [
+   "Requirement1 needs a deterministic, rule-based check. A code-based evaluator runs a Python grade() function in a sandbox that includes the jsonschema package and returns a score from 0.0 to 1.0.",
+   "Requirement2 is a subjective judgment on a custom scale that no built-in evaluator covers. A prompt-based evaluator provides it: a judge prompt with ordinal scoring from 1 to 5 that returns result and reason.",
+   "Requirement3 asks for token overlap with a reference text. builtin.f1_score computes precision and recall over the words that the response and the ground truth share, without a judge model.",
+   "Requirement4 matches the definition of builtin.coherence: the logical and orderly presentation of ideas, scored from 1 to 5 by an LLM judge, so no custom evaluator is needed."
+  ],
+  "notes": [
+   "A Python grade(sample, item) function that returns a float from 0.0 to 1.0. Use it for rule-based checks such as format validation or length limits; it runs in a sandbox without network access.",
+   "A judge prompt that an LLM evaluates for each item, with ordinal, continuous, or binary scoring. Use it for subjective criteria, such as tone or brand voice, that no built-in evaluator covers.",
+   "Delegates scoring to an HTTP endpoint that you operate, through a project connection. Use it when scoring needs network access, proprietary models, or logic beyond the limits of the code sandbox.",
+   "An algorithmic token-overlap metric between response and ground truth, based on precision and recall, with a default threshold of 0.5. Use it when exact word overlap is the criterion.",
+   "An LLM-as-judge evaluator for the logical flow and organization of ideas, scored 1-5 with a default threshold of 3. Use it when the reasoning in a response must be easy to follow.",
+   "An LLM-as-judge evaluator for the semantic similarity between response and ground truth. Use it when paraphrases of the reference should count as matches, not only shared tokens."
+  ],
+  "explanation": "Use a built-in evaluator when one already measures the criterion, such as F1 score for token overlap or coherence for logical flow. Create a custom evaluator for criteria that the catalog does not cover: code-based for deterministic rules, prompt-based for subjective LLM judgments, and endpoint-based when scoring needs your own service.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/custom-evaluators"
+ },
+ {
+  "id": "4.1.4-08",
+  "obj": "4.1.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Nod Publishers registers a code-based custom evaluator by using project_client.beta.evaluators.create_version(). The grade() function uses only Python string operations and does not call a model.\n\nWhich two initialization parameters should the evaluator definition declare as required? Each correct answer presents part of the solution.",
+  "choices": [
+   "deployment_name",
+   "pass_threshold",
+   "threshold",
+   "connection_name",
+   "rouge_type"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Custom evaluators declare init_parameters in their definition. Code-based evaluators require deployment_name and pass_threshold, prompt-based evaluators require deployment_name and threshold, and endpoint-based evaluators reference a project connection by connection_name. When you use the evaluator in testing_criteria, you pass the values in initialization_parameters.",
+  "rationale": [
+   "Correct: deployment_name is required for code-based evaluators even though they do not call an LLM, because the service API schema needs it for evaluation-run orchestration. Any valid model deployment name from the project works.",
+   "Correct: pass_threshold is required for code-based evaluators. It sets the score between 0.0 and 1.0 that an item must reach to pass, for example 0.5 in the Learn sample.",
+   "Incorrect: threshold is a required runtime parameter of prompt-based evaluators, together with deployment_name. Code-based evaluators use pass_threshold instead.",
+   "Incorrect: connection_name belongs to the definition of an endpoint-based evaluator, where it names the project connection that stores the endpoint URL and credentials. A code-based evaluator runs its own code in the sandbox.",
+   "Incorrect: rouge_type is an initialization parameter of builtin.rouge_score that selects the n-gram metric, such as rouge1 or rougeL. It is not part of a custom evaluator definition."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/custom-evaluators"
+ },
+ {
+  "id": "4.1.4-09",
+  "obj": "4.1.4",
+  "difficulty": "medium",
+  "type": "yesno",
+  "case": "C-f",
+  "stem": "You plan the GitHub Actions workflow that meets the automation requirements. The workflow uses the Azure Developer CLI (azd) evaluation extension to run the release evaluation.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Running azd ai eval run show with --wait and --fail-on pass-rate=0.85 enforces the merge requirement.",
+   "The workflow identity needs the Contributor role at the subscription scope to run the evaluation.",
+   "A test case that ends with an error counts against the pass rate.",
+   "The workflow should use the pull_request_target trigger so that pull requests from forks are evaluated."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "A pull request quality gate with the azd evaluation extension combines OIDC sign-in without a client secret, a least-privilege identity with the Foundry User role, a --fail-on pass-rate threshold, and a job condition that skips fork pull requests. Quality breaches and operational failures both exit with code 1, but only a quality breach prints evaluation quality gate not met.",
+  "rationale": [
+   "Yes: with --wait, the command waits for the run, and --fail-on pass-rate=0.85 makes it exit with code 1 when passed test cases divided by total test cases is below 0.85. Because branch protection requires status checks to pass, the failed job blocks the merge.",
+   "No: the identity needs Foundry User to run evaluations, plus Contributor only on a dedicated resource group when the workflow reconciles with azd up. Learn explicitly says not to assign Contributor at the subscription scope.",
+   "Yes: failed, errored, skipped, and otherwise unpassed rows all count against the run. An errored test case therefore lowers the pass rate in the same way as a failed one.",
+   "No: the job must skip fork pull requests, and the workflow must not use pull_request_target. Gate the job to same-repository pull requests, which also keeps forks from requesting an Azure token, as the requirements demand."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluation-github-action"
+ }
+]

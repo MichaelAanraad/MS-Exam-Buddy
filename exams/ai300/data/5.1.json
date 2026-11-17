@@ -1,0 +1,1035 @@
+[
+ {
+  "id": "5.1.1-01",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. stores chunks of product manuals in an Azure AI Search index. The vector field contentVector uses the cosine similarity metric. A RAG app sends a pure vector query with k set to 5. For questions that the manuals do not cover, the query still returns five chunks, and the model answers from them.\n\nYou need to exclude every match whose cosine similarity is below 0.8, even when fewer than five results remain.\n\nWhat should you add to the vector query?",
+  "choices": [
+   "The exhaustive parameter set to true for an exact neighbor search",
+   "The vectorFilterMode parameter set to strictPostFilter with a filter",
+   "A threshold object with kind vectorSimilarity and a value of 0.8",
+   "A k value of 2 so that fewer nearest neighbors are returned"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Nearest neighbor search returns the k closest vectors even when none of them is similar, so off-topic questions still get results. The threshold parameter (preview) removes matches below a minimum similarity (kind vectorSimilarity) or search score (kind searchScore), and the filtering happens before results from different recall sets are fused. Learn recommends minimum thresholds for pure single vector queries, because RRF scores in hybrid queries are small and volatile.",
+  "rationale": [
+   "Incorrect: exhaustive KNN scans every vector instead of the HNSW graph, so it finds the exact nearest neighbors, but it still returns k of them. Use it to build ground truth or for small, highly filtered sets, not to drop weak matches.",
+   "Incorrect: vectorFilterMode controls when an OData filter on filterable nonvector fields, such as a category, is applied. It filters on field values, not on similarity scores. Use it to restrict vector results by metadata.",
+   "Correct: a threshold of kind vectorSimilarity drops vector matches whose similarity is below the value, even if fewer than k results remain. The parameter is in preview, so send the request with the latest preview REST API version.",
+   "Incorrect: nearest neighbor search returns k results whenever at least k documents exist, however poor the similarity. A k of 2 returns two weak chunks instead of five. Lower k when you only want fewer chunks in the prompt."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/vector-search-how-to-query"
+ },
+ {
+  "id": "5.1.1-02",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Proseware, Inc. sends hybrid queries to Azure AI Search. Each request contains a search string and one vector query, and the requests do not use semantic ranking. To drop weak results, the app now discards every result whose @search.score is below 0.5. Since the change, the app discards nearly all results, including chunks that users rate as highly relevant.\n\nWhich explanation should you give to the developers?",
+  "choices": [
+   "The semantic ranker replaces @search.score with a reranker score that ranges from 0 to 4.",
+   "Hybrid results are scored by RRF, and each subquery adds at most about 1/60 to a score.",
+   "BM25 scores have no upper limit, so the text results push the vector results below 0.5.",
+   "Vector scores for cosine range from 0.333 to 1.00, so the 0.5 cutoff is set too low."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Each ranking method has its own score range: BM25 is unbounded, cosine vector scores range from 0.333 to 1.00, RRF scores are bounded by about 1/k per fused query, and semantic reranker scores range from 0 to 4. Because RRF ranges are small and volatile, Learn advises against minimum thresholds on hybrid queries; thresholds suit pure single vector queries.",
+  "rationale": [
+   "Incorrect: these requests do not use semantic ranking. When it is used, @search.rerankerScore is reported separately from @search.score and ranges from 0 to 4. Apply a cutoff on rerankerScore when you need one on semantically ranked results.",
+   "Correct: RRF adds 1/(rank + k) per result set, with the constant k set to about 60, so with two subqueries a score cannot exceed roughly 0.033. A strong hybrid match can score 0.03, which means a 0.5 cutoff removes almost everything.",
+   "Incorrect: BM25 scores are unbounded, but RRF uses only the rank of each result in each list, not the raw BM25 or cosine values. That is why RRF can merge result sets whose score scales differ. Raw BM25 scores matter for text-only queries.",
+   "Incorrect: 0.333 to 1.00 is the range of @search.score for a pure vector query that uses cosine similarity. In a hybrid query, @search.score holds the fused RRF score, so the cosine range does not apply. Use cosine ranges when you set a threshold on a single vector query."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-ranking"
+ },
+ {
+  "id": "5.1.1-03",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys is designing fixed-size chunking for product documentation that will be embedded with text-embedding-3-small. The team wants to begin with the starting point that Microsoft recommends for fixed-size chunks and tune from there. Chunks must keep some continuity across chunk boundaries.\n\nWhich initial chunk size and overlap should you use?",
+  "choices": [
+   "8,191 tokens with no overlap between chunks",
+   "128 tokens with an overlap of 32 tokens",
+   "512 tokens with an overlap of 128 tokens",
+   "512 tokens with no overlap between chunks"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Chunking keeps inputs under the limit of the embedding model (8,191 tokens for text-embedding-3-small) and gives each vector a focused meaning. Microsoft recommends starting fixed-size chunks at 512 tokens, about 2,000 characters, with a 25 percent overlap and tuning from there: structured data might need less overlap and narrative text more. With the Text Split skill in characters, the suggested starting values are maximumPageLength 2000 and pageOverlapLength 500.",
+  "rationale": [
+   "Incorrect: 8,191 tokens is the maximum input of text-embedding-3-small. A chunk that large fits the model but mixes many sub-topics into one vector and has no continuity. Size chunks near the limit only to avoid truncation, not as a starting point.",
+   "Incorrect: 128-token chunks are far smaller than the recommended start and can split explanations into fragments that carry too little meaning to match a question. Use smaller chunks only when testing shows that they retrieve better.",
+   "Correct: Learn recommends starting at 512 tokens, about 2,000 characters, with an initial overlap of 25 percent, which is 128 tokens. The overlap keeps continuity between chunks without excessive duplication.",
+   "Incorrect: 512 tokens is the recommended size, but without overlap a sentence or paragraph that falls on a boundary loses its context, which breaks the continuity requirement. Little or no overlap can suit highly structured data."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/vector-search-how-to-chunk-documents"
+ },
+ {
+  "id": "5.1.1-04",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Northwind Traders indexes supplier contracts by using an Azure AI Search indexer. The skillset contains the following Text Split skill:\n\n```json\n{\n  \"@odata.type\": \"#Microsoft.Skills.Text.SplitSkill\",\n  \"textSplitMode\": \"pages\",\n  \"maximumPageLength\": 2000,\n  \"pageOverlapLength\": 500,\n  \"maximumPagesToTake\": 1,\n  \"inputs\": [ { \"name\": \"text\", \"source\": \"/document/content\" } ],\n  \"outputs\": [ { \"name\": \"textItems\", \"targetName\": \"pages\" } ]\n}\n```\n\nUsers report that questions about termination clauses, which appear near the end of each contract, never retrieve the right content. Questions about the opening sections work well. The chunk size and overlap were validated in testing and must not change.\n\nWhat should you change?",
+  "choices": [
+   "Set maximumPagesToTake to 0.",
+   "Set pageOverlapLength to 900.",
+   "Set textSplitMode to sentences.",
+   "Set maximumPageLength to 50000."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "In pages mode, the Text Split skill has three size controls: maximumPageLength (300 to 50,000 characters, default 5,000), pageOverlapLength (less than half of the page length), and maximumPagesToTake (default 0, which returns all chunks). A nonzero maximumPagesToTake keeps only the first chunks of each document, which helps to stay within embedding limits on a subset of content, but silently drops the rest of every document.",
+  "rationale": [
+   "Correct: maximumPagesToTake limits how many chunks the skill returns per document. With a value of 1, only the first 2,000 characters of each contract are chunked and embedded. The default of 0 returns all chunks, so the later clauses become searchable.",
+   "Incorrect: changing the overlap breaks the validated settings and does not help, because the skill still returns only the first chunk of each contract. Overlap only controls how much text consecutive chunks share.",
+   "Incorrect: maximumPagesToTake does not apply in sentences mode, so later clauses would be chunked, but each chunk becomes one sentence, which discards the validated size and overlap. Use sentences mode when queries target individual facts.",
+   "Incorrect: 50,000 characters is the maximum page length. It changes the validated size, and one chunk that large can exceed the input limit of the embedding model and blend many clauses into one vector."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/cognitive-search-skill-textsplit"
+ },
+ {
+  "id": "5.1.1-05",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Fabrikam, Inc. has an Azure AI Search index named manuals. The vector field contentVector uses the cosine metric and has an Azure OpenAI vectorizer. You need to write a query request that meets the following requirements:\n\n- Send the user question as text and let the search service vectorize it.\n- Return at most 10 matches.\n- Exclude matches whose cosine similarity is below 0.75.\n- Use the approximate nearest neighbor graph to keep latency low.\n\nHow should you complete the request? To answer, select the appropriate options in the answer area.\n\n```http\nPOST https://fabrikam-search.search.windows.net/indexes/manuals/docs/search?api-version=[[1]]\n{\n  \"vectorQueries\": [\n    {\n      \"kind\": \"[[2]]\",\n      \"text\": \"how do I reset the controller\",\n      \"fields\": \"contentVector\",\n      \"k\": 10,\n      \"exhaustive\": [[3]],\n      \"threshold\": {\n        \"kind\": \"[[4]]\",\n        \"value\": 0.75\n      }\n    }\n  ]\n}\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "latest preview version (yyyy-mm-dd-preview)",
+     "latest stable version (yyyy-mm-dd)"
+    ],
+    "why": [
+     "Correct: threshold is a preview parameter, so the request must use a preview API version. Learn recommends the latest preview version of Documents - Search Post for minimum thresholds (2026-08-01-preview when this was written).",
+     "Incorrect: the stable version supports kind text, k, exhaustive, and weight, but not the preview threshold parameter. Use the latest stable version for production queries that need no preview features (2026-04-01 when this was written)."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "text",
+     "vector",
+     "imageUrl"
+    ],
+    "why": [
+     "Correct: kind text sends a string, and the vectorizer assigned to contentVector converts it into an embedding at query time, so the app does not call the embedding model.",
+     "Incorrect: kind vector expects an embedding array in the vector property, so the app would have to generate the query embedding itself. Use it when the application already has the vector.",
+     "Incorrect: kind imageUrl sends an image URL for vectorization by a vectorizer that supports images. The Azure OpenAI vectorizer supports only text queries, and the input here is a question."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "false",
+     "true"
+    ],
+    "why": [
+     "Correct: false, the default, searches the HNSW graph for approximate nearest neighbors, which keeps latency low on large indexes.",
+     "Incorrect: true runs exhaustive KNN over every vector. It finds the exact neighbors at a higher latency cost. Use it to build ground truth for evaluation or when a filter leaves only a few candidates."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "vectorSimilarity",
+     "searchScore"
+    ],
+    "why": [
+     "Correct: vectorSimilarity filters on the similarity metric of the field, here cosine similarity, and chooses the threshold direction automatically for the metric.",
+     "Incorrect: searchScore filters on the @search.score in the response, which for cosine fields is reported in the 0.333 to 1.00 range and is not the raw cosine similarity. Use it when you calibrated a cutoff on observed search scores."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "explanation": "A pure vector query with kind text relies on the vectorizer in the index to embed the string. k caps the number of nearest neighbors, and exhaustive switches from approximate HNSW search to exact KNN; both are in the stable API. The threshold parameter is a preview feature, so the request needs a preview API version; it removes matches below a minimum vector similarity or search score before any results are fused. Version strings change over time, so learn which features are preview-only rather than memorizing dates.",
+  "ref": "https://learn.microsoft.com/azure/search/vector-search-how-to-query"
+ },
+ {
+  "id": "5.1.1-06",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud has a RAG assistant over its internal knowledge base. Users often ask questions such as \"How does the new expense policy work, and how does it compare to the travel policy?\" The answer needs passages from two different documents, but the single vector query returns chunks about the first topic only.\n\nWhich query translation technique should you add before retrieval?",
+  "choices": [
+   "Augmentation that adds context to a short or vague query",
+   "Decomposition into subqueries whose results are combined",
+   "Rewriting that adds synonyms and removes unneeded words",
+   "Hypothetical Document Embeddings (HyDE) for the question"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Query translation runs before retrieval. Augmentation adds context to vague queries, decomposition splits multipart questions into subqueries, rewriting optimizes the wording for keyword and semantic search, and HyDE searches with the embedding of a generated hypothetical answer. The techniques can be chained in a pipeline in which each decomposed subquery is rewritten, executed, and reranked.",
+  "rationale": [
+   "Incorrect: augmentation keeps the original query and adds context, such as a time frame, to a small or vague query. This question is already specific; it needs separate retrievals, not more context. Use augmentation for queries such as \"Compare the earnings\".",
+   "Correct: decomposition breaks a complex, multipart query into simpler subqueries, runs each one, and aggregates the top results as accumulated context. Each policy gets its own retrieval, so passages from both documents reach the model.",
+   "Incorrect: rewriting fixes vagueness, missing keywords, and unclear semantics in one query, but it still runs a single search for both topics. Use it when queries lack the terms that appear in the documents.",
+   "Incorrect: HyDE asks a language model to generate an answer and embeds that answer for an answer-to-answer similarity search. It still runs one search, so the second topic can be missed. Use HyDE when you want to match generated answers against chunks instead of matching the raw question."
+  ],
+  "ref": "https://learn.microsoft.com/azure/architecture/ai-ml/guide/rag/rag-information-retrieval"
+ },
+ {
+  "id": "5.1.1-07",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank stores policy chunks for 40 countries in one Azure AI Search index. A vector query uses the filter country eq 'NL', sets vectorFilterMode to postFilter, and sets k to 10. Dutch policies make up less than 1 percent of the index. For many queries, the response contains only two or three chunks, although hundreds of Dutch chunks exist. The compliance team requires each query to return 10 Dutch chunks when that many exist and accepts a higher query latency.\n\nWhat should you do?",
+  "choices": [
+   "Keep postFilter and set k to 50.",
+   "Set vectorFilterMode to strictPostFilter.",
+   "Set vectorFilterMode to preFilter.",
+   "Keep postFilter and set top to 10."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "preFilter, the default for current indexes, favors recall and guarantees k results if they exist. postFilter favors speed but can return fewer than k results when a filter is selective. strictPostFilter (preview) applies the filter to the unfiltered global top k and has the highest risk of false negatives. For very selective filters, Learn also suggests exhaustive search to limit the traversal cost.",
+  "rationale": [
+   "Incorrect: a higher k with postFilter reduces false negatives, but with a filter that matches under 1 percent of the index it cannot guarantee 10 Dutch chunks. Use it when filters are not very selective and predictable latency matters more.",
+   "Incorrect: strictPostFilter finds the unfiltered global top k first and then applies the filter, so a selective filter returns even fewer results, possibly none. Use it for faceted navigation where counts must stay consistent.",
+   "Correct: preFilter applies the filter during HNSW traversal and keeps expanding the graph until k matching candidates are found, so it guarantees k results if they exist. It costs more latency for selective filters, which the team accepts.",
+   "Incorrect: in a vector-only query, k sets the number of matches, and top does not stop postFilter from removing matches after each shard finds its unfiltered top k. Learn suggests a higher k with top only to reduce false negatives, not to guarantee k results for a highly selective filter."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/vector-search-filters"
+ },
+ {
+  "id": "5.1.1-08",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Adventure Works Cycles wants to choose one of three chunk sizes for its RAG index by using a parameter sweep. Product experts already graded the relevance of source documents for 200 test queries. You will use the document retrieval evaluator in Microsoft Foundry to compare the configurations.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Build one index per chunk size by running the indexer with each Text Split configuration.",
+   "Run the 200 graded queries against each index and record the retrieved document IDs and scores.",
+   "Run the document retrieval evaluator on each result set, with the grades as retrieval_ground_truth.",
+   "Compare NDCG and fidelity across the runs and keep the chunk size that has the best scores.",
+   "Run the groundedness evaluator on the retrieved documents of each index without generating responses.",
+   "Generate synthetic queries for each index and use them in place of the 200 graded queries."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A parameter sweep generates retrieval results for each candidate setting, such as search algorithm, top_k, or chunk size, scores every result set with the document retrieval evaluator against the same graded labels, and keeps the setting that yields the highest retrieval quality. The evaluator needs no judge model, so it is cheap to run for many configurations.",
+  "rationale": [
+   "Step 1: chunking happens at indexing time, so each chunk size needs its own index content. The indexes must exist before any query can run against them.",
+   "Step 2: the evaluator scores retrieved results, so you first run the same graded queries against every index and capture retrieved_documents, with a document_id and relevance_score for each result.",
+   "Step 3: document_retrieval compares retrieved_documents with retrieval_ground_truth (document_id and query_relevance_label) and returns NDCG, XDCG, fidelity, max relevance, and holes for each configuration.",
+   "Step 4: with the metrics of every configuration side by side, the sweep keeps the parameters that produce the highest retrieval quality. Learn names chunk size, top_k, and the search algorithm as typical sweep parameters.",
+   "Incorrect: groundedness checks whether a generated response is supported by the context, so it needs a response and ignores relevance labels. Use it to evaluate the generation step after retrieval is tuned.",
+   "Incorrect: the graded queries are the ground truth that makes NDCG meaningful, and synthetic queries have no relevance labels. Generate synthetic queries when you have no test set at all, for example before launch."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "5.1.1-09",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "case": "C-g",
+  "stem": "You need to change the indexing pipeline of idx-rulings to meet the chunking requirement.\n\nWhich two changes should you make to the Text Split skill? Each correct answer presents part of the solution.",
+  "choices": [
+   "Set maximumPagesToTake to 1.",
+   "Set pageOverlapLength to 500.",
+   "Keep maximumPageLength at 5000 and set pageOverlapLength to 3000.",
+   "Set maximumPageLength to 2000.",
+   "Set textSplitMode to sentences."
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "In pages mode, maximumPageLength sets the chunk size and pageOverlapLength copies text from the end of one chunk to the start of the next, which keeps headings and sentences that fall on a boundary in both chunks. The overlap must be less than half of the page length. Learn suggests pages, 2000, and 500 as starting values when chunking by characters, and the indexer must be reset and run so that existing documents are chunked again.",
+  "rationale": [
+   "Incorrect: maximumPagesToTake of 1 keeps only the first chunk of each document and drops the rest of every regulation. Use a nonzero value only when a subset of each document is enough, for example to stay within embedding limits.",
+   "Correct: pageOverlapLength of 500 repeats the last 500 characters of each chunk at the start of the next, so text at a boundary appears in both adjacent chunks. 500 is less than half of 2000, as the skill requires.",
+   "Incorrect: the overlap must be less than half of maximumPageLength, so 3000 is not valid with 5000, and keeping 5,000-character chunks does not make chunks smaller.",
+   "Correct: the current 5,000-character chunks cover several articles. 2,000 characters, the suggested starting value, makes each chunk cover fewer articles, so a retrieved chunk is more likely to contain the specific paragraph.",
+   "Incorrect: sentences mode makes every sentence a chunk, and pageOverlapLength applies only in pages mode, so paragraphs lose their article heading and context. Use sentences mode when queries target isolated facts."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/vector-search-how-to-chunk-documents"
+ },
+ {
+  "id": "5.1.2-01",
+  "obj": "5.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Trey Research is building a RAG solution over internal lab reports. The reports use project code names and compound identifiers that do not appear anywhere on the internet. The team tested the top-ranked general embedding models, and no domain-specific embedding model exists for this content. Retrieval quality is still too low.\n\nWhat should you do next?",
+  "choices": [
+   "Fine-tune a general embedding model with the domain vocabulary",
+   "Reduce the embedding dimensions to remove noisy features",
+   "Switch to the next general model on the MTEB leaderboard",
+   "Use the PubMedBERT Embeddings model for the lab reports"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Choose an embedding model by first asking whether the content is domain-specific; a good test is whether you can find its entities and keywords on the internet. For general content, test top-ranked general models. For domain content, test a domain model if one exists; if none exists or it performs poorly, fine-tune a general model. Validate every choice on retrieval performance with real queries.",
+  "rationale": [
+   "Correct: the Learn decision flow for domain-specific content without an available domain model ends at fine-tuning a general model. Fine-tuning adjusts the weights to represent code names and identifiers that a general vocabulary handles poorly.",
+   "Incorrect: dimensionality reduction, such as PCA or the dimensions parameter, lowers storage and compute cost and can remove noisy features, but it cannot add vocabulary that the model never learned. Use it to balance cost and quality.",
+   "Incorrect: leaderboard rankings are the starting point for general, non-domain-specific content. The team already tested top general models, and the terms are not in public data, so another general model is unlikely to know them.",
+   "Incorrect: PubMedBERT Embeddings is a domain model for biomedical literature. It is the right test when a domain model exists for your content, but internal code names are not part of its training data either."
+  ],
+  "ref": "https://learn.microsoft.com/azure/architecture/ai-ml/guide/rag/rag-generate-embeddings"
+ },
+ {
+  "id": "5.1.2-02",
+  "obj": "5.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lucerne Publishing has a vector index of pharmacology articles. Retrieval works well for questions in plain language, but questions that contain rare drug names return unrelated chunks. You confirm the following:\n\n- The same embedding model embeds the chunks and the queries.\n- Smaller chunks did not change the results.\n- An exhaustive KNN query returns the same chunks as the HNSW query.\n\nWhich cause should you address?",
+  "choices": [
+   "The efSearch value of the HNSW configuration is too low for these queries",
+   "The model vocabulary lacks the drug names and splits them into subwords",
+   "The query embeddings and chunk embeddings have different dimension counts",
+   "The vector field uses cosine instead of the dotProduct similarity metric"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Every embedding model has a fixed vocabulary. Words outside it are split into subwords, and the resulting vector can be far from the meaning of the word, which weakens vector matches for domain terms. Diagnose by elimination (same model for queries and chunks, chunking changes, exhaustive versus HNSW results) and then close the vocabulary gap with a domain model, fine-tuning, or keyword search alongside vectors.",
+  "rationale": [
+   "Incorrect: efSearch controls how many neighbors an HNSW query considers. The exhaustive KNN query scans every vector and returned the same chunks, so approximate search is not the cause. Tune efSearch when exhaustive results beat HNSW results.",
+   "Correct: a model that does not know a word breaks it into subword tokens, such as his, ta, and mine for histamine, whose vectors are far from the real meaning. That explains failures limited to rare terms. Fine-tune or choose a model whose vocabulary covers them.",
+   "Incorrect: the same model embeds chunks and queries, so the dimensions match. A dimension mismatch causes errors rather than poor matches for some terms. Check dimensions when you change models or the dimensions parameter.",
+   "Incorrect: the similarity metric only changes how the distance between two vectors is computed; it does not change how the model represents unknown words. Pick the metric that matches how your embedding model was trained, such as cosine for Azure OpenAI embedding models."
+  ],
+  "ref": "https://learn.microsoft.com/azure/architecture/ai-ml/guide/rag/rag-generate-embeddings"
+ },
+ {
+  "id": "5.1.2-03",
+  "obj": "5.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery has an Azure AI Search index whose vector field contains 1,536-dimension embeddings from text-embedding-ada-002. The team deploys text-embedding-3-large to improve retrieval quality.\n\nWhat should you do with the existing document embeddings?",
+  "choices": [
+   "Keep them and embed only the queries by using text-embedding-3-large",
+   "Generate new embeddings for every chunk by using text-embedding-3-large",
+   "Keep them and request 1,536 dimensions from text-embedding-3-large",
+   "Convert them to the new model by using principal component analysis"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Embeddings from different models are not interchangeable, even when they have the same number of dimensions. Changing the embedding model means re-embedding all content and embedding queries with the same model, typically by updating the embedding skill and the vectorizer together and reindexing.",
+  "rationale": [
+   "Incorrect: query vectors and document vectors from different models live in different vector spaces, so similarity scores become meaningless. Learn says to use the same embedding model for queries and source documents.",
+   "Correct: you cannot upgrade between embedding models; moving from text-embedding-ada-002 to text-embedding-3-large requires new embeddings. Queries must use the same new model, because only vectors from one model are comparable.",
+   "Incorrect: the dimensions parameter makes text-embedding-3-large return 1,536 values, but they are still in a different space from the ada-002 vectors. Matching counts only avoids a schema error; use the parameter to control storage after re-embedding.",
+   "Incorrect: PCA reduces the dimensions of vectors from one model to save storage or remove noise. It cannot translate vectors into the vector space of another model. Apply it as a postprocessing step on embeddings you generate."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure"
+ },
+ {
+  "id": "5.1.2-04",
+  "obj": "5.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Humongous Insurance fine-tuned an open-source embedding model on claim descriptions and deployed it to an Azure Machine Learning managed online endpoint. An Azure AI Search indexer must embed chunks with this model during indexing. At query time, the search service must vectorize user questions with the same model, so that the app sends text only.\n\nWhich configuration should you use in Azure AI Search?",
+  "choices": [
+   "An Azure OpenAI Embedding skill and an Azure OpenAI vectorizer, both pointing to the endpoint",
+   "An AML skill in the skillset and a vectorizer of kind aml, both pointing to the endpoint",
+   "A Custom Web API skill in the skillset, with the queries embedded in the application code",
+   "An AML skill in the skillset and an Azure OpenAI vectorizer that uses text-embedding-3-large"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Integrated vectorization pairs an indexing skill with a query-time vectorizer for the same model: the Azure OpenAI Embedding skill with the Azure OpenAI vectorizer, or the AML skill with the Microsoft Foundry model catalog vectorizer (kind aml). The aml pair serves model catalog deployments and custom models on Azure Machine Learning online endpoints. The vector field dimensions must match the output of the model.",
+  "rationale": [
+   "Incorrect: the Azure OpenAI skill and vectorizer support only text-embedding-ada-002, text-embedding-3-small, and text-embedding-3-large on Azure OpenAI or Foundry endpoints. Use them when an Azure OpenAI embedding deployment fits the content.",
+   "Correct: the AML skill calls a custom model on an AML online endpoint during indexing, and the model catalog vectorizer (kind aml) connects to the same endpoint at query time. Learn recommends using them together so one model embeds chunks and queries.",
+   "Incorrect: a Custom Web API skill can embed chunks through a wrapper that you host, but without a vectorizer the app must call the model to embed every question, which breaks the text-only requirement. Use custom skills for logic no built-in skill provides.",
+   "Incorrect: chunks would be embedded by the fine-tuned model and queries by text-embedding-3-large, so query and document vectors come from different models and cannot be compared. Pair each indexing skill with a vectorizer for the same model."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/cognitive-search-aml-skill"
+ },
+ {
+  "id": "5.1.2-05",
+  "obj": "5.1.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Alpine Ski House connects an AML skill and a vectorizer in Azure AI Search to a fine-tuned embedding model on an Azure Machine Learning managed online endpoint. The endpoint uses token-based authentication and runs in a different Azure region from the search service. The search service has a system-assigned managed identity. Security policy prohibits API keys in skillset and index definitions.\n\nWhich three actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Set region to the Azure region of the online endpoint.",
+   "Assign the search service identity the Reader role on the endpoint.",
+   "Set resourceId to the Azure Resource Manager ID of the online endpoint.",
+   "Set uri to the scoring URI and key to the primary key of the endpoint.",
+   "Assign the search service identity the Contributor role on the endpoint."
+  ],
+  "answer": [
+   0,
+   2,
+   4
+  ],
+  "explanation": "The AML skill and the model catalog vectorizer support key-based authentication (uri and key) and token-based authentication (resourceId, plus region when the regions differ). With tokens, the managed identity of the search service calls the endpoint, so no secret is stored in the definitions, and the identity needs a role assignment that Learn specifies as Owner or Contributor on the model provider.",
+  "rationale": [
+   "Correct: region is optional for token-based authentication but required when the model provider is in a different region from the search service, which is the case here.",
+   "Incorrect: Reader lets the identity view the endpoint but is not one of the roles that Learn documents for scoring calls from the AML skill or vectorizer. Use Reader for read-only monitoring access.",
+   "Correct: token-based authentication requires resourceId, which for an AML online endpoint has the format subscriptions/{guid}/resourceGroups/{resource-group-name}/Microsoft.MachineLearningServices/workspaces/{workspace-name}/onlineendpoints/{endpoint_name}. The skill then authenticates with the search service identity instead of a key.",
+   "Incorrect: uri plus key is key-based authentication, which stores the endpoint key in the definitions and violates the policy. Use it when the endpoint uses key authentication and storing a key is allowed.",
+   "Correct: for token-based authentication, Learn states that the search service identity must have the Owner or Contributor role on the model provider. Contributor is the narrower of the two documented roles."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/cognitive-search-aml-skill"
+ },
+ {
+  "id": "5.1.2-06",
+  "obj": "5.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel must choose between two embedding models for a RAG index of travel policies. Model1 ranks higher than Model2 on the MTEB leaderboard. The decision must be based on how well each model retrieves the right content for the company's own data.\n\nWhat should you do?",
+  "choices": [
+   "Choose the model that produces the largest number of dimensions per embedding",
+   "Embed the content with each model and compare retrieval metrics on real test queries",
+   "Plot the chunk embeddings of each model with t-SNE and pick the tighter clusters",
+   "Choose Model1, because public benchmark rankings predict quality on business data"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Selecting an embedding model is an experiment: shortlist candidates from leaderboards or domain models, embed your own content, and compare retrieval metrics such as recall or NDCG on real queries. Weigh the quality gain against the storage and compute cost of larger vectors, because larger models are not always better.",
+  "rationale": [
+   "Incorrect: larger models and vectors are not always better; they can increase storage and compute cost without improving retrieval. Treat dimensions as a cost factor, not as a quality measure.",
+   "Correct: Learn calls retrieval performance the most practical way to evaluate embedding quality: embed your content, run vector searches with real queries, check whether the correct items are retrieved, and compare the metrics.",
+   "Incorrect: t-SNE plots help you see how far questions are from chunks, but cluster shape alone does not show whether the correct chunks are retrieved for real queries. Use visualization to investigate, then confirm with retrieval metrics.",
+   "Incorrect: public benchmarks are often academic datasets that might not apply to your business data and use cases. Use leaderboard rankings to shortlist candidates, then validate them on your own queries."
+  ],
+  "ref": "https://learn.microsoft.com/azure/architecture/ai-ml/guide/rag/rag-generate-embeddings"
+ },
+ {
+  "id": "5.1.2-07",
+  "obj": "5.1.2",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Contoso, Ltd. is choosing embedding models for four RAG workloads that use Azure AI Search.\n\nWhich embedding option should you use for each workload? To answer, drag the appropriate options to the correct workloads. Each option may be used once, more than once, or not at all.",
+  "choices": [
+   "text-embedding-3-small",
+   "text-embedding-3-large",
+   "text-embedding-ada-002",
+   "Cohere-embed-v4 through the Foundry model catalog vectorizer",
+   "A fine-tuned general model on an Azure Machine Learning online endpoint"
+  ],
+  "targets": [
+   "Workload1: multilingual support articles; use the Azure OpenAI model that has the highest MIRACL benchmark score",
+   "Workload2: English FAQ; use an Azure OpenAI third-generation model whose maximum output is 1,536 dimensions",
+   "Workload3: queries are text or a photo sent as image binary, and vectors must have 512 dimensions",
+   "Workload4: internal jargon that neither general nor domain-specific models represent well"
+  ],
+  "answer": [
+   1,
+   0,
+   3,
+   4
+  ],
+  "rationale": [
+   "text-embedding-3-large has the highest MIRACL average of the Azure OpenAI embedding models (54.9), ahead of text-embedding-3-small (44.0) and text-embedding-ada-002 (31.4).",
+   "text-embedding-3-small is a third-generation model with a maximum of 1,536 dimensions. text-embedding-ada-002 also outputs 1,536 dimensions, but it belongs to the older generation.",
+   "Cohere-embed-v4 through the model catalog vectorizer supports text and imageBinary queries and 256 to 1,536 dimensions, so 512 fits. The Azure OpenAI vectorizer supports text queries only.",
+   "When no general or domain model represents the vocabulary, Learn recommends fine-tuning a general model. Hosting it on an AML online endpoint lets the AML skill and the kind aml vectorizer use it."
+  ],
+  "notes": [
+   "Third-generation Azure OpenAI embedding model with 1 to 1,536 dimensions through the dimensions parameter. A good fit when vector storage matters and its quality is sufficient for the content.",
+   "The most capable Azure OpenAI embedding model, with 1 to 3,072 dimensions and the best MIRACL multilingual score. Use the dimensions parameter to trade vector size for cost.",
+   "Older Azure OpenAI embedding model with a fixed 1,536 dimensions and no dimensions parameter. Moving from it to a newer model requires new embeddings for all content.",
+   "Cohere model deployed serverless from the Foundry model catalog. With the AML skill and the kind aml vectorizer, it supports text and imageBinary queries and 256 to 1,536 dimensions.",
+   "A general model adapted to your vocabulary by fine-tuning and served from an AML online endpoint. Connect it through the AML skill at indexing time and the kind aml vectorizer at query time."
+  ],
+  "explanation": "Pick an embedding model by the constraint that matters most: multilingual quality, maximum dimensions and storage, supported query modalities, or domain vocabulary. Whatever you pick, use the same model for chunks and queries and set the dimensions of the vector field to the output of the model.",
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure"
+ },
+ {
+  "id": "5.1.2-08",
+  "obj": "5.1.2",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Wingtip Toys has an Azure AI Search index named idx-manuals that serves production queries. A skillset embeds chunks with text-embedding-ada-002 into a vector field named contentVector (1,536 dimensions) through an index projection, and an indexer named idx-manuals-indexer runs the skillset. A deployment named emb-3-large of text-embedding-3-large already exists. You must move to text-embedding-3-large with 3,072 dimensions without dropping idx-manuals, and production queries must keep working during the migration.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Send a Create or Update Index request (`PUT /indexes/idx-manuals`) that adds a field named contentVector3 with 3,072 dimensions and a vector profile whose vectorizer uses emb-3-large.",
+   "Add a second Azure OpenAI Embedding skill that calls emb-3-large to the skillset, and map its output to contentVector3 in the index projection.",
+   "Run `POST /indexers/idx-manuals-indexer/reset` and then `POST /indexers/idx-manuals-indexer/run`.",
+   "Change the vector queries of the app to target contentVector3 instead of contentVector.",
+   "Send a Create or Update Index request that changes the dimensions of contentVector to 3,072.",
+   "Change the vectorizer of contentVector to emb-3-large and keep the field at 1,536 dimensions."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "The dimensions of a vector field are part of its definition, which cannot change in place. To switch embedding models without downtime, add a new vector field with its own vectorizer, add an embedding skill that writes to the new field, reset and run the indexer to backfill, and then switch the queries. Drop the old field during a later planned rebuild, optionally behind an index alias.",
+  "rationale": [
+   "Step 1: an existing index accepts new fields and new vector configurations for new fields without a rebuild. Learn requires the target index to exist before you create the skillset, and every index projection mapping names a field in that index, so contentVector3 must be defined first.",
+   "Step 2: the new skill calls emb-3-large and its output is mapped to contentVector3. A reset and run overwrites every document in full, so keeping the existing ada-002 skill and its mapping keeps contentVector populated for production queries.",
+   "Step 3: a run without reset processes only new or changed source documents, so existing chunks would never get contentVector3. Reset clears the high-water mark, and the following run reprocesses every document.",
+   "Step 4: queries switch only after contentVector3 is populated. Until then, production queries keep using contentVector and its ada-002 vectorizer, so search works during the whole migration.",
+   "Incorrect: changing the dimensions of an existing field changes its definition, which requires dropping and rebuilding the index. Use a new field, or a rebuilt index behind an alias, when the vector shape changes.",
+   "Incorrect: query vectors would come from text-embedding-3-large while document vectors come from ada-002, so the similarity scores are meaningless even if the vector sizes matched. It also never moves the index to 3,072 dimensions."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/vector-search-how-to-create-index"
+ },
+ {
+  "id": "5.1.2-09",
+  "obj": "5.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "case": "C-g",
+  "stem": "You need to recommend an embedding configuration for idx-rulings that meets the embedding requirements.\n\nWhich model and dimension setting should you recommend?",
+  "choices": [
+   "text-embedding-3-small with the dimensions parameter set to 1,536",
+   "text-embedding-ada-002 with its existing output of 1,536 dimensions",
+   "text-embedding-3-large with its default output of 3,072 dimensions",
+   "text-embedding-3-large with the dimensions parameter set to 1,536"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Among the Azure OpenAI embedding models, text-embedding-3-large has the best multilingual retrieval benchmark (MIRACL 54.9, against 44.0 for text-embedding-3-small and 31.4 for text-embedding-ada-002). Third-generation models accept a dimensions parameter, so you can cap the vector size and set the same value on the embedding skill and the vector field. Changing models also requires re-embedding every chunk.",
+  "rationale": [
+   "Incorrect: text-embedding-3-small fits 1,536 dimensions, but its MIRACL score of 44.0 is lower than that of text-embedding-3-large. Use it when cost and storage matter more than multilingual quality.",
+   "Incorrect: text-embedding-ada-002 is the current model, with the lowest MIRACL score (31.4) and no dimensions parameter, so it does not fix the weaker German and Dutch retrieval.",
+   "Incorrect: 3,072 dimensions is the default and maximum output of text-embedding-3-large, which doubles the vector size and exceeds the 1,536-dimension limit. Use it when storage is not a constraint.",
+   "Correct: text-embedding-3-large has the highest MIRACL score, and its dimensions parameter accepts 1 to 3,072, so 1,536 meets the size limit. Set the same dimensions on the embedding skill and on the vector field, and re-embed all chunks."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure"
+ },
+ {
+  "id": "5.1.3-01",
+  "obj": "5.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. uses vector-only queries in Azure AI Search for a RAG assistant over support articles. Questions that contain exact part numbers, such as \"error on board FX-2207\", return articles about other boards that use similar wording.\n\nYou need to keep conceptual matching for natural-language questions and also match exact part numbers.\n\nWhat should you do?",
+  "choices": [
+   "Change the similarity metric of the vector field to dotProduct",
+   "Add a second vector field that stores embeddings of article titles",
+   "Increase k on the vector query so that more neighbors are returned",
+   "Add a full-text search string to the same request as the vector query"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Hybrid search combines a full-text query (search) and one or more vector queries (vectorQueries) in one request. Keyword search handles product codes, specialized jargon, dates, and names precisely, vector search finds conceptually similar content, and RRF merges both ranked lists. Semantic ranking can then rerank the merged results.",
+  "rationale": [
+   "Incorrect: any vector metric measures how close two embeddings are in meaning, not whether an exact token such as FX-2207 matches. Change the metric only to match how your embedding model was trained, such as cosine for Azure OpenAI embedding models.",
+   "Incorrect: a title vector adds another semantic signal, but embeddings compare meaning, not exact tokens such as FX-2207. Use multiple vector fields when different fields carry different semantic content.",
+   "Incorrect: a larger k returns more nearest neighbors, but vector similarity still does not reward the exact part number, so the right article can stay low or absent. Increase k when relevant chunks rank just below the cutoff.",
+   "Correct: a hybrid query runs a BM25 full-text query and the vector query in parallel and merges the results with RRF. Keyword search identifies exact matches such as part numbers, and the vector query keeps the conceptual matches."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-overview"
+ },
+ {
+  "id": "5.1.3-02",
+  "obj": "5.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud sends hybrid queries to Azure AI Search. Each request contains one search string and two vector queries and does not use semantic ranking. A developer asks how the service orders the merged results in the response.\n\nWhich ranking method should you describe?",
+  "choices": [
+   "The highest cosine similarity of each document across both vector queries",
+   "BM25 scoring of the full-text query, with vector results appended after it",
+   "Semantic reranking of the merged results with a score from 0 to 4",
+   "Reciprocal Rank Fusion of the rank of each result in each result set"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Whenever more than one query runs in parallel (hybrid queries, multiple vector fields, or multiple vector queries), Azure AI Search merges the ranked lists with RRF; one full-text query plus two vector queries means three query executions. Vector weights scale each list's contribution, and semantic ranking, when enabled, reranks the fused results afterward.",
+  "rationale": [
+   "Incorrect: cosine similarity ranks the results of a single vector query. With several queries, RRF merges the lists by rank, because raw scores from different methods have different ranges.",
+   "Incorrect: BM25 scores only the full-text query. In a hybrid query, its ranked list is one input to RRF, not the final order. BM25 alone ranks keyword-only queries.",
+   "Incorrect: semantic ranking is an optional second step that runs after RRF when queryType is semantic, and these requests do not use it. Enable it when you want a model-based rerank of the top 50 results.",
+   "Correct: each of the three queries produces a ranked list. RRF gives every result 1/(rank + k) per list, with k set to about 60, and sums the values, so documents that rank high in several lists rise to the top."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-ranking"
+ },
+ {
+  "id": "5.1.3-03",
+  "obj": "5.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. tests hybrid queries on a large Azure AI Search index. Measurements show that the vector side consistently outperforms the text side, and that the 1,000 BM25-ranked results passed to the ranker add latency without improving relevance. You need to limit the text side of each hybrid query to the top 100 BM25-ranked results.\n\nWhat should you add to the request?",
+  "choices": [
+   "A hybridSearch object with maxTextRecallSize set to 100",
+   "A weight parameter set to 0.5 on the vector query",
+   "A top parameter set to 100 for the whole request",
+   "A hybridSearch object with countAndFacetMode set to countRetrievableResults"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Two settings balance a hybrid query: maxTextRecallSize (preview) controls how many BM25 results enter RRF, and the weight on each vector query scales its contribution to the RRF score. Decrease maxTextRecallSize when vectors outperform text, and increase it on large indexes when the default misses results.",
+  "rationale": [
+   "Correct: maxTextRecallSize (preview) sets how many BM25-ranked results go to the RRF ranker. The default is 1,000 and the maximum is 10,000, and Learn suggests decreasing it when vector search generally outperforms the text side.",
+   "Incorrect: a weight below 1.0 makes the vector results less important in RRF, which contradicts the measurements, and it does not limit the text candidates. Raise a vector weight when vectors should count more.",
+   "Incorrect: in a hybrid query, top sets how many fused results the response returns. It does not change how many BM25 results enter RRF. Use top to size the response or, with skip, to page through results.",
+   "Incorrect: countAndFacetMode controls whether count and facets include all text matches or only those retrieved for ranking. It does not change the BM25 results passed to RRF. Use it together with maxTextRecallSize."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-how-to-query"
+ },
+ {
+  "id": "5.1.3-04",
+  "obj": "5.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Alpine Ski House runs hybrid queries that combine a search string and one vector query. Tests show that the vector results should influence the final ranking twice as much as the keyword results.\n\nWhat should you configure?",
+  "choices": [
+   "Set maxTextRecallSize to 2000 in hybridSearch",
+   "Set weight to 2.0 on the vector query",
+   "Set k to twice the value of top",
+   "Add a scoring profile that boosts the content field"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "In RRF, the reciprocal rank of each result is multiplied by the weight of its query before the scores are summed. Vector queries accept a positive weight with a default of 1.0, while the text query keeps an implicit weight of 1.0; the text side is tuned with maxTextRecallSize instead.",
+  "rationale": [
+   "Incorrect: maxTextRecallSize sets how many BM25 results enter RRF. Raising it supplies more text candidates, which tends to increase keyword influence. Increase it when the text side misses results on a large index.",
+   "Correct: weight multiplies the RRF contribution of a vector query. The default is 1.0 and the text query has an implicit weight of 1.0, so a weight of 2.0 makes the vector results twice as important.",
+   "Incorrect: k sets how many nearest neighbors the vector query contributes, not how much each one counts. More candidates do not double the influence of a rank. Set k to 50 when semantic ranking needs inputs.",
+   "Incorrect: a scoring profile boosts documents for matches in weighted nonvector fields or by functions such as freshness. In a hybrid query it is applied as a document boost on the merged results; it does not double the contribution of the vector query. Use it to favor fields such as the title."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/vector-search-how-to-query"
+ },
+ {
+  "id": "5.1.3-05",
+  "obj": "5.1.3",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Graphic Design Institute uses the azure-search-documents package for Python to send hybrid queries. The queries must meet the following requirements:\n\n- Rerank the merged results with the semantic ranker by using the configuration named sem-config.\n- Make the vector query return as many matches as the semantic ranker can accept as input, and no more.\n- Make the vector query count 1.5 times as much as the keyword query in the fused ranking.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nvector_query = VectorizedQuery(\n    vector=embedding,\n    k_nearest_neighbors=[[1]],\n    fields=\"contentVector\",\n    weight=[[2]],\n)\n\nresults = search_client.search(\n    search_text=question,\n    vector_queries=[vector_query],\n    query_type=[[3]],\n    semantic_configuration_name=\"sem-config\",\n    top=5,\n)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "50",
+     "5",
+     "1000"
+    ],
+    "why": [
+     "Correct: the semantic ranker uses up to 50 results, so Learn recommends k of 50 whenever semantic ranking is combined with vectors. top still limits the response to five results.",
+     "Incorrect: k of 5 matches top, but it feeds only five vector results into RRF and the semantic ranker, which deprives the ranker of inputs. Use a small k for vector-only queries without reranking.",
+     "Incorrect: 1000 adds far more vector candidates than the semantic ranker can use (50) and increases merge cost. More text-side recall is set with maxTextRecallSize, not k."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "1.5",
+     "0.5",
+     "0"
+    ],
+    "why": [
+     "Correct: weight multiplies the RRF contribution of the vector query. The keyword query has an implicit weight of 1.0, so 1.5 makes the vector query count 1.5 times as much.",
+     "Incorrect: 0.5 halves the vector contribution, so keyword results become more important. Use a weight below 1.0 when vector results are less reliable than keyword results.",
+     "Incorrect: the weight must be a positive number larger than zero, so 0 is not a valid value. To remove the vector side, leave out the vector query instead."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "\"semantic\"",
+     "\"full\"",
+     "\"simple\""
+    ],
+    "why": [
+     "Correct: query_type semantic, together with semantic_configuration_name, invokes the semantic ranker on the fused results of the hybrid query.",
+     "Incorrect: full enables the full Lucene syntax for the search text, such as fielded or fuzzy search, but it does not invoke semantic reranking.",
+     "Incorrect: simple is the default simple query syntax for the search text and does not invoke semantic ranking."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0
+  ],
+  "explanation": "In the Python SDK, VectorizedQuery carries the vector, k_nearest_neighbors, fields, and an optional weight, and search_client.search combines it with search_text into a hybrid query. Adding query_type semantic and semantic_configuration_name reranks the fused top 50, so set k to 50 and control the size of the response with top.",
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-how-to-query"
+ },
+ {
+  "id": "5.1.3-06",
+  "obj": "5.1.3",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Southridge Video tunes hybrid queries in Azure AI Search and finds four issues.\n\nWhich setting should you use to resolve each issue? To answer, drag the appropriate settings to the correct issues. Each setting may be used once, more than once, or not at all.",
+  "choices": [
+   "countAndFacetMode set to countRetrievableResults",
+   "filterOverride on the vector query",
+   "k set to 50 on the vector query",
+   "maxTextRecallSize set to 5000",
+   "vectorFilterMode set to strictPostFilter",
+   "weight set to 0.5 on the vector query"
+  ],
+  "targets": [
+   "Issue1: facet counts include text matches that never reach the RRF ranker",
+   "Issue2: a date filter must restrict the vector results but not the keyword results",
+   "Issue3: k is 10, few documents match the keywords, and the semantic ranker gets fewer than 50 inputs",
+   "Issue4: on a large index, the default BM25 recall does not capture enough results"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "rationale": [
+   "countRetrievableResults scopes count and facets to the documents retrieved for ranking, that is, the maxTextRecallSize text results plus the k vector matches, instead of every text match.",
+   "filterOverride (preview) applies an OData filter to the vector subquery only and leaves the keyword results unaffected. It replaces the global filter for that subquery, so repeat any security trimming filter in it.",
+   "The semantic ranker takes up to 50 results. With few keyword matches, the vector side must supply them, so set k to 50, as the troubleshooting guidance for fewer semantic results advises.",
+   "maxTextRecallSize sets how many BM25 results feed RRF, with a default of 1,000 and a maximum of 10,000. Increase it on a large index when the default does not capture enough results."
+  ],
+  "notes": [
+   "Preview hybridSearch property. countAllResults, the default, counts every text match; countRetrievableResults counts only documents retrieved for RRF. Use it with maxTextRecallSize.",
+   "Preview vectorQueries property that replaces the global filter for one vector subquery. Use it to filter vectors only, and include security trimming filters explicitly.",
+   "Number of nearest neighbors that the vector query contributes to RRF. Set it to 50 with semantic ranking, and keep it modest for low-latency, precision-first queries.",
+   "Preview hybridSearch property for the number of BM25 results passed to RRF. Decrease it when vectors outperform text, and increase it for coverage on large indexes.",
+   "Preview filter mode that applies the filter to the unfiltered global top k. It keeps facet counts consistent but loses the most recall, and Learn does not recommend it with semantic ranker.",
+   "Lowers the RRF contribution of a vector query below the implicit 1.0 of the text query. Use it when vector results are less reliable than keyword results."
+  ],
+  "explanation": "Hybrid tuning settings act at different stages: filters and filterOverride before retrieval, k and maxTextRecallSize on the candidates that enter RRF, weight inside RRF, countAndFacetMode on counts and facets, and semantic ranking after RRF on up to 50 results.",
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-how-to-query"
+ },
+ {
+  "id": "5.1.3-07",
+  "obj": "5.1.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "VanArsdel, Ltd. sends the following hybrid query to Azure AI Search:\n\n```json\n{\n  \"search\": \"battery drains overnight\",\n  \"vectorQueries\": [\n    { \"kind\": \"text\", \"text\": \"battery drains overnight\", \"fields\": \"contentVector\", \"k\": 10 }\n  ],\n  \"filter\": \"product eq 'Tablet7'\",\n  \"vectorFilterMode\": \"strictPostFilter\",\n  \"queryType\": \"semantic\",\n  \"semanticConfiguration\": \"sem-kb\",\n  \"top\": 5\n}\n```\n\nArticles about Tablet7 make up 2 percent of the index. Responses often contain fewer than five results, and the reranked order misses relevant articles. You need to give the semantic ranker as many filtered candidates as it can use.\n\nWhich two changes should you make? Each correct answer presents part of the solution.",
+  "choices": [
+   "Set vectorFilterMode to preFilter.",
+   "Add an orderby clause on the lastUpdated field.",
+   "Set k to 50.",
+   "Set queryType to simple.",
+   "Add hybridSearch with maxTextRecallSize set to 10."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The semantic ranker reranks at most 50 fused results, so its quality depends on its inputs: k of 50 on the vector side, enough BM25 recall, and a filter mode that does not discard matches. preFilter returns k filtered matches if they exist, while postFilter and especially strictPostFilter can starve the ranker when filters are selective.",
+  "rationale": [
+   "Correct: strictPostFilter keeps only the Tablet7 articles that are already in the unfiltered global top k, so a selective filter leaves very few, and Learn does not recommend it with semantic ranker. preFilter returns k filtered matches if they exist.",
+   "Incorrect: an orderby clause overrides search scores, and combining it with semantic ranking returns an HTTP 400 error. It also adds no filtered candidates. Use orderby on a sortable field, such as a date, when users want a sort order instead of relevance.",
+   "Correct: the semantic ranker can use up to 50 results, and a k of 10 limits the vector side to 10 candidates. Learn recommends k of 50 whenever semantic ranking is combined with vectors.",
+   "Incorrect: simple is the plain query syntax without semantic ranking, so it removes the reranking that the team wants. Use it for queries that do not need a model-based rerank.",
+   "Incorrect: maxTextRecallSize of 10 cuts the BM25 side from the default 1,000 results to 10, which gives the ranker fewer candidates. Learn advises that k and maxTextRecallSize sum to at least 50 with semantic ranking."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-how-to-query"
+ },
+ {
+  "id": "5.1.3-08",
+  "obj": "5.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A. Datum Corporation enables query rewriting (preview) on a semantic hybrid query in Azure AI Search to correct typos and add synonyms. The request sets queryType to semantic, names a semantic configuration, sets queryRewrites to generative|count-5, sets queryLanguage to en-US, and contains a search string and a vector query of kind text. The text of the vector query is a shortened version of the search string. The debug output shows that no query rewrites are generated.\n\nWhat should you change?",
+  "choices": [
+   "Make the text of the vector query identical to the search string.",
+   "Set queryType to full and keep the semantic configuration name.",
+   "Change the vector query to kind vector with an embedding array.",
+   "Set queryRewrites to generative|count-20 to request more rewrites."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Query rewriting (preview) is part of semantic ranker: a small language model generates up to 10 alternative queries, which are combined with the original query for BM25 and concatenated with it before vectorization. It requires semantic ranking, a queryLanguage that matches the search text, and, when vector queries are present, vector query text identical to the search string. Rewrites can drop exact identifiers such as product codes, so test them with debug set to queryRewrites.",
+  "rationale": [
+   "Correct: when a request includes vector queries, the search text must match the text property of the vector query; Learn states that the values must be identical for query rewriting to work. A shortened vector text breaks this rule.",
+   "Incorrect: query rewriting requires semantic ranking, which you enable by setting queryType to semantic or by sending a semanticQuery. full only selects the Lucene query syntax for the search string.",
+   "Incorrect: query rewriting works on text queries or the text portion of a vector query, and the rewrites are concatenated with the original query before the embedding step. A kind vector query carries only a precomputed embedding, so it gives the service no text to rewrite.",
+   "Incorrect: the count of rewrites can be set from 1 to 10, so 20 is out of range, and the count does not explain why no rewrites appear. Use a lower count to limit latency."
+  ],
+  "ref": "https://learn.microsoft.com/azure/search/semantic-how-to-query-rewrite"
+ },
+ {
+  "id": "5.1.3-09",
+  "obj": "5.1.3",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "case": "C-g",
+  "stem": "You need to complete the query request that TariffAssist sends to idx-rulings so that it meets the retrieval requirements.\n\nHow should you complete the request? To answer, select the appropriate options in the answer area.\n\n```http\nPOST https://srch-wwi.search.windows.net/indexes/idx-rulings/docs/search?api-version=2026-04-01\n{\n  \"[[1]]\": \"duty rate for 8471.30.00 laptops\",\n  \"vectorQueries\": [\n    {\n      \"kind\": \"text\",\n      \"text\": \"duty rate for 8471.30.00 laptops\",\n      \"fields\": \"contentVector\",\n      \"k\": [[2]]\n    }\n  ],\n  \"queryType\": \"[[3]]\",\n  \"semanticConfiguration\": \"sem-rulings\",\n  \"top\": 5\n}\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "search",
+     "filter",
+     "orderby"
+    ],
+    "why": [
+     "Correct: search holds the full-text query, which runs BM25 keyword matching in parallel with the vector query. Keyword search matches exact codes such as 8471.30.00, while the vector query keeps conceptual matches.",
+     "Incorrect: filter expects an OData expression on filterable fields, such as hsCode eq '8471.30.00'. A natural-language string is not a valid filter, and a filter excludes documents instead of ranking keyword matches.",
+     "Incorrect: orderby expects a sort expression on sortable fields and overrides relevance ranking; with semantic ranking it returns an HTTP 400 error. It does not run a keyword query, so the exact-code requirement is not met."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "50",
+     "3",
+     "1000"
+    ],
+    "why": [
+     "Correct: the semantic ranker uses up to 50 results, so Learn recommends k of 50 whenever semantic ranking is combined with vectors. top then limits the response to five results.",
+     "Incorrect: 3 is the current setting. With semantic ranking it deprives the reranker of inputs from the vector side. A small k suits vector-only queries without reranking.",
+     "Incorrect: 1000 adds far more vector candidates than the semantic ranker can use and increases merge cost. More text-side recall is set with maxTextRecallSize, not k."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "semantic",
+     "full",
+     "simple"
+    ],
+    "why": [
+     "Correct: queryType semantic, together with the sem-rulings configuration, reranks the fused results with the semantic ranker, which Azure AI Search hosts, so the company does not manage a reranking model.",
+     "Incorrect: full enables the full Lucene syntax for the search string, such as fielded or fuzzy search, but it does not rerank results with a model.",
+     "Incorrect: simple is the default query syntax for the search string and does not invoke semantic ranking."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0
+  ],
+  "explanation": "A semantic hybrid query combines search (BM25) and vectorQueries in one request, merges them with RRF, and reranks up to 50 fused results with the semantic ranker when queryType is semantic and a semantic configuration is named. Set k to 50 so that the ranker gets enough inputs, and use top to limit what the app passes to the model.",
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-how-to-query"
+ },
+ {
+  "id": "5.1.4-01",
+  "obj": "5.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Nod Publishers has a RAG app in Microsoft Foundry. Editors labeled each test query with graded relevance scores for the documents in the index. You need an evaluator that compares the documents that the search step retrieves with these labels and reports NDCG.\n\nWhich evaluator should you use?",
+  "choices": [
+   "Relevance",
+   "Response Completeness",
+   "Retrieval",
+   "Document Retrieval"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "RAG evaluators split into process evaluation of the retrieval step (Document Retrieval when you have relevance labels, Retrieval when you do not) and system evaluation of the final response (Groundedness, Groundedness Pro, Relevance, and Response Completeness). Classic retrieval metrics such as precision at K, recall at K, and mean reciprocal rank measure the same retrieval step.",
+  "rationale": [
+   "Incorrect: Relevance judges how well the final response addresses the query. It evaluates the generated answer, not the ranking of the retrieved documents.",
+   "Incorrect: Response Completeness (preview) compares the response with a ground truth answer to find missing information. It needs an expected answer, not document relevance labels.",
+   "Incorrect: Retrieval uses an LLM judge to rate how relevant the retrieved context is to the query on a 1 to 5 scale. It is meant for cases without ground truth and does not report NDCG.",
+   "Correct: Document Retrieval compares retrieved_documents with retrieval_ground_truth, the query relevance labels, and returns NDCG, XDCG, fidelity, max relevance, and holes. It needs no judge model deployment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "5.1.4-02",
+  "obj": "5.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Best For You Organics Company has a RAG chatbot. You have test queries and the context chunks that the search step returned for each query, but no relevance labels and no expected answers. You need to measure how relevant the retrieved chunks are to each query.\n\nWhich evaluator should you use?",
+  "choices": [
+   "Retrieval",
+   "Response Completeness",
+   "Document Retrieval",
+   "Groundedness"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Pick a RAG evaluator by what you want to measure and what data you have. Retrieval quality without labels: Retrieval (query and context). Retrieval quality with labels: Document Retrieval. Faithfulness of the answer to the context: Groundedness. Coverage of an expected answer: Response Completeness.",
+  "rationale": [
+   "Correct: Retrieval uses a judge model to score how relevant the retrieved context chunks are to the query. Its inputs are query and context, so it works without ground truth.",
+   "Incorrect: Response Completeness needs a ground_truth answer and a response, and it checks whether critical information is missing from the answer.",
+   "Incorrect: Document Retrieval needs retrieval_ground_truth with a relevance label for each document, which you do not have. Use it when labels exist and you want NDCG and fidelity.",
+   "Incorrect: Groundedness checks whether the response stays within the context. It evaluates the generated answer, not how relevant the chunks are to the query."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "5.1.4-03",
+  "obj": "5.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee evaluates a RAG assistant. Reviewers confirm that the answers contain no invented facts, but the answers often leave out steps that appear in the expected answers of the test dataset.\n\nWhich evaluator should you add to measure this problem?",
+  "choices": [
+   "Groundedness",
+   "Response Completeness",
+   "Relevance",
+   "Groundedness Pro"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Groundedness covers the precision aspect of a RAG answer (no content outside the grounding context), and Response Completeness covers the recall aspect (no critical information missing compared with ground truth). Use both to check that an answer is faithful and complete.",
+  "rationale": [
+   "Incorrect: Groundedness measures the precision aspect, whether the response contains content that is not in the context. The answers have no invented facts, so it would pass them.",
+   "Correct: Response Completeness (preview) measures the recall aspect. It compares the response with ground_truth and fails responses that miss critical information, such as steps from the expected answer.",
+   "Incorrect: Relevance judges whether the response addresses the query, and an answer that skips steps can still be on topic. It does not compare the response with an expected answer.",
+   "Incorrect: Groundedness Pro (preview) uses Azure AI Content Safety for a strict true or false groundedness check. It also targets fabrication, not missing steps."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "5.1.4-04",
+  "obj": "5.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "City Power & Light runs the document retrieval evaluator in Microsoft Foundry to compare a new index configuration with the current one. The new configuration has a higher NDCG, but its holes and holes_ratio metrics are much higher than those of the current configuration.\n\nWhat should you do before you trust the NDCG result?",
+  "choices": [
+   "Switch both runs to the Retrieval evaluator to remove the labels",
+   "Raise ground_truth_label_max so that the labels have a wider range",
+   "Add relevance labels for the retrieved documents that have no label",
+   "Increase top_k so that more documents are retrieved for each query"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Holes is a label sanity metric: the number of retrieved documents that have no relevance judgment. A configuration that retrieves documents the experts never labeled can look better or worse by chance, so check holes and holes_ratio before you act on NDCG, XDCG, or fidelity.",
+  "rationale": [
+   "Incorrect: the Retrieval evaluator uses an LLM judge without ground truth, so you would lose the precise label-based metrics instead of fixing the labels. Use it when no labels exist.",
+   "Incorrect: ground_truth_label_min and ground_truth_label_max describe the scale of your labels, with SDK defaults of 0 and 4. Changing the scale does not add judgments for unlabeled documents.",
+   "Correct: holes counts retrieved documents with missing query relevance judgments. Unlabeled documents distort ranking metrics, so label the newly retrieved documents before you compare NDCG between the configurations.",
+   "Incorrect: retrieving more documents per query brings in more documents without labels, which tends to increase holes. Vary top_k as a sweep parameter after the labels are complete."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "5.1.4-05",
+  "obj": "5.1.4",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "First Up Consultants evaluated a baseline RAG configuration and two candidate configurations on the same dataset in Microsoft Foundry. You select the three evaluation runs on the evaluation detail page and select Compare.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "When you set one run as the baseline, the view shows how each other run deviates from that run.",
+   "A metric cell marked Inconclusive means that the candidate run performed worse than the baseline.",
+   "The comparison view is saved in the project, so you can reopen it later without selecting the runs again."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Foundry compares evaluation runs with statistical t-tests. Each cell shows whether a metric improved, degraded, or changed, with strong (p <= 0.001) or weak (0.001 < p <= 0.05) significance, or Inconclusive when there are too few examples or p >= 0.05. This turns an offline A/B comparison of configurations into a decision with a known confidence.",
+  "rationale": [
+   "Yes: baseline comparison sets a reference run and shows how each other run deviates from it, which is how you compare candidate configurations with the current one.",
+   "No: Inconclusive means there were too few examples or the p-value was 0.05 or higher, so no significant difference was found. A significant decline shows as DegradedStrong (p <= 0.001) or DegradedWeak (0.001 < p <= 0.05).",
+   "No: the comparison view is not saved. If you leave the page, you reselect the runs and select Compare to regenerate it. Comparisons can also be created and retrieved through the evaluation comparison insights API."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/evaluate-results"
+ },
+ {
+  "id": "5.1.4-06",
+  "obj": "5.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Consolidated Messenger wants to compare two retrieval configurations of a RAG app with live users. Each configuration is a JSON object with settings such as k and the name of the semantic configuration. Both configurations must be delivered to the app by one feature flag, and a third candidate configuration might be added to the same test later. Ten percent of users must get the new configuration and the rest the current one. The team must compare an \"answer accepted\" custom event per configuration in Application Insights and must be able to change the split without redeploying the app.\n\nWhich Azure App Configuration feature flag should you create?",
+  "choices": [
+   "A Rollout flag that uses a time window filter for the new configuration",
+   "An Experiment flag with two variants, a 10/90 allocation, and telemetry",
+   "A Rollout flag that enables the new configuration for 10 percent of users",
+   "A Switch flag that turns the new configuration on or off for all users"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Azure App Configuration offers three flag purposes: Switch (on or off for everyone), Rollout (gradual release to a percentage of users), and Experiment (variants with traffic allocation for A/B tests). For a RAG A/B test, put each retrieval configuration in a variant, enable telemetry, and analyze the flag evaluation events against custom events such as answer accepted in Application Insights.",
+  "rationale": [
+   "Incorrect: a time window filter turns a feature on or off during a scheduled window, so all users switch together. Use it for planned activations, not for a percentage-based comparison.",
+   "Correct: an Experiment flag is a variant feature flag. Each variant carries a configuration value such as the retrieval JSON, more variants can be added later, allocation assigns 10 and 90 percent of users, and telemetry lets you compare the variants with custom events in Application Insights.",
+   "Incorrect: a Rollout flag gradually exposes one feature to a percentage of users. Its configuration reaches the app only when the flag evaluates as enabled, so it cannot deliver both configurations or a third candidate. Use it for a staged release of a single change.",
+   "Incorrect: a Switch flag toggles a feature for all users at once, so there are no groups to compare. Use it for short-lived operational toggles."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-app-configuration/concept-feature-management"
+ },
+ {
+  "id": "5.1.4-07",
+  "obj": "5.1.4",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Bellows College compares a baseline retrieval configuration with a new one. For each configuration, a JSONL dataset that contains retrieval_ground_truth and retrieved_documents for 300 queries is already uploaded to the Microsoft Foundry project, and you have both dataset IDs. You use the azure-ai-projects package for Python.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Create `AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())` and call `get_openai_client()`.",
+   "Call `openai_client.evals.create(...)` with a testing criterion whose `evaluator_name` is `builtin.document_retrieval`.",
+   "Call `openai_client.evals.runs.create(eval_id=eval_object.id, ...)` once for each dataset ID.",
+   "Select both runs on the evaluation detail page, select Compare, and set the baseline run.",
+   "Call `project_client.datasets.upload_file(...)` once for each JSONL file.",
+   "Call `openai_client.evals.create(...)` with a testing criterion whose `evaluator_name` is `builtin.groundedness`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A Foundry cloud evaluation has three steps: define the data schema and evaluators in an evaluation, start a run against each dataset, and read the scored results. For an offline A/B comparison, run the same evaluation on the data of each configuration and compare the runs against a baseline with statistical testing.",
+  "rationale": [
+   "Step 1: every later call needs the project client, and get_openai_client() returns the client that exposes the evals API used by Foundry cloud evaluations.",
+   "Step 2: the evaluation defines the data schema and testing criteria. builtin.document_retrieval maps retrieval_ground_truth and retrieved_documents and needs no judge model. The runs need the ID of this evaluation.",
+   "Step 3: each run executes the testing criteria on one dataset, referenced by its file ID, so two runs produce comparable metrics for the two configurations.",
+   "Step 4: the Compare view runs statistical t-tests against the baseline run and marks each metric as improved, degraded, changed, or inconclusive.",
+   "Incorrect: upload_file creates a versioned dataset from a local file. Both datasets are already uploaded and their IDs are known, so another upload is not needed. Upload first when you start from local files.",
+   "Incorrect: builtin.groundedness judges whether a response is supported by its context. It needs a response and ignores the graded labels, so it cannot compare retrieval rankings. Use it to evaluate generated answers."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/cloud-evaluation-datasets"
+ },
+ {
+  "id": "5.1.4-08",
+  "obj": "5.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Blue Yonder Airlines runs an A/B test of a RAG app with a variant feature flag in Azure App Configuration. The flag has the variants Current and New, allocates 20 percent of users to New, and sets DefaultWhenDisabled to Current. After a model update, the New variant produces wrong answers. You must give every user the Current variant immediately, without a deployment, and keep the allocation rules unchanged so that the same users return to New when the test resumes.\n\nWhat should you do?",
+  "choices": [
+   "Set the DefaultWhenEnabled variant to Current.",
+   "Add an override that assigns Current to every user group.",
+   "Set the Enabled field of the flag to false.",
+   "Change the allocation to 0 percent New and 100 percent Current."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A variant feature flag has variants, allocation rules (percentiles, users, and groups), and two defaults: DefaultWhenEnabled for users in unassigned percentiles and DefaultWhenDisabled for when the flag is disabled. Disabling the flag is the documented kill switch for a variant that has a bug, a regression, or bad performance.",
+  "rationale": [
+   "Incorrect: DefaultWhenEnabled applies only to users in percentiles that the allocation does not assign. The 20 percent of users allocated to New keep receiving New.",
+   "Incorrect: overrides assign variants to specific users or groups regardless of percentages, but adding them changes the assignment rules and must cover every group. Use overrides to pin testers, such as a beta group, to a variant.",
+   "Correct: setting Enabled to false is the kill switch. Every user gets the DefaultWhenDisabled variant, Current, regardless of percentiles or overrides, and the allocation stays intact for when you enable the flag again.",
+   "Incorrect: an allocation of 0 and 100 percent moves all users to Current, but it changes the allocation rules that must stay unchanged. Change allocations to resize an experiment, not to stop it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-app-configuration/howto-variant-feature-flags"
+ },
+ {
+  "id": "5.1.4-09",
+  "obj": "5.1.4",
+  "difficulty": "hard",
+  "type": "yesno",
+  "case": "C-g",
+  "stem": "You plan how to evaluate and roll out the new retrieval configuration of TariffAssist.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "You can use the Document Retrieval evaluator with the graded labels of the brokers to compare the NDCG of the current and the new chunking configurations.",
+   "The Relevance evaluator can use the graded labels of the brokers to score how well the new configuration ranks the labeled chunks.",
+   "If you create a variant feature flag in appcs-wwi that allocates 10 percent of brokers to the new configuration and sets DefaultWhenDisabled to the current configuration, operations staff can move every broker back by disabling the flag."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Offline, the Document Retrieval evaluator turns graded relevance labels into ranking metrics such as NDCG, so each retrieval change can be measured before production. Online, an Experiment variant feature flag in Azure App Configuration splits users between configurations without a deployment, telemetry in the connected Application Insights resource lets you compare acceptance per variant, and disabling the flag is the kill switch.",
+  "rationale": [
+   "Yes: Document Retrieval compares retrieved_documents with retrieval_ground_truth, the graded labels, and reports NDCG, XDCG, and fidelity. The 0 to 4 scale of the brokers matches the SDK defaults for the minimum and maximum label.",
+   "No: Relevance judges how well a generated response addresses the query, with query and response as inputs. It does not use relevance labels or score the ranking of retrieved chunks.",
+   "Yes: disabling a variant feature flag is the kill switch, and every user then gets the DefaultWhenDisabled variant, here the current configuration. It takes effect without a deployment and keeps the allocation for a later restart."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ }
+]
