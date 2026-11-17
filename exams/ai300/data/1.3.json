@@ -85,10 +85,10 @@
   ],
   "explanation": "A GitHub-hosted runner runs outside Azure, so it cannot sign in as the managed identity of an Azure resource. For secretless sign-in, Learn lists two options: a Microsoft Entra application or a user-assigned managed identity, each with a federated identity credential that trusts tokens that GitHub issues for the repository.",
   "rationale": [
-   "Incorrect: the system-assigned identity belongs to the workspace and is used by the workspace itself. Federated identity credentials, which let a GitHub workflow sign in without a secret, can be added to an application or a user-assigned managed identity, not to a system-assigned identity.",
+   "Incorrect: the system-assigned identity belongs to the workspace and is used by the workspace itself. A GitHub workflow signs in without a secret through a federated identity credential, and Learn states that configuring one on a system-assigned managed identity is not supported.",
    "Correct: the solution does not meet the goal because the workflow cannot sign in as the system-assigned identity of Workspace1. The workspace identity is the right choice when the workspace accesses its own storage account or key vault."
   ],
-  "ref": "https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect"
+  "ref": "https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust-user-assigned-managed-identity"
  },
  {
   "id": "1.3.1-05",
@@ -106,11 +106,11 @@
    0,
    2
   ],
-  "explanation": "Microsoft Entra ID compares the issuer and subject of the GitHub token with each federated identity credential. The subject depends on how the job runs: environment:<name> for jobs tied to an environment, ref:refs/heads/<branch> or a tag ref for other push jobs, and pull-request for pull request events. A subject that does not match makes the token exchange fail.",
+  "explanation": "Microsoft Entra ID compares the issuer and subject of the GitHub token with each federated identity credential. The subject depends on how the job runs: environment:<name> for jobs tied to an environment, ref:refs/heads/<branch> or a tag ref for other push jobs, and pull_request for pull request events. A subject that does not match makes the token exchange fail.",
   "rationale": [
-   "Yes: the deploy job runs in the production environment, so its token subject is repo:lamna/mlops-infra:environment:production. The credential must match that subject exactly, which requires the entity type Environment and the value production.",
+   "Yes: the deploy job runs in the production environment, so its token subject names the environment, for example repo:lamna/mlops-infra:environment:production. The credential must match that subject exactly, which requires the entity type Environment and the value production.",
    "No: a Branch credential has the subject repo:lamna/mlops-infra:ref:refs/heads/main, which matches jobs that are not tied to an environment. Because the deploy job runs in an environment, its token carries the environment subject instead.",
-   "Yes: validate-infra.yml runs on pull_request events, which produce the subject repo:lamna/mlops-infra:pull-request. A Pull request credential matches it, so the workflow can sign in as id-mlops-gh to preview the changes."
+   "Yes: validate-infra.yml runs on pull_request events, which produce a subject that ends in :pull_request. A Pull request credential matches it, so the workflow can sign in as id-mlops-gh to preview the changes."
   ],
   "ref": "https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust"
  },
@@ -131,7 +131,7 @@
   ],
   "explanation": "A GitHub job that references an environment gets a token whose subject names the environment instead of the branch. Each subject that must sign in needs its own federated identity credential, because a standard credential matches one exact subject. An app or user-assigned managed identity can have up to 20 credentials.",
   "rationale": [
-   "Incorrect: the Pull request entity type produces the subject repo:<org>/<repo>:pull-request, which matches workflows triggered by pull_request events. The failing job runs on a push and is tied to an environment.",
+   "Incorrect: the Pull request entity type produces the subject repo:<org>/<repo>:pull_request, which matches workflows triggered by pull_request events. The failing job runs on a push and is tied to an environment.",
    "Correct: a job that references an environment presents the subject repo:<org>/<repo>:environment:staging. A new Environment credential fixes the job, and keeping the Branch credential keeps the other workflows working.",
    "Incorrect: a Tag credential matches workflows triggered by a pushed tag, and changing the existing credential breaks the workflows that rely on the main branch credential. Use Tag when release workflows run on tags.",
    "Incorrect: https://token.actions.githubusercontent.com is the issuer of GitHub tokens, not the audience. The recommended audience is api://AzureADTokenExchange, and this failure is caused by the subject."
@@ -191,7 +191,7 @@
   "obj": "1.3.2",
   "difficulty": "medium",
   "type": "order",
-  "stem": "Northwind Traders has a file named main.bicep that defines an Azure Machine Learning workspace named mlw-prod and its dependent resources. The file targets a resource group. A resource group named rg-mlprod does not exist yet. The Azure CLI and its ml extension are installed.\n\nYou need to preview the changes that main.bicep makes, deploy the file, and then confirm that the workspace reports a provisioningState of Succeeded.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "stem": "Northwind Traders has a file named main.bicep that defines an Azure Machine Learning workspace named mlw-prod and its dependent resources. The file targets a resource group. A resource group named rg-mlprod does not exist yet. The Azure CLI and its ml extension are installed.\n\nYou need to preview the changes that main.bicep makes, deploy the file, and then use the ml extension to display the properties of the new workspace.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
   "choices": [
    "`az group create --name rg-mlprod --location westeurope`",
    "`az deployment group what-if --resource-group rg-mlprod --template-file main.bicep`",
@@ -207,12 +207,12 @@
    2,
    3
   ],
-  "explanation": "A Bicep deployment from the Azure CLI follows the target scope of the file: a resource group file uses the az deployment group commands, and the resource group must exist first. Run what-if before create to preview the changes, and use az ml workspace show to confirm the provisioning state of the workspace.",
+  "explanation": "A Bicep deployment from the Azure CLI follows the target scope of the file: a resource group file uses the az deployment group commands, and the resource group must exist first. Run what-if before create to preview the changes, and use az ml workspace show to display the new workspace.",
   "rationale": [
    "Step 1: a resource group deployment needs an existing resource group, and both what-if and create run at resource group scope. az group create makes rg-mlprod in the chosen region.",
    "Step 2: what-if lists the resources that the file would create, modify, or delete without changing anything, and it also validates the file. It runs against the existing resource group, so it follows az group create.",
    "Step 3: az deployment group create compiles main.bicep and deploys the workspace and its dependent resources into rg-mlprod after you review the preview.",
-   "Step 4: az ml workspace show uses the ml extension and returns a provisioningState of Succeeded when the deployment has finished, which confirms the result.",
+   "Step 4: az ml workspace show uses the ml extension to return the properties of mlw-prod, such as its storage account, key vault, and MLflow tracking URI. It runs last because the workspace exists only after the deployment.",
    "Incorrect: az deployment sub create deploys at subscription scope, which you use for a file that sets targetScope to subscription, for example to create resource groups. main.bicep targets a resource group.",
    "Incorrect: az ml workspace create would create the workspace outside the Bicep file, with new dependent resources. Use it when you manage the workspace with the CLI and a YAML file instead of Bicep.",
    "Incorrect: the Azure CLI compiles a .bicep file during what-if and deployment, so a separate build is not needed. Use bicep build when you need the compiled JSON template, for example to inspect or publish it."
@@ -266,12 +266,12 @@
    {
     "label": "Box 4",
     "options": [
-     "Identity",
-     "AccessKey"
+     "identity",
+     "accesskey"
     ],
     "why": [
-     "Correct: Identity makes the workspace use Microsoft Entra ID, through its managed identity or the identity of the user, to access the system datastores instead of the shared key of the storage account.",
-     "Incorrect: AccessKey keeps shared key access to the default storage account. It is the setting you revert to when key-based access to the storage account is required again."
+     "Correct: identity makes the workspace use Microsoft Entra ID, through its managed identity or the identity of the user, to access the system datastores instead of the shared key of the storage account.",
+     "Incorrect: accesskey keeps shared key access to the default storage account. It is the value you set to revert a workspace when key-based access to the storage account is required again."
     ]
    }
   ],
@@ -281,8 +281,8 @@
    0,
    0
   ],
-  "explanation": "In Bicep, the workspace properties reference dependent resources by resource ID (symbolicName.id). The identity block sets the managed identity type, publicNetworkAccess controls inbound public access, and systemDatastoresAuthMode switches the system datastores from shared keys to Microsoft Entra ID authorization.",
-  "ref": "https://learn.microsoft.com/azure/templates/microsoft.machinelearningservices/workspaces?pivots=deployment-language-bicep"
+  "explanation": "In Bicep, the workspace properties reference dependent resources by resource ID (symbolicName.id). The identity block sets the managed identity type, publicNetworkAccess controls inbound public access, and systemDatastoresAuthMode set to identity switches the system datastores from shared keys to Microsoft Entra ID authorization, as in the Learn template sample for API version 2024-04-01.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-disable-local-auth-storage?view=azureml-api-2"
  },
  {
   "id": "1.3.2-03",
@@ -299,9 +299,9 @@
   "answer": [
    1
   ],
-  "explanation": "The CLI v2 creates a workspace with new dependent resources by default. To bring your own storage account, key vault, container registry, or Application Insights resource, put their Azure Resource Manager IDs in a workspace YAML file and pass it with --file. You can mix existing and automatically created resources.",
+  "explanation": "The CLI v2 creates a workspace with new dependent resources by default. To bring your own storage account, key vault, container registry, or Application Insights resource, put their Azure Resource Manager IDs in a workspace YAML file and pass it with --file (the command also accepts IDs in parameters such as --storage-account and --key-vault). You can mix existing and automatically created resources.",
   "rationale": [
-   "Incorrect: without a configuration file, az ml workspace create creates new dependent services, such as a storage account and a key vault. Use it when you have no existing resources to reuse.",
+   "Incorrect: with no YAML file and no resource ID parameters, az ml workspace create creates new dependent services, such as a storage account and a key vault. Use it when you have no existing resources to reuse.",
    "Correct: a workspace YAML file lists the resource IDs of existing resources in storage_account and key_vault. Resources that you leave out, such as Application Insights, are created automatically.",
    "Incorrect: the first command creates new dependent resources, and sync-keys only makes the workspace pick up regenerated access keys immediately instead of after about an hour. It does not change which resources it uses.",
    "Incorrect: az ml workspace update changes settings of a workspace that already exists, such as public network access. The workspace in this scenario must be created, so the update command does not apply."
@@ -402,7 +402,7 @@
    "Incorrect: AzureML Data Scientist grants actions inside an existing workspace and cannot create workspaces. A missing permission returns an authorization error, not a namespace registration error.",
    "Incorrect: quota limits apply to compute resources such as clusters and instances. The error names an unregistered namespace, not an exceeded quota."
   ],
-  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-workspace-cli"
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-workspace-template?view=azureml-api-2#troubleshooting"
  },
  {
   "id": "1.3.2-08",
@@ -530,7 +530,7 @@
   "answer": [
    0
   ],
-  "explanation": "GitHub Actions triggers are events in the on section. schedule runs on a cron timetable, workflow_dispatch enables manual runs, pull_request reacts to pull request activity, and push reacts to commits. The Azure Machine Learning sample workflow combines workflow_dispatch, schedule, and pull_request.",
+  "explanation": "GitHub Actions triggers are events in the on section. schedule runs on a cron timetable, workflow_dispatch enables manual runs, pull_request reacts to pull request activity, and push reacts to commits. The Azure Machine Learning sample workflow runs on a cron schedule and on pull requests, and you can also start it with Run workflow.",
   "rationale": [
    "Correct: schedule with a cron expression starts the nightly run, and workflow_dispatch adds the Run workflow option so that a team member can start the workflow manually.",
    "Incorrect: schedule covers the nightly run, but push starts the workflow on commits instead of on demand. Use push when code that is merged into a branch must trigger the workflow.",
@@ -554,7 +554,7 @@
   "answer": [
    3
   ],
-  "explanation": "In an IaC pipeline, the pull request stage runs a what-if analysis and attaches the report to the pull request, and the deploy stage runs after the merge. What-if is read-only, but it needs the same permissions as a deployment because it evaluates the template against the current resources.",
+  "explanation": "In an IaC pipeline, the pull request stage runs a what-if analysis and attaches the report to the pull request, and the deploy stage runs after the merge. What-if changes nothing, but Learn states that it has the same permission requirements as a deployment.",
   "rationale": [
    "Incorrect: validate checks that the template is valid and deployable at the resource group, but it does not list the resource changes. Use it in a unit test workflow that runs on every commit.",
    "Incorrect: create deploys the file and changes resources in rg-ml before the pull request is reviewed. Run it in the workflow that triggers on pushes to main after the merge.",
@@ -592,22 +592,22 @@
   "obj": "1.3.3",
   "difficulty": "hard",
   "type": "single",
-  "stem": "Humongous Insurance has a GitHub Actions workflow that has two jobs. The plan job runs a what-if operation and must sign in as a read-only identity. The deploy job references the production environment and must sign in as a read/write identity. Both jobs pass ${{ secrets.AZURE_CLIENT_ID }} to the azure/login action, and the repository secret AZURE_CLIENT_ID contains the client ID of the read-only identity. You must not change the workflow file.\n\nWhat should you do?",
+  "stem": "Humongous Insurance has a GitHub Actions workflow that has two jobs. The inventory job runs az ml compute list against a workspace and must sign in as Identity1, which has only the Reader role. The deploy job references the production environment, deploys a Bicep file, and must sign in as Identity2, which has the Contributor role on the resource group. Each identity already has a federated credential that matches the subject of its job. Both jobs pass ${{ secrets.AZURE_CLIENT_ID }} to the azure/login action, and the repository secret AZURE_CLIENT_ID contains the client ID of Identity1. You must not change the workflow file.\n\nWhat should you do?",
   "choices": [
-   "Replace the value of the repository secret AZURE_CLIENT_ID with the client ID of the read/write identity",
-   "Create an environment secret named AZURE_CLIENT_ID in production that contains the read/write client ID",
-   "Add a federated credential to the read-only identity for the production environment",
-   "Assign the Contributor role to the read-only identity at the resource group scope"
+   "Replace the value of the repository secret AZURE_CLIENT_ID with the client ID of Identity2",
+   "Create an environment secret named AZURE_CLIENT_ID in production that contains the client ID of Identity2",
+   "Add a federated credential to Identity1 for the production environment",
+   "Assign the Contributor role to Identity1 at the resource group scope"
   ],
   "answer": [
    1
   ],
-  "explanation": "GitHub environments can hold their own secrets. When a job references an environment, a secret of that environment takes precedence over a repository secret with the same name. When the environment requires approval, the job cannot read its secrets until a required reviewer approves. This gives the deploy stage a read/write identity and the plan stage a read-only one.",
+  "explanation": "GitHub environments can hold their own secrets. When a job references an environment, a secret of that environment takes precedence over a repository secret with the same name, and when the environment requires approval the job cannot read its secrets until a required reviewer approves. Learn's IaC reference architecture uses this to give the deploy stage a read/write identity while other jobs keep a read-only one.",
   "rationale": [
-   "Incorrect: replacing the repository secret gives both jobs the read/write identity, so the plan job would no longer sign in as the read-only identity.",
-   "Correct: a job that references an environment reads the secrets of that environment, and an environment secret overrides a repository secret with the same name. The deploy job gets the read/write ID; the plan job keeps the other.",
-   "Incorrect: a federated credential controls which GitHub subjects can sign in as an identity. It would let the deploy job sign in, but as the read-only identity, which cannot deploy changes.",
-   "Incorrect: Contributor would let the read-only identity deploy, but the plan job would then also run with write access, which removes the separation between the two identities."
+   "Incorrect: replacing the repository secret gives both jobs the client ID of Identity2, so the inventory job would run with Contributor access instead of as the Reader-only Identity1. Replace a repository secret when every job should use the new value.",
+   "Correct: a job that references an environment reads the secrets of that environment, and an environment secret overrides a repository secret with the same name. The deploy job gets the client ID of Identity2; the inventory job keeps Identity1.",
+   "Incorrect: a federated credential controls which GitHub subjects can sign in as an identity. The deploy job could then sign in, but as Identity1, which has only the Reader role and cannot deploy the Bicep file.",
+   "Incorrect: Contributor would let Identity1 deploy, but the inventory job would then also run with write access, which removes the separation between the two identities. Grant a role only when every job that uses the identity needs it."
   ],
   "ref": "https://learn.microsoft.com/devops/deliver/iac-github-actions"
  },
@@ -777,7 +777,7 @@
    "Incorrect: privatelink.vaultcore.azure.net is the zone for Azure Key Vault private endpoints. The key vault of the workspace is already covered by its own private endpoint and zone.",
    "Incorrect: privatelink.azurecr.io is the zone for Azure Container Registry private endpoints. It is needed when the registry has a private endpoint, which already exists with its zone in this scenario."
   ],
-  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-workspace-cli"
+  "ref": "https://learn.microsoft.com/azure/private-link/private-endpoint-dns#commercial"
  },
  {
   "id": "1.3.4-05",
