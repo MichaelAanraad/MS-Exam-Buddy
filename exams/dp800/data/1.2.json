@@ -1,0 +1,956 @@
+[
+ {
+  "id": "1.2.1-01",
+  "obj": "1.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants reports to query only active customers, using the same columns as the Customers table, as if it were a table. Which object should you create?",
+  "choices": [
+   "A view with a WHERE clause on IsActive",
+   "An INSTEAD OF trigger on the Customers table for each insert",
+   "A scalar function that returns the active customers for each report",
+   "A stored procedure that selects the active customers for each report"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A view is a named query that can be used in a FROM clause like a table. A scalar function returns one value, a stored procedure cannot be used in FROM, and a trigger runs on data changes rather than on reads.",
+  "rationale": [
+   "Correct: a view with a WHERE clause on IsActive can be queried in a FROM clause, so reports see only active customers with the table's columns.",
+   "Incorrect: an INSTEAD OF trigger runs when data is changed, not when it is read. It does not give reports a filtered object to query.",
+   "Incorrect: a scalar function returns a single value for use in an expression. It cannot return a set of customer columns for a FROM clause.",
+   "Incorrect: a stored procedure returns result sets to the caller, but its output cannot be used in a FROM clause. Reports need a queryable object."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/views/views"
+ },
+ {
+  "id": "1.2.1-02",
+  "obj": "1.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. wants a view that returns order totals per customer. The view must always show current data, and the totals must not be stored anywhere. Which type of view should you create?",
+  "choices": [
+   "A copy of the totals table that a nightly job refreshes",
+   "A table-valued function that returns the totals",
+   "A standard view",
+   "An indexed view with a clustered index"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A standard view stores only its query, so it always runs against current data. An indexed view stores its result, and a refreshed copy is a table, which the requirement rules out.",
+  "rationale": [
+   "Incorrect: a nightly copy shows yesterday's totals between refreshes and stores the results in a table. The requirement rules out both points.",
+   "Incorrect: a table-valued function can return the totals, but it is not a view. The stem asks for a view, so this option does not meet the requirement.",
+   "Correct: a standard view runs its query each time it is read, so the totals are always current and nothing is stored.",
+   "Incorrect: an indexed view materializes its result in a clustered index. The requirement says the totals must not be stored, so this option does not fit."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/views/views"
+ },
+ {
+  "id": "1.2.1-03",
+  "obj": "1.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank exposes a view over the Accounts table that shows only accounts in the Retail branch. Users must not be able to insert or update a row through the view so that the row falls outside the Retail branch. Which view option should you use?",
+  "choices": [
+   "WITH CHECK OPTION",
+   "WITH VIEW_METADATA",
+   "WITH SCHEMABINDING",
+   "WITH ENCRYPTION"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "WITH CHECK OPTION makes the database reject any insert or update through the view that would produce a row the view's WHERE clause excludes. The other options control binding, hiding the definition, or metadata, not row filtering on writes.",
+  "rationale": [
+   "Correct: WITH CHECK OPTION enforces the view's WHERE condition on inserts and updates, so a row cannot be written outside the Retail branch.",
+   "Incorrect: WITH VIEW_METADATA makes the view return metadata of the base table to client APIs. It does not enforce the branch condition on writes.",
+   "Incorrect: WITH SCHEMABINDING prevents changes to the underlying tables that would break the view. It does not check the rows that users write through the view.",
+   "Incorrect: WITH ENCRYPTION hides the view definition from users. It does not restrict which rows can be inserted or updated through the view."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-view-transact-sql"
+ },
+ {
+  "id": "1.2.1-04",
+  "obj": "1.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys wants an indexed view that stores total sales per product. Which requirement should the view definition meet?",
+  "choices": [
+   "It must include an ORDER BY clause so that the groups are sorted",
+   "It must reference another indexed view so that the totals are cached",
+   "It must use an outer join so that products without sales appear",
+   "It must be created WITH SCHEMABINDING, and include COUNT_BIG(*) when it uses GROUP BY"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "An indexed view requires SCHEMABINDING, and a grouped indexed view must include COUNT_BIG(*). ORDER BY and outer joins are prohibited in indexed views, and an indexed view cannot reference another view.",
+  "rationale": [
+   "Incorrect: indexed views cannot contain ORDER BY. Sorting belongs in the query that reads the view, not in the view definition.",
+   "Incorrect: an indexed view cannot reference another view. It must reference base tables by two-part names in the same database.",
+   "Incorrect: indexed views cannot use outer joins. Products without sales would have to be handled in a query over the view.",
+   "Correct: SCHEMABINDING lets the engine maintain the view, and COUNT_BIG(*) is required with GROUP BY so that the view can be updated as rows change."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/views/create-indexed-views"
+ },
+ {
+  "id": "1.2.1-05",
+  "obj": "1.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation tries to create an indexed view that includes a column calculated from GETDATE(), and the CREATE UNIQUE CLUSTERED INDEX statement fails. The view otherwise meets the schema binding and key rules. What is the most likely cause that you should investigate?",
+  "choices": [
+   "GETDATE() is non-deterministic, so an expression in the indexed view cannot be indexed",
+   "The first index must be nonclustered, and the team created it as clustered",
+   "The view lacks an ORDER BY clause, which the clustered index needs",
+   "The view must be created without SCHEMABINDING when it contains date functions"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "All expressions in an indexed view must be deterministic, and GETDATE() is not, so the unique clustered index cannot be created. Indexed views do not require ORDER BY, the first index must be clustered, and they require SCHEMABINDING.",
+  "rationale": [
+   "Correct: GETDATE() returns a different value over time, so it is non-deterministic, and the engine rejects a view that stores such a value in an index.",
+   "Incorrect: the first index on an indexed view must be a unique clustered index. Creating it as clustered is what the engine requires, so this is not the cause.",
+   "Incorrect: indexed views cannot contain ORDER BY, so requiring it would make the view invalid. The index failure is not caused by a missing sort.",
+   "Incorrect: indexed views require SCHEMABINDING, so removing it would produce a different error. Date functions are not the reason to drop the binding."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/views/create-indexed-views"
+ },
+ {
+  "id": "1.2.1-06",
+  "obj": "1.2.1",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Northwind Traders uses indexed views in a reporting database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "On SQL Server Standard edition, the optimizer uses an indexed view automatically in every query that can match it, unless the query uses the NOEXPAND hint.",
+   "On Azure SQL Database, the optimizer can match a query to an indexed view without the NOEXPAND hint.",
+   "The query option OPTION (EXPAND VIEWS) forces the optimizer to use the indexed view."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Azure SQL Database matches indexed views automatically, but Standard edition requires the NOEXPAND hint to use the indexed view's stored result. OPTION (EXPAND VIEWS) does the opposite and prevents the indexed view from being used.",
+  "rationale": [
+   "No: on Standard edition, the view is used only when the query names it with WITH (NOEXPAND), so automatic matching does not happen there.",
+   "Yes: Azure SQL Database and Managed Instance match queries to indexed views automatically, so no hint is needed.",
+   "No: OPTION (EXPAND VIEWS) prevents use of an indexed view, so the base tables are read instead."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/views/create-indexed-views"
+ },
+ {
+  "id": "1.2.1-07",
+  "obj": "1.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud has a view defined as SELECT * FROM dbo.Customers. An administrator adds a column to Customers, and the view does not show the new column. Which action should you take?",
+  "choices": [
+   "Run sp_refreshview on the view",
+   "Rebuild the clustered index on Customers",
+   "Add WITH ENCRYPTION to the view",
+   "Drop and recreate the Customers table"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A view that uses SELECT * stores its column list when it is created. sp_refreshview updates the metadata so that new columns appear. Recreating the table, encrypting the view, or rebuilding an index does not change that list.",
+  "rationale": [
+   "Correct: sp_refreshview re-reads the base table metadata, so the view picks up the new column without changing its definition.",
+   "Incorrect: rebuilding the clustered index changes how the table is stored, not the column metadata that the view uses.",
+   "Incorrect: WITH ENCRYPTION hides the definition of the view from users. It does not update the column list of the view.",
+   "Incorrect: dropping and recreating the table would destroy its data and would still leave the view's stored column list unchanged until the view is refreshed."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/stored-procedures/sp-refreshview-transact-sql"
+ },
+ {
+  "id": "1.2.1-08",
+  "obj": "1.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank must prevent anyone from dropping a column that a view depends on, because the view would break. Which view option should you use?",
+  "choices": [
+   "WITH ENCRYPTION",
+   "WITH RECOMPILE",
+   "WITH SCHEMABINDING",
+   "WITH CHECK OPTION"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "WITH SCHEMABINDING binds the view to the schema of the objects it references, so the database rejects changes that would break it. CHECK OPTION governs writes, ENCRYPTION hides the definition, and RECOMPILE is not a view option.",
+  "rationale": [
+   "Incorrect: WITH ENCRYPTION hides the view definition from users. It does not protect the referenced columns from schema changes.",
+   "Incorrect: WITH RECOMPILE is not a valid view option. Recompilation is a plan setting for queries and procedures, not a schema-binding feature.",
+   "Correct: WITH SCHEMABINDING blocks drops and alterations of the referenced columns and tables while the view exists.",
+   "Incorrect: WITH CHECK OPTION checks rows that are inserted or updated through the view. It does not prevent a column from being dropped."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-view-transact-sql"
+ },
+ {
+  "id": "1.2.2-01",
+  "obj": "1.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. needs a function that returns the age in whole years for a birth date, and the function must be usable inside a SELECT expression. Which function type should you create?",
+  "choices": [
+   "An inline table-valued function",
+   "A stored procedure with an OUTPUT parameter",
+   "A scalar function",
+   "A multi-statement table-valued function"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A scalar function returns one value that can be used in any expression, such as a SELECT list. Table-valued functions return rows, and stored procedures cannot be called inside an expression.",
+  "rationale": [
+   "Incorrect: an inline table-valued function returns a table, not a single age value. It is used in a FROM clause, not as an expression.",
+   "Incorrect: a stored procedure cannot be called inside an expression. An OUTPUT parameter returns a value only through an EXEC statement.",
+   "Correct: a scalar function returns one value of the declared type, so it can be called in a SELECT list wherever an expression is allowed.",
+   "Incorrect: a multi-statement table-valued function also returns a table. It cannot supply a single value to an expression."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.2-02",
+  "obj": "1.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. writes a scalar function that returns one integer. Which RETURNS clause should the function declare?",
+  "choices": [
+   "RETURNS VOID",
+   "RETURNS INT",
+   "RETURNS @result TABLE (Value INT)",
+   "RETURNS TABLE"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A scalar function declares the data type of the single value it returns in its RETURNS clause. RETURNS TABLE and the table variable form declare table-valued functions, and VOID is not a SQL Server data type.",
+  "rationale": [
+   "Incorrect: VOID is not a data type in SQL Server, so this clause is rejected. A scalar function declares an actual data type such as INT.",
+   "Correct: RETURNS INT declares a scalar return value of type INT, which the function sends back to each expression that calls it.",
+   "Incorrect: RETURNS @result TABLE declares a multi-statement table-valued function that returns rows. A single integer is not a table.",
+   "Incorrect: RETURNS TABLE declares a table-valued function. A scalar function must return one value, so this clause does not match the requirement."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.2-03",
+  "obj": "1.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. writes a scalar function that inserts an audit row each time it runs. The function fails when it is used in a SELECT statement. Which cause should you investigate?",
+  "choices": [
+   "Scalar functions require a TRY...CATCH block to run",
+   "Scalar functions cannot accept any input parameters",
+   "Functions cannot modify database state",
+   "Scalar functions must always return a table of rows"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A user-defined function cannot change database state, so an INSERT inside it is rejected. Scalar functions can take parameters, and they cannot use TRY...CATCH, so the last two options are wrong in both directions.",
+  "rationale": [
+   "Incorrect: functions cannot use TRY...CATCH, so requiring it would be wrong. The failure comes from the INSERT inside the function body.",
+   "Incorrect: scalar functions accept parameters, which is common practice. The failure comes from the INSERT, not from the parameter list.",
+   "Correct: a user-defined function may not modify database state. An INSERT inside it makes creation or execution fail, so the audit must be written by a procedure or trigger.",
+   "Incorrect: a scalar function returns one value. Table results belong to table-valued functions, so this is not the cause of the failure."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.2-04",
+  "obj": "1.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants a persisted, indexed computed column that calls a scalar function. The function returns the number of days since an order date, and its body calls GETDATE(). Which change should you make first?",
+  "choices": [
+   "Replace the scalar function with a multi-statement table-valued function",
+   "Add the WITH ENCRYPTION option to the function definition",
+   "Add WITH SCHEMABINDING only, and keep the call to GETDATE() inside the function",
+   "Pass the date in as a parameter and add SCHEMABINDING"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A computed column can be persisted and indexed only when its expression is deterministic. GETDATE() is not deterministic, so the reference date must be passed in, and the function must be schema-bound to qualify.",
+  "rationale": [
+   "Incorrect: a table-valued function cannot be used in a computed column, so replacing the scalar function does not solve the problem.",
+   "Incorrect: WITH ENCRYPTION hides the function definition. It does not make the expression deterministic or allow the column to be indexed.",
+   "Incorrect: SCHEMABINDING does not make GETDATE() deterministic. The computed column still cannot be persisted or indexed while the call remains.",
+   "Correct: passing the date as a parameter removes the non-deterministic call, and SCHEMABINDING with a deterministic body lets the computed column be persisted and indexed."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/indexes-on-computed-columns"
+ },
+ {
+  "id": "1.2.2-05",
+  "obj": "1.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank creates a scalar function whose body calls NEWID() to produce a value. The CREATE FUNCTION statement fails. Which statement should you use to explain the failure?",
+  "choices": [
+   "A function that calls NEWID() must be a table-valued function",
+   "NEWID() is not permitted in functions and causes error 443",
+   "The function must be WITH SCHEMABINDING before NEWID() can be used",
+   "Functions cannot return GUIDs, so the return type must be INT"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The engine rejects non-deterministic built-ins such as NEWID(), NEWSEQUENTIALID(), and RAND() inside user-defined functions, and it reports error 443. Functions can return a GUID, and the table-valued type is not required.",
+  "rationale": [
+   "Incorrect: calling NEWID() does not require a table-valued function, and changing the function type would not remove the restriction on that call.",
+   "Correct: NEWID() is rejected inside a user-defined function, and the engine reports error 443 when the function is created.",
+   "Incorrect: SCHEMABINDING does not allow non-deterministic built-ins in a function. The NEWID() call is still rejected with error 443.",
+   "Incorrect: a scalar function can return a UNIQUEIDENTIFIER, which is the GUID type. The problem is the NEWID() call, not the return type."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.2-06",
+  "obj": "1.2.2",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Tailspin Toys uses scalar functions in several queries.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A scalar function can be used in a SELECT list and in a WHERE clause.",
+   "A scalar function can use TRY...CATCH to handle errors that occur in its body.",
+   "A scalar function returns one value of the data type declared in its RETURNS clause."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "A scalar function returns one value of its declared type, and it can appear wherever an expression is allowed, including the SELECT list and WHERE clause. Functions cannot use TRY...CATCH.",
+  "rationale": [
+   "Yes: a scalar function is an expression, so it can be used in the SELECT list and in a WHERE clause.",
+   "No: TRY...CATCH is not allowed in a user-defined function, so errors in the body cannot be caught inside it.",
+   "Yes: the RETURNS clause sets the type of the single value the function returns to each caller."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.2-07",
+  "obj": "1.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants to index a computed column that calls a user-defined scalar function. Which property should the function have?",
+  "choices": [
+   "It must be deterministic and created WITH SCHEMABINDING",
+   "It must be encrypted with WITH ENCRYPTION",
+   "It must be a multi-statement table-valued function",
+   "It must return NVARCHAR(MAX)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A computed column can be indexed only when the function it calls is deterministic and schema-bound. Table-valued, encrypted, and max-length return types do not provide that guarantee.",
+  "rationale": [
+   "Correct: a deterministic function that is created WITH SCHEMABINDING lets the computed column be indexed, because its value depends only on its inputs.",
+   "Incorrect: WITH ENCRYPTION hides the definition and does not make the function deterministic or schema-bound.",
+   "Incorrect: a multi-statement table-valued function cannot be called from a computed column, so changing the function type does not help.",
+   "Incorrect: the return type does not decide whether a computed column can be indexed. Determinism and schema binding are the required properties."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/indexes-on-computed-columns"
+ },
+ {
+  "id": "1.2.2-08",
+  "obj": "1.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adatum Corporation has a scalar function named dbo.DaysOpen that takes a date. Which query should you run to return the function's value for each row of dbo.Orders?",
+  "choices": [
+   "EXEC dbo.DaysOpen OrderDate FROM dbo.Orders",
+   "SELECT dbo.DaysOpen(OrderDate) FROM dbo.Orders",
+   "SELECT dbo.DaysOpen.OrderDate FROM dbo.Orders",
+   "SELECT * FROM dbo.DaysOpen(OrderDate)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A scalar function is called by name in an expression, with its schema and parameters in parentheses. FROM clause syntax applies only to table-valued functions, and EXEC does not return a value to a query.",
+  "rationale": [
+   "Incorrect: EXEC runs a procedure or function as a statement and does not return a per-row value into a query. It cannot be combined this way.",
+   "Correct: calling dbo.DaysOpen(OrderDate) in the SELECT list returns one value per row, which is how a scalar function is used.",
+   "Incorrect: this reads a column from a function name, which is not valid. A scalar function is called with parentheses and its arguments.",
+   "Incorrect: this FROM clause syntax is for table-valued functions. A scalar function returns a single value, so it cannot be selected from in this way."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.3-01",
+  "obj": "1.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys needs a reusable object that returns the set of orders for a given customer, and the result must be joined to other tables. Which object should you create?",
+  "choices": [
+   "A scalar function",
+   "An INSTEAD OF trigger on the Orders table",
+   "A table-valued function",
+   "A stored procedure with an OUTPUT parameter"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A table-valued function returns a set of rows that can be used in a FROM clause and joined to other tables. A scalar function returns one value, and a stored procedure or trigger cannot be joined as a row source.",
+  "rationale": [
+   "Incorrect: a scalar function returns one value for each call. It cannot return a set of order rows for a join.",
+   "Incorrect: an INSTEAD OF trigger runs when data is changed. It does not return rows that a query can read or join.",
+   "Correct: a table-valued function returns rows that can be used in FROM and JOIN clauses, so the customer's orders can be joined to other tables.",
+   "Incorrect: a stored procedure returns result sets to the caller, but its output cannot be joined in a query. It is not a row source in FROM."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.3-02",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank's table-valued function returns a table built from one SELECT with a join. The team wants the optimizer to expand the function into the calling query so that it can choose a full plan. Which form should you use?",
+  "choices": [
+   "An inline table-valued function with RETURNS TABLE AS RETURN",
+   "A stored procedure called with INSERT ... EXEC",
+   "A multi-statement table-valued function with RETURNS @t TABLE",
+   "A scalar function that returns XML"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "An inline table-valued function is a single SELECT, and the optimizer expands it into the calling query, which lets it use the full plan. A multi-statement function is a black box with fixed row estimates.",
+  "rationale": [
+   "Correct: the RETURNS TABLE AS RETURN form holds one SELECT that the optimizer merges into the calling query, so the plan considers all the joins together.",
+   "Incorrect: a stored procedure called with INSERT ... EXEC copies its results into a table. It is not expanded into the calling query.",
+   "Incorrect: a multi-statement function fills a table variable step by step. The optimizer treats it as a separate step, which limits the plan choices.",
+   "Incorrect: a scalar function returns one value, so it cannot return the joined rows that the requirement needs."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.3-03",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. writes a multi-statement table-valued function that fills a table variable in several steps. Which statement should end the function body before it returns the table?",
+  "choices": [
+   "END RETURN",
+   "RETURN;",
+   "GO",
+   "RETURN @Result;"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A multi-statement table-valued function ends with a RETURN statement that has no expression, because the table variable named in RETURNS is returned. Returning a value, writing END RETURN, or using GO is not valid here.",
+  "rationale": [
+   "Incorrect: END RETURN is not a T-SQL statement. The function body closes with END, and RETURN must come before it.",
+   "Correct: RETURN; with no value ends a multi-statement table-valued function and returns the table variable named in its RETURNS clause.",
+   "Incorrect: GO is a batch separator used by client tools, not a statement inside a function body. Using it there would split the CREATE FUNCTION batch.",
+   "Incorrect: adding a value after RETURN is not valid for a table-valued function. The table variable is returned by the RETURNS clause, not by an expression."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.3-04",
+  "obj": "1.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation's multi-statement table-valued function is slow when joined to a 10-million-row table, because the optimizer estimates very few rows for it. The function body is a single SELECT with a join, with no logic that an inline function cannot express. Which change should you make?",
+  "choices": [
+   "Add WITH ENCRYPTION to the function definition",
+   "Rewrite it as an inline table-valued function",
+   "Change the return type of the function to a scalar value",
+   "Add a WHILE loop inside the function to process the rows in batches"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "An inline table-valued function holds a single SELECT that the optimizer expands into the caller, so it gets realistic row estimates and a full plan. Loops, scalar returns, and encryption do not address the estimate problem.",
+  "rationale": [
+   "Incorrect: WITH ENCRYPTION hides the definition from users. It does not change the row estimates or the plan the optimizer builds.",
+   "Correct: when the logic is one SELECT, an inline function lets the optimizer see the real joins and estimate rows accurately, which fixes the slow plan.",
+   "Incorrect: a scalar return type cannot supply the rows that the join needs. The function would no longer be a table source, so the query would not work.",
+   "Incorrect: a WHILE loop adds more procedural steps to a multi-statement function. The optimizer still treats it as a black box, so the estimates stay poor."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.3-05",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Relecloud uses table-valued functions in reporting queries.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "An inline table-valued function can be used with CROSS APPLY.",
+   "A multi-statement table-valued function can modify permanent tables in the database.",
+   "A table-valued function can be used in a FROM clause like a table."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Table-valued functions, inline or multi-statement, can be used in a FROM clause and with CROSS APPLY. A user-defined function cannot modify permanent tables.",
+  "rationale": [
+   "Yes: CROSS APPLY accepts table-valued functions on the right side, and it passes values from each outer row into the function's parameters.",
+   "No: a user-defined function cannot modify database state, so a multi-statement function cannot write to permanent tables.",
+   "Yes: a table-valued function returns rows, so it can be named in a FROM clause the same way as a table or view."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.3-06",
+  "obj": "1.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders writes a multi-statement table-valued function. Which clause should you use to define the columns of the table that the function returns?",
+  "choices": [
+   "RETURNS SETOF (...)",
+   "RETURNS @table TABLE (...)",
+   "RETURNS TABLE AS RETURN",
+   "OUTPUT TABLE (...)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A multi-statement table-valued function declares a table variable in its RETURNS clause, and that declaration lists the columns. The inline form has no column list, and OUTPUT and SETOF are not used in function definitions.",
+  "rationale": [
+   "Incorrect: SETOF is not a T-SQL keyword. SQL Server does not use it to declare the result shape of a function.",
+   "Correct: RETURNS @table TABLE (...) names a table variable and lists its columns, which define the shape of the rows the function returns.",
+   "Incorrect: RETURNS TABLE AS RETURN is the inline form. Its columns come from the single SELECT, not from a column list in the RETURNS clause.",
+   "Incorrect: OUTPUT is used with DML statements to return affected rows. It is not a clause for declaring the columns of a function's result."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/user-defined-functions/create-user-defined-functions-database-engine"
+ },
+ {
+  "id": "1.2.3-07",
+  "obj": "1.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants to call a table-valued function inside a computed column to return the customer name for each row. Which statement should you rely on?",
+  "choices": [
+   "A table-valued function can be used in a CHECK constraint to validate each row",
+   "A computed column can call a table-valued function when the function is schema-bound",
+   "A multi-statement table-valued function is allowed in a computed column when it is deterministic",
+   "A computed column cannot call a table-valued function, so the design must use a scalar function instead"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Computed columns evaluate an expression that returns one value per row, so they call scalar functions. Table-valued functions return rows and cannot be used in a computed column, a CHECK constraint, or any single-value expression.",
+  "rationale": [
+   "Incorrect: a CHECK constraint evaluates a single condition per row. A table-valued function returns rows and cannot be used in that expression.",
+   "Incorrect: schema binding does not change what a computed column can call. A table-valued function returns rows, and a computed column needs one value.",
+   "Incorrect: determinism does not make a multi-statement table-valued function usable in a computed column. Its result is a table, which is not a single value.",
+   "Correct: a computed column needs a single value per row, so the design must use a deterministic scalar function, and a table-valued function cannot fill that role."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/indexes-on-computed-columns"
+ },
+ {
+  "id": "1.2.3-08",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys has a table-valued function dbo.GetOrders with a parameter @CustomerId. The team wants each row of dbo.Customers joined to the orders that the function returns for that customer. Which query should you use?",
+  "choices": [
+   "SELECT dbo.GetOrders(c.CustomerId) FROM dbo.Customers AS c",
+   "SELECT c.CustomerId, o.* FROM dbo.Customers AS c CROSS APPLY dbo.GetOrders(c.CustomerId) AS o",
+   "SELECT c.CustomerId, o.* FROM dbo.Customers AS c, dbo.GetOrders(c.CustomerId) AS o WITH (NOLOCK)",
+   "SELECT c.CustomerId, o.* FROM dbo.Customers AS c JOIN dbo.GetOrders AS o ON 1 = 1"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "CROSS APPLY evaluates the table-valued function once for each outer row, passing the row's CustomerId into the parameter. A plain JOIN cannot pass a value from the outer row, and a scalar call in the SELECT list returns one value.",
+  "rationale": [
+   "Incorrect: this calls the function as a scalar expression in the SELECT list, but dbo.GetOrders returns a table, so it cannot be used that way.",
+   "Correct: CROSS APPLY calls dbo.GetOrders for each customer row, so the parameter is correlated with the outer row and the joined result is correct.",
+   "Incorrect: a comma join cannot pass a column of the outer row into a table-valued function, so the correlated call needs APPLY. The NOLOCK hint is also not part of the requirement.",
+   "Incorrect: a plain JOIN with no parameter passing does not supply c.CustomerId to the function, so the query is not valid for a correlated call."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/from-transact-sql"
+ },
+ {
+  "id": "1.2.4-01",
+  "obj": "1.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adatum Corporation wants a reusable routine that inserts an order and returns the new order ID to the application. Which object should the team create?",
+  "choices": [
+   "A view",
+   "A table-valued function",
+   "A stored procedure",
+   "A scalar function"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A stored procedure can change data, run several statements, and return values through OUTPUT parameters or result sets. A scalar function cannot change data, and a view and a table-valued function cannot perform an insert.",
+  "rationale": [
+   "Incorrect: a view is a stored query for reading data. It cannot run an INSERT that writes the order.",
+   "Incorrect: a table-valued function returns rows and cannot modify database state. It cannot insert the order.",
+   "Correct: a stored procedure can run an INSERT and return the new ID through an OUTPUT parameter, which matches the requirement.",
+   "Incorrect: a scalar function cannot modify database state, so it cannot insert the order. It can only return a single computed value."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/stored-procedures/create-a-stored-procedure"
+ },
+ {
+  "id": "1.2.4-02",
+  "obj": "1.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. wants a stored procedure to return the new customer count through a parameter that the caller can read after the call. Which keyword should the parameter declaration use?",
+  "choices": [
+   "YIELD",
+   "RETURNS",
+   "OUTPUT",
+   "OUT"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A parameter declared with OUTPUT passes a value back to the caller when the procedure finishes. RETURNS declares a function's return type, and YIELD and OUT are not parameter keywords in T-SQL.",
+  "rationale": [
+   "Incorrect: YIELD is not a T-SQL keyword, so it cannot declare a parameter. A procedure cannot use it to pass values back.",
+   "Incorrect: RETURNS declares the return type of a function. It is not a parameter keyword, and a stored procedure does not use it for output parameters.",
+   "Correct: a parameter declared with OUTPUT passes its final value back to the caller, which the caller reads through a variable in the EXEC statement.",
+   "Incorrect: OUT is not the T-SQL keyword for output parameters. Using it would produce a syntax error when the procedure is created."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/stored-procedures/create-a-stored-procedure"
+ },
+ {
+  "id": "1.2.4-03",
+  "obj": "1.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys builds a dynamic query from user input. The team wants to prevent SQL injection and allow plan reuse. Which approach should you use?",
+  "choices": [
+   "Concatenate the input into the query string and run it with EXEC",
+   "EXEC sp_executesql with a parameter placeholder such as @CustomerId",
+   "Store the input in a table and run EXEC on the value of a column",
+   "Use REPLACE to remove quotes from the input and run the result with EXEC"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "sp_executesql takes the query text and the parameter values separately, so user input is never treated as SQL code and the plan can be reused. Concatenating or stripping characters from the input leaves injection paths open.",
+  "rationale": [
+   "Incorrect: concatenating input into the string lets a user insert SQL code. This is the injection risk the requirement asks to avoid.",
+   "Correct: sp_executesql passes the input as a typed parameter, so it cannot change the statement's structure, and the same plan can serve different values.",
+   "Incorrect: storing input in a table and executing a column value still runs user-supplied text as SQL. It does not separate code from data.",
+   "Incorrect: removing quotes with REPLACE misses other dangerous characters and statements. Input filtering is not a reliable substitute for parameters."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/system-stored-procedures/sp-executesql-transact-sql"
+ },
+ {
+  "id": "1.2.4-04",
+  "obj": "1.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank's procedure must roll back all changes when any statement fails, and the caller must receive the error. Which combination should you use?",
+  "choices": [
+   "XACT_ABORT ON, TRY...CATCH, rollback, and THROW",
+   "SET NOCOUNT ON, with a RETURN code that signals the failure",
+   "WITH RECOMPILE, with an OUTPUT parameter for the error text",
+   "BEGIN TRANSACTION without any error handling in the procedure"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "SET XACT_ABORT ON ends the transaction when a run-time error occurs, and TRY...CATCH lets the procedure roll back and re-raise the error with THROW. NOCOUNT only suppresses row-count messages, and a transaction without error handling can leave work uncommitted.",
+  "rationale": [
+   "Correct: XACT_ABORT rolls back on error, the CATCH block rolls back any open transaction, and THROW passes the error to the caller.",
+   "Incorrect: SET NOCOUNT ON only suppresses the messages about rows affected. It does not roll back work or pass the error to the caller.",
+   "Incorrect: WITH RECOMPILE controls plan reuse, and an OUTPUT parameter cannot carry the full error to the caller. Neither rolls back the changes.",
+   "Incorrect: a transaction without error handling stays open when an error occurs, which can leave locks held and changes uncommitted. It does not meet the requirement."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/language-elements/try-catch-transact-sql"
+ },
+ {
+  "id": "1.2.4-05",
+  "obj": "1.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud has a procedure that is fast for most customers but very slow for one large customer. The plan was compiled for a small customer and is reused for the large one, which is a parameter sniffing problem. Which option should you consider first?",
+  "choices": [
+   "Add WITH ENCRYPTION to the procedure so the plan cannot be changed",
+   "Convert the procedure into a scalar function so that every call is compiled again",
+   "Add an INSTEAD OF trigger to the table so that each insert is handled separately",
+   "Add OPTION (RECOMPILE) or OPTIMIZE FOR UNKNOWN"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Parameter sniffing happens when a plan built for one parameter value is reused for others. OPTION (RECOMPILE) and OPTIMIZE FOR UNKNOWN let the optimizer choose a plan that fits the value at run time, while encryption, scalar conversion, and triggers do not change plan selection.",
+  "rationale": [
+   "Incorrect: WITH ENCRYPTION hides the procedure text. It does not affect plan selection, so the slow plan would still be reused.",
+   "Incorrect: a scalar function cannot return result sets and cannot replace this procedure. The change would not address the plan reuse at all.",
+   "Incorrect: an INSTEAD OF trigger handles data changes, not query plan selection for the procedure. It does not remove the parameter sniffing problem.",
+   "Correct: OPTION (RECOMPILE) builds a plan for the actual parameter value, and OPTIMIZE FOR UNKNOWN avoids locking in a plan for one value, so either fixes the sniffing problem."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/query-processing-architecture-guide"
+ },
+ {
+  "id": "1.2.4-06",
+  "obj": "1.2.4",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Woodgrove Bank uses stored procedures for its reporting and maintenance tasks.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A stored procedure can return a result set to the caller without using an OUTPUT parameter.",
+   "A stored procedure can be used in the FROM clause of a SELECT statement.",
+   "RETURN in a stored procedure can send an integer status code to the caller."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "A stored procedure returns result sets directly and can send an integer status through RETURN. A procedure cannot be used in a FROM clause, which is a table-valued function's role.",
+  "rationale": [
+   "Yes: a SELECT inside a stored procedure sends its rows to the caller, so no OUTPUT parameter is needed for result sets.",
+   "No: a stored procedure cannot be named in a FROM clause. Table-valued functions are the objects that can be used there.",
+   "Yes: RETURN with an integer value sends a status code to the caller, which is commonly used to signal success or failure."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/stored-procedures/create-a-stored-procedure"
+ },
+ {
+  "id": "1.2.4-07",
+  "obj": "1.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. wants a procedure that updates the Salary table. Users must not have direct UPDATE permission on the table. Which approach should you use?",
+  "choices": [
+   "Grant UPDATE on the table to every user, and let the procedure check the caller",
+   "Grant EXECUTE and rely on ownership chaining",
+   "Grant CONTROL on the database to the users who run the procedure",
+   "Make the procedure WITH ENCRYPTION, which lets users run it without permissions"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Ownership chaining lets a procedure access tables that share its owner, without the caller holding permissions on those tables. Granting UPDATE to everyone, encrypting the procedure, or granting database control would widen access instead of limiting it.",
+  "rationale": [
+   "Incorrect: granting UPDATE to every user removes the protection the requirement asks for. The procedure would no longer control who changes the salaries.",
+   "Correct: callers need only EXECUTE on the procedure, and the procedure's UPDATE runs under ownership chaining because the procedure and table share an owner.",
+   "Incorrect: CONTROL on the database is a broad permission that allows almost any change. It violates least privilege for a single update path.",
+   "Incorrect: WITH ENCRYPTION hides the procedure definition. It grants no permissions, so callers would still need rights on the table."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/authentication-access/ownership-and-user-schema-separation-in-sql-server"
+ },
+ {
+  "id": "1.2.4-08",
+  "obj": "1.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A procedure accepts a customer ID that is optional. When the caller omits it, the procedure should use NULL. Which parameter declaration should the procedure use?",
+  "choices": [
+   "@CustomerId INT WITH NULL",
+   "@CustomerId INT = NULL",
+   "@CustomerId INT OUTPUT NULL",
+   "@CustomerId INT DEFAULT NULL"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A procedure parameter gets its default value with an equals sign in the declaration. DEFAULT is not used in this position, OUTPUT marks a parameter that returns a value, and WITH is not part of a parameter declaration.",
+  "rationale": [
+   "Incorrect: WITH is not part of a parameter declaration. The default value follows an equals sign after the data type.",
+   "Correct: @CustomerId INT = NULL declares an optional parameter whose default value is NULL when the caller omits it.",
+   "Incorrect: OUTPUT marks a parameter that passes a value back to the caller. It does not set a default, and NULL is not a valid modifier here.",
+   "Incorrect: DEFAULT is not used before the value in a parameter declaration. The default is written with an equals sign, so this declaration is a syntax error."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/stored-procedures/create-a-stored-procedure"
+ },
+ {
+  "id": "1.2.5-01",
+  "obj": "1.2.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants a view to accept INSERT statements and write each new row into two base tables. Which object should the team create?",
+  "choices": [
+   "An INSTEAD OF trigger on the view",
+   "A stored procedure that runs automatically when the view is written",
+   "A CHECK constraint on the view",
+   "An AFTER trigger on the view"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "An INSTEAD OF trigger replaces the insert on a view with its own statements, so it can write to several base tables. AFTER triggers apply only to tables, and CHECK constraints and procedures do not run automatically on a view.",
+  "rationale": [
+   "Correct: an INSTEAD OF trigger on the view receives the inserted rows and writes them to both base tables, which is how views support multi-table inserts.",
+   "Incorrect: a stored procedure does not run automatically when a view is written. Writes through a view need an INSTEAD OF trigger to be redirected.",
+   "Incorrect: a CHECK constraint validates values in a table. It cannot insert rows into base tables when a view is written.",
+   "Incorrect: AFTER triggers can be created only on tables, so an AFTER trigger cannot be attached to the view."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/triggers/dml-triggers"
+ },
+ {
+  "id": "1.2.5-02",
+  "obj": "1.2.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. writes an AFTER UPDATE trigger that must compare each row's old and new values. Which pseudo-table should you read to get the rows as they were before the update?",
+  "choices": [
+   "deleted",
+   "updated",
+   "changed",
+   "inserted"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "In a DML trigger, deleted holds the old versions of the affected rows, and inserted holds the new versions. An UPDATE uses both. updated and changed are not pseudo-tables in SQL Server.",
+  "rationale": [
+   "Correct: deleted holds the rows as they were before the UPDATE, so comparing it with inserted shows the old and new values.",
+   "Incorrect: updated is not a pseudo-table in a SQL Server trigger. The old and new values are in deleted and inserted.",
+   "Incorrect: changed is not a pseudo-table in SQL Server. The rows as they were before the update are held in deleted.",
+   "Incorrect: inserted holds the rows after the change, which is the new version. It does not show the values before the update."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/triggers/use-the-inserted-and-deleted-tables"
+ },
+ {
+  "id": "1.2.5-03",
+  "obj": "1.2.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys wants an audit trigger on dbo.Products that runs only when a statement sets the Price column. Which statement should the trigger use to test this?",
+  "choices": [
+   "IF TRIGGER_NESTLEVEL(Price) = 1",
+   "IF COLUMNS_UPDATED() = 1",
+   "IF UPDATE(Price)",
+   "IF inserted.Price <> deleted.Price"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "UPDATE(column) returns true when the column is named in the SET clause of the statement. COLUMNS_UPDATED() returns a bit mask that is hard to read for one column, and the other options are not valid T-SQL in a trigger.",
+  "rationale": [
+   "Incorrect: TRIGGER_NESTLEVEL reports how deeply triggers are nested. It does not test which columns a statement updates, and it does not take a column argument.",
+   "Incorrect: COLUMNS_UPDATED() returns a bit mask for all columns, and comparing it to 1 does not test the Price column by name.",
+   "Correct: UPDATE(Price) tests whether the statement sets the Price column, which matches the requirement of running only when that column is in the SET clause.",
+   "Incorrect: inserted and deleted are tables, so they cannot be compared like single values in an IF statement. This expression is not valid T-SQL."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/update-trigger-transact-sql"
+ },
+ {
+  "id": "1.2.5-04",
+  "obj": "1.2.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. has an AFTER trigger on dbo.Orders that writes an audit row. A constraint violation on dbo.Orders is raised by the same statement. What should you expect to happen to the trigger?",
+  "choices": [
+   "The trigger does not run, because AFTER triggers fire only after the constraints pass",
+   "The trigger runs as an INSTEAD OF trigger so that the constraint is skipped",
+   "The trigger runs and its audit row is kept, because the trigger is not part of the transaction",
+   "The trigger runs first, and then the constraint fails and the trigger's audit row remains"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "An AFTER trigger runs only after the statement's constraints have been checked successfully, so it does not fire when a constraint is violated. The trigger's work belongs to the same transaction as the statement, so no audit row remains.",
+  "rationale": [
+   "Correct: AFTER triggers run after the action and its constraints, so a constraint violation stops the statement before the trigger fires.",
+   "Incorrect: an AFTER trigger is not converted into an INSTEAD OF trigger. The constraint still applies, and the trigger does not fire when it fails.",
+   "Incorrect: the trigger is part of the same transaction as the statement, so a failure rolls back its work too. No audit row is kept.",
+   "Incorrect: the trigger does not run before the constraint check. An AFTER trigger fires only after the constraints pass, so no audit row is written."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/triggers/dml-triggers"
+ },
+ {
+  "id": "1.2.5-05",
+  "obj": "1.2.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation's AFTER UPDATE trigger handles updates that change 500 rows in one statement. The trigger uses a cursor to process the rows one at a time, and it is slow. Which change should you make?",
+  "choices": [
+   "Change the trigger to an INSTEAD OF trigger on the table",
+   "Write it set-based, joining inserted and deleted",
+   "Add a WHILE loop that processes one row per iteration with a batch size of 1",
+   "Convert the trigger into a DDL trigger so that it fires once per row"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A DML trigger fires once for each statement, and inserted and deleted hold all the affected rows. A set-based statement that joins those tables processes them together, which removes the cursor's per-row cost. DDL triggers fire on schema events, not on row changes.",
+  "rationale": [
+   "Incorrect: an INSTEAD OF trigger replaces the update and does not make the processing faster. The row-by-row logic would still be needed.",
+   "Correct: one set-based statement that joins inserted and deleted handles all 500 rows together, and it avoids the cost of a cursor over the rows.",
+   "Incorrect: a WHILE loop with a batch size of 1 keeps the row-by-row cost. It is the same slow pattern the cursor used.",
+   "Incorrect: DDL triggers fire on schema events such as CREATE or ALTER, not on row changes. They would not run for the 500 row updates."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/triggers/dml-triggers"
+ },
+ {
+  "id": "1.2.5-06",
+  "obj": "1.2.5",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Contoso, Ltd. is designing triggers for its database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "An AFTER trigger can be created on a view.",
+   "An INSTEAD OF trigger on a view replaces the action that would otherwise be performed on the view.",
+   "A trigger can call a stored procedure."
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "AFTER triggers apply only to tables, while INSTEAD OF triggers can be defined on views and replace the action. A DML trigger can also call a stored procedure.",
+  "rationale": [
+   "No: AFTER triggers can be created only on tables. A view needs an INSTEAD OF trigger to handle its writes.",
+   "Yes: an INSTEAD OF trigger runs in place of the triggering statement, so the trigger's own statements decide what is written.",
+   "Yes: a trigger's body is ordinary T-SQL, so it can call a stored procedure to do part of its work."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/triggers/dml-triggers"
+ },
+ {
+  "id": "1.2.5-07",
+  "obj": "1.2.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud wants a trigger that undoes an INSERT when a business rule fails inside the trigger. Which statement should the trigger use?",
+  "choices": [
+   "SAVE TRANSACTION",
+   "COMMIT TRANSACTION",
+   "ROLLBACK TRANSACTION",
+   "BEGIN TRANSACTION"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "ROLLBACK TRANSACTION undoes the work of the current transaction, which includes the statement that fired the trigger. COMMIT makes the work permanent, SAVE creates a savepoint, and BEGIN starts a new transaction.",
+  "rationale": [
+   "Incorrect: SAVE TRANSACTION creates a savepoint that a later rollback can return to. It does not undo the insert by itself.",
+   "Incorrect: COMMIT TRANSACTION makes the changes permanent. It does the opposite of what the rule requires.",
+   "Correct: ROLLBACK TRANSACTION undoes the insert and every other change in the transaction when the business rule fails.",
+   "Incorrect: BEGIN TRANSACTION starts a transaction and does not undo any work. It does not handle the failed business rule."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/language-elements/rollback-transaction-transact-sql"
+ },
+ {
+  "id": "1.2.5-08",
+  "obj": "1.2.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank wants a trigger that logs every CREATE TABLE statement executed in the database. Which trigger type should the team use?",
+  "choices": [
+   "An INSTEAD OF trigger on a table",
+   "A DDL trigger",
+   "A CHECK constraint",
+   "An AFTER trigger on each table"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A DDL trigger fires on schema events such as CREATE TABLE, so it can log those statements. DML triggers fire on data changes, and CHECK constraints validate column values rather than running on schema events.",
+  "rationale": [
+   "Incorrect: an INSTEAD OF trigger on a table replaces data changes. It does not run when a table is created.",
+   "Correct: a DDL trigger fires when a CREATE TABLE statement runs, which lets the team log each schema change in the database.",
+   "Incorrect: a CHECK constraint validates column values on rows. It cannot log schema statements or fire on CREATE TABLE.",
+   "Incorrect: AFTER triggers on tables fire on data changes such as INSERT, UPDATE, and DELETE. They do not fire on CREATE TABLE."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/triggers/ddl-triggers"
+ }
+]

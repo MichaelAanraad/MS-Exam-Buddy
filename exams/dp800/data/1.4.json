@@ -1,0 +1,978 @@
+[
+ {
+  "id": "1.4.1-01",
+  "obj": "1.4.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. connects GitHub Copilot in Visual Studio Code to a production SQL database. The security team asks what Copilot can send to the model. Which information should you list?",
+  "choices": [
+   "Only the text of the prompt that you type in the chat box",
+   "The code being edited, content of open files, schema information, and your prompts",
+   "Nothing, because all processing happens in the editor on your computer",
+   "Only the rows returned by queries that you run"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "GitHub Copilot uses the code you edit, the content of open files, database schema information when connected, and your natural-language prompts as context for the model.",
+  "rationale": [
+   "Incorrect: Copilot sends more than the typed prompt, because open files and schema information are also used as context for suggestions.",
+   "Correct: these are the kinds of context that Copilot gathers and sends to produce a suggestion, so they must be part of the security review.",
+   "Incorrect: suggestions come from a hosted model, so the context leaves the editor. The review must cover what is sent.",
+   "Incorrect: the documentation lists code, open files, schema, and prompts as context, and does not describe query result rows as the only data."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/3-interpret-security-impact"
+ },
+ {
+  "id": "1.4.1-02",
+  "obj": "1.4.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank gives Copilot agent mode access to a database through an MCP connection. The AI only needs to read schema information. Which account should the connection use?",
+  "choices": [
+   "A dedicated service account with read-only access",
+   "The account of the developer with db_owner rights",
+   "The database administrator account of the team",
+   "A shared sysadmin login stored in the mcp.json file"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "An MCP connection should use a dedicated account with the least privilege that the task needs, and read-only access is enough when the AI only needs schema information.",
+  "rationale": [
+   "Correct: a dedicated read-only service account limits what the AI tool can read or change, which follows the least-privilege guidance.",
+   "Incorrect: db_owner allows every action in the database, which is far more than reading the schema requires.",
+   "Incorrect: an administrator account lets the tool change anything, so a wrong or manipulated suggestion could do serious damage.",
+   "Incorrect: a sysadmin login is the broadest possible access, and storing it in a file that tools read exposes the secret."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/3-interpret-security-impact"
+ },
+ {
+  "id": "1.4.1-03",
+  "obj": "1.4.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants to keep a connection string with a password out of files that AI-assisted tools can read. Which location should the team use to store the password?",
+  "choices": [
+   "In a comment next to the connection code",
+   "In the prompt, so the AI can use it",
+   "In an environment variable or a secret store",
+   "In the copilot-instructions.md file of the repository"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Connection information should be kept in environment variables and not in files that the AI can see, and credentials should never be pasted into prompts.",
+  "rationale": [
+   "Incorrect: comments are part of the open file and are sent as context, and they are also committed to source control.",
+   "Incorrect: a prompt is sent to the model, and credentials must never be pasted into prompts.",
+   "Correct: environment variables or a secret store keep the password out of source and out of the context sent to the model.",
+   "Incorrect: the instruction file is included as context for suggestions, so a password there would be exposed to the tool and to the repository."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/3-interpret-security-impact"
+ },
+ {
+  "id": "1.4.1-04",
+  "obj": "1.4.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation receives a stored procedure from GitHub Copilot that builds a query by joining user input into a string. Which action should you take before the code is committed?",
+  "choices": [
+   "Review the code, and rewrite it to use sp_executesql with parameters",
+   "Encrypt the procedure with WITH ENCRYPTION",
+   "Commit it, because AI-generated code is already validated",
+   "Add WITH EXECUTE AS OWNER to the procedure"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "AI output is a first draft that needs human review. Dynamic SQL should be validated and should use sp_executesql with parameters to prevent injection.",
+  "rationale": [
+   "Correct: a human review finds the concatenated input, and parameters keep user input from being run as code.",
+   "Incorrect: WITH ENCRYPTION hides the definition but does not remove the injection weakness in the code.",
+   "Incorrect: generated code is not guaranteed to be safe, so the documentation treats it as a draft that must be reviewed.",
+   "Incorrect: EXECUTE AS OWNER changes the security context and can make an injection more harmful, because the code then runs with more rights."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/3-interpret-security-impact"
+ },
+ {
+  "id": "1.4.1-05",
+  "obj": "1.4.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. uses Microsoft Copilot in Fabric. Which information should you expect Copilot in Fabric to use as context, according to the module?",
+  "choices": [
+   "Metadata about lakehouses, warehouses, and semantic models",
+   "The full contents of every table in the tenant",
+   "The password hashes of the Fabric workspace users",
+   "The source code of every notebook of other tenants"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot in Fabric works with metadata about the lakehouses, warehouses, and semantic models. The documentation also says prompts and responses are not used to train the underlying models.",
+  "rationale": [
+   "Correct: metadata about these items is what Fabric Copilot uses to answer questions and generate queries.",
+   "Incorrect: the documented context is metadata, not the full contents of all tables in the tenant.",
+   "Incorrect: authentication secrets are not part of the context that Copilot uses to generate suggestions.",
+   "Incorrect: tenants are isolated, so the code of other tenants is never part of the context."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/3-interpret-security-impact"
+ },
+ {
+  "id": "1.4.1-06",
+  "obj": "1.4.1",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Relecloud reviews the security of AI-assisted database development.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "AI-suggested GRANT and REVOKE statements should be checked against the least-privilege model.",
+   "It is acceptable to paste a connection password into a Copilot prompt for a test database.",
+   "Data classification, such as PII or financial data, should be considered before using AI tools on a database."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Suggested permission statements must be reviewed against least privilege, and data classification and policy must be considered. Credentials must never be pasted into prompts.",
+  "rationale": [
+   "Yes: a suggestion that grants too much access should be caught in review, because the tool does not know the permission model.",
+   "No: credentials must never be pasted into prompts, even for a test database, because a prompt is sent to the model.",
+   "Yes: the type of data decides whether policy allows AI tools to work with it, so classification is part of the review."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/3-interpret-security-impact"
+ },
+ {
+  "id": "1.4.1-07",
+  "obj": "1.4.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders works in a sensitive environment and uses an MCP server for its Azure SQL database. Which network measure should you consider for the MCP traffic?",
+  "choices": [
+   "Disabling TLS to reduce latency",
+   "Using a public endpoint without a firewall rule",
+   "Opening the Azure SQL firewall to all addresses",
+   "Private endpoints or a VPN"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "For sensitive environments, the module suggests private endpoints or a VPN, and the client IP must be allowed through the Azure SQL firewall.",
+  "rationale": [
+   "Incorrect: disabling TLS removes encryption in transit, which is the opposite of what a sensitive environment needs.",
+   "Incorrect: a public endpoint without a firewall rule would either be unreachable or too open, and it is not a security measure.",
+   "Incorrect: opening the firewall to all addresses exposes the database to any client on the internet.",
+   "Correct: private connectivity keeps the MCP traffic off the public internet, which suits a sensitive environment."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/3-interpret-security-impact"
+ },
+ {
+  "id": "1.4.1-08",
+  "obj": "1.4.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys asks which GitHub offering provides enterprise policies, content filtering, and audit logs for Copilot. Which option should you recommend?",
+  "choices": [
+   "The Copilot extension without sign-in",
+   "A free personal account",
+   "A fork of the public repository",
+   "GitHub Enterprise Cloud"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The module states that GitHub Copilot offers content filtering, enterprise policies, and audit logs with GitHub Enterprise Cloud.",
+  "rationale": [
+   "Incorrect: the extension requires a signed-in account, and sign-in does not add audit logs.",
+   "Incorrect: a free personal account has no organization-wide policies or audit logs.",
+   "Incorrect: a fork of a repository is a copy of code and does not add policy controls for Copilot.",
+   "Correct: these governance features are part of the enterprise offering and help to control how Copilot is used."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/3-interpret-security-impact"
+ },
+ {
+  "id": "1.4.2-01",
+  "obj": "1.4.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants developers to use GitHub Copilot for T-SQL in Visual Studio Code. Which extensions should the developers install?",
+  "choices": [
+   "Azure Functions Core Tools and the Docker extension for containers",
+   "Live Share and GitLens for collaboration and source history",
+   "Python and Jupyter for notebooks and data science scripts",
+   "GitHub Copilot, GitHub Copilot Chat, and SQL Server (mssql)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The module lists GitHub Copilot, GitHub Copilot Chat, and the SQL Server (mssql) extension for database work in VS Code.",
+  "rationale": [
+   "Incorrect: Azure Functions and Docker support other workloads and do not provide Copilot or a SQL connection.",
+   "Incorrect: Live Share and GitLens help with collaboration and source history, but they do not add Copilot features.",
+   "Incorrect: Python and Jupyter support notebooks and scripts, not T-SQL assistance with a database connection.",
+   "Correct: the two Copilot extensions provide completions and chat, and the mssql extension connects to the database."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/4-enable-github-copilot-fabric-copilot"
+ },
+ {
+  "id": "1.4.2-02",
+  "obj": "1.4.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. wants to use GitHub Copilot in SQL Server Management Studio. Which action should the team take during setup?",
+  "choices": [
+   "Install an Azure Data Studio extension for Copilot in SSMS",
+   "Install SQL Server 2025 on the developer workstation first",
+   "Modify the SSMS installation and select the AI Assistance workload",
+   "Enable a tenant setting in the Fabric Admin portal for the workspace"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In the Visual Studio Installer, you modify the SSMS installation and select the AI Assistance workload. SSMS 22 or later is needed.",
+  "rationale": [
+   "Incorrect: SSMS does not use an Azure Data Studio extension for Copilot.",
+   "Incorrect: Copilot in SSMS works with the connected databases, and a local SQL Server 2025 installation is not required.",
+   "Correct: the AI Assistance workload adds the Copilot features to the SSMS installation.",
+   "Incorrect: the Fabric tenant setting applies to Copilot in Fabric and not to GitHub Copilot in SSMS."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/4-enable-github-copilot-fabric-copilot"
+ },
+ {
+  "id": "1.4.2-03",
+  "obj": "1.4.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank wants to use Microsoft Copilot in Fabric. Which capacity should the workspace use?",
+  "choices": [
+   "Fabric capacity F2 or higher, or Power BI Premium P1 or higher",
+   "Only a Power BI Premium capacity of P3 or higher in a region",
+   "A Fabric capacity of F1 or higher in any supported region",
+   "Any free Fabric trial capacity that the tenant already owns"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot in Fabric needs a Fabric capacity of F2 or higher, or a Power BI Premium capacity of P1 or higher.",
+  "rationale": [
+   "Correct: these are the minimum capacities that the module states for Copilot in Fabric.",
+   "Incorrect: P1 is the lowest Premium capacity that qualifies, so P3 is not required.",
+   "Incorrect: there is no F1 SKU in the stated requirement, which starts at F2.",
+   "Incorrect: the module does not describe a free trial capacity as the requirement."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/4-enable-github-copilot-fabric-copilot"
+ },
+ {
+  "id": "1.4.2-04",
+  "obj": "1.4.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation has the right capacity, but users cannot use Copilot in Fabric. A Fabric administrator should check one setting first. Which setting should the administrator enable?",
+  "choices": [
+   "The workspace setting for private links and outbound access",
+   "The SQL database setting for auditing of query activity",
+   "The tenant setting for Copilot and Azure OpenAI features",
+   "The capacity setting for autoscale and smoothing of load"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A Fabric administrator enables the tenant setting for Copilot and Azure OpenAI features in the Admin portal, and then configures which security groups have access.",
+  "rationale": [
+   "Incorrect: private links control network access and do not turn on Copilot.",
+   "Incorrect: auditing records activity and does not switch Copilot on.",
+   "Correct: this tenant setting turns on Copilot features, and security groups can limit who may use them.",
+   "Incorrect: autoscale changes how a capacity scales and does not turn on Copilot."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/4-enable-github-copilot-fabric-copilot"
+ },
+ {
+  "id": "1.4.2-05",
+  "obj": "1.4.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys has a developer without a Copilot subscription who wants to try GitHub Copilot in SSMS. Which option should the developer choose?",
+  "choices": [
+   "Sign up for Copilot Free",
+   "Enable the Fabric tenant setting",
+   "Install SQL Server Reporting Services",
+   "Buy a Fabric F64 capacity"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "In SSMS, a user without a subscription can select Sign up for Copilot Free.",
+  "rationale": [
+   "Correct: the sign-up option gives access to Copilot without an existing subscription.",
+   "Incorrect: the tenant setting controls Copilot in Fabric and does not give a GitHub subscription.",
+   "Incorrect: Reporting Services is a reporting product and does not provide Copilot.",
+   "Incorrect: a Fabric capacity is needed for Copilot in Fabric and not for GitHub Copilot in SSMS."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/4-enable-github-copilot-fabric-copilot"
+ },
+ {
+  "id": "1.4.2-06",
+  "obj": "1.4.2",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Contoso, Ltd. enables AI-assisted tools for its database team.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "GitHub Copilot can be used in Visual Studio Code, Visual Studio, and SQL Server Management Studio.",
+   "GitHub Copilot works without an internet connection.",
+   "Copilot in Fabric requires a tenant setting that a Fabric administrator enables."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "GitHub Copilot works in VS Code, Visual Studio, and SSMS, and needs an internet connection. Copilot in Fabric needs a tenant setting enabled by a Fabric administrator.",
+  "rationale": [
+   "Yes: these are the three supported environments that the module lists.",
+   "No: the module lists an active internet connection as a requirement because the model runs as a hosted service.",
+   "Yes: the Fabric administrator enables the tenant setting and chooses the security groups that can use Copilot."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/4-enable-github-copilot-fabric-copilot"
+ },
+ {
+  "id": "1.4.2-07",
+  "obj": "1.4.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud wants Copilot to help with a SQL database in Microsoft Fabric. A developer must work from external tools such as Visual Studio Code with the database connected. Which product should you recommend for that scenario?",
+  "choices": [
+   "Power Automate",
+   "Azure Advisor",
+   "Microsoft Copilot in Fabric only",
+   "GitHub Copilot with the mssql extension"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "GitHub Copilot runs in external developer tools and supports SQL databases in Fabric when they are connected from those tools. Copilot in Fabric runs in the Fabric portal.",
+  "rationale": [
+   "Incorrect: Power Automate builds flows and does not help to author T-SQL.",
+   "Incorrect: Azure Advisor gives recommendations and does not assist with writing T-SQL in an editor.",
+   "Incorrect: Copilot in Fabric runs in the Fabric portal and not in external developer tools.",
+   "Correct: GitHub Copilot with the mssql extension works in VS Code against a connected database, including SQL database in Fabric."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/2-describe-ai-assisted-development-tools"
+ },
+ {
+  "id": "1.4.2-08",
+  "obj": "1.4.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders wants Copilot to turn a description such as show the ten largest orders into T-SQL. Which capability should the developers use?",
+  "choices": [
+   "Explanation of selected code",
+   "Assistance with a failing query",
+   "Optimization of a slow query",
+   "Natural language to SQL"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Natural language to SQL generates T-SQL from a description, while explanation, optimization, and error assistance work on existing code and failures.",
+  "rationale": [
+   "Incorrect: code explanation describes what selected code does and does not write new code from a description.",
+   "Incorrect: error assistance helps diagnose a query that fails.",
+   "Incorrect: query optimization suggests performance improvements for an existing query.",
+   "Correct: this capability generates a T-SQL statement from a plain-language request."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/2-describe-ai-assisted-development-tools"
+ },
+ {
+  "id": "1.4.3-01",
+  "obj": "1.4.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. developers use GitHub Copilot Chat in Visual Studio Code. They want to switch to a more capable model for a complex stored procedure rewrite. Which feature should the developers use?",
+  "choices": [
+   "The SQL Server (mssql) connection profile",
+   "The Git commit history view",
+   "The Azure portal pricing calculator",
+   "The model picker in Copilot Chat"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Copilot Chat has a model picker in VS Code, and a model selector dropdown in SSMS, to choose between available models.",
+  "rationale": [
+   "Incorrect: a connection profile chooses the database to connect to, and does not change the AI model.",
+   "Incorrect: commit history shows source changes and has no effect on the model used by Copilot.",
+   "Incorrect: the pricing calculator estimates Azure cost and does not change a chat session.",
+   "Correct: the model picker lets the developer choose a stronger model for complex T-SQL work."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/5-configure-model-mcp-tool-options"
+ },
+ {
+  "id": "1.4.3-02",
+  "obj": "1.4.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. wants Copilot in Visual Studio Code to call external tools, such as an MCP server, to gather context and take actions. Which chat mode should the developers select?",
+  "choices": [
+   "Ask",
+   "Plan",
+   "Agent",
+   "Edit"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In VS Code the mode selector offers Ask, Edit, and Agent. Agent mode lets Copilot use external tools, including MCP servers.",
+  "rationale": [
+   "Incorrect: Ask is intended for questions and does not use the MCP tools to take actions.",
+   "Incorrect: Plan is not one of the three modes listed by the module.",
+   "Correct: agent mode is the mode in which Copilot can use MCP servers and other tools.",
+   "Incorrect: Edit is for changing files in the workspace, and the module ties external tool use to Agent mode."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/5-configure-model-mcp-tool-options"
+ },
+ {
+  "id": "1.4.3-03",
+  "obj": "1.4.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank has three MCP servers configured, and a developer wants Copilot to use only the SQL server in this chat session. Which action should the developer take?",
+  "choices": [
+   "Delete the .vscode folder from the whole repository for the team",
+   "Change the compatibility level of the target database to 170",
+   "Restart the SQL Server service on the database host",
+   "Open the tools icon in agent mode and disable the other tools"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "In agent mode, the tools icon shows the available MCP servers and tools, and specific tools can be enabled or disabled per session.",
+  "rationale": [
+   "Incorrect: deleting the folder removes the configuration for everyone and is not a per-session choice.",
+   "Incorrect: the compatibility level changes database behavior and does not control which tools Copilot can call.",
+   "Incorrect: restarting the service does not change the tools that the chat session uses.",
+   "Correct: the tools list lets the developer switch off tools that the session should not use."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/5-configure-model-mcp-tool-options"
+ },
+ {
+  "id": "1.4.3-04",
+  "obj": "1.4.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation adds an MCP server through the Command Palette in Visual Studio Code. Which command should the developer run?",
+  "choices": [
+   "MCP: Add Server",
+   "Git: Clone",
+   "SQL Server: Add Connection",
+   "Chat: Configure Instructions"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The MCP: Add Server command asks for an HTTP or Stdio server and the URL or configuration. Chat: Configure Instructions relates to instruction files.",
+  "rationale": [
+   "Correct: this command adds an MCP server to the configuration.",
+   "Incorrect: cloning copies a repository and does not register an MCP server.",
+   "Incorrect: this command adds a database connection for the mssql extension, which is not an MCP server.",
+   "Incorrect: this command is used to reference instruction files and not to add MCP servers."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/5-configure-model-mcp-tool-options"
+ },
+ {
+  "id": "1.4.3-05",
+  "obj": "1.4.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys wants a quick completion for a simple query and has no need for deep reasoning. Which model choice should the developer make according to the module guidance?",
+  "choices": [
+   "A faster model",
+   "No model, because completions do not use one",
+   "A model without database context",
+   "The most advanced model for every request"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The module says that advanced models fit complex optimization or design, and faster models are enough for quick completions.",
+  "rationale": [
+   "Correct: a faster model returns quick results for a simple completion.",
+   "Incorrect: completions are produced by a model, so a model is always involved.",
+   "Incorrect: database context helps the answer, so removing it does not match the guidance.",
+   "Incorrect: the most advanced model is meant for complex optimization or design, and it adds latency for simple requests."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/5-configure-model-mcp-tool-options"
+ },
+ {
+  "id": "1.4.3-06",
+  "obj": "1.4.3",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud configures a Copilot chat session in Visual Studio Code.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "An MCP server can be added with the MCP: Add Server command, which supports HTTP or Stdio.",
+   "MCP servers can only be used in Ask mode.",
+   "Tools of an MCP server can be enabled or disabled per session from the tools icon."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "MCP: Add Server supports HTTP or Stdio servers, and tools can be enabled or disabled in agent mode. MCP use is tied to Agent mode and not to Ask mode.",
+  "rationale": [
+   "Yes: the command asks you to choose HTTP or Stdio and to enter the URL or configuration.",
+   "No: external tools, including MCP servers, are used in Agent mode.",
+   "Yes: the tools icon in agent mode lists servers and tools, and individual tools can be switched on or off."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/5-configure-model-mcp-tool-options"
+ },
+ {
+  "id": "1.4.3-07",
+  "obj": "1.4.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants a team to share the same MCP server configuration in a repository. Which file should the team create in Visual Studio Code?",
+  "choices": [
+   "appsettings.Development.json",
+   "package-lock.json",
+   ".vscode/mcp.json",
+   "web.config"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The module shows the .vscode/mcp.json file with a top-level servers object, and recommends sharing configurations through version control.",
+  "rationale": [
+   "Incorrect: appsettings files configure web applications and not VS Code MCP servers.",
+   "Incorrect: package-lock.json records npm dependency versions and has no MCP settings.",
+   "Correct: the mcp.json file in the .vscode folder holds the server definitions and can be committed.",
+   "Incorrect: web.config configures web applications and not MCP servers."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/5-configure-model-mcp-tool-options"
+ },
+ {
+  "id": "1.4.3-08",
+  "obj": "1.4.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders uses SSMS and wants to open the Copilot chat and pick a model there. Which control should the developer use?",
+  "choices": [
+   "The Query Store report for top resource consuming queries",
+   "The Activity Monitor panel for current server activity",
+   "The model selector dropdown at the top of Copilot Chat",
+   "The filter button at the top of Object Explorer"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In SSMS, the model selector dropdown at the top of Copilot Chat is used to pick a model.",
+  "rationale": [
+   "Incorrect: Query Store reports show query performance history and do not choose a model.",
+   "Incorrect: Activity Monitor shows live server activity and does not configure Copilot.",
+   "Correct: this dropdown is the control the module names for choosing a model in SSMS.",
+   "Incorrect: the Object Explorer filter limits the list of objects and has nothing to do with models."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/5-configure-model-mcp-tool-options"
+ },
+ {
+  "id": "1.4.4-01",
+  "obj": "1.4.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants every developer in a repository to get the same T-SQL naming rules from GitHub Copilot. Which file should the team create?",
+  "choices": [
+   "global.json",
+   "README.md in the docs folder",
+   "azure-pipelines.yml",
+   ".github/copilot-instructions.md"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Repository instructions live in copilot-instructions.md in the .github folder at the repository root, and they apply to everyone who works in that repository.",
+  "rationale": [
+   "Incorrect: global.json selects an SDK version and has no Copilot role.",
+   "Incorrect: a README documents the project for people and is not loaded as Copilot instructions.",
+   "Incorrect: a pipeline file defines build steps and does not guide Copilot.",
+   "Correct: Copilot includes the content of this file as context, so the rules apply to every developer in the repository."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/6-create-configure-copilot-instruction-files"
+ },
+ {
+  "id": "1.4.4-02",
+  "obj": "1.4.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. wants a reusable prompt that developers can run on demand to generate a stored procedure from a template with a placeholder. Which type of file should the team create?",
+  "choices": [
+   "A copilot-instructions.md file with no placeholders",
+   "A SQL Database Project file",
+   "A prompt file with the .prompt.md extension in .github/prompts",
+   "A dacpac file"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Prompt files are .prompt.md files in .github/prompts, which developers reference in chat, and they can contain placeholders such as {{procedureName}}.",
+  "rationale": [
+   "Incorrect: the instruction file is included automatically as context and is not a prompt that developers run on demand.",
+   "Incorrect: a project file describes the database build and not a Copilot prompt.",
+   "Correct: prompt files are reusable and can be invoked with the # or the prompt picker in VS Code.",
+   "Incorrect: a dacpac is a compiled database package and has nothing to do with Copilot prompts."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/6-create-configure-copilot-instruction-files"
+ },
+ {
+  "id": "1.4.4-03",
+  "obj": "1.4.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank writes an instruction file with the line use good naming. Copilot output is inconsistent. Which change should you make to the instruction file?",
+  "choices": [
+   "Rename the file to .copilot in the repository root folder",
+   "Add the password of the database to the instruction file",
+   "Remove the file and rely on the prompt text alone each time",
+   "Replace it with a specific rule such as usp_ActionEntity naming"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The module recommends specific rules, such as a named pattern, instead of vague guidance. It also recommends concrete examples and critical rules near the top.",
+  "rationale": [
+   "Incorrect: the file must keep the documented name and location to be loaded, so renaming it stops it working.",
+   "Incorrect: credentials must not be placed in files that Copilot reads and that are committed to source control.",
+   "Incorrect: without the file, every prompt would need to repeat the rules, which is what the file avoids.",
+   "Correct: a specific, testable rule gives Copilot something concrete to follow in each suggestion."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/6-create-configure-copilot-instruction-files"
+ },
+ {
+  "id": "1.4.4-04",
+  "obj": "1.4.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation wants to see which instruction files VS Code loads automatically. Which action should the developer take?",
+  "choices": [
+   "Run SELECT * FROM sys.dm_exec_requests on the server",
+   "Open the Fabric Admin portal and its tenant settings",
+   "Run git blame on the whole repository history",
+   "Search the settings for GitHub Copilot: Instructions"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "In VS Code you search the settings for GitHub Copilot: Instructions to choose which files load automatically. Chat: Configure Instructions references instructions explicitly.",
+  "rationale": [
+   "Incorrect: a DMV shows server requests and does not show Copilot configuration.",
+   "Incorrect: the Fabric Admin portal controls tenant settings and not VS Code instruction files.",
+   "Incorrect: git blame shows who changed lines and does not show which files Copilot loads.",
+   "Correct: these settings control which instruction files are loaded for chat."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/6-create-configure-copilot-instruction-files"
+ },
+ {
+  "id": "1.4.4-05",
+  "obj": "1.4.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys wants a required TRY...CATCH pattern to appear in all generated procedures. Which content should the team add to the instruction file?",
+  "choices": [
+   "The connection string of production",
+   "A request to write fast code",
+   "A list of all table names and row counts",
+   "A concrete code example of the required pattern"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The module advises adding concrete code examples, such as a required TRY...CATCH pattern, together with naming conventions, style, security, and performance rules.",
+  "rationale": [
+   "Incorrect: a connection string is a secret and does not belong in a file that Copilot reads.",
+   "Incorrect: a vague request such as write fast code gives Copilot nothing specific to follow.",
+   "Incorrect: row counts change and do not describe a coding rule, so they do not guide the structure of generated code.",
+   "Correct: an example shows Copilot exactly how the procedures should be structured."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/6-create-configure-copilot-instruction-files"
+ },
+ {
+  "id": "1.4.4-06",
+  "obj": "1.4.4",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud maintains instruction files for its SQL repositories.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Copilot includes the contents of the repository instructions file as context when it generates suggestions.",
+   "Instruction files guarantee that Copilot output always follows every rule.",
+   "Teams can keep instruction files in source control and update them as standards change."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Copilot considers instruction files as context, so they guide output but do not guarantee it. Teams use source control and update files as standards change.",
+  "rationale": [
+   "Yes: the file content is added as context, so prompts do not need to repeat the rules.",
+   "No: Copilot considers the instructions, which guides output and does not guarantee that every rule is followed.",
+   "Yes: the module suggests git version control and updating the files when standards change."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/6-create-configure-copilot-instruction-files"
+ },
+ {
+  "id": "1.4.4-07",
+  "obj": "1.4.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. has an instruction file with 40 rules, and the most important security rule is at the bottom. Which change should you make?",
+  "choices": [
+   "Split the file into 40 files",
+   "Delete all rules except the naming rule",
+   "Move the critical rules to the top of the file",
+   "Convert the file to a PDF"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The module recommends prioritizing the critical rules at the top, testing prompts, and updating the files as standards change.",
+  "rationale": [
+   "Incorrect: splitting into 40 files makes the guidance harder to maintain and is not the documented approach.",
+   "Incorrect: removing the security rule would reduce the quality of the generated code.",
+   "Correct: placing critical rules at the top gives them priority in the guidance.",
+   "Incorrect: a PDF is not read as an instruction file in the repository."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/6-create-configure-copilot-instruction-files"
+ },
+ {
+  "id": "1.4.4-08",
+  "obj": "1.4.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders uses Visual Studio, not VS Code. Which menu path should a developer use to choose which instruction files are used?",
+  "choices": [
+   "Debug > Windows > Locals view",
+   "Tools > Connect to Database...",
+   "Tools > Options > GitHub > Copilot",
+   "Build > Publish Selection..."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In Visual Studio, the module points to Tools, Options, GitHub, Copilot for the settings of instruction files.",
+  "rationale": [
+   "Incorrect: the Locals window shows variable values while debugging.",
+   "Incorrect: connecting to a database does not configure Copilot instruction files.",
+   "Correct: this is the options page that the module names for Copilot in Visual Studio.",
+   "Incorrect: Publish Selection deploys build output and does not configure Copilot."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/6-create-configure-copilot-instruction-files"
+ },
+ {
+  "id": "1.4.5-01",
+  "obj": "1.4.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants Copilot agent mode to query an Azure SQL database through an MCP endpoint that Microsoft provides as an open-source solution built on Data API builder. Which server should the team deploy?",
+  "choices": [
+   "SQL MCP Server",
+   "Azure Service Bus",
+   "Azure Load Testing",
+   "SQL Server Reporting Services"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "SQL MCP Server is Microsoft's open-source solution built on Data API builder. You enable its MCP endpoint, note the URL, and add it to VS Code.",
+  "rationale": [
+   "Correct: SQL MCP Server exposes the database through an MCP endpoint that agent mode can call.",
+   "Incorrect: Service Bus is a messaging service and does not expose database tools to Copilot.",
+   "Incorrect: Load Testing generates test traffic and does not give an AI assistant access to data.",
+   "Incorrect: Reporting Services publishes reports and has no MCP endpoint."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/7-connect-mcp-server-endpoints"
+ },
+ {
+  "id": "1.4.5-02",
+  "obj": "1.4.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. uses the mssql extension in Visual Studio Code and wants to ask questions about a connected database without setting up a separate MCP server. Which action should the developer take?",
+  "choices": [
+   "Install the Azure MCP Server extension and sign in",
+   "Select Chat with this database on the connected database",
+   "Deploy a Data API builder container for the database",
+   "Create and publish a Fabric data agent for it"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The MSSQL extension offers Chat with this database on a connected database, and no separate MCP server is needed.",
+  "rationale": [
+   "Incorrect: the Azure MCP Server is a separate server, and the scenario asks for no separate server.",
+   "Correct: this option starts a chat that works with the connected database through the extension.",
+   "Incorrect: Data API builder hosts a SQL MCP Server, which this scenario avoids.",
+   "Incorrect: a Fabric data agent is used to expose a lakehouse or warehouse through MCP, not a connected SQL database in the extension."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/7-connect-mcp-server-endpoints"
+ },
+ {
+  "id": "1.4.5-03",
+  "obj": "1.4.5",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Woodgrove Bank wants Copilot agent mode to read data from a Microsoft Fabric lakehouse through MCP. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Copy the MCP server URL from Settings > Model Context Protocol of the data agent",
+   "Grant the db_owner role to every user of the workspace",
+   "Set the database compatibility level to 170",
+   "Create and publish a data agent that has access to the lakehouse",
+   "Enable Always Encrypted on the lakehouse tables"
+  ],
+  "answer": [
+   0,
+   3
+  ],
+  "explanation": "For a Fabric lakehouse, you publish a data agent with access to the lakehouse, and then copy its MCP server URL from the Model Context Protocol settings.",
+  "rationale": [
+   "Correct: the MCP server URL and tool description on the settings page are what you add to the client configuration.",
+   "Incorrect: db_owner would give far too much access and is not part of the connection steps.",
+   "Incorrect: the compatibility level is a SQL database setting and does not connect an MCP client to a lakehouse.",
+   "Correct: the data agent is the item that exposes the lakehouse or warehouse through MCP, and it must be published.",
+   "Incorrect: Always Encrypted protects column data in SQL databases and is not a step for exposing a lakehouse through MCP."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/7-connect-mcp-server-endpoints"
+ },
+ {
+  "id": "1.4.5-04",
+  "obj": "1.4.5",
+  "difficulty": "medium",
+  "type": "dropdown",
+  "stem": "Adatum Corporation adds an HTTP MCP server to a repository for Visual Studio Code. How should you complete the file? To answer, select the appropriate options in the answer area.\n\n```json\n// [[1]]\n{\n  \"[[2]]\": {\n    \"sql-server\": {\n      \"type\": \"http\",\n      \"url\": \"https://your-mcp-endpoint/mcp\"\n    }\n  }\n}\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     ".vscode/mcp.json",
+     ".github/copilot-instructions.md",
+     ".vscode/launch.json"
+    ],
+    "why": [
+     "Correct: this is the file in which VS Code reads the definitions of MCP servers.",
+     "Incorrect: this file holds natural-language instructions and does not define servers.",
+     "Incorrect: launch.json defines debug configurations and does not define MCP servers."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "servers",
+     "entities",
+     "connectionStrings"
+    ],
+    "why": [
+     "Correct: the top-level servers object holds each server with its type and url.",
+     "Incorrect: entities is a Data API builder configuration term, not the key of mcp.json.",
+     "Incorrect: connectionStrings belongs to application configuration files and is not used in mcp.json."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0
+  ],
+  "explanation": "VS Code reads MCP server definitions from .vscode/mcp.json, in a top-level servers object where each server has a type and a url.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/5-configure-model-mcp-tool-options",
+  "rationale": []
+ },
+ {
+  "id": "1.4.5-05",
+  "obj": "1.4.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys runs MCP connections for an automated build agent that is shared by a team. Which authentication method should you use?",
+  "choices": [
+   "A service principal in Microsoft Entra ID",
+   "A password in a committed JSON file",
+   "Interactive browser sign-in of one developer",
+   "Anonymous access"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The module recommends interactive sign-in for development and a service principal in Microsoft Entra ID for automation and shared environments.",
+  "rationale": [
+   "Correct: a service principal suits automation and shared environments because it does not depend on a person.",
+   "Incorrect: credentials must never be committed to source control.",
+   "Incorrect: interactive sign-in is intended for development and needs a person at the browser.",
+   "Incorrect: anonymous access would expose the data to anyone who can reach the endpoint."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/7-connect-mcp-server-endpoints"
+ },
+ {
+  "id": "1.4.5-06",
+  "obj": "1.4.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. has set up an MCP connection to Azure SQL, and VS Code cannot connect. The endpoint is reachable, but the database rejects the connection. Which action should the administrator take first?",
+  "choices": [
+   "Install the GitHub Copilot Chat extension again",
+   "Change the Copilot model",
+   "Disable the mcp.json file",
+   "Allow the client IP address through the Azure SQL firewall"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The module says to allow your client IP through the Azure SQL firewall and to configure private endpoints for MCP traffic where applicable.",
+  "rationale": [
+   "Incorrect: reinstalling the extension does not change the firewall rules of the server.",
+   "Incorrect: the model chosen in chat does not affect network access to the database.",
+   "Incorrect: disabling mcp.json removes the server definition and does not fix a firewall block.",
+   "Correct: the firewall blocks clients that are not allowed, so the client address must be added."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/7-connect-mcp-server-endpoints"
+ },
+ {
+  "id": "1.4.5-07",
+  "obj": "1.4.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders wants to confirm that an MCP server works in VS Code agent mode. Which check should the developer perform?",
+  "choices": [
+   "Run a Git merge of the main branch into yours",
+   "Check the tools icon for a green status and test it",
+   "Run DBCC CHECKDB on the connected database",
+   "Delete and recreate the database and its schema"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "In agent mode, the tools icon shows a green status for a working server, and a question such as what tables are available in the database tests the connection.",
+  "rationale": [
+   "Incorrect: a merge combines branches and does not test an MCP server.",
+   "Correct: a green tool status and a test question confirm that the server responds.",
+   "Incorrect: DBCC CHECKDB checks database integrity and does not test an MCP connection.",
+   "Incorrect: recreating the database destroys data and does not test the server."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/7-connect-mcp-server-endpoints"
+ },
+ {
+  "id": "1.4.5-08",
+  "obj": "1.4.5",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud connects Copilot to several MCP endpoints.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Development, test, and production should use separate endpoints.",
+   "Credentials for an MCP server should be committed to source control so the team can share them.",
+   "Read-only accounts are recommended for MCP connections when the AI only needs to read data."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The module recommends separate endpoints per environment, least-privilege read-only accounts, and never committing credentials to source control.",
+  "rationale": [
+   "Yes: separate endpoints stop a development session from touching production data.",
+   "No: credentials must never be committed to source control. Use environment variables or input prompts.",
+   "Yes: a read-only account limits the damage that a wrong suggestion can do."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-sql-solutions-ai-assisted-tools/7-connect-mcp-server-endpoints"
+ }
+]

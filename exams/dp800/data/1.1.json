@@ -1,0 +1,1153 @@
+[
+ {
+  "id": "1.1.1-01",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. stores product prices on invoices, and the totals must add up to the exact amount that customers are billed. Which data type should you use for the Price column?",
+  "choices": [
+   "FLOAT",
+   "VARCHAR(10)",
+   "DECIMAL(10,2)",
+   "REAL"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Money amounts need exact arithmetic. DECIMAL stores a fixed number of digits and decimal places, so sums are exact, while FLOAT and REAL store approximations that can drift.",
+  "rationale": [
+   "Incorrect: FLOAT is an approximate binary type, so adding many prices can produce small rounding differences. Use it for measurements, where a small error is acceptable.",
+   "Incorrect: VARCHAR stores text, so the column would need conversion before any arithmetic and would accept values that are not numbers. Use it for codes, not amounts.",
+   "Correct: DECIMAL(10,2) stores exactly up to 10 digits with two decimal places, which matches invoice prices and keeps sums exact.",
+   "Incorrect: REAL is also approximate, with less precision than FLOAT. It shares the rounding problem, so invoice totals would not reconcile exactly."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/decimal-and-numeric-transact-sql"
+ },
+ {
+  "id": "1.1.1-02",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. needs an OrderDate column that stores only the calendar date. No time part should be stored for any row. Which data type should you use?",
+  "choices": [
+   "DATETIMEOFFSET",
+   "SMALLDATETIME",
+   "DATETIME2(0)",
+   "DATE"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "DATE stores only year, month, and day. The other types also store a time part, so they keep values that the design does not need.",
+  "rationale": [
+   "Incorrect: DATETIMEOFFSET stores a date, a time, and a time zone offset. That is more than a calendar date, so it breaks the rule that no time is stored.",
+   "Incorrect: SMALLDATETIME stores the date and time to the minute. It adds a time part the column must not hold, so it does not meet the requirement.",
+   "Incorrect: DATETIME2(0) drops fractional seconds, but it still stores a time part. Every row would carry a time such as 00:00:00, which the requirement forbids.",
+   "Correct: DATE stores only the calendar date, so no time part can be saved and the column meets the requirement with the smallest storage."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/date-transact-sql"
+ },
+ {
+  "id": "1.1.1-03",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank keeps a transactions table of about 2 TB. Each night the table is loaded in large batches. Reports scan most rows and aggregate a few columns, and the storage team wants the best compression. Which index should you create?",
+  "choices": [
+   "CREATE CLUSTERED COLUMNSTORE INDEX CCI_Transactions ON dbo.Transactions",
+   "CREATE NONCLUSTERED INDEX ON dbo.Transactions (TransactionDate) INCLUDE (Amount, Currency)",
+   "CREATE UNIQUE NONCLUSTERED INDEX UX_Transactions ON dbo.Transactions (TransactionId)",
+   "CREATE CLUSTERED INDEX CIX_Transactions ON dbo.Transactions (TransactionId)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A clustered columnstore index compresses each column separately and reads only the columns a query needs, which suits large scans and aggregates. Rowstore indexes suit seeks and small ranges.",
+  "rationale": [
+   "Correct: a clustered columnstore index compresses each column in segments and reads only the aggregated columns during large scans, which matches reports over most rows of a 2 TB table.",
+   "Incorrect: a narrow nonclustered index only helps seeks on TransactionDate. Reports that scan most rows still read a large rowstore structure, and compression is weaker than columnstore.",
+   "Incorrect: a unique nonclustered index enforces uniqueness and speeds lookups by TransactionId. The reports never look up single transactions, so the index does not help the aggregates.",
+   "Incorrect: a clustered rowstore index orders the table by TransactionId. It does not compress columns, so scans of most rows gain little for the aggregates."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/indexes/columnstore-indexes-overview"
+ },
+ {
+  "id": "1.1.1-04",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Litware, Inc. stores 900 million device readings. Reports aggregate most columns over time ranges, so the table needs a clustered columnstore index. Other tables must reference ReadingId as a foreign key. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Create a CLUSTERED COLUMNSTORE INDEX on the table",
+   "Create the table with a PRIMARY KEY CLUSTERED constraint on ReadingId",
+   "Create the table with a PRIMARY KEY NONCLUSTERED constraint on ReadingId",
+   "Replace the primary key with a UNIQUE NONCLUSTERED index on ReadingId",
+   "Create a NONCLUSTERED COLUMNSTORE INDEX on ReadingId only"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "A clustered columnstore index is the table's storage, so a primary key on that table must be nonclustered. A foreign key needs a PRIMARY KEY or UNIQUE constraint as its target, not only a unique index.",
+  "rationale": [
+   "Correct: a clustered columnstore index stores the whole table in compressed column segments, which suits reports that aggregate most columns over time ranges.",
+   "Incorrect: a clustered primary key would need the table's clustered index, which conflicts with the clustered columnstore index that stores the rows.",
+   "Correct: a nonclustered primary key enforces uniqueness on ReadingId and gives other tables a valid foreign key target, while the columnstore stays the clustered structure.",
+   "Incorrect: a foreign key cannot reference a unique index, only a PRIMARY KEY or UNIQUE constraint, so the referencing tables would fail to create.",
+   "Incorrect: a nonclustered columnstore index on one column does not change the table's storage, and it does not enforce a key that foreign keys can reference."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/primary-and-foreign-key-constraints"
+ },
+ {
+  "id": "1.1.1-05",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. stores customer names that come from many languages, including Japanese and Arabic. Names are at most 100 characters long. Which data type should you use for the Name column?",
+  "choices": [
+   "VARBINARY(200)",
+   "NVARCHAR(100)",
+   "VARCHAR(100)",
+   "CHAR(100)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "NVARCHAR stores Unicode text for any script. VARCHAR depends on a single-byte code page, so some scripts cannot be stored in it.",
+  "rationale": [
+   "Incorrect: VARBINARY stores raw bytes, not text. Names would need an encoding step on every read and write, and the database could not compare them as strings.",
+   "Correct: NVARCHAR(100) stores Unicode characters, which covers every script in the requirement, and the length limit of 100 characters keeps storage bounded.",
+   "Incorrect: VARCHAR stores characters from one code page. Japanese and Arabic characters cannot all be stored, so names would be lost or replaced.",
+   "Incorrect: CHAR(100) is also a single-byte code page type, and it pads every value to 100 characters. It fails the multilanguage requirement and wastes storage."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/nchar-and-nvarchar-transact-sql"
+ },
+ {
+  "id": "1.1.1-06",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys needs a surrogate key for the Product table. The database must generate the next value for each new row automatically, and the key must not depend on any separate database object. Which column definition should you use?",
+  "choices": [
+   "ProductId INT NOT NULL DEFAULT 1",
+   "ProductId INT IDENTITY(1,1) NOT NULL",
+   "ProductId INT NOT NULL DEFAULT NEXT VALUE FOR dbo.ProductSeq",
+   "ProductId UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID()"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "An IDENTITY column generates an increasing value for each inserted row, and its counter belongs to that table. A sequence is a separate object, and a constant default repeats the same value for every row.",
+  "rationale": [
+   "Incorrect: a constant default of 1 gives every row the same value, which breaks the primary key on the second insert. Use a default only for values that may repeat.",
+   "Correct: IDENTITY(1,1) makes the table generate 1, 2, 3 and so on for each insert, and the application does not supply values. The counter is part of the table.",
+   "Incorrect: a sequence increments correctly, but it is a separate database object, which the requirement rules out. Use a sequence when several tables must share one numbering series.",
+   "Incorrect: NEWID() produces random GUIDs that are unique but not increasing. The requirement asks for an incrementing value, so this key would not be sequential."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-table-transact-sql"
+ },
+ {
+  "id": "1.1.1-07",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders stores shipment weights in kilograms with three decimal places. Weights can reach 9,999,999 kg. Reports add weights across shipments, and the totals must match exactly. Which data type should you use?",
+  "choices": [
+   "DECIMAL(10,3)",
+   "DECIMAL(7,3)",
+   "DECIMAL(10,2)",
+   "FLOAT(53)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The type must hold 7 digits before the decimal point and 3 after, which is precision 10 and scale 3. Exact totals require a DECIMAL type rather than a floating-point type.",
+  "rationale": [
+   "Correct: DECIMAL(10,3) holds 7 digits before the decimal point and 3 after, so it stores up to 9,999,999.999 exactly and the totals reconcile.",
+   "Incorrect: DECIMAL(7,3) keeps 4 digits before the decimal point, so it stops at 9999.999 and cannot hold weights above that value.",
+   "Incorrect: DECIMAL(10,2) has the right range, but only 2 decimal places, so the third decimal of each weight would be rounded away.",
+   "Incorrect: FLOAT(53) covers the range, but it is approximate, so totals across many shipments can differ slightly from the exact sum the reports need."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/decimal-and-numeric-transact-sql"
+ },
+ {
+  "id": "1.1.2-01",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. must keep every earlier salary of each employee, so auditors can see the value that applied on any past date. The auditors need the history only, not tamper-evident proof. Which table type should you create for the Employee table?",
+  "choices": [
+   "An external table over the salary files",
+   "A memory-optimized table with DURABILITY = SCHEMA_AND_DATA",
+   "A system-versioned temporal table",
+   "An append-only ledger table"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A system-versioned temporal table stores each earlier row version in a history table and supports AS OF queries. The memory-optimized, ledger, and external options solve other problems: speed, tamper evidence, or external storage.",
+  "rationale": [
+   "Incorrect: an external table reads files stored outside the database. It does not record changes to the Employee rows, so the history would not be kept.",
+   "Incorrect: a memory-optimized table keeps data in memory for speed. It does not store earlier row versions, so each salary change overwrites the previous value.",
+   "Correct: the database stores each earlier version in a history table automatically, and FOR SYSTEM_TIME AS OF returns the value that applied on a given date.",
+   "Incorrect: an append-only ledger table adds cryptographic tamper evidence and blocks updates. The requirement does not ask for proof, so the added verification is unnecessary."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/temporal-tables"
+ },
+ {
+  "id": "1.1.2-02",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. records product certifications in a table. Rows must never be updated or deleted, and the database must block any UPDATE or DELETE statement at the engine level. Which table type should you create?",
+  "choices": [
+   "A clustered columnstore index on a standard table",
+   "An updatable ledger table",
+   "A system-versioned temporal table",
+   "An append-only ledger table"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "An append-only ledger table blocks UPDATE and DELETE and records each insert with verification data. An updatable ledger table allows both statements and keeps history instead.",
+  "rationale": [
+   "Incorrect: a clustered columnstore index speeds analytic scans and compresses data, but it does not stop UPDATE or DELETE statements, so it does not enforce the rule.",
+   "Incorrect: an updatable ledger table allows UPDATE and DELETE and stores previous versions in a history table. It does not block changes, so it does not meet the requirement.",
+   "Incorrect: a system-versioned temporal table records history for each change but still allows updates and deletes. It does not stop modifications, so it is not the answer.",
+   "Correct: an append-only ledger table permits only inserts, so the engine blocks updates and deletes, and each row carries ledger data that proves it was not changed."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/ledger/ledger-overview"
+ },
+ {
+  "id": "1.1.2-03",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. runs a session-state table that handles thousands of reads and writes per second. The sessions can be rebuilt by the application after a server restart, so the rows do not need to survive a restart. Which table option should you use?",
+  "choices": [
+   "WITH (LEDGER = ON)",
+   "WITH (MEMORY_OPTIMIZED = ON, DURABILITY = SCHEMA_ONLY)",
+   "WITH (SYSTEM_VERSIONING = ON)",
+   "WITH (MEMORY_OPTIMIZED = ON, DURABILITY = SCHEMA_AND_DATA)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Memory-optimized tables with SCHEMA_ONLY durability keep the schema after a restart but lose the rows, and their data changes are not logged. Use this for disposable data that needs very fast access.",
+  "rationale": [
+   "Incorrect: LEDGER = ON adds tamper evidence and hash data to each row. It does not place the table in memory, and the sessions do not need verification.",
+   "Correct: SCHEMA_ONLY keeps the table definition after a restart and does not log the row changes, which gives the highest throughput for data the application can rebuild.",
+   "Incorrect: SYSTEM_VERSIONING creates a temporal table that keeps earlier row versions. It does not keep rows in memory, so it does not meet the performance requirement.",
+   "Incorrect: SCHEMA_AND_DATA makes the rows durable, so each change is logged and written to disk. The sessions do not need that protection, and it costs throughput."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/in-memory-oltp/defining-durability-for-memory-optimized-objects"
+ },
+ {
+  "id": "1.1.2-04",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys records employees and the teams they belong to. An employee can belong to several teams, and a team has several employees. The application must find all employees who share a team with a given employee, reached through up to two membership hops, by using T-SQL. Which design should you use?",
+  "choices": [
+   "A hierarchyid column on the employee table, with a recursive common table expression",
+   "A system-versioned temporal table for memberships, queried with FOR SYSTEM_TIME",
+   "An external table over a membership file, queried with OPENJSON",
+   "Node tables for employees and teams, an edge table for memberships, and MATCH queries"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Graph node and edge tables model many-to-many relationships, and MATCH traverses them with patterns over several hops. A hierarchyid models a tree in which each node has one parent, so it cannot represent an employee who belongs to several teams.",
+  "rationale": [
+   "Incorrect: hierarchyid models a tree in which each node has one parent. An employee in several teams has several parents, so the design cannot represent the relationship.",
+   "Incorrect: temporal tables keep earlier versions of rows over time. They do not traverse relationships between employees, so the shared-team question cannot be answered with them.",
+   "Incorrect: an external table reads files outside the database. It does not model the relationships as nodes and edges, and it does not give pattern matching across hops.",
+   "Correct: nodes and edges model the many-to-many membership directly, and MATCH walks the relationship across one or two hops in a single query."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/graphs/sql-graph-overview"
+ },
+ {
+  "id": "1.1.2-05",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank uses an updatable ledger table for account balances. Auditors must later prove that no row changed without detection, even if an administrator with full database rights tries to change the data. Which location should you use to store the database digests?",
+  "choices": [
+   "In the transaction log of the ledger database",
+   "In immutable Azure Blob Storage or Azure Confidential Ledger, outside the database",
+   "In a history table in the same database",
+   "In an Always Encrypted column of the ledger table"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Digests are the fingerprints that verification compares against the data. Storing them outside the database, in tamper-proof storage, means an administrator with database rights cannot rewrite both the data and the fingerprints.",
+  "rationale": [
+   "Incorrect: the transaction log is written by the same database engine that an administrator controls. It records activity but does not provide a tamper-proof copy of the digests.",
+   "Correct: immutable storage or a confidential ledger keeps the fingerprints beyond the reach of database administrators, so verification can detect any change to the data.",
+   "Incorrect: a history table lives in the same database as the data. An administrator who can change the rows can also change the history and any digests stored with it.",
+   "Incorrect: Always Encrypted protects values from people who should not read them, but it does not protect against changes. The digests would remain inside the same database."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/ledger/ledger-overview"
+ },
+ {
+  "id": "1.1.2-06",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Adatum Corporation has an existing Employee table with the columns EmployeeId, Name, and Salary. The team must turn the table into a system-versioned temporal table that keeps its history in dbo.EmployeeHistory. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Enable Change Data Capture on the table and query the change tables with FOR SYSTEM_TIME",
+   "Set SYSTEM_VERSIONING = ON with HISTORY_TABLE = dbo.EmployeeHistory on the table",
+   "Create a memory-optimized copy of the table and point the application at the copy",
+   "Drop the primary key so the history table can store duplicate EmployeeId values",
+   "Add two datetime2 columns that are GENERATED ALWAYS AS ROW START and ROW END, and define PERIOD FOR SYSTEM_TIME over them"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "A temporal table needs period columns, and SYSTEM_VERSIONING with a HISTORY_TABLE clause turns on the history. Change Data Capture writes changes to its own change tables, which FOR SYSTEM_TIME does not query.",
+  "rationale": [
+   "Incorrect: Change Data Capture writes changes to its own change tables. FOR SYSTEM_TIME does not query those tables, so this does not create a temporal table.",
+   "Correct: SYSTEM_VERSIONING = ON with HISTORY_TABLE turns on automatic history capture into the named table, which is the second part of the conversion.",
+   "Incorrect: a memory-optimized copy stores the data in memory and does not record row history, so the application would lose the versioning the team needs.",
+   "Incorrect: a temporal history table does not require the primary key to be dropped. Removing the key weakens integrity and is not part of the conversion.",
+   "Correct: the period columns record when each row version was valid, and PERIOD FOR SYSTEM_TIME ties them together, which the table needs before versioning can start."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/temporal-tables"
+ },
+ {
+  "id": "1.1.2-07",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Tailspin Toys has a system-versioned temporal table named dbo.Employee with a history table.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A query with FOR SYSTEM_TIME AS OF returns rows whose ValidFrom is at or before the given time and whose ValidTo is after it.",
+   "An UPDATE on the Employee table stores the previous version of the row in the history table.",
+   "Turning SYSTEM_VERSIONING on always creates a new history table, even when HISTORY_TABLE names an existing table."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The period columns define when each version was valid, and the database moves the old version to the history table on each change. HISTORY_TABLE tells the engine which existing table to use, so no new table is created.",
+  "rationale": [
+   "Yes: AS OF returns the version whose period contains the given time, which means ValidFrom is less than or equal to the time and ValidTo is greater than it.",
+   "Yes: every data modification moves the replaced version into the history table, which is how the temporal table keeps its history.",
+   "No: when HISTORY_TABLE names an existing table, the engine uses that table, which must have a compatible schema. It creates a default history table only when no name is given."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/temporal-tables"
+ },
+ {
+  "id": "1.1.2-08",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. stores people and friendships. Friendships connect two person nodes and are queried with the MATCH operator. Which table type should you create for the friendships?",
+  "choices": [
+   "A system-versioned temporal table",
+   "An edge table created with AS EDGE",
+   "A node table created with AS NODE",
+   "A standard table with a foreign key to the Person table"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "MATCH traverses relationships that are stored in edge tables. Node tables hold the entities, such as people, and a standard table with a foreign key cannot be traversed with MATCH patterns.",
+  "rationale": [
+   "Incorrect: a temporal table keeps history for a row's changes over time. It does not link people to one another, so MATCH cannot traverse friendships in it.",
+   "Correct: an edge table stores the relationships between nodes, and MATCH patterns traverse them from one person to another.",
+   "Incorrect: a node table stores the entities, such as people, and has no relationships of its own. Create node tables for the people and use edge tables for the friendships.",
+   "Incorrect: a foreign key links two standard tables, but MATCH works only on graph node and edge tables. The friendships would need to be graph edges to be traversed."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/graphs/sql-graph-overview"
+ },
+ {
+  "id": "1.1.3-01",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. stores product attributes as JSON documents on SQL Server 2025. The database must parse each document on insert, so queries read parsed values and the application can change one property in place. Which column type should you use?",
+  "choices": [
+   "varbinary(max)",
+   "xml",
+   "nvarchar(max) with an ISJSON check constraint",
+   "json"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The native json type stores documents in a parsed binary form, which speeds reads and lets the modify method change one value without rewriting the whole document. A string column with ISJSON validates the text but stores it as plain characters.",
+  "rationale": [
+   "Incorrect: varbinary(max) stores raw bytes with no JSON awareness. Queries would need to convert every value first, which removes any parsing benefit.",
+   "Incorrect: xml stores XML documents, not JSON, so the JSON functions and the json type's storage benefits do not apply to these values.",
+   "Incorrect: an ISJSON check rejects invalid text, but the column still stores plain characters that are parsed on every read. It cannot change one property in place.",
+   "Correct: the json type stores documents parsed, rejects invalid JSON on insert, and the modify method changes one value without sending the whole document back."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/json-data-type"
+ },
+ {
+  "id": "1.1.3-02",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys stores product details in a json column named Details in an Azure SQL Database table. Queries filter on an exact Brand value inside each document, and the query plan must seek instead of scan. Which index should you create?",
+  "choices": [
+   "CREATE JSON INDEX on the Details column",
+   "CREATE NONCLUSTERED INDEX on the Details column",
+   "CREATE CLUSTERED COLUMNSTORE INDEX on the Products table",
+   "CREATE FULLTEXT INDEX on the Details column"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A JSON index is designed to speed up queries on values inside json documents. A standard nonclustered index cannot use a json column as a key, and a full-text index targets words rather than exact property values.",
+  "rationale": [
+   "Correct: a JSON index is designed for queries on values inside json documents, which is the case for the Brand filter, so the plan avoids reading every document.",
+   "Incorrect: json columns cannot be key columns of a standard index, so the definition is rejected and the Brand value is not indexed.",
+   "Incorrect: a clustered columnstore index compresses the table for analytic scans. It does not index values inside each document, so exact Brand lookups still scan.",
+   "Incorrect: a full-text index supports word and phrase searches. It does not provide exact property-value lookups, so it does not meet the seek requirement."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/json-data-type"
+ },
+ {
+  "id": "1.1.3-03",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank runs SQL Server 2022 on premises and wants to store documents in a native json column. The database team asks which action enables the json type. Which action should you take?",
+  "choices": [
+   "Upgrade the instance to SQL Server 2025 before you create json columns",
+   "Set the database compatibility level to the latest value",
+   "Enable full-text search on the nvarchar(max) column",
+   "Create a JSON index on an nvarchar(max) column"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The json type is not available in SQL Server 2016 through 2022, so the instance version decides whether it can be used. Compatibility levels do not enable it, and a JSON index needs a json column.",
+  "rationale": [
+   "Correct: the json type is not available in SQL Server 2022 or earlier, so the instance must be upgraded to SQL Server 2025 before json columns can be created.",
+   "Incorrect: the json type is available under all database compatibility levels, so raising the level does not make it available on a version that lacks it.",
+   "Incorrect: full-text search indexes words in text columns. It does not add the json type or parse documents, so it does not meet the requirement.",
+   "Incorrect: a JSON index works on a json column, so it cannot be created on nvarchar(max) to enable the type. This action does not solve the requirement."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/json-data-type"
+ },
+ {
+  "id": "1.1.3-04",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation stores order payloads in a json column named Payload on Azure SQL Database. Queries must seek on a value inside Payload. The team also wants Payload to be a key column of a standard nonclustered index, so that queries can use the index directly. Which design should you use?",
+  "choices": [
+   "Include Payload as a non-key column of a standard nonclustered index",
+   "Create a JSON index on Payload and keep Payload out of standard index keys",
+   "Make Payload the key column of a standard nonclustered index",
+   "Convert Payload to nvarchar(max) so that it can become a key column"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A json column cannot be a key column of a standard index, so the JSON index is the tool for seeks on values inside documents. Included non-key columns are only read with the index and do not provide seeks on values.",
+  "rationale": [
+   "Incorrect: an included column is stored with the index for reads only. A query cannot seek on a value inside an included column, so the seek requirement is not met.",
+   "Correct: the JSON index is built for searches on values inside json documents, and the standard index keeps the json column out of its key, which the engine requires.",
+   "Incorrect: a json column cannot be a key column of a standard index, so the engine rejects the definition and no seek on Payload is created.",
+   "Incorrect: nvarchar(max) cannot be a key column either, because index key columns cannot use the max length. Converting the column also gives up the json type's parsing and in-place updates."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/json-data-type"
+ },
+ {
+  "id": "1.1.3-05",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. must change the status value inside one json document. The application must not send the whole document back to the server for the update. Which feature should you use?",
+  "choices": [
+   "The modify method of the json type",
+   "A computed column that derives the status from the document",
+   "An UPDATE that replaces the full document from the application",
+   "A trigger that deletes and re-inserts the row"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The modify method changes a value inside a json document without rewriting all of it. Replacing the document or re-inserting the row writes all of it, and a computed column is read-only.",
+  "rationale": [
+   "Correct: modify updates a single value inside a json column and can apply the change without rewriting the whole document, which is what the requirement asks for.",
+   "Incorrect: a computed column only reads a value from the document. It cannot change the status, so it does not solve the update requirement.",
+   "Incorrect: replacing the full document sends all of it to the server for every change, which the requirement forbids. Use it when the whole document changes anyway.",
+   "Incorrect: deleting and re-inserting the row rewrites the whole row and is slower than an in-place change. The requirement does not call for it."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/json-data-type"
+ },
+ {
+  "id": "1.1.3-06",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Litware, Inc. tests a json column named Settings on SQL Server 2025.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The Settings column can be an included column of a nonclustered index.",
+   "The Settings column can be the key column of a standard nonclustered index.",
+   "Assigning the scalar value 1234.56 to the Settings column succeeds without error."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A json column can be included in an index but cannot be used as its key. A json column accepts only an object or an array at the top level, so a scalar number raises an error on conversion.",
+  "rationale": [
+   "Yes: included columns are stored with the index for reads, and the json column is allowed there even though it cannot be a key.",
+   "No: json columns cannot be key columns of a standard index, so the definition is rejected.",
+   "No: the json type accepts only an object or array, so a scalar value such as 1234.56 raises an error instead of being stored."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/json-data-type"
+ },
+ {
+  "id": "1.1.3-07",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A client sends this document to a json column:\n\n```json\n{\"Color\": \"red\", \"Color\": \"blue\"}\n```\n\nWhich value should you expect the database to keep?",
+  "choices": [
+   "An array that contains both values",
+   "red, and the duplicate key is discarded without an error",
+   "blue, because the last value replaces the first",
+   "The insert fails with an error about duplicate keys"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The json type keeps the first value for a repeated key and discards later ones without raising an error. Keeping the last value is a common assumption, but this type does not do that.",
+  "rationale": [
+   "Incorrect: the json type does not turn duplicate keys into an array. The stored object keeps one key with one value.",
+   "Correct: the database keeps the first value for a duplicate key and discards the others with no error, so the stored document contains red only.",
+   "Incorrect: this assumes the last value replaces the first, which is not how the json type behaves. The stored value would be red, not blue.",
+   "Incorrect: duplicate keys do not raise an error in the json type. The first value is kept and the rest are discarded silently."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/json-data-type"
+ },
+ {
+  "id": "1.1.3-08",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. copies a json column into an nvarchar(max) column for a legacy report. The developer writes the assignment without an explicit CAST or CONVERT. Which result should you expect?",
+  "choices": [
+   "The statement fails, because conversion from json to a string type must be explicit",
+   "The conversion works implicitly, and both directions are always allowed",
+   "The conversion returns only the first property of the document",
+   "The conversion fails only for JSON arrays, which the legacy report does not store"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The json type converts to string types only through an explicit CAST or CONVERT. Implicit conversion from json to a string is not allowed, and the type accepts arrays as well as objects.",
+  "rationale": [
+   "Correct: the json-to-string conversion must be explicit with CAST or CONVERT, so the implicit assignment raises an error until the developer adds the conversion.",
+   "Incorrect: the conversion from json to a string type is not implicit, so the assignment does not work silently. Only the reverse direction, from strings to json, can be implicit.",
+   "Incorrect: converting json to a string returns the whole document text without insignificant white space. It does not return only the first property of the document.",
+   "Incorrect: the json type accepts objects and arrays, and the conversion to string does not depend on array content. The failure comes from the missing explicit conversion."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/json-data-type"
+ },
+ {
+  "id": "1.1.4-01",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. stores a national ID for each employee. The ID must be unique when it is present, but many employees do not have one yet, and their rows must still be accepted. Which constraint should you add to the NationalId column?",
+  "choices": [
+   "A UNIQUE index on NationalId with WHERE NationalId IS NOT NULL",
+   "A CHECK constraint that requires NationalId to contain a value",
+   "A PRIMARY KEY constraint on NationalId",
+   "A UNIQUE constraint on NationalId"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A filtered unique index enforces uniqueness only for rows that have a value, so many rows can have NULL. A UNIQUE constraint on one column allows just one NULL, and a PRIMARY KEY never allows NULL.",
+  "rationale": [
+   "Correct: the filter applies uniqueness to non-null values only, so every present ID is unique while many employees can have no ID yet.",
+   "Incorrect: a CHECK constraint that requires a value rejects the rows that do not have an ID yet. It does not enforce uniqueness.",
+   "Incorrect: a PRIMARY KEY requires every value to be non-null, so rows without a national ID could not be stored.",
+   "Incorrect: a UNIQUE constraint allows only one NULL in a single column, so the second employee without an ID would be rejected."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/unique-constraints-and-check-constraints"
+ },
+ {
+  "id": "1.1.4-02",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank stores a Status column for loans. The only allowed values are Open, Closed, and Archived, and the list must stay inside the table definition with no lookup table. Which constraint should you add?",
+  "choices": [
+   "A FOREIGN KEY to a separate status table",
+   "A DEFAULT constraint that sets Status to Open",
+   "A CHECK constraint with an IN list of the three values",
+   "A UNIQUE constraint on Status"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A CHECK constraint evaluates a condition on each row, so an IN list limits the column to the allowed values. A DEFAULT only supplies a value when none is given, and UNIQUE prevents repeats without limiting the list.",
+  "rationale": [
+   "Incorrect: a foreign key checks against another table, which the requirement rules out. It would also need a lookup table with the same three rows.",
+   "Incorrect: a DEFAULT supplies a value only when the insert omits the column. It does not stop other values from being written.",
+   "Correct: a CHECK constraint with IN ('Open', 'Closed', 'Archived') rejects any other value on insert and update, and it lives in the table definition.",
+   "Incorrect: a UNIQUE constraint stops the same value from appearing twice. It does not limit the column to three allowed values."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/unique-constraints-and-check-constraints"
+ },
+ {
+  "id": "1.1.4-03",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. has Orders and Customers tables. Each Orders.CustomerId must refer to an existing customer. Deleting a customer that still has orders must be blocked. Which constraint should you use?",
+  "choices": [
+   "A FOREIGN KEY constraint with ON DELETE SET NULL",
+   "A FOREIGN KEY constraint with ON DELETE CASCADE",
+   "A FOREIGN KEY constraint with the default NO ACTION on delete",
+   "A CHECK constraint that calls a function to count orders"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A foreign key with NO ACTION rejects a delete of a parent row that still has child rows. CASCADE deletes the orders, SET NULL clears the reference, and a CHECK constraint cannot read other tables directly.",
+  "rationale": [
+   "Incorrect: ON DELETE SET NULL allows the customer to be deleted and sets the orders' CustomerId to NULL, which breaks the rule that every order refers to a customer.",
+   "Incorrect: ON DELETE CASCADE deletes the customer's orders along with the customer. The requirement says the delete must be blocked, not carried out for the orders.",
+   "Correct: NO ACTION makes the database reject any delete of a customer whose ID is still referenced by an order, and the default behavior matches the requirement.",
+   "Incorrect: a CHECK constraint cannot read other tables directly, so it cannot count orders for each customer. It is not the right tool for a referential rule."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/primary-and-foreign-key-constraints"
+ },
+ {
+  "id": "1.1.4-04",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank stores payments in Payments.AccountCode, which must refer to Accounts.AccountCode. AccountCode is not the primary key of Accounts, and each account code must be unique and never NULL. Which change should you make before you create the foreign key?",
+  "choices": [
+   "Make Accounts.AccountCode nullable, so that rows without a code can still be referenced",
+   "Create a nonclustered index on Payments.AccountCode, so that the foreign key can use it",
+   "Create a unique index on Accounts.AccountCode with a WHERE filter, so that the foreign key has a valid target",
+   "Add a UNIQUE constraint on Accounts.AccountCode, so that the foreign key has a valid target"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A foreign key must reference the columns of a PRIMARY KEY or UNIQUE constraint. An index on the referencing column speeds lookups but does not provide that target, and a nullable target column breaks the uniqueness rule.",
+  "rationale": [
+   "Incorrect: a nullable target column cannot satisfy the never-NULL requirement, and it still lacks a constraint that a foreign key can reference.",
+   "Incorrect: an index on the referencing column speeds up lookups but does not give the foreign key a target. The referenced column still needs a PRIMARY KEY or UNIQUE constraint.",
+   "Incorrect: a filtered unique index is not a PRIMARY KEY or UNIQUE constraint, so a foreign key cannot reference it. The filter also leaves rows with NULL outside the uniqueness rule.",
+   "Correct: a UNIQUE constraint on AccountCode gives the foreign key a valid target, and it guarantees each code matches one account."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/primary-and-foreign-key-constraints"
+ },
+ {
+  "id": "1.1.4-05",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adatum Corporation wants the CreatedAt column to get the current UTC time automatically when a row is inserted. The application must not supply the value. Which constraint should you add?",
+  "choices": [
+   "UNIQUE constraint on CreatedAt",
+   "PRIMARY KEY on CreatedAt",
+   "CHECK (CreatedAt > SYSUTCDATETIME()) on CreatedAt",
+   "DEFAULT (SYSUTCDATETIME()) on CreatedAt"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A DEFAULT constraint supplies a value when the insert does not provide one. A CHECK constraint validates values, and PRIMARY KEY and UNIQUE constraints enforce uniqueness, so none of them fill the column.",
+  "rationale": [
+   "Incorrect: a UNIQUE constraint prevents duplicate values and does not generate any value. Repeated timestamps would also be rejected.",
+   "Incorrect: a PRIMARY KEY enforces uniqueness and non-null values. It does not fill the column, and a row without a value would be rejected.",
+   "Incorrect: a CHECK constraint only validates a value that is given. It does not fill the column when the insert leaves it out.",
+   "Correct: the DEFAULT constraint calls SYSUTCDATETIME() when an insert omits CreatedAt, so the column is filled with the UTC time without application code."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-table-transact-sql"
+ },
+ {
+  "id": "1.1.4-06",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Northwind Traders stores order lines with OrderId, LineNumber, ProductId, and Quantity. Each pair of OrderId and LineNumber must be unique, and Quantity must always be greater than zero. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Add a PRIMARY KEY constraint on the OrderId and LineNumber columns",
+   "Add a CHECK constraint that requires Quantity to be greater than zero",
+   "Add a UNIQUE constraint on the ProductId column",
+   "Add a FOREIGN KEY from the LineNumber column to the Orders table",
+   "Add a DEFAULT constraint that sets Quantity to 1"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "A composite PRIMARY KEY enforces uniqueness of the pair, and a CHECK constraint rejects invalid quantities even when the application sends them. A DEFAULT only fills a missing value, and products appear on many order lines.",
+  "rationale": [
+   "Correct: a composite PRIMARY KEY makes each OrderId and LineNumber pair unique and non-null, which is the uniqueness rule the table needs.",
+   "Correct: a CHECK constraint rejects a Quantity of zero or less on every insert and update, which enforces the rule regardless of the application.",
+   "Incorrect: a product appears on many order lines, so a UNIQUE constraint on ProductId would reject valid orders. The requirement does not restrict products.",
+   "Incorrect: LineNumber is not a key of the Orders table, so a foreign key on it would not match the rule. The stem asks for uniqueness of the pair and a positive quantity.",
+   "Incorrect: a DEFAULT applies only when no value is given. An explicit zero or negative quantity would still be stored, so the rule is not enforced."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/primary-and-foreign-key-constraints"
+ },
+ {
+  "id": "1.1.4-07",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Relecloud keeps a Products table in which the Sku column must follow the rules below.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A PRIMARY KEY column can contain NULL values when the table has no rows yet.",
+   "A UNIQUE constraint on a nullable column in SQL Server allows one NULL value.",
+   "Adding a CHECK constraint to a table validates the existing rows unless WITH NOCHECK is specified."
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "A PRIMARY KEY never accepts NULL, regardless of how many rows exist. A UNIQUE constraint treats one NULL as a single value, and an added CHECK constraint is checked against existing rows unless it is created with NOCHECK.",
+  "rationale": [
+   "No: PRIMARY KEY columns cannot contain NULL, and this holds even when the table is empty, because the columns are defined as NOT NULL.",
+   "Yes: a single UNIQUE constraint permits one NULL, because NULL is not compared as equal to another NULL, so a second NULL is rejected.",
+   "Yes: when you add a CHECK constraint, SQL Server validates existing rows unless you specify WITH NOCHECK, which skips that check for the existing data."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/primary-and-foreign-key-constraints"
+ },
+ {
+  "id": "1.1.4-08",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank's Orders table needs a column OrderId that is unique, never NULL, and referenced by OrderLines through foreign keys. Which constraint should you add to OrderId?",
+  "choices": [
+   "A UNIQUE constraint",
+   "A CHECK constraint that requires OrderId to be greater than zero",
+   "A DEFAULT constraint that generates a GUID",
+   "A PRIMARY KEY constraint"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A PRIMARY KEY enforces uniqueness and forbids NULL, and it is the usual target of foreign keys. A UNIQUE constraint allows one NULL, which breaks the non-null rule, while CHECK and DEFAULT do not enforce uniqueness.",
+  "rationale": [
+   "Incorrect: a UNIQUE constraint allows one NULL in SQL Server, which breaks the rule that OrderId is never NULL. Use it for other unique values that may be empty.",
+   "Incorrect: a CHECK constraint validates each value against a condition. It does not stop duplicates, and it does not make the column referenceable.",
+   "Incorrect: a DEFAULT constraint fills in a value when none is given. It does not enforce uniqueness or the non-null rule, so duplicate IDs would still be accepted.",
+   "Correct: a PRIMARY KEY makes OrderId unique and non-null, and foreign keys in OrderLines can reference it directly."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/tables/primary-and-foreign-key-constraints"
+ },
+ {
+  "id": "1.1.5-01",
+  "obj": "1.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud issues invoices and credit notes that are stored in two different tables, and both must share one numbering series. Which object should you create?",
+  "choices": [
+   "A DEFAULT constraint that uses GETDATE()",
+   "A computed column that uses ROW_NUMBER()",
+   "An IDENTITY column in each table",
+   "A SEQUENCE object that both tables use in their DEFAULT constraints"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A sequence is an object that exists outside any table, so several tables can draw numbers from one series. IDENTITY counters belong to a single table, and GETDATE() and ROW_NUMBER() do not produce a shared series.",
+  "rationale": [
+   "Incorrect: GETDATE() returns the current time, not a unique number. Using it as a numbering series would produce duplicates for rows inserted at the same moment.",
+   "Incorrect: window functions such as ROW_NUMBER() cannot be used in a computed column, and a row number calculated per query would change when rows are read.",
+   "Incorrect: each IDENTITY column keeps its own counter, so invoices and credit notes would each count from their own start and could repeat numbers in the shared series.",
+   "Correct: a sequence is independent of any table, so both tables can draw from one numbering series through NEXT VALUE FOR in their defaults."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-sequence-transact-sql"
+ },
+ {
+  "id": "1.1.5-02",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank requires invoice numbers without gaps, even when the transaction that created an invoice is rolled back. Which approach should you use?",
+  "choices": [
+   "A SEQUENCE object created with NO CACHE",
+   "A DEFAULT constraint that uses NEWID()",
+   "A counter table updated in the same transaction as the invoice insert, with locking hints",
+   "An IDENTITY column with a large seed value"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A sequence hands out values outside the transaction, so a rollback does not return them and gaps appear. A counter table updated inside the same transaction rolls back together with the insert.",
+  "rationale": [
+   "Incorrect: NO CACHE reduces gaps caused by cache loss, but a rolled-back transaction still consumes the value. Gaps still appear, so this does not meet the requirement.",
+   "Incorrect: NEWID() produces random unique identifiers, which are not sequential numbers. An invoice series needs ordered numbers, so this option does not apply.",
+   "Correct: the counter update rolls back with the insert, so a failed transaction returns the number and the series stays without gaps, at the cost of serializing inserts.",
+   "Incorrect: IDENTITY values are not returned when a transaction rolls back, so a large seed does not prevent gaps and only changes where the series starts."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-sequence-transact-sql"
+ },
+ {
+  "id": "1.1.5-03",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. imports 100,000 rows and needs 100 key values from a sequence in a single call, to cut round trips to the server. Which statement should you use?",
+  "choices": [
+   "EXEC sp_executesql with IDENTITY_INSERT set to ON",
+   "EXEC sys.sp_sequence_get_range with @sequence_name and @range_size set to 100",
+   "SELECT NEXT VALUE FOR dbo.ImportKeys 100 times in a loop",
+   "ALTER SEQUENCE dbo.ImportKeys CACHE 100 before the import"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "sp_sequence_get_range reserves a block of values in one call, which reduces round trips. A loop of NEXT VALUE FOR calls works but makes one call per value, and a cache setting does not return values to the caller.",
+  "rationale": [
+   "Incorrect: IDENTITY_INSERT lets you insert explicit values into an identity column. It does not reserve sequence values, and it applies only to identity columns.",
+   "Correct: sp_sequence_get_range returns a range of values in one call, so the import reserves 100 keys at once instead of making 100 separate requests.",
+   "Incorrect: a loop of NEXT VALUE FOR returns the right numbers but makes one request per value. The requirement asks for one call, which the loop does not meet.",
+   "Incorrect: CACHE controls how many values the server reserves in memory. It does not return values to the caller, so the import still needs its own calls."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/system-stored-procedures/sp-sequence-get-range-transact-sql"
+ },
+ {
+  "id": "1.1.5-04",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. resets its invoice numbering at the start of each fiscal year. Which statement should you run at the start of each fiscal year?",
+  "choices": [
+   "ALTER SEQUENCE dbo.InvoiceNumbers RESTART WITH 1",
+   "TRUNCATE TABLE dbo.Invoices",
+   "ALTER TABLE dbo.Invoices ALTER COLUMN InvoiceNumber RESTART WITH 1",
+   "DBCC CHECKIDENT ('dbo.Invoices', RESEED, 0)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "ALTER SEQUENCE with RESTART WITH changes the next value a sequence hands out. DBCC CHECKIDENT reseeds an identity column, and TRUNCATE TABLE removes rows but does not change any sequence.",
+  "rationale": [
+   "Correct: ALTER SEQUENCE RESTART WITH sets the next value the sequence hands out, so the new fiscal year starts numbering at 1.",
+   "Incorrect: TRUNCATE TABLE removes all rows, but it does not change the next value of any sequence. The next invoice would continue the old series.",
+   "Incorrect: ALTER COLUMN changes the column's data type or nullability, and it has no RESTART clause. The numbering lives in the sequence object, not in the column.",
+   "Incorrect: DBCC CHECKIDENT reseeds an IDENTITY column, not a sequence. The invoice numbers come from a sequence, so this statement would leave them unchanged."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/alter-sequence-transact-sql"
+ },
+ {
+  "id": "1.1.5-05",
+  "obj": "1.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation uses a sequence with CACHE 50 for order numbers in five tables. The server stops unexpectedly with cached values unused. Which result should you expect after the restart?",
+  "choices": [
+   "Unused cached values may be lost, which leaves gaps, but the numbers do not repeat",
+   "All five tables must be rebuilt before new orders can be inserted",
+   "The sequence restarts from its START WITH value, so numbers repeat",
+   "The cached values are recovered from the log, so no gap appears"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A cache keeps a block of values in memory for speed. If the server stops unexpectedly, unused cached values are lost, which creates gaps, but the sequence continues beyond them, so numbers do not repeat.",
+  "rationale": [
+   "Correct: cached values are held in memory and are not recovered after an unexpected stop, which skips numbers. The sequence resumes beyond the cached block, so no number is reused.",
+   "Incorrect: the sequence is independent of the five tables, so rebuilding them is not needed. The only effect on new orders is possible gaps in the numbering.",
+   "Incorrect: the sequence keeps counting from its last reserved block and does not return to START WITH. Restarting from the beginning would repeat numbers, which the database avoids.",
+   "Incorrect: cached values are not recovered after an unexpected stop, so this result does not happen. Reusing them would also create duplicate numbers."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-sequence-transact-sql"
+ },
+ {
+  "id": "1.1.5-06",
+  "obj": "1.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys wants a sequence named dbo.ReceiptNo that starts at 1000 and increases by 1. Which statement should you run?",
+  "choices": [
+   "ALTER TABLE dbo.Receipts ADD ReceiptNo INT IDENTITY(1000,1)",
+   "CREATE IDENTITY SEQUENCE dbo.ReceiptNo START 1000 STEP 1",
+   "CREATE SEQUENCE dbo.ReceiptNo SEED 1000 INCREMENT 1",
+   "CREATE SEQUENCE dbo.ReceiptNo AS INT START WITH 1000 INCREMENT BY 1"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "CREATE SEQUENCE defines a named series with a start value and an increment. The other options use invalid syntax or create an IDENTITY counter that belongs to one table.",
+  "rationale": [
+   "Incorrect: adding an IDENTITY column creates a counter owned by one table, not a named sequence. The stem asks for a standalone sequence that other objects can use.",
+   "Incorrect: CREATE IDENTITY SEQUENCE is not valid T-SQL, and START and STEP are not sequence options. Use CREATE SEQUENCE with START WITH and INCREMENT BY.",
+   "Incorrect: SEED and INCREMENT are not options of CREATE SEQUENCE. The correct keywords are START WITH and INCREMENT BY.",
+   "Correct: CREATE SEQUENCE with START WITH 1000 and INCREMENT BY 1 creates the named series with exactly the start value and step the stem asks for."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-sequence-transact-sql"
+ },
+ {
+  "id": "1.1.5-07",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Litware, Inc. uses a sequence named dbo.OrderNumbers.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A column DEFAULT constraint can use NEXT VALUE FOR dbo.OrderNumbers to fill new rows.",
+   "Rolling back a transaction returns the sequence to the value it had before the transaction started.",
+   "A sequence and an IDENTITY column on the same table share one counter."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A sequence can supply values to a column default, and it keeps going after a rollback because consumed values are not returned. An IDENTITY column has its own counter, so it never shares one with a sequence.",
+  "rationale": [
+   "Yes: a default that calls NEXT VALUE FOR fills the column for each new row, which is a common way to use a sequence in table definitions.",
+   "No: values drawn from a sequence are consumed even when the transaction rolls back, so the next value continues from where it was and leaves a gap.",
+   "No: an IDENTITY column keeps its own counter that is separate from any sequence, so the two never share one set of numbers."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-sequence-transact-sql"
+ },
+ {
+  "id": "1.1.5-08",
+  "obj": "1.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud uses a sequence to assign slot numbers from 1 to 999 in a round-robin queue. After 999, numbers must be reused starting at 1, and the sequence must not raise an error. Which options should you set?",
+  "choices": [
+   "CACHE 999 with NO CYCLE",
+   "INCREMENT BY 999 with MAXVALUE 1000",
+   "NO CYCLE with START WITH 1 and INCREMENT BY 999",
+   "CYCLE with MINVALUE 1 and MAXVALUE 999"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "CYCLE makes the sequence wrap to its minimum value after it reaches the maximum, and MINVALUE and MAXVALUE set the bounds. Without CYCLE, the sequence raises an error at the limit, so numbers are never reused.",
+  "rationale": [
+   "Incorrect: CACHE only controls how many values the server reserves in memory, and NO CYCLE raises an error at the maximum. The queue would stop instead of reusing numbers.",
+   "Incorrect: a MAXVALUE of 1000 with an increment of 999 produces only a few values, and without CYCLE it raises an error at the limit. It does not reuse the range.",
+   "Incorrect: NO CYCLE stops the sequence with an error at the limit, so numbers are never reused. An increment of 999 also skips most of the range.",
+   "Correct: CYCLE wraps the sequence back to 1 after 999, and the MINVALUE and MAXVALUE bounds keep the values in the range the queue requires."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-sequence-transact-sql"
+ },
+ {
+  "id": "1.1.6-01",
+  "obj": "1.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud wants each month of Sales rows in its own partition. Which object should you create to define the boundary values?",
+  "choices": [
+   "A clustered index",
+   "A partition scheme",
+   "A partition function",
+   "A filegroup"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A partition function defines how rows map to partitions through boundary values. The partition scheme then maps those partitions to filegroups, and the table is created on the scheme.",
+  "rationale": [
+   "Incorrect: a clustered index orders the rows of a table. It can be partitioned, but it does not define the boundary values for the split.",
+   "Incorrect: a partition scheme maps the partitions from a function to filegroups. It does not define the boundary values, so it comes after the function.",
+   "Correct: the partition function sets the number of partitions and the boundary values that split the rows, such as one boundary per month.",
+   "Incorrect: a filegroup is storage space that holds data. Partitions can be placed on filegroups, but the filegroup does not define how rows are split."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-partition-function-transact-sql"
+ },
+ {
+  "id": "1.1.6-02",
+  "obj": "1.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank creates a partition function with RANGE RIGHT and boundary values 2025-01-01 and 2025-02-01. Which partition should contain rows dated exactly 2025-02-01?",
+  "choices": [
+   "The partition that ends at 2025-02-01",
+   "The leftmost partition, which holds rows before 2025-01-01",
+   "The partition that starts at 2025-02-01",
+   "The middle partition, which holds rows from 2025-01-01 up to 2025-02-01"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "With RANGE RIGHT, each boundary value is the lower limit of the partition on its right. A row dated exactly on a boundary therefore belongs to the partition that starts at that value.",
+  "rationale": [
+   "Incorrect: a partition that ends at 2025-02-01 would hold rows up to that value, which is how RANGE LEFT works. This function is RANGE RIGHT.",
+   "Incorrect: the leftmost partition holds dates before 2025-01-01. A row dated 2025-02-01 is well to the right of that boundary, so it cannot be there.",
+   "Correct: RANGE RIGHT makes 2025-02-01 the lower limit of the partition on its right, so the rows dated exactly that day sit in that partition.",
+   "Incorrect: this middle partition covers dates from 2025-01-01 up to but not including 2025-02-01, so a row dated 2025-02-01 does not belong to it."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/partitions/partitioned-tables-and-indexes"
+ },
+ {
+  "id": "1.1.6-03",
+  "obj": "1.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. defines monthly boundaries on the first day of each month. Every row for a given day must stay in one partition, and each boundary date must be the first date in its partition. Which partition function should you define?",
+  "choices": [
+   "RANGE RIGHT with the boundary dates at the last day of each month",
+   "RANGE RIGHT with the boundary dates at the first day of each month",
+   "RANGE LEFT with the boundary dates at the last day of each month",
+   "RANGE LEFT with the boundary dates at the first day of each month"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "With RANGE RIGHT, a boundary date is the first date in its partition, so each month starts exactly on its first day and no day is split. RANGE LEFT would place the boundary date in the previous month.",
+  "rationale": [
+   "Incorrect: RANGE RIGHT with month-end boundaries makes the last day the first day of the next partition, which does not match the requirement that boundaries mark the start of each month.",
+   "Correct: RANGE RIGHT makes each boundary the first value of the partition on its right, so a month starts exactly on its first day and no day is split.",
+   "Incorrect: with month-end boundaries and RANGE LEFT, the last day of each month stays in the earlier partition, so a month would not begin on its first day.",
+   "Incorrect: with RANGE LEFT, the boundary date belongs to the partition on its left, so the first day of each month would fall into the previous month's partition."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/partitions/partitioned-tables-and-indexes"
+ },
+ {
+  "id": "1.1.6-04",
+  "obj": "1.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. loads one month of Sales rows into a staging table that has the same columns, indexes, and constraints as dbo.Sales. The target partition is empty. Which statement should you run to add the staged rows to partition 13 of dbo.Sales?",
+  "choices": [
+   "ALTER TABLE dbo.Sales SWITCH PARTITION 13 TO dbo.SalesStaging",
+   "ALTER TABLE dbo.SalesStaging SWITCH TO dbo.Sales PARTITION 13",
+   "INSERT INTO dbo.Sales SELECT * FROM dbo.SalesStaging",
+   "Delete the target month from dbo.Sales, then insert the staged rows in batches"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "SWITCH moves a whole partition by changing metadata, so it finishes in moments regardless of the row count. Copying rows with INSERT or DELETE moves every row, which is slow, and the switch requires identical structure and an empty target partition.",
+  "rationale": [
+   "Incorrect: this switches partition 13 out of dbo.Sales into the staging table, which moves the existing data in the wrong direction for a load.",
+   "Correct: switching the staging table into partition 13 is a metadata change, so no rows are copied. It requires the same structure and indexes, and an empty target partition.",
+   "Incorrect: INSERT ... SELECT copies every row into dbo.Sales, which is slow for a full month and logs each row. The switch avoids copying entirely.",
+   "Incorrect: deleting the month and then inserting batches moves every row twice and holds locks for long periods. A partition switch does the same job without touching each row."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/partitions/partitioned-tables-and-indexes"
+ },
+ {
+  "id": "1.1.6-05",
+  "obj": "1.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders switches partitions of a partitioned table that has a nonclustered index. Which property should the nonclustered index have so that the switch works?",
+  "choices": [
+   "The index must be aligned, which means it uses the same partition scheme as the table",
+   "The index must be stored on its own filegroup outside the scheme",
+   "The index must not include the partitioning column",
+   "The index must be a unique clustered index"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A switch needs the table and its nonclustered indexes to share the same partition scheme, so that both move together. An unaligned index blocks the switch.",
+  "rationale": [
+   "Correct: aligned indexes use the same partition function and scheme, so each partition of the index matches the table's partition, and both can switch together.",
+   "Incorrect: placing the index on a separate filegroup outside the scheme makes it unaligned, which is the wrong direction for a switch.",
+   "Incorrect: an index that lacks the partitioning column cannot share the table's partition scheme, so it is not aligned and the switch cannot keep it in step.",
+   "Incorrect: a table has only one clustered index, and making a nonclustered index clustered is not a requirement for switching. It would also conflict with the table's clustered structure."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/partitions/partitioned-tables-and-indexes"
+ },
+ {
+  "id": "1.1.6-06",
+  "obj": "1.1.6",
+  "difficulty": "medium",
+  "type": "dropdown",
+  "stem": "Fabrikam, Inc. partitions an Orders table by OrderDate. Each boundary date must be the lower limit of its partition. How should you complete the code? To answer, select the appropriate options in the answer area.\n\n```sql\nCREATE PARTITION FUNCTION pfOrders (DATE)\nAS RANGE [[1]]\nFOR VALUES ('2025-01-01', '2025-02-01');\n\nCREATE PARTITION SCHEME psOrders\nAS PARTITION pfOrders ALL TO ([PRIMARY]);\n\nCREATE TABLE dbo.Orders (\n    OrderId INT NOT NULL,\n    OrderDate DATE NOT NULL\n) ON psOrders ([[2]]);\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "LEFT",
+     "RIGHT"
+    ],
+    "why": [
+     "Incorrect: RANGE LEFT puts each boundary date in the partition on its left, so the boundary becomes the upper limit, not the lower limit that the requirement needs.",
+     "Correct: RANGE RIGHT makes each boundary value the lower limit of the partition on its right, which is the rule the stem requires."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "OrderId",
+     "OrderDate"
+    ],
+    "why": [
+     "Incorrect: the partition scheme must map rows by the column that the boundary values compare with. Partitioning on OrderId would not split the rows by date.",
+     "Correct: the table is created ON psOrders with OrderDate as the partitioning column, so the rows are split by the date boundaries in the function."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   1
+  ],
+  "explanation": "RANGE RIGHT defines lower limits for each partition, and the table must be placed on the partition scheme by the partitioning column OrderDate. Choosing the other option for either box produces a valid statement that splits the data at the wrong points or by the wrong column.",
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-partition-function-transact-sql"
+ },
+ {
+  "id": "1.1.6-07",
+  "obj": "1.1.6",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Litware, Inc. partitions a Readings table by month. Each month must be archived by a partition switch into dbo.ReadingsArchive. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Remove the partitioning column from the clustered index key of dbo.Readings",
+   "Enable page compression on dbo.ReadingsArchive only",
+   "Create dbo.ReadingsArchive with the same columns, indexes, and constraints as dbo.Readings, on the same filegroup",
+   "Delete the oldest month with a DELETE statement that filters on the month",
+   "Build every nonclustered index on dbo.Readings on the same partition scheme as the table"
+  ],
+  "answer": [
+   2,
+   4
+  ],
+  "explanation": "A switch requires an archive table with an identical structure on the same filegroup, and aligned nonclustered indexes. Removing the partitioning column breaks the partitioning, and a DELETE moves every row, which defeats the purpose of the switch.",
+  "rationale": [
+   "Incorrect: a unique clustered index on a partitioned table must include the partitioning column, so removing it breaks the partitioning requirement.",
+   "Incorrect: page compression on the archive table does not make the switch possible. The table structures must match, and compression is a separate choice.",
+   "Correct: the archive table must match the source structure, indexes, constraints, and filegroup, so the switch can move the partition without copying rows.",
+   "Incorrect: a DELETE removes the rows one by one, which is slow and logs every row. A switch moves the whole partition with a metadata change instead.",
+   "Correct: aligned nonclustered indexes share the table's partition scheme, so each index partition switches with its table partition and the structures stay consistent."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/partitions/partitioned-tables-and-indexes"
+ },
+ {
+  "id": "1.1.6-08",
+  "obj": "1.1.6",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Fabrikam, Inc. creates a new partitioned table named dbo.Sales in Azure SQL Database, partitioned by month on SaleDate. Which three actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "CREATE PARTITION FUNCTION pfSales (DATE) AS RANGE RIGHT FOR VALUES ('2025-01-01', '2025-02-01');",
+   "CREATE PARTITION SCHEME psSales AS PARTITION pfSales ALL TO ([PRIMARY]);",
+   "CREATE TABLE dbo.Sales (SaleId INT NOT NULL, SaleDate DATE NOT NULL) ON psSales (SaleDate);",
+   "ALTER PARTITION FUNCTION pfSales() SPLIT RANGE ('2025-03-01');",
+   "INSERT INTO dbo.Sales (SaleId, SaleDate) VALUES (1, '2025-01-15');"
+  ],
+  "answer": [
+   0,
+   1,
+   2
+  ],
+  "explanation": "A partitioned table needs its function first, then the scheme that uses the function, then the table created on the scheme. Adding a boundary or inserting rows is a later task, not part of the creation sequence.",
+  "rationale": [
+   "Step 1: the partition function must come first because the scheme refers to it, and it defines the boundary values that split the rows by month.",
+   "Step 2: the partition scheme maps the function's partitions to filegroups, so it must exist before the table can be created on it.",
+   "Step 3: the table is created ON the scheme with SaleDate as the partitioning column, which completes the partitioned table.",
+   "Incorrect: SPLIT adds a new boundary to a function that already exists. It is a maintenance step for a later month, not part of creating the table.",
+   "Incorrect: inserting rows happens after the table exists and is not part of creating a partitioned table. The stem asks only for the setup actions."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/partitions/partitioned-tables-and-indexes"
+ }
+]

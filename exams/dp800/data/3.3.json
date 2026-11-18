@@ -1,0 +1,531 @@
+[
+ {
+  "id": "3.3.1-01",
+  "obj": "3.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants a support assistant to answer questions from its own product manuals, which change every week. Which pattern should the team use?",
+  "choices": [
+   "Retraining the language model every week",
+   "Retrieval-augmented generation (RAG)",
+   "A foreign key between manuals and questions",
+   "A scheduled index rebuild"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "RAG retrieves the relevant passages at question time and gives them to the model, so the answers follow the current documents without retraining.",
+  "rationale": [
+   "Incorrect: retraining every week is slow and costly for content that changes often.",
+   "Correct: RAG adds the current manual text to the prompt at question time.",
+   "Incorrect: a foreign key links rows and does not answer questions.",
+   "Incorrect: an index rebuild does not produce answers. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/"
+ },
+ {
+  "id": "3.3.1-02",
+  "obj": "3.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which benefit should the team of Fabrikam, Inc. expect from adding retrieval to a language model?",
+  "choices": [
+   "A change of the weights of the language model",
+   "Exact results for every arithmetic question that is asked",
+   "A smaller number of tokens in every prompt that is sent",
+   "Answers that are grounded in current company data"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Retrieval adds relevant data to the prompt, so the model can base its answer on current private data and has less reason to invent facts.",
+  "rationale": [
+   "Incorrect: RAG does not change the weights of the model. It does not satisfy the requirement in the question.",
+   "Incorrect: a model can still make arithmetic errors, and RAG does not fix that.",
+   "Incorrect: retrieved text makes the prompt longer and not shorter.",
+   "Correct: the model answers from the supplied data that is current."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/"
+ },
+ {
+  "id": "3.3.1-03",
+  "obj": "3.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Wingtip Toys has three requirements. Which requirement should the team solve with a plain T-SQL query instead of RAG?",
+  "choices": [
+   "Suggest similar products from their descriptions",
+   "Report the total of sales per month",
+   "Answer questions about the return policy documents",
+   "Summarize customer reviews for a product"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A total per month is an exact calculation that a GROUP BY query does better. RAG suits questions over text and meaning.",
+  "rationale": [
+   "Incorrect: similar products suit vector search on the descriptions.",
+   "Correct: an aggregate query gives an exact and cheap result.",
+   "Incorrect: policy documents are text, which RAG handles well.",
+   "Incorrect: summaries of review text suit a language model with retrieved reviews."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/"
+ },
+ {
+  "id": "3.3.1-04",
+  "obj": "3.3.1",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Northwind Traders designs a RAG solution on its database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "RAG retrieves relevant data and adds it to the prompt of the model.",
+   "RAG changes the weights of the language model.",
+   "The retrieved rows should include only data that the caller is allowed to see."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "RAG adds retrieved data to the prompt, does not change the model, and must respect data permissions.",
+  "rationale": [
+   "Yes: the model then answers from the supplied data. This matches the documented behavior.",
+   "No: the model stays the same, and only the prompt changes. This does not match the documented behavior.",
+   "Yes: the retrieved data goes into the prompt, so security rules must apply before that."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/"
+ },
+ {
+  "id": "3.3.1-05",
+  "obj": "3.3.1",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Which two steps should the team include in a RAG pattern that it implements in SQL? Each correct answer presents part of the solution.",
+  "choices": [
+   "Replace the source table with the language model",
+   "Delete the retrieved rows after each answer",
+   "Send the retrieved data together with the question to the language model",
+   "Retrain the weights of the model every night",
+   "Retrieve the relevant rows by vector or hybrid search"
+  ],
+  "answer": [
+   2,
+   4
+  ],
+  "explanation": "RAG retrieves relevant data and sends it with the question to the model. It does not train the model or remove the source data.",
+  "rationale": [
+   "Incorrect: the source table remains the source of truth. It does not satisfy the requirement in the question.",
+   "Incorrect: deleting rows destroys data and is not part of the pattern.",
+   "Correct: the model needs the data and the question in its prompt to answer from them.",
+   "Incorrect: retraining is not part of RAG. It does not satisfy the requirement in the question.",
+   "Correct: retrieval finds the data that is relevant to the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/"
+ },
+ {
+  "id": "3.3.2-01",
+  "obj": "3.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer calls a language model endpoint from T-SQL with sp_invoke_external_rest_endpoint. Which parameter should hold the JSON body of the request?",
+  "choices": [
+   "@payload",
+   "@url",
+   "@headers",
+   "@response"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The @payload parameter holds the body of the request. The @headers parameter holds request headers.",
+  "rationale": [
+   "Correct: @payload carries the JSON body of the request. This is the option that satisfies the requirement in the question.",
+   "Incorrect: @url holds the address of the endpoint. It does not satisfy the requirement in the question.",
+   "Incorrect: @headers carries request headers and not the body.",
+   "Incorrect: @response receives the answer and is an output parameter."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.2-02",
+  "obj": "3.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which parameter of sp_invoke_external_rest_endpoint should the developer declare as OUTPUT to receive the answer of the endpoint?",
+  "choices": [
+   "@retry_count",
+   "@response",
+   "@credential",
+   "@payload"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The @response parameter is an nvarchar(max) OUTPUT parameter that receives the response document.",
+  "rationale": [
+   "Incorrect: @retry_count sets the number of retries. It does not satisfy the requirement in the question.",
+   "Correct: @response receives the response document of the call.",
+   "Incorrect: @credential names the credential for authentication.",
+   "Incorrect: @payload is an input with the request body. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.2-03",
+  "obj": "3.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The endpoint needs an API key in the header api-key. Which approach should the developer use so that the key is not stored in the T-SQL text?",
+  "choices": [
+   "The key in plain text inside the @headers parameter",
+   "The key in a comment of the stored procedure text",
+   "The key in the name of the database itself",
+   "A database scoped credential of the HTTPEndpointHeaders type in @credential"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A database scoped credential can store headers as a secret and is passed in @credential, so the key is not part of the code.",
+  "rationale": [
+   "Incorrect: a key in @headers is stored in the code and can leak.",
+   "Incorrect: a comment is part of the code and is visible to anyone who can read it.",
+   "Incorrect: a database name is visible in metadata and is not secret.",
+   "Correct: the credential keeps the secret outside the code and the call refers to it by name."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.2-04",
+  "obj": "3.3.2",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Adventure Works calls an endpoint with sp_invoke_external_rest_endpoint.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The endpoint must use HTTPS.",
+   "The default value of @method is GET.",
+   "The caller needs the EXECUTE ANY EXTERNAL ENDPOINT permission."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "HTTPS is required, the default method is POST, and the caller needs the EXECUTE ANY EXTERNAL ENDPOINT permission.",
+  "rationale": [
+   "Yes: the procedure supports HTTPS and TLS only. This matches the documented behavior.",
+   "No: the default is POST. This does not match the documented behavior.",
+   "Yes: a credential used by the call also needs the REFERENCES permission."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.2-05",
+  "obj": "3.3.2",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A service account of Tailspin Toys must call a model endpoint with a credential. Which two permissions should you grant? Each correct answer presents part of the solution.",
+  "choices": [
+   "ALTER ANY EXTERNAL MODEL",
+   "REFERENCES on the database scoped credential",
+   "EXECUTE ANY EXTERNAL ENDPOINT",
+   "VIEW SERVER STATE",
+   "CONTROL on the database"
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "The caller needs the right to run external endpoint calls and the right to reference the credential that the call uses.",
+  "rationale": [
+   "Incorrect: ALTER ANY EXTERNAL MODEL manages models and does not allow endpoint calls.",
+   "Correct: REFERENCES allows the call to use the credential. This is the option that satisfies the requirement in the question.",
+   "Correct: this permission allows the call of external endpoints.",
+   "Incorrect: VIEW SERVER STATE shows server state and does not allow endpoint calls.",
+   "Incorrect: CONTROL is far wider than the call needs. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.3-01",
+  "obj": "3.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Contoso, Ltd. wants to turn the rows of a query result into JSON text for a prompt. Which clause should the developer add to the query?",
+  "choices": [
+   "WITH (NOLOCK)",
+   "FOR XML AUTO",
+   "FOR JSON PATH",
+   "OPTION (FORCE ORDER)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "FOR JSON formats the result of a query as JSON text, and PATH gives control over the structure.",
+  "rationale": [
+   "Incorrect: NOLOCK is a table hint and does not change the format.",
+   "Incorrect: FOR XML returns XML and not JSON. It does not satisfy the requirement in the question.",
+   "Correct: FOR JSON PATH returns the rows as an array of JSON objects.",
+   "Incorrect: FORCE ORDER is a query hint and does not change the format."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/json/json-data-sql-server"
+ },
+ {
+  "id": "3.3.3-02",
+  "obj": "3.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The JSON of the retrieved rows must be wrapped in one root property named context. Which option should the developer add to FOR JSON PATH?",
+  "choices": [
+   "INCLUDE_NULL_VALUES",
+   "WITHOUT_ARRAY_WRAPPER",
+   "AS context",
+   "ROOT('context')"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The ROOT option adds a single root element with the given name around the JSON result.",
+  "rationale": [
+   "Incorrect: INCLUDE_NULL_VALUES keeps null properties and adds no root.",
+   "Incorrect: WITHOUT_ARRAY_WRAPPER removes the array brackets and adds no root.",
+   "Incorrect: AS names a column or table alias and does not add a root.",
+   "Correct: ROOT adds one named root property around the result."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/json/json-data-sql-server"
+ },
+ {
+  "id": "3.3.3-03",
+  "obj": "3.3.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The developer must build the message object {\"role\":\"user\",\"content\":...} from the variable @question. Which function should the developer use?",
+  "choices": [
+   "ISJSON",
+   "JSON_VALUE",
+   "JSON_OBJECT",
+   "OPENJSON"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "JSON_OBJECT builds a JSON object from key and value pairs. JSON_VALUE and OPENJSON read JSON, and ISJSON tests it.",
+  "rationale": [
+   "Incorrect: ISJSON only tests whether a string is valid JSON.",
+   "Incorrect: JSON_VALUE reads a scalar from JSON and builds nothing.",
+   "Correct: JSON_OBJECT builds an object from key and value pairs.",
+   "Incorrect: OPENJSON reads JSON into rows and builds nothing."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/json/json-data-sql-server"
+ },
+ {
+  "id": "3.3.3-04",
+  "obj": "3.3.3",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. works with JSON in T-SQL.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "FOR JSON PATH returns the rows of a query as an array of objects.",
+   "OPENJSON can read a JSON array into rows.",
+   "JSON_VALUE returns a JSON object or array."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "FOR JSON writes arrays of objects, OPENJSON reads them, and JSON_VALUE returns scalars.",
+  "rationale": [
+   "Yes: each row becomes one JSON object in the array. This matches the documented behavior.",
+   "Yes: it returns a table, so the content can be queried as rows.",
+   "No: JSON_VALUE returns a scalar value, and JSON_QUERY returns an object or array."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/json/json-data-sql-server"
+ },
+ {
+  "id": "3.3.4-01",
+  "obj": "3.3.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "The prompt of Litware, Inc. contains the retrieved rows and the question. Which instruction should the system message contain to reduce invented answers?",
+  "choices": [
+   "Reply in the shortest possible form without any further check",
+   "Answer only from the supplied context, and say when it lacks the answer",
+   "Answer every question with the most likely guess that you have",
+   "Ignore the supplied context whenever the context is long"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A system message that limits the model to the supplied context and allows it to say that it does not know keeps the answer grounded. This comes from general knowledge of prompt design.",
+  "rationale": [
+   "Incorrect: a short answer without a check does not reduce errors.",
+   "Correct: this instruction keeps the answer grounded and allows an honest refusal.",
+   "Incorrect: guessing leads to invented answers. It does not satisfy the requirement in the question.",
+   "Incorrect: ignoring the context removes the data that RAG supplies."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.4-02",
+  "obj": "3.3.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The retrieved text of Adventure Works sometimes exceeds the token limit of the model. Which action should the team take?",
+  "choices": [
+   "Raise the @timeout parameter of the call to 230 seconds",
+   "Convert the text to a vector before it is sent to the model",
+   "Send the whole table to the model with every question",
+   "Limit the number of retrieved rows and the size of every chunk"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The prompt must fit in the context window, so the team limits the number of chunks and their size, for example with TOP in the retrieval query.",
+  "rationale": [
+   "Incorrect: the timeout does not change the size of the prompt.",
+   "Incorrect: a vector cannot be read by a chat model as text. It does not satisfy the requirement in the question.",
+   "Incorrect: the whole table is far larger than any context window.",
+   "Correct: fewer and smaller chunks keep the prompt within the token limit."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.4-03",
+  "obj": "3.3.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A call to the model takes about 60 seconds and fails with the default settings of sp_invoke_external_rest_endpoint. Which change should the developer make?",
+  "choices": [
+   "Set @timeout to a larger value, up to 230 seconds",
+   "Set @method to GET for the call to the endpoint",
+   "Set @timeout to a value of 600 seconds for the call",
+   "Set @retry_count to a value of 60 for the call"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The default timeout is 30 seconds, and the allowed range is 1 to 230 seconds, so a larger value within that range fixes the failure.",
+  "rationale": [
+   "Correct: the timeout is the limit that fails the call, and 230 is the maximum.",
+   "Incorrect: a GET method does not change how long the model takes.",
+   "Incorrect: 600 is above the allowed maximum of 230 seconds. It does not satisfy the requirement in the question.",
+   "Incorrect: @retry_count accepts at most 10 and repeats calls and does not extend the wait."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.4-04",
+  "obj": "3.3.4",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Wingtip Toys sends prompts to a model endpoint from Azure SQL Database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The @retry_count parameter can retry the call after a 429 status code.",
+   "Calls from Azure SQL Database are limited to approved domains such as *.openai.azure.com.",
+   "The payload of a call can be up to 1 GB."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Retries cover throttling codes, endpoints are limited to approved domains, and the payload limit is 100 MB.",
+  "rationale": [
+   "Yes: retries apply to the status codes 408, 429, 500, 502, 503, and 504.",
+   "Yes: other services can be reached through API Management. This matches the documented behavior.",
+   "No: the payload limit is 100 MB. This does not match the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.5-01",
+  "obj": "3.3.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which function should the developer use to read a single text value, such as the answer, from the JSON text of the response?",
+  "choices": [
+   "FOR JSON PATH",
+   "JSON_QUERY",
+   "STRING_AGG",
+   "JSON_VALUE"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "JSON_VALUE extracts a scalar value from JSON text by a path. JSON_QUERY returns an object or an array.",
+  "rationale": [
+   "Incorrect: FOR JSON PATH writes JSON and does not read it. It does not satisfy the requirement in the question.",
+   "Incorrect: JSON_QUERY returns objects and arrays and not a scalar.",
+   "Incorrect: STRING_AGG joins text values and does not read JSON.",
+   "Correct: JSON_VALUE returns a scalar value at the given path."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/json/json-data-sql-server"
+ },
+ {
+  "id": "3.3.5-02",
+  "obj": "3.3.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The response variable @response holds a chat completion in the format of Azure OpenAI. Which path should the developer pass to JSON_VALUE to read the text of the first answer? This format comes from general knowledge of the API.",
+  "choices": [
+   "$.result.usage as the token counts",
+   "$.result.choices[0].message.content",
+   "$.headers.content as the header",
+   "$.response.status.http.code for the call"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The procedure puts the body of the response under result, and a chat completion keeps the answer in choices[0].message.content.",
+  "rationale": [
+   "Incorrect: the usage property holds token counts and not the answer.",
+   "Correct: the answer text is in the first choice, in message and then content, under result.",
+   "Incorrect: the headers path does not hold the answer text. It does not satisfy the requirement in the question.",
+   "Incorrect: this path holds the HTTP status code and not the answer."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.5-03",
+  "obj": "3.3.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The call of sp_invoke_external_rest_endpoint returns a value other than 0. Which meaning should the developer assume?",
+  "choices": [
+   "The procedure waited longer than 30 seconds in total",
+   "The credential was created for the call just now",
+   "The response has no result property at all",
+   "The endpoint returned an HTTP status code that is not 2xx"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The procedure returns 0 for a 2xx status code. Otherwise it returns the HTTP status code of the endpoint.",
+  "rationale": [
+   "Incorrect: a timeout does not return a status code and raises an exception.",
+   "Incorrect: creating a credential is not part of the call. It does not satisfy the requirement in the question.",
+   "Incorrect: a missing result property does not change the return value.",
+   "Correct: a non-zero return value is the HTTP status code of a failed call."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ },
+ {
+  "id": "3.3.5-04",
+  "obj": "3.3.5",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Tailspin Toys reads the response of sp_invoke_external_rest_endpoint.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The response document contains the HTTP status and the result.",
+   "The result property is always present.",
+   "ISJSON can test whether the response text is valid JSON."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The response has a status and a result, the result is omitted for 204, and ISJSON validates text.",
+  "rationale": [
+   "Yes: the status is under response and the body is under result.",
+   "No: it is omitted when the endpoint returns 204 No Content. This does not match the documented behavior.",
+   "Yes: the function returns 1 for valid JSON text. This matches the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-invoke-external-rest-endpoint-transact-sql"
+ }
+]

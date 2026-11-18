@@ -1,0 +1,1341 @@
+[
+ {
+  "id": "2.1.1-01",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank stores card numbers in Azure SQL Database. The data must stay unreadable even for database administrators and cloud operators. Which feature should you use?",
+  "choices": [
+   "A CHECK constraint on the card number column",
+   "Dynamic data masking on the card number column",
+   "Transparent data encryption on the database files",
+   "Always Encrypted, with keys kept outside the database"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Always Encrypted keeps the encryption keys away from the Database Engine, so high-privileged users cannot read the data. Transparent data encryption protects files at rest only, and masking does not encrypt.",
+  "rationale": [
+   "Incorrect: a CHECK constraint validates values that are stored and has no effect on who can read them.",
+   "Incorrect: dynamic data masking changes what unprivileged users see in results, but the stored data is not encrypted and privileged users see it.",
+   "Incorrect: transparent data encryption protects the files on disk, but the engine decrypts the data for every query, so a privileged user can still read it.",
+   "Correct: the client driver encrypts and decrypts the data, and the keys never reach the Database Engine, so administrators see only ciphertext."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/encryption/always-encrypted-database-engine"
+ },
+ {
+  "id": "2.1.1-02",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. uses Always Encrypted with a column encryption key and a column master key. Which location should the team use to store the column master key?",
+  "choices": [
+   "Outside the database, such as in Azure Key Vault",
+   "In a table that all users can read",
+   "In the same database, next to the encrypted columns",
+   "In the application log files of the web server"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The column master key protects the column encryption keys and is stored outside the database, for example in Azure Key Vault. The database stores only key metadata and the encrypted key value.",
+  "rationale": [
+   "Correct: keeping the master key outside the database is what prevents the Database Engine and its administrators from decrypting the data.",
+   "Incorrect: a table readable by all users would expose the key to anyone who can query it.",
+   "Incorrect: storing the master key in the database would let the engine and its administrators decrypt the columns, which defeats the feature.",
+   "Incorrect: log files are not a secure key store, and keys written there would leak to anyone who can read the logs."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/encryption/always-encrypted-database-engine"
+ },
+ {
+  "id": "2.1.1-03",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. encrypts a NationalId column with Always Encrypted. The application must find a customer with WHERE NationalId = @Id and must join on the column. Which encryption type should you use?",
+  "choices": [
+   "Encryption that is applied only to the first four characters",
+   "Deterministic encryption",
+   "Randomized encryption",
+   "Encryption with a different key for each row"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Deterministic encryption gives the same ciphertext for the same value, so equality lookups, joins, grouping, and indexing work. Randomized encryption gives a different result every time and does not support them.",
+  "rationale": [
+   "Incorrect: Always Encrypted encrypts the whole value of a column and has no option to encrypt only part of the characters.",
+   "Correct: deterministic encryption supports point lookups with equality, equality joins, GROUP BY, and indexes on the encrypted column.",
+   "Incorrect: randomized encryption is more secure, but it does not support comparison, joins, grouping, or indexing on the column.",
+   "Incorrect: Always Encrypted does not offer a separate key for each row, and different ciphertexts would prevent equality matching."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/encryption/always-encrypted-database-engine"
+ },
+ {
+  "id": "2.1.1-04",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. needs LIKE pattern matching and range comparisons on an Always Encrypted column in Azure SQL Database, while the plaintext stays hidden from administrators. Which capability should you enable?",
+  "choices": [
+   "Column-level encryption with ENCRYPTBYKEY",
+   "Randomized encryption without an enclave",
+   "Deterministic encryption without an enclave",
+   "Always Encrypted with secure enclaves"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Secure enclaves process encrypted data in a protected memory area, which enables pattern matching, comparison operators, sorting, and indexing on encrypted columns.",
+  "rationale": [
+   "Incorrect: ENCRYPTBYKEY is column-level encryption inside the engine, which does not keep the plaintext away from the engine or its administrators.",
+   "Incorrect: randomized encryption without an enclave supports no computations on the column at all.",
+   "Incorrect: deterministic encryption without an enclave supports equality only, so LIKE and range comparisons are not available.",
+   "Correct: the enclave decrypts and computes inside protected memory, which makes pattern matching and range comparisons possible without exposing plaintext to administrators."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/encryption/always-encrypted-database-engine"
+ },
+ {
+  "id": "2.1.1-05",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation wants to encrypt a salary column inside the database with a symmetric key, and the application is not able to use an Always Encrypted driver. The team accepts that the engine can decrypt the data. Which approach should you use?",
+  "choices": [
+   "Column-level encryption with a symmetric key and ENCRYPTBYKEY",
+   "Always Encrypted with randomized encryption and a client driver",
+   "Dynamic data masking with the default function on the column",
+   "Row-level security with a filter predicate on the table"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Column-level (cell-level) encryption uses a symmetric key with ENCRYPTBYKEY and DECRYPTBYKEY in T-SQL, so the engine performs the encryption and no special driver is needed.",
+  "rationale": [
+   "Correct: ENCRYPTBYKEY and DECRYPTBYKEY encrypt and decrypt values in T-SQL after the key is opened, and no client driver is required.",
+   "Incorrect: Always Encrypted needs a client driver that encrypts and decrypts, which the application cannot use.",
+   "Incorrect: masking changes how values appear to some users and does not encrypt the stored data.",
+   "Incorrect: row-level security limits which rows a user can access and does not encrypt any column."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/encryption/encrypt-a-column-of-data"
+ },
+ {
+  "id": "2.1.1-06",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Tailspin Toys uses Always Encrypted in SQL Server 2022.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The column encryption key is stored in the database in an encrypted form.",
+   "Randomized encryption supports equality joins on the encrypted column.",
+   "The client driver must be enabled for Always Encrypted to encrypt and decrypt data."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The database keeps only key metadata and the encrypted column encryption key, and the driver does the encryption. Randomized encryption does not allow joins, grouping, or searching.",
+  "rationale": [
+   "Yes: the database stores the encrypted value of the column encryption key and metadata, but the master key stays outside.",
+   "No: randomized encryption produces a different ciphertext every time, so equality joins, searching, and grouping are not possible.",
+   "Yes: an Always Encrypted enabled driver encrypts parameters before sending them and decrypts results, so it must be enabled."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/encryption/always-encrypted-database-engine"
+ },
+ {
+  "id": "2.1.1-07",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud grants a reporting user access to an Always Encrypted column. The user can read the table, but the application driver cannot decrypt the column. Which permissions should you grant to the user?",
+  "choices": [
+   "ALTER ANY MASK on the table for the reporting user",
+   "The two VIEW ANY COLUMN key definition permissions",
+   "db_owner membership in the database for the reporting user",
+   "CONTROL SERVER on the instance for the reporting user"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Querying encrypted columns requires the permissions to view the column master key and column encryption key definitions. In Azure SQL Database, the public role does not grant them by default.",
+  "rationale": [
+   "Incorrect: ALTER ANY MASK manages dynamic data masking and has nothing to do with encryption key metadata.",
+   "Correct: the driver needs the key metadata, which these two permissions allow the user to read, so that the column can be decrypted.",
+   "Incorrect: db_owner is a broad role that violates least privilege, and the key definition permissions are what the driver needs.",
+   "Incorrect: CONTROL SERVER is far broader than required, and it would not be least privilege for a reporting user."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/encryption/always-encrypted-database-engine"
+ },
+ {
+  "id": "2.1.2-01",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants support staff to see only the first letter and the domain of customer email addresses in query results. The stored data must not change. Which masking function should you use?",
+  "choices": [
+   "default()",
+   "partial(0, \"XXXX\", 0)",
+   "email()",
+   "random(1, 9)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The email() function exposes the first letter and the .com suffix, as in aXXX@XXXX.com, while the stored data is not changed.",
+  "rationale": [
+   "Incorrect: default() applies a full mask by data type, such as xxxx for strings, so the first letter would not be shown.",
+   "Incorrect: this partial mask with no prefix and no suffix would hide all characters, so no letter would be shown.",
+   "Correct: email() is the built-in function for email addresses, and it shows the first letter and masks the rest.",
+   "Incorrect: random() replaces numeric values with a random number in a range and is meant for numbers."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/dynamic-data-masking"
+ },
+ {
+  "id": "2.1.2-02",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. adds a mask to an existing PhoneNumber column that shows the last four digits only. Which statement should you run?",
+  "choices": [
+   "UPDATE dbo.Customers SET PhoneNumber = RIGHT(PhoneNumber, 4)",
+   "ALTER TABLE dbo.Customers ALTER COLUMN PhoneNumber ADD MASKED WITH (FUNCTION = 'partial(0,\"XXX-XXX-\",4)')",
+   "ALTER TABLE dbo.Customers ALTER COLUMN PhoneNumber ADD ENCRYPTED WITH (COLUMN_ENCRYPTION_KEY = CEK1)",
+   "CREATE SECURITY POLICY MaskPhone ADD FILTER PREDICATE dbo.fn_mask(PhoneNumber) ON dbo.Customers"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "ALTER COLUMN with ADD MASKED WITH and a partial function masks a column without changing the stored data. UPDATE would destroy the data.",
+  "rationale": [
+   "Incorrect: an UPDATE would permanently remove the other digits from the stored data, which is not masking.",
+   "Correct: ADD MASKED WITH applies the partial function in the result for users without UNMASK, and the stored value stays complete.",
+   "Incorrect: this is syntax for Always Encrypted and not for masking, and it needs different options and keys.",
+   "Incorrect: a security policy with a filter predicate hides rows and does not mask the values of a column."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/dynamic-data-masking"
+ },
+ {
+  "id": "2.1.2-03",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank uses masking on a Salary column. A reporting analyst needs to see the real values of this one column only, on SQL Server 2022. Which statement should you run?",
+  "choices": [
+   "GRANT ALTER ANY MASK TO ReportingAnalyst",
+   "ALTER ROLE db_owner ADD MEMBER ReportingAnalyst",
+   "GRANT CONTROL ON DATABASE::HR TO ReportingAnalyst",
+   "GRANT UNMASK ON dbo.Employees(Salary) TO ReportingAnalyst"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Starting with SQL Server 2022, UNMASK can be granted at the database, schema, table, or column level, so a column grant gives the narrowest access.",
+  "rationale": [
+   "Incorrect: ALTER ANY MASK lets a user add, change, or remove masks. It does not allow reading unmasked values.",
+   "Incorrect: db_owner members always see unmasked data and can change everything in the database.",
+   "Incorrect: CONTROL on the database gives full control of the database, which is far more than the analyst needs.",
+   "Correct: a column-level UNMASK reveals the original values of that column only, which follows least privilege."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/dynamic-data-masking"
+ },
+ {
+  "id": "2.1.2-04",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation asks whether dynamic data masking can replace encryption of a column that stores health data. Which answer should you give?",
+  "choices": [
+   "No, masking only changes query results, and the stored data is not encrypted",
+   "Yes, masking encrypts the data on disk",
+   "No, because masking can be applied only to Always Encrypted columns",
+   "Yes, because masked columns cannot be updated"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Dynamic data masking limits exposure in query results for unprivileged users but does not change or encrypt stored data. It complements encryption and does not replace it.",
+  "rationale": [
+   "Correct: masking hides values in results for some users, while the data in storage stays unchanged and readable to privileged users.",
+   "Incorrect: masking does not encrypt anything on disk, so it cannot replace encryption.",
+   "Incorrect: masks cannot be applied to Always Encrypted columns, so the combination is not possible.",
+   "Incorrect: users with write permission can still update masked columns, and updating has no relation to encryption."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/dynamic-data-masking"
+ },
+ {
+  "id": "2.1.2-05",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys finds that an analyst with SELECT permission can run WHERE Salary > 99999 AND Salary < 100001 against a masked column and so learns a value. Which control should you add to reduce this risk?",
+  "choices": [
+   "Add an index on the Salary column",
+   "Combine masking with least privilege and auditing of the queries",
+   "Replace the mask with the random() function on the column",
+   "Grant UNMASK to the analyst so queries are no longer needed"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Masking is not a complete security control, because users with ad hoc query access can infer masked values. It should be combined with least privilege, auditing, and other controls.",
+  "rationale": [
+   "Incorrect: an index changes performance and does not stop the inference by filtering.",
+   "Correct: limiting what users can query and auditing the activity addresses the inference risk that masking alone leaves.",
+   "Incorrect: a different mask function still leaves the stored value open to inference through filters in a query.",
+   "Incorrect: granting UNMASK gives the analyst the real values, which is the opposite of the intended protection."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/dynamic-data-masking"
+ },
+ {
+  "id": "2.1.2-06",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud applies dynamic data masking to several columns in SQL Server 2022.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A user who has CONTROL permission on the database sees unmasked data.",
+   "A mask can be applied to a column that is encrypted with Always Encrypted.",
+   "A user with only SELECT permission sees the masked value."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Users with CONTROL, such as db_owner, always see unmasked data, while users with SELECT see masked values. Masks cannot be applied to Always Encrypted columns.",
+  "rationale": [
+   "Yes: CONTROL, which db_owner and sysadmin have, always shows the original values.",
+   "No: masks cannot be applied to Always Encrypted, computed, FILESTREAM, or full-text key columns.",
+   "Yes: SELECT permission alone returns masked values, and UNMASK is needed to see the original ones."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/dynamic-data-masking"
+ },
+ {
+  "id": "2.1.2-07",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders wants a user to add and remove masks on columns of one database, but the user must not see unmasked data. Which permission should you grant to the user?",
+  "choices": [
+   "UNMASK",
+   "CONTROL on the table",
+   "ALTER ANY MASK",
+   "db_owner role membership"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "ALTER ANY MASK is needed to add, change, or remove masks. UNMASK reveals data, and CONTROL or db_owner would let the user see unmasked values.",
+  "rationale": [
+   "Incorrect: UNMASK would allow reading the original values, which the user must not see.",
+   "Incorrect: CONTROL on the table includes the right to see unmasked data, which is more than is allowed.",
+   "Correct: ALTER ANY MASK lets the user manage masks without giving the right to read the original values.",
+   "Incorrect: db_owner always sees unmasked data and can change everything, so it breaks the requirement."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/dynamic-data-masking"
+ },
+ {
+  "id": "2.1.3-01",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. has an Orders table, and each sales representative must see only the rows that they own. The rule must be enforced by the database for every application. Which feature should you use?",
+  "choices": [
+   "Dynamic data masking on the SalesRep column",
+   "Always Encrypted on the SalesRep column",
+   "A view that is used only by the web application",
+   "Row-level security with a filter predicate"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Row-level security attaches a predicate to a table through a security policy, and the database enforces it on every access regardless of the application tier.",
+  "rationale": [
+   "Incorrect: masking changes how column values are shown and does not remove rows from the result.",
+   "Incorrect: Always Encrypted protects column values from the engine and does not limit which rows a user can read.",
+   "Incorrect: a view used by one application can be bypassed by other applications that query the table directly.",
+   "Correct: a filter predicate silently hides the rows that the user may not see, for every query against the table."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/row-level-security"
+ },
+ {
+  "id": "2.1.3-02",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. writes a row-level security predicate. Which type of object should the predicate be?",
+  "choices": [
+   "A stored procedure",
+   "An inline table-valued function",
+   "A scalar function that returns a bit",
+   "A multi-statement table-valued function"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The predicate is written as an inline table-valued function, preferably created WITH SCHEMABINDING, and a security policy attaches it to a table.",
+  "rationale": [
+   "Incorrect: a stored procedure cannot be attached to a security policy as a predicate.",
+   "Correct: the function returns a row when the user may access the row, and the security policy applies it to the table.",
+   "Incorrect: a scalar function is not accepted as a security predicate, because the predicate must return a table.",
+   "Incorrect: a multi-statement function is not suitable, because the predicate must be an inline table-valued function."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/row-level-security"
+ },
+ {
+  "id": "2.1.3-03",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. has a filter predicate on Sales.Orders. A user also must not be able to insert a row that belongs to another sales representative, and the insert must fail with an error. Which predicate should you add?",
+  "choices": [
+   "A second filter predicate on the same table",
+   "A block predicate with BEFORE DELETE",
+   "A DEFAULT constraint on the SalesRep column",
+   "A block predicate with AFTER INSERT"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Filter predicates silently hide rows, while block predicates raise errors for writes that violate the predicate. AFTER INSERT blocks inserts that the predicate would not allow.",
+  "rationale": [
+   "Incorrect: a filter predicate hides rows from reads and does not stop an insert of a row for another representative.",
+   "Incorrect: a BEFORE DELETE block predicate controls deletes, not inserts.",
+   "Incorrect: a DEFAULT constraint fills in a value when none is given and does not reject a value that the user supplies.",
+   "Correct: an AFTER INSERT block predicate rejects an insert whose row does not satisfy the predicate and raises an error."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/row-level-security"
+ },
+ {
+  "id": "2.1.3-04",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank has a web application that connects to the database with one shared account. The predicate must use the signed-in user of the application. Which approach should you use?",
+  "choices": [
+   "Create a database user for every web user of the app",
+   "Store the user ID in a temporary table for each session",
+   "Pass the user with sp_set_session_context and read SESSION_CONTEXT",
+   "Read USER_NAME() in the predicate function of the policy"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A middle-tier application sets the user ID with sp_set_session_context, and the predicate reads it with SESSION_CONTEXT. Passing @read_only = 1 prevents later changes on that connection.",
+  "rationale": [
+   "Incorrect: a database user for every web user is not practical and does not work with connection pooling over one account.",
+   "Incorrect: a temporary table per session is not read by the predicate function and adds complexity.",
+   "Correct: the application passes the signed-in user through the session context, so the predicate can filter by that user over a shared connection.",
+   "Incorrect: USER_NAME() returns the shared account, which is the same for every web user, so rows cannot be separated per person."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/row-level-security"
+ },
+ {
+  "id": "2.1.3-05",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation creates a security policy. Which clause should the team use to switch the policy on when it is created?",
+  "choices": [
+   "WITH (ACTIVATE = 1)",
+   "WITH (SCHEMABINDING = OFF)",
+   "WITH (STATE = ON)",
+   "WITH (ENABLED = TRUE)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A security policy is enabled or disabled with STATE = ON or STATE = OFF in the WITH clause. SCHEMABINDING is a separate option.",
+  "rationale": [
+   "Incorrect: ACTIVATE is not an option of CREATE SECURITY POLICY.",
+   "Incorrect: SCHEMABINDING controls binding to the predicate and does not turn the policy on, and it is ON by default.",
+   "Correct: STATE = ON turns the policy on, and STATE = OFF turns it off.",
+   "Incorrect: ENABLED is not an option of CREATE SECURITY POLICY, so the statement would fail."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-security-policy-transact-sql"
+ },
+ {
+  "id": "2.1.3-06",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Tailspin Toys uses row-level security in Azure SQL Database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A filter predicate silently hides rows and returns no error when all rows are filtered.",
+   "Members of db_owner automatically bypass a row-level security policy.",
+   "A block predicate can be defined for AFTER UPDATE and BEFORE DELETE operations."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Filter predicates hide rows without an error, and block predicates cover AFTER INSERT, AFTER UPDATE, BEFORE UPDATE, and BEFORE DELETE. No role bypasses the policy, so the predicate must allow administrators explicitly.",
+  "rationale": [
+   "Yes: a filter predicate returns an empty set without an error when no row passes.",
+   "No: the policy applies to dbo, db_owner, and table owners too, and the predicate must allow them access explicitly if needed.",
+   "Yes: block predicates exist for AFTER INSERT, AFTER UPDATE, BEFORE UPDATE, and BEFORE DELETE."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/row-level-security"
+ },
+ {
+  "id": "2.1.3-07",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud is concerned that a user can learn whether a salary equals 100000 by running a query that divides by (Salary - 100000) and so causes a divide-by-zero error on a protected table. Which risk should you identify?",
+  "choices": [
+   "A side-channel attack that infers data through error messages",
+   "A missing index on the column used by the predicate",
+   "An expired column master key of the table",
+   "A deadlock that is caused by the security policy locks"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Row-level security is vulnerable to inference through side channels, such as errors raised by an expression, so the risk must be limited with least privilege and monitoring.",
+  "rationale": [
+   "Correct: the error reveals whether the hidden value matches, which leaks information about rows the user cannot see.",
+   "Incorrect: a missing index affects performance and does not leak data.",
+   "Incorrect: a column master key belongs to Always Encrypted and is not part of row-level security.",
+   "Incorrect: a deadlock is a locking conflict and does not reveal data through an error."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/row-level-security"
+ },
+ {
+  "id": "2.1.4-01",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders wants a reporting role to read all tables in the Sales schema and any table that is added to it later. Which statement should you run?",
+  "choices": [
+   "GRANT SELECT ON SCHEMA::Sales TO ReportingRole",
+   "GRANT SELECT ON dbo.Orders TO ReportingRole",
+   "GRANT CONTROL ON DATABASE::SalesDb TO ReportingRole",
+   "ALTER ROLE db_owner ADD MEMBER ReportingRole"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A permission on a schema covers its tables and views, including objects that are added later. Permissions are hierarchical and transitive.",
+  "rationale": [
+   "Correct: the schema-level SELECT permission covers every table in the schema, including new ones, and nothing outside it.",
+   "Incorrect: a grant on one table does not cover other tables or new tables in the schema.",
+   "Incorrect: CONTROL on the database is far more than reading the Sales tables and breaks least privilege.",
+   "Incorrect: db_owner gives full control of the database, which is much more than required."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/getting-started-with-database-engine-permissions"
+ },
+ {
+  "id": "2.1.4-02",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. gives a user SELECT on a table through a role, and later wants to block that user from reading the table regardless of other grants. Which statement should you use?",
+  "choices": [
+   "DENY SELECT ON dbo.Salaries TO ReportingUser",
+   "ALTER ROLE db_datareader DROP MEMBER ReportingUser",
+   "GRANT SELECT ON dbo.Salaries TO ReportingUser WITH GRANT OPTION",
+   "REVOKE SELECT ON dbo.Salaries FROM ReportingRole"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "DENY explicitly prohibits a permission, and a denial overrides all grants from any source. REVOKE only removes a previous grant or denial.",
+  "rationale": [
+   "Correct: DENY overrides every grant, including the one that comes through the role, so the user cannot read the table.",
+   "Incorrect: removing the user from db_datareader removes one source of access but does not block the other grants.",
+   "Incorrect: WITH GRANT OPTION adds more access and lets the user pass the permission on to others.",
+   "Incorrect: REVOKE removes the grant from the role for everyone in it, and the user could still receive access from other sources."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/getting-started-with-database-engine-permissions"
+ },
+ {
+  "id": "2.1.4-03",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank wants an analyst to read only the Name and City columns of dbo.Customers and no other columns. Which statement should you run?",
+  "choices": [
+   "GRANT SELECT ON SCHEMA::dbo TO Analyst",
+   "GRANT SELECT ON dbo.Customers TO Analyst",
+   "GRANT VIEW DEFINITION ON dbo.Customers TO Analyst",
+   "GRANT SELECT ON dbo.Customers (Name, City) TO Analyst"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A column list in GRANT SELECT limits the permission to those columns. A table or schema grant would include all other columns.",
+  "rationale": [
+   "Incorrect: a schema-level grant covers every table and column in the schema.",
+   "Incorrect: a table-level grant includes every column, including the ones that must stay hidden.",
+   "Incorrect: VIEW DEFINITION allows seeing metadata and does not allow reading data.",
+   "Correct: the column list gives SELECT on the two columns only, which is the narrowest grant that meets the requirement."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/grant-object-permissions-transact-sql"
+ },
+ {
+  "id": "2.1.4-04",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. gives users EXECUTE on a stored procedure that updates a table. The users must not have direct UPDATE on the table. Which condition should be true so that the procedure works?",
+  "choices": [
+   "The procedure is created WITH ENCRYPTION",
+   "The table is in a different database than the procedure",
+   "The procedure and the table have the same owner",
+   "The users are members of the db_owner role"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "With ownership chaining, access to objects with the same owner is checked on the first object only, so EXECUTE on the procedure is enough for the update inside it.",
+  "rationale": [
+   "Incorrect: WITH ENCRYPTION hides the definition and grants no permission.",
+   "Incorrect: a different database breaks the chain by default, so users would need permission in that database.",
+   "Correct: when the owners match, the permission check on the table is skipped, and callers need only EXECUTE on the procedure.",
+   "Incorrect: db_owner membership gives broad rights and contradicts the requirement that users have no direct UPDATE permission."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/security/authentication-access/ownership-and-user-schema-separation-in-sql-server"
+ },
+ {
+  "id": "2.1.4-05",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation has many developers who need the same set of permissions. Which approach should the administrator use?",
+  "choices": [
+   "Grant each permission to each developer separately",
+   "Grant the permissions to a role and add the developers to it",
+   "Share one SQL login between all developers",
+   "Add every developer to the db_owner role"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Grant permissions to roles instead of individual users where possible, which keeps administration simple and follows least privilege.",
+  "rationale": [
+   "Incorrect: separate grants for each developer are hard to maintain and easy to get wrong.",
+   "Correct: one role carries the permissions, and membership controls who has them, which is easy to review and change.",
+   "Incorrect: a shared login removes accountability, because actions cannot be traced to a person.",
+   "Incorrect: db_owner gives full control, which is much more than the developers need."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/getting-started-with-database-engine-permissions"
+ },
+ {
+  "id": "2.1.4-06",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Tailspin Toys reviews permissions on its SQL database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A DENY on a permission overrides a GRANT of the same permission from a role.",
+   "A permission granted on a schema applies to the tables and views in that schema.",
+   "REVOKE and DENY have the same effect on a permission."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Denials override grants, and schema permissions are inherited by the objects in the schema. REVOKE removes a grant or denial, while DENY blocks the permission.",
+  "rationale": [
+   "Yes: any denial overrides all grants that the user receives from any source.",
+   "Yes: permissions are hierarchical, so a schema permission covers its tables and views.",
+   "No: REVOKE removes an earlier GRANT or DENY, but DENY actively prohibits the permission."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/getting-started-with-database-engine-permissions"
+ },
+ {
+  "id": "2.1.4-07",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud wants a developer to pass SELECT permission on dbo.Orders on to a colleague. Which clause should you add to the GRANT statement?",
+  "choices": [
+   "WITH SCHEMABINDING",
+   "WITH GRANT OPTION",
+   "WITH CHECK OPTION",
+   "WITH NO_INFOMSGS"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "WITH GRANT OPTION lets the grantee grant the same permission to other principals.",
+  "rationale": [
+   "Incorrect: WITH SCHEMABINDING is an option for views and functions and is not part of GRANT.",
+   "Correct: the developer who receives the permission with this option can grant it to others.",
+   "Incorrect: WITH CHECK OPTION belongs to views and controls row changes through the view.",
+   "Incorrect: NO_INFOMSGS suppresses informational messages in DBCC commands and is not part of GRANT."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/grant-object-permissions-transact-sql"
+ },
+ {
+  "id": "2.1.5-01",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. runs a web app on Azure App Service that connects to Azure SQL Database. The team wants no password in the connection string. Which authentication should you use?",
+  "choices": [
+   "A password that is stored in the app settings in plain text",
+   "A shared access signature",
+   "A managed identity with Microsoft Entra authentication",
+   "SQL authentication with the sa login"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A managed identity lets the app authenticate to Azure SQL with Microsoft Entra ID without a password or secret in the connection string.",
+  "rationale": [
+   "Incorrect: a plain text password is exactly the kind of secret that the team wants to remove.",
+   "Incorrect: a shared access signature is a token for Azure Storage and not an authentication method for Azure SQL.",
+   "Correct: the platform issues the token for the identity, so no credential is stored or rotated by the team.",
+   "Incorrect: SQL authentication with a login and password still needs a secret, and sa is not available in Azure SQL Database."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/authentication-aad-configure"
+ },
+ {
+  "id": "2.1.5-02",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. wants to let a managed identity named app-orders access an Azure SQL database. Which statement should you run in the database, connected as a Microsoft Entra identity?",
+  "choices": [
+   "CREATE USER [app-orders] FROM EXTERNAL PROVIDER",
+   "CREATE USER [app-orders] WITHOUT LOGIN",
+   "CREATE CERTIFICATE [app-orders]",
+   "CREATE LOGIN [app-orders] WITH PASSWORD = 'P@ssw0rd'"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A contained user for a Microsoft Entra identity is created with FROM EXTERNAL PROVIDER, and the user must then be added to a role or granted permissions.",
+  "rationale": [
+   "Correct: this creates a database user for the Entra identity, so it can authenticate with a token and not with a password.",
+   "Incorrect: a user without login cannot be used to sign in and is meant for impersonation and ownership.",
+   "Incorrect: a certificate is an encryption object and does not map an identity to a database user.",
+   "Incorrect: a login with a password is SQL authentication, which still needs a secret."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/authentication-aad-configure"
+ },
+ {
+  "id": "2.1.5-03",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. enables Microsoft Entra authentication for an Azure SQL logical server. Which setting should the team configure on the server first?",
+  "choices": [
+   "A database master key",
+   "A server-level firewall rule for all Azure addresses",
+   "A column master key",
+   "A Microsoft Entra admin"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A Microsoft Entra admin must be set on the logical server before Entra authentication works, and removing the admin disables Entra authentication for the server.",
+  "rationale": [
+   "Incorrect: a database master key protects other keys and credentials in the database and does not enable Entra sign-in.",
+   "Incorrect: a firewall rule controls network access and does not enable Entra authentication.",
+   "Incorrect: a column master key belongs to Always Encrypted and not to authentication.",
+   "Correct: setting the Entra admin enables Microsoft Entra authentication, and the admin can then create the other Entra users."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/authentication-aad-configure"
+ },
+ {
+  "id": "2.1.5-04",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation uses a user-assigned managed identity for an app that connects to Azure SQL Database. Which value should the connection string specify for Authentication?",
+  "choices": [
+   "Windows Authentication with an on-premises domain account",
+   "Active Directory Password, with a user name and password",
+   "Active Directory Managed Identity, with the client ID as User Id",
+   "SQL Password, with a login and password in the string"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "For a user-assigned managed identity, the connection uses Active Directory Managed Identity and the client ID of the identity as User Id. Active Directory Default uses the available credential chain.",
+  "rationale": [
+   "Incorrect: Windows Authentication uses an on-premises domain account and is not used for Azure SQL Database.",
+   "Incorrect: Active Directory Password sends a user name and password, which is not passwordless.",
+   "Correct: this authentication mode requests a token for the managed identity, and the client ID selects the user-assigned identity.",
+   "Incorrect: SQL Password sends a login and password, which the team wants to avoid."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/authentication-aad-configure"
+ },
+ {
+  "id": "2.1.5-05",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank uses Azure SQL Managed Instance with Microsoft Entra authentication. The instance must be able to read the directory to resolve identities. Which role should the instance identity have?",
+  "choices": [
+   "Directory Readers",
+   "Application Developer",
+   "Billing Reader",
+   "Global Administrator"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A managed instance needs the Directory Readers role, or equivalent fine-grained Microsoft Graph permissions, so it can read Microsoft Entra ID.",
+  "rationale": [
+   "Correct: the Directory Readers role lets the instance look up users and groups in the directory.",
+   "Incorrect: Application Developer allows creating app registrations and does not give read access for resolving identities.",
+   "Incorrect: Billing Reader gives access to billing information and not to directory objects.",
+   "Incorrect: Global Administrator is far too broad for reading identities and breaks least privilege."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/authentication-aad-configure"
+ },
+ {
+  "id": "2.1.5-06",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Tailspin Toys moves its apps to passwordless access for Azure SQL Database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A system-assigned managed identity can be mapped to a database user with CREATE USER ... FROM EXTERNAL PROVIDER.",
+   "Authentication=Active Directory Default can use a managed identity on Azure when no other credential is found first.",
+   "Removing the Microsoft Entra admin from the server keeps Entra authentication working."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Managed identities map to database users with FROM EXTERNAL PROVIDER, and Active Directory Default uses a credential chain that includes managed identity. Removing the Entra admin disables Entra authentication for the server.",
+  "rationale": [
+   "Yes: the identity name is used in CREATE USER ... FROM EXTERNAL PROVIDER, so the managed identity becomes a database principal.",
+   "Yes: Active Directory Default walks through the available credential sources, which include the managed identity of the Azure resource.",
+   "No: removing the admin disables Microsoft Entra authentication for the whole server."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/authentication-aad-configure"
+ },
+ {
+  "id": "2.1.5-07",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud has an automation job that runs outside Azure and must connect to Azure SQL Database without a user present. Which Microsoft Entra identity should you use?",
+  "choices": [
+   "A guest user account in the tenant directory",
+   "A service principal with a certificate or federated credential",
+   "The interactive browser sign-in of an administrator",
+   "The Microsoft Entra admin account of the SQL server"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Automation that runs without a person needs a non-interactive identity, such as a service principal. A managed identity is available only for Azure resources.",
+  "rationale": [
+   "Incorrect: a guest user is a person-oriented account and is not suited to unattended automation.",
+   "Correct: a service principal authenticates without a person, and a certificate or federated credential avoids a stored password.",
+   "Incorrect: an interactive sign-in needs a person at the browser, which the job does not have.",
+   "Incorrect: using the admin account for a job would give the job far more access than required."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/authentication-aad-configure"
+ },
+ {
+  "id": "2.1.6-01",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. enables auditing for an Azure SQL database. Which destination should the team choose to analyze audit logs with Kusto queries?",
+  "choices": [
+   "A local file on the workstation",
+   "A SQL Server Agent job history",
+   "A Log Analytics workspace",
+   "An Azure Data Factory pipeline"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Azure SQL auditing can write to an Azure Storage account, a Log Analytics workspace, or Event Hubs. Log Analytics supports Kusto queries.",
+  "rationale": [
+   "Incorrect: a local file on a workstation is not a supported destination for Azure SQL auditing.",
+   "Incorrect: SQL Server Agent job history records job runs and is not an audit destination.",
+   "Correct: a Log Analytics workspace stores the audit data in a form that you can query with Kusto.",
+   "Incorrect: a Data Factory pipeline moves data and is not an audit destination."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/auditing-overview"
+ },
+ {
+  "id": "2.1.6-02",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. must send Azure SQL audit events to a third-party security information tool in near real time. Which audit destination should you choose?",
+  "choices": [
+   "Event Hubs",
+   "The Windows event log",
+   "Azure Storage account",
+   "A table in the audited database"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Event Hubs is a streaming destination, so audit events can be forwarded to an external tool in near real time.",
+  "rationale": [
+   "Correct: Event Hubs streams events to consumers, which suits a near real-time feed to another tool.",
+   "Incorrect: Azure SQL Database has no Windows event log that the team could use.",
+   "Incorrect: a storage account keeps log files, which are read later and are not a streaming feed.",
+   "Incorrect: writing audit data to a table in the audited database is not a supported destination and would let administrators change it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/auditing-overview"
+ },
+ {
+  "id": "2.1.6-03",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank wants to review audit logs that are stored as .xel files in Azure Storage. Which tool should an administrator use to open them?",
+  "choices": [
+   "Microsoft Excel opened directly",
+   "Windows Notepad text editor",
+   "Azure Key Vault secrets view",
+   "SQL Server Management Studio"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Azure SQL audit logs are .xel files written to append blobs, and they can be opened in SQL Server Management Studio.",
+  "rationale": [
+   "Incorrect: Excel cannot read the extended events file format directly.",
+   "Incorrect: Notepad would show binary content and not the audit records.",
+   "Incorrect: Key Vault stores keys and secrets and does not read audit logs.",
+   "Correct: SSMS can open extended events files and show the audit records."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/auditing-overview"
+ },
+ {
+  "id": "2.1.6-04",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation runs a large OLTP workload on Azure SQL Database, and auditing adds query cost. Which auditing scope should you consider according to the documentation?",
+  "choices": [
+   "No auditing, because it cannot be scoped",
+   "Auditing of every database through a single trigger",
+   "Server-level auditing for all databases",
+   "Database-level auditing for the busy database"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "For large OLTP workloads the documentation recommends database-level auditing to reduce query cost.",
+  "rationale": [
+   "Incorrect: auditing can be scoped at the server and at the database level.",
+   "Incorrect: a trigger cannot audit every database and does not cover reads or login events.",
+   "Incorrect: server-level auditing uses a single event session for all databases and is not the recommended choice for large OLTP workloads.",
+   "Correct: database-level auditing limits the audit to the database that needs it and reduces the cost for large workloads."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/auditing-overview"
+ },
+ {
+  "id": "2.1.6-05",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys wants an auditor to view audit logs of a user database without making the auditor a database owner. Which permission should you grant in the database?",
+  "choices": [
+   "VIEW DATABASE SECURITY AUDIT",
+   "db_securityadmin role membership",
+   "CONTROL DATABASE",
+   "ALTER ANY DATABASE AUDIT"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Viewing audit logs requires the VIEW DATABASE SECURITY AUDIT permission in the user database.",
+  "rationale": [
+   "Correct: this permission allows viewing the audit data and nothing else, which keeps the auditor within least privilege.",
+   "Incorrect: db_securityadmin manages permissions and roles, which is not a viewing right for audit logs.",
+   "Incorrect: CONTROL DATABASE gives full control, which is much more than the auditor needs.",
+   "Incorrect: ALTER ANY DATABASE AUDIT would allow changing audit settings and is not needed for viewing."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/auditing-overview"
+ },
+ {
+  "id": "2.1.6-06",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud configures auditing for Azure SQL Database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Audit logs can be written to Azure Storage, Log Analytics, or Event Hubs.",
+   "With database-level auditing, all logs go to a single master folder in storage.",
+   "The audit log files are written as .xel files to append blobs."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The three destinations are Azure Storage, Log Analytics, and Event Hubs, and logs are .xel files in append blobs. The single master folder applies to server-level auditing, while database-level auditing writes to its own folder.",
+  "rationale": [
+   "Yes: these are the three supported destinations for Azure SQL auditing.",
+   "No: server-level auditing writes all logs to one master folder, while database-level auditing writes each database to its own folder.",
+   "Yes: the logs are extended events files written to append blobs and they can be opened in SSMS."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/auditing-overview"
+ },
+ {
+  "id": "2.1.6-07",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders stores audit logs in a storage account with an immutable storage policy. Which condition should the team make sure of for the retention settings?",
+  "choices": [
+   "The retention interval is set to zero days",
+   "The immutable storage retention interval is longer than the SQL Auditing retention setting",
+   "Both retention settings are disabled",
+   "The immutable storage retention interval is shorter than the SQL Auditing retention setting"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The documentation notes that an immutable storage retention interval must be shorter than the SQL Auditing retention setting.",
+  "rationale": [
+   "Incorrect: a retention of zero days defeats the purpose of keeping audit evidence.",
+   "Incorrect: a longer immutable interval would stop auditing from deleting old logs when its own retention ends.",
+   "Incorrect: disabling retention settings removes the control over how long the evidence is kept.",
+   "Correct: this ordering lets auditing apply its own retention without being blocked by the immutable policy."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/auditing-overview"
+ },
+ {
+  "id": "2.1.7-01",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. calls an Azure OpenAI embeddings endpoint from Azure SQL Database through an external model. The team does not want an API key stored in the database. Which credential identity should you use?",
+  "choices": [
+   "A SQL login with a password",
+   "A certificate that has no private key",
+   "The API key as a literal in the LOCATION value",
+   "Managed Identity in a database scoped credential"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A database scoped credential with IDENTITY = 'Managed Identity' lets the database authenticate to the endpoint without storing a key.",
+  "rationale": [
+   "Incorrect: a SQL login authenticates to SQL Server and not to the model endpoint.",
+   "Incorrect: a certificate without a private key cannot prove identity to the endpoint.",
+   "Incorrect: placing a key in the LOCATION value would expose the secret in the object definition.",
+   "Correct: the database authenticates with its managed identity, so there is no API key to store or rotate."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "2.1.7-02",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. creates an external model for an embeddings endpoint. Which protocol should the LOCATION value use?",
+  "choices": [
+   "SMB",
+   "HTTPS with TLS",
+   "FTP",
+   "HTTP without encryption"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The LOCATION of an external model must use HTTPS with TLS, so the traffic to the endpoint is encrypted.",
+  "rationale": [
+   "Incorrect: SMB is a file sharing protocol and is not used for model endpoints.",
+   "Correct: HTTPS with TLS is the only accepted protocol for the endpoint location.",
+   "Incorrect: FTP is a file transfer protocol and not an inference endpoint protocol.",
+   "Incorrect: plain HTTP would send the text and the credentials without encryption and is not accepted."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "2.1.7-03",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank wants a developer to use an existing external model in AI_GENERATE_EMBEDDINGS but not to create or change models. Which permission should you grant?",
+  "choices": [
+   "EXECUTE on the external model",
+   "CONTROL on the database",
+   "CREATE EXTERNAL MODEL",
+   "ALTER ANY EXTERNAL MODEL"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Principals that use a model in an AI function need EXECUTE on the external model. Creating or altering models needs CREATE EXTERNAL MODEL or ALTER ANY EXTERNAL MODEL.",
+  "rationale": [
+   "Correct: GRANT EXECUTE ON EXTERNAL MODEL lets the developer call the model and nothing more.",
+   "Incorrect: CONTROL on the database is a broad permission that breaks least privilege.",
+   "Incorrect: CREATE EXTERNAL MODEL allows creating new models, which the developer must not do.",
+   "Incorrect: ALTER ANY EXTERNAL MODEL allows changing any model, which is more than needed."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "2.1.7-04",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation creates a database scoped credential for Azure OpenAI with IDENTITY = 'Managed Identity'. Which value should the SECRET contain?",
+  "choices": [
+   "The password of the SQL server administrator account",
+   "The connection string of the database",
+   "The Azure OpenAI API key of the resource",
+   "A JSON value with the resource ID of the Azure AI service"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "For managed identity, the SECRET holds a JSON value with the resource ID, such as {\"resourceid\":\"https://cognitiveservices.azure.com\"}, and no key is stored.",
+  "rationale": [
+   "Incorrect: the SQL administrator password has no relation to the endpoint and would be a serious exposure.",
+   "Incorrect: a database connection string is not an input for authenticating to a model endpoint.",
+   "Incorrect: an API key would be used with a different identity type, and the aim of managed identity is to avoid keys.",
+   "Correct: the resource ID tells the database which resource to request a token for."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "2.1.7-05",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys uses SQL Server 2025 on premises and wants to use a managed identity to call Azure OpenAI. Which requirement should the team meet?",
+  "choices": [
+   "The server is connected to Azure Arc with a managed identity",
+   "The server runs only on Linux",
+   "The database has transparent data encryption turned off",
+   "The server uses SQL Server 2019 compatibility level"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "On SQL Server 2025, managed identity requires an Azure Arc connection, an enabled primary managed identity, a suitable role on the Azure OpenAI resource, and the setting for server scoped database credentials.",
+  "rationale": [
+   "Correct: Azure Arc provides the identity that the on-premises server uses to request tokens.",
+   "Incorrect: the requirement is not tied to an operating system, and the identity comes from Azure Arc.",
+   "Incorrect: transparent data encryption has no role in obtaining a managed identity.",
+   "Incorrect: compatibility level 150 does not provide a managed identity and the feature needs SQL Server 2025."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "2.1.7-06",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Relecloud connects SQL Server 2025 to Azure OpenAI by using a managed identity for an external model. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Store the API key in the LOCATION value of the model",
+   "Assign a role such as Cognitive Services OpenAI Contributor to the identity on the Azure OpenAI resource",
+   "Disable TLS on the endpoint to avoid certificate errors",
+   "Run sp_configure to set allow server scoped db credentials to 1",
+   "Grant db_owner to the managed identity"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "The identity needs a role on the Azure OpenAI resource, and on SQL Server 2025 the server must allow server scoped database credentials. TLS must stay on and keys do not belong in LOCATION.",
+  "rationale": [
+   "Incorrect: a key in LOCATION would expose the secret, and managed identity removes the need for a key.",
+   "Correct: without a role on the resource, the token of the identity is rejected by the Azure OpenAI endpoint.",
+   "Incorrect: the LOCATION must use HTTPS with TLS, so TLS cannot be disabled.",
+   "Correct: the configuration option allows database scoped credentials that use the server identity on SQL Server 2025.",
+   "Incorrect: db_owner gives the identity full control of the database, which it does not need to call a model."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "2.1.7-07",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Northwind Traders reviews the security of its external model setup.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The CREDENTIAL of an external model refers to a database scoped credential.",
+   "A user needs CREATE EXTERNAL MODEL to use an existing model in AI_GENERATE_EMBEDDINGS.",
+   "The PARAMETERS option can add JSON values, such as dimensions, to the requests."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The CREDENTIAL is a database scoped credential, and PARAMETERS is JSON that is appended to requests. Using a model needs EXECUTE on it, not the permission to create models.",
+  "rationale": [
+   "Yes: the CREDENTIAL option names a DATABASE SCOPED CREDENTIAL that holds the authentication information.",
+   "No: using a model needs EXECUTE on the external model, while CREATE EXTERNAL MODEL is for creating models.",
+   "Yes: PARAMETERS takes valid JSON, for example {\"dimensions\":725}, and the values are added to the requests."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "2.1.8-01",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. exposes a table through Data API builder. Which access should you expect roles to have on a newly added entity by default?",
+  "choices": [
+   "Read access for anonymous users and all roles",
+   "Create access for all roles of the entity",
+   "Full access for authenticated users of the API",
+   "None, until permissions are granted explicitly"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Entities have no permissions by default in Data API builder. Access must be granted explicitly per role and action.",
+  "rationale": [
+   "Incorrect: anonymous read access is not a default and would have to be configured.",
+   "Incorrect: no role gets create access by default. It does not satisfy the requirement in the question.",
+   "Incorrect: authenticated users get no access unless the entity grants it.",
+   "Correct: until permissions are added to the entity in the configuration, no role can access it."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/security/overview"
+ },
+ {
+  "id": "2.1.8-02",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. runs Data API builder and wants users to sign in with Microsoft Entra ID. Which authentication provider should you configure?",
+  "choices": [
+   "EntraID",
+   "StaticWebApps",
+   "Simulator",
+   "Unauthenticated"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The EntraID provider validates tokens that Microsoft Entra ID issues. Simulator is for local development, and Unauthenticated trusts a front end.",
+  "rationale": [
+   "Correct: EntraID validates JWT tokens from Microsoft Entra ID by issuer, audience, and signature.",
+   "Incorrect: StaticWebApps trusts platform headers of Azure Static Web Apps and does not validate Entra tokens itself.",
+   "Incorrect: Simulator skips external validation and is meant for local development and testing only.",
+   "Incorrect: Unauthenticated is the default and leaves identity to a trusted front end."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/security/overview"
+ },
+ {
+  "id": "2.1.8-03",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. needs a client to call a Data API builder endpoint with a specific role from the token. Which header should the client send?",
+  "choices": [
+   "X-MS-API-ROLE",
+   "Content-Role",
+   "Authorization-Role",
+   "X-Api-Key"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A user role is taken from the roles claim in the token and is selected with the X-MS-API-ROLE header.",
+  "rationale": [
+   "Correct: the header selects which of the roles in the token the request should use.",
+   "Incorrect: Content-Role is not a standard header and is not read.",
+   "Incorrect: Authorization-Role is not a header that Data API builder reads.",
+   "Incorrect: X-Api-Key is not used by Data API builder to select a role."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/security/overview"
+ },
+ {
+  "id": "2.1.8-04",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank keeps a connection string for Data API builder in dab-config.json. Which approach should the team use to keep the secret out of the file?",
+  "choices": [
+   "Commit the file to a private repository only",
+   "Use @env or @azure references in the configuration",
+   "Rename the file to something less obvious",
+   "Encode the string in Base64 inside the file itself"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Secrets are referenced with @env or @azure so that passwords and connection strings are never committed to dab-config.json.",
+  "rationale": [
+   "Incorrect: a private repository still stores the secret in source control, which the guidance says to avoid.",
+   "Correct: the configuration holds a reference, and the real value comes from the environment or Key Vault.",
+   "Incorrect: a less obvious file name does not protect the content of the file.",
+   "Incorrect: Base64 is an encoding and anyone can reverse it, so the secret is still exposed in the file."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/security/overview"
+ },
+ {
+  "id": "2.1.8-05",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation needs each user of a Data API builder REST endpoint to see only their own rows. Which feature should you use?",
+  "choices": [
+   "A CORS rule on the host",
+   "A second entity with the same table name",
+   "A larger page size for the endpoint",
+   "A database policy on the entity permission"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Database policies in Data API builder add row-level conditions to queries per role and action, which limits rows per user.",
+  "rationale": [
+   "Incorrect: CORS controls which browser origins may call the API and does not filter rows.",
+   "Incorrect: a second entity for the same table does not add row filtering.",
+   "Incorrect: a page size controls how many rows are returned per request and does not restrict access.",
+   "Correct: a policy applies a predicate to queries for the role, so users only see rows that match it."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/security/overview"
+ },
+ {
+  "id": "2.1.8-06",
+  "obj": "2.1.8",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Tailspin Toys secures REST, GraphQL, and MCP endpoints that run on Data API builder.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Production traffic should use HTTPS with TLS 1.2 or later.",
+   "The Simulator provider is suitable for production because it validates tokens.",
+   "Field-level security can include or exclude columns per role."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Production should use TLS 1.2 or later over HTTPS, and field-level security can include or exclude columns for a role. The Simulator provider is only for local development and skips external validation.",
+  "rationale": [
+   "Yes: encrypted transport protects tokens and data between the client and the API.",
+   "No: Simulator skips external validation and is only meant for local development and testing.",
+   "Yes: field-level security lets a role see only the columns that are allowed for it."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/security/overview"
+ },
+ {
+  "id": "2.1.8-07",
+  "obj": "2.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud connects an AI agent to an MCP endpoint that is hosted by Data API builder. The agent only needs to read two entities. Which design should you choose?",
+  "choices": [
+   "Grant all actions on every entity to the anonymous role",
+   "Give the agent the database owner connection string",
+   "Grant read on the two entities to a dedicated role",
+   "Use the Simulator provider so that the agent is trusted"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Entity permissions are granted per role and action, so a dedicated role with read access to two entities follows least privilege for the agent.",
+  "rationale": [
+   "Incorrect: granting all actions to anonymous would expose every entity to anyone who can reach the endpoint.",
+   "Incorrect: an owner connection string would give the agent full database access and bypass the entity permissions.",
+   "Correct: a dedicated role with read access limits what the agent can reach through the endpoint.",
+   "Incorrect: Simulator skips validation and is only for local development, so it must not be used for an agent in production."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/security/overview"
+ }
+]

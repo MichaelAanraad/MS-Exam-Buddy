@@ -1,0 +1,1316 @@
+[
+ {
+  "id": "2.3.1-01",
+  "obj": "2.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants to verify the logic of one stored procedure in isolation from the data in the real tables. Which kind of test should the team write?",
+  "choices": [
+   "An integration test against the production database",
+   "A unit test that replaces the tables with fakes",
+   "A manual review of the saved execution plan",
+   "A load test that runs thousands of sessions"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A unit test checks one object in isolation, so its dependencies are replaced with fakes. Integration tests use real dependencies and load tests measure scale.",
+  "rationale": [
+   "Incorrect: an integration test with real data checks many objects together and does not isolate the procedure logic.",
+   "Correct: a unit test controls the data through fake tables, so only the logic of the procedure is checked.",
+   "Incorrect: a plan review shows how a query runs and does not assert that the procedure returns the right result.",
+   "Incorrect: a load test measures behavior under heavy use and does not verify the logic of one procedure."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.1-02",
+  "obj": "2.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. writes unit tests for T-SQL code with the tSQLt framework. Which tSQLt procedure should a developer call to replace a table with an empty copy that has no constraints, so that the test controls the data?",
+  "choices": [
+   "tSQLt.FakeTable",
+   "tSQLt.NewTestClass",
+   "tSQLt.RunAll",
+   "tSQLt.ExpectException"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "tSQLt.FakeTable swaps a table for an empty copy without constraints so the test arranges its own rows. This comes from general knowledge of the tSQLt framework.",
+  "rationale": [
+   "Correct: FakeTable creates an empty, constraint-free copy of the table for the length of the test.",
+   "Incorrect: NewTestClass creates a schema that groups tests and does not fake a table.",
+   "Incorrect: RunAll executes the tests and does not change any table.",
+   "Incorrect: ExpectException asserts that an error is raised and does not replace a table."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.1-03",
+  "obj": "2.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Wingtip Toys unit tests for an order procedure pass, but after deployment the procedure fails because a trigger on the real table rejects the row. Which kind of test should the team add to catch this problem before release?",
+  "choices": [
+   "A static check of the project build output",
+   "More unit tests that use FakeTable on the same table",
+   "Integration tests that run against the deployed test database",
+   "A code review of the procedure text only"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Fakes remove constraints and triggers, so unit tests cannot see them. Integration tests run on a deployed database with real triggers, keys, and permissions.",
+  "rationale": [
+   "Incorrect: a successful build checks syntax and references and does not run the procedure.",
+   "Incorrect: more fake-based unit tests would hide the trigger again because the fake has no triggers.",
+   "Correct: the deployed test database contains the real trigger, so the failure shows before release.",
+   "Incorrect: a text review can miss run-time behavior of triggers on the real table."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.1-04",
+  "obj": "2.3.1",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Adventure Works defines a testing strategy for its database project.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Unit tests should give the same result every time they run.",
+   "tSQLt runs each test inside a transaction that is rolled back afterwards.",
+   "Integration tests are normally faster than unit tests because they use fewer objects."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Unit tests are isolated and repeatable, and tSQLt rolls back each test. Integration tests use real objects and are slower.",
+  "rationale": [
+   "Yes: repeatable tests make a failure point to a change in code and not to leftover data.",
+   "Yes: the rollback removes the changes of the test, so tests do not affect each other.",
+   "No: integration tests need a deployed database and real dependencies, so they are usually slower."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.1-05",
+  "obj": "2.3.1",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Tailspin Toys runs database tests in a pipeline. Which two actions should you perform so that a failing test blocks the release? Each correct answer presents part of the solution.",
+  "choices": [
+   "Run the tests in a pipeline step after the dacpac is deployed to a test database",
+   "Ignore failed tests that take longer than one minute",
+   "Make the step fail when any test fails so that the job stops",
+   "Deploy to production first and run the tests afterwards",
+   "Run the tests only on the laptop of the developer who wrote them"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "A pipeline test step must run after deployment to a test database, and a failed result must fail the job so later stages do not run.",
+  "rationale": [
+   "Correct: the tests need a deployed database to run against, and the step belongs after the deploy step.",
+   "Incorrect: skipping slow failures hides real problems and lets bad changes through.",
+   "Correct: a failed step stops the job, so the release does not continue to later stages.",
+   "Incorrect: running tests after a production deploy finds problems too late to block the release.",
+   "Incorrect: tests that run only on one laptop are not part of the pipeline and cannot block a release."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.1-06",
+  "obj": "2.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders has intermittent test failures because tests read rows that other tests insert. Which change should the team make?",
+  "choices": [
+   "Arrange the data per test inside a transaction that is rolled back",
+   "Rerun the failed tests until they pass, and keep any shared data",
+   "Remove the assertions from the unstable tests to stop the failures",
+   "Run the tests against the production database to use real rows"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Tests must not depend on shared data. Arranging data per test and rolling back keeps every test isolated and repeatable.",
+  "rationale": [
+   "Correct: each test builds the rows it needs and the rollback removes them, so tests stay independent.",
+   "Incorrect: rerunning hides the cause and the test result stays unreliable.",
+   "Incorrect: without assertions a test cannot detect a wrong result.",
+   "Incorrect: production data changes all the time and tests could modify live rows."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.2-01",
+  "obj": "2.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. keeps lookup values in source control and wants them inserted after every deployment. Which project item should hold the INSERT statements?",
+  "choices": [
+   "A table definition file",
+   "A database scoped credential",
+   "A pre-deployment script",
+   "A post-deployment script"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A post-deployment script runs after the schema changes on every deployment, so lookup data can be loaded there.",
+  "rationale": [
+   "Incorrect: a table definition describes the structure and does not load rows.",
+   "Incorrect: a credential stores authentication data and does not load rows.",
+   "Incorrect: a pre-deployment script runs before the changes, so new lookup tables may not exist yet.",
+   "Correct: post-deployment scripts run after the model is updated, so the lookup tables already exist."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.2-02",
+  "obj": "2.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A post-deployment script runs on every deployment. Which T-SQL pattern should the script use so that running it twice does not create duplicate reference rows?",
+  "choices": [
+   "An INSERT inside a loop that runs ten times",
+   "A plain INSERT of all rows with no key check",
+   "A DROP TABLE and CREATE TABLE of the lookup table",
+   "A MERGE statement that matches on the key of the lookup table"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A script that runs on every deployment must be idempotent. MERGE on the key inserts missing rows and updates changed rows without duplicates.",
+  "rationale": [
+   "Incorrect: looping the insert repeats the problem and adds duplicates.",
+   "Incorrect: a plain INSERT adds the same rows again or fails on the key at the second run.",
+   "Incorrect: dropping the table removes data and breaks foreign keys that reference it.",
+   "Correct: MERGE compares source rows to the table by key, so repeated runs give the same result."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.2-03",
+  "obj": "2.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A project allows only one post-deployment script, but the team keeps reference data in several .sql files. Which approach should the team use?",
+  "choices": [
+   "Add one PostDeploy item for each reference data file in the project file",
+   "Rename the files so that the pipeline runs them in alphabetical order",
+   "Mark each reference data file with the Build action so it joins the model",
+   "Call each file from the post-deployment script with :r and remove them from the build"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Only one pre-deployment and one post-deployment script are allowed. Extra files are included with :r and removed from the model build with Build Remove.",
+  "rationale": [
+   "Incorrect: a project accepts only one PostDeploy item, so extra items are not valid.",
+   "Incorrect: the deployment does not run files by name order, only the registered scripts.",
+   "Incorrect: files that join the model must hold object definitions and not data statements.",
+   "Correct: the single script pulls in the other files, and Build Remove keeps them out of the model."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.2-04",
+  "obj": "2.3.2",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. stores reference data scripts in its SQL database project.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Reference data scripts in source control can be reviewed in a pull request.",
+   "A project can have several post-deployment scripts.",
+   "A post-deployment script runs on every deployment."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Reference data lives in files that are reviewed like code. A project has one post-deployment script, and it runs every time.",
+  "rationale": [
+   "Yes: the data change is a text change in a file, so reviewers see it like any other code change.",
+   "No: a project has at most one pre-deployment and one post-deployment script.",
+   "Yes: the script is part of the deployment, so it must be safe to run repeatedly."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.2-05",
+  "obj": "2.3.2",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A reference data file must not be compiled into the database model. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Change the extension of the file to .dacpac",
+   "Register the file as a second PostDeploy item",
+   "Exclude the file from the model build by using Build Remove in the project file",
+   "Include the file from the post-deployment script by using :r",
+   "Set the Build action of the file to Compile"
+  ],
+  "answer": [
+   2,
+   3
+  ],
+  "explanation": "Files that hold data statements are removed from the build with Build Remove and included from the single post-deployment script with :r.",
+  "rationale": [
+   "Incorrect: a .dacpac is a package output and not an input script.",
+   "Incorrect: a second PostDeploy item is not allowed because only one script is supported.",
+   "Correct: Build Remove keeps the data statements out of the model, which accepts object definitions only.",
+   "Correct: the :r command inlines the file into the post-deployment script when the script is built.",
+   "Incorrect: Compile would put the data statements in the model and the build would report errors."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.2-06",
+  "obj": "2.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team removes a row from the reference data script and wants the row deleted from the database on the next deployment. Which clause should the MERGE statement include?",
+  "choices": [
+   "WHEN NOT MATCHED BY SOURCE THEN DELETE",
+   "WHEN MATCHED THEN INSERT",
+   "OUTPUT INTO a temporary table",
+   "WHEN NOT MATCHED BY TARGET THEN DELETE"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Rows that exist in the table but not in the source list are matched by NOT MATCHED BY SOURCE, and this clause can delete them.",
+  "rationale": [
+   "Correct: the clause finds table rows that are missing from the script list and deletes them.",
+   "Incorrect: MATCHED rows exist in both sides and INSERT is not allowed in that clause.",
+   "Incorrect: OUTPUT records the changed rows and does not remove any row by itself.",
+   "Incorrect: NOT MATCHED BY TARGET finds source rows missing in the table, which are inserted and not deleted."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/merge-transact-sql"
+ },
+ {
+  "id": "2.3.3-01",
+  "obj": "2.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. creates an SDK-style SQL database project. Which SDK should the .sqlproj file reference?",
+  "choices": [
+   "Microsoft.SqlServer.Dac",
+   "Microsoft.Build.NoTargets",
+   "Microsoft.Build.Sql",
+   "Microsoft.Build.Traversal"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "SDK-style SQL database projects use the Microsoft.Build.Sql SDK, which builds the project into a .dacpac.",
+  "rationale": [
+   "Incorrect: Microsoft.SqlServer.Dac is the DacFx library name and not the SDK of the project.",
+   "Incorrect: Microsoft.Build.NoTargets is for projects that produce no output and so no dacpac.",
+   "Correct: Microsoft.Build.Sql is the SDK that builds SQL database projects and produces a dacpac.",
+   "Incorrect: Microsoft.Build.Traversal groups several projects and does not build database objects."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.3-02",
+  "obj": "2.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A pipeline must check the syntax and references of a SQL database project and produce a .dacpac without touching any database. Which command should the pipeline run?",
+  "choices": [
+   "dotnet restore",
+   "sqlcmd -i project.sqlproj",
+   "dotnet build",
+   "SqlPackage /Action:Extract"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "dotnet build validates syntax and references against the target platform and writes the .dacpac. Extract reads a live database instead.",
+  "rationale": [
+   "Incorrect: restore only gets packages and does not validate or produce a dacpac.",
+   "Incorrect: sqlcmd runs T-SQL scripts against a server and cannot build a project file.",
+   "Correct: the build validates the model and writes the dacpac, and it needs no database connection.",
+   "Incorrect: Extract reads the schema of a live database and does not build the project."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.3-03",
+  "obj": "2.3.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A Debug build of an SDK-style project completes without errors. Which location should hold the generated .dacpac file?",
+  "choices": [
+   "The obj/Release folder of the project",
+   "The folder that holds the post-deployment script",
+   "The bin/Debug folder of the project",
+   "The root folder of the repository"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The default output of a Debug build is the bin/Debug folder of the project, where the .dacpac is written.",
+  "rationale": [
+   "Incorrect: obj holds intermediate files, and Release is not the configuration that was built.",
+   "Incorrect: script folders hold source files and are not an output location.",
+   "Correct: bin/Debug is the default build output folder for the Debug configuration.",
+   "Incorrect: the build does not copy output to the repository root by default."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.3-04",
+  "obj": "2.3.3",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Wingtip Toys builds a SQL database project in its pipeline.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The build checks the T-SQL syntax of the project files.",
+   "The build checks references against the target platform set in the project.",
+   "The build deploys the schema to the target database."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "A build validates syntax and references and produces the dacpac. Deployment is a separate step.",
+  "rationale": [
+   "Yes: syntax errors in the source files make the build fail before any deployment.",
+   "Yes: objects or features that the platform does not support are reported as build errors.",
+   "No: the build only produces the dacpac, and a separate publish step deploys it."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.3-05",
+  "obj": "2.3.3",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A team targets Azure SQL Database and wants the build to catch T-SQL features that the service does not support. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Open each file in an editor and rely on syntax coloring",
+   "Set the target platform to an older on-premises version",
+   "Skip the build and test the scripts on a developer laptop",
+   "Run dotnet build for the project in the pipeline",
+   "Set the target platform of the project to Azure SQL Database"
+  ],
+  "answer": [
+   3,
+   4
+  ],
+  "explanation": "The build validates the model against the target platform in the project, so the platform must match the service and the build must run.",
+  "rationale": [
+   "Incorrect: coloring in an editor does not validate references or platform features.",
+   "Incorrect: an older platform allows different features and would not match the service.",
+   "Incorrect: a laptop test depends on the local version and may miss unsupported features.",
+   "Correct: the build performs the validation and reports unsupported features as errors.",
+   "Correct: the target platform decides which features are valid, so it must match Azure SQL Database."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.3-06",
+  "obj": "2.3.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A developer adds a new table script in a subfolder of an SDK-style project. Which action should the developer take so that the next build includes the file?",
+  "choices": [
+   "Add a Compile item for the new file to the .sqlproj file by hand",
+   "Regenerate the .sqlproj file in Visual Studio after every new file",
+   "Register the new file in a separate manifest file of the project",
+   "No action, because the .sql files under the project folder are included by default"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "SDK-style projects include the source files under the project folder by default, so no item is needed for each file. This is general knowledge of SDK-style projects.",
+  "rationale": [
+   "Incorrect: SDK-style projects do not need a manual Compile item for each file.",
+   "Incorrect: regenerating the project file is not needed to add a script.",
+   "Incorrect: there is no manifest file for the database model.",
+   "Correct: files under the project folder are part of the model without a manual entry."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.4-01",
+  "obj": "2.3.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adventure Works adds a SQL database project to a Git repository. Which folders should the .gitignore file exclude?",
+  "choices": [
+   "The folder that holds the post-deployment script",
+   "The folder that holds the table scripts",
+   "The folder that holds the .sqlproj file",
+   "The bin and obj build output folders"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Build output such as bin and obj is generated again by every build, so it is not stored in source control.",
+  "rationale": [
+   "Incorrect: the post-deployment script is source code and must be committed.",
+   "Incorrect: table scripts are the source of the schema and must be committed.",
+   "Incorrect: the project file defines the build and must be committed.",
+   "Correct: generated output can be rebuilt, and committing it adds noise and conflicts."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.4-02",
+  "obj": "2.3.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Northwind Traders wants small, reviewable diffs for schema changes. Which layout should the team use for object scripts in the project?",
+  "choices": [
+   "One .sql file per object, grouped in folders by schema",
+   "Only the compiled .dacpac file",
+   "A single .sql file for each release",
+   "One large script that holds the whole schema"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "One file per object keeps a change small and makes the diff in a pull request easy to review. The dacpac is a build result.",
+  "rationale": [
+   "Correct: a change to one object changes one file, so reviewers see exactly what moved.",
+   "Incorrect: a binary package cannot be reviewed as text and is rebuilt from source.",
+   "Incorrect: a file per release hides which object changed and breaks history per object.",
+   "Incorrect: one large file mixes unrelated changes and produces conflicts and hard diffs."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.4-03",
+  "obj": "2.3.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A team stores a GitHub Actions workflow that deploys the project. Which folder in the repository should hold the workflow YAML file?",
+  "choices": [
+   ".sqlproj/pipelines",
+   "docs/workflows",
+   ".github/workflows",
+   ".github/CODEOWNERS"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "GitHub looks for workflow files in the .github/workflows folder of the repository.",
+  "rationale": [
+   "Incorrect: there is no special pipelines folder inside the project name.",
+   "Incorrect: a docs folder is not scanned for workflow files. It does not satisfy the requirement in the question.",
+   "Correct: workflow definitions must be in .github/workflows for GitHub Actions to find them.",
+   "Incorrect: CODEOWNERS is a file name that lists reviewers, and it is not a folder for workflows."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.4-04",
+  "obj": "2.3.4",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Tailspin Toys organizes its SQL database project in Git.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The .sqlproj file and the .sql source files are committed.",
+   "The bin and obj folders are committed so that every developer has the dacpac.",
+   "Source control is the single source of truth for the schema."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Source files are committed, build output is not, and the repository is the source of truth.",
+  "rationale": [
+   "Yes: they are the source of truth from which the model and the dacpac are built.",
+   "No: build output is generated and does not belong in source control.",
+   "Yes: the live database is updated from the project and not the other way round."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.4-05",
+  "obj": "2.3.4",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Fabrikam, Inc. has an existing database and wants to start tracking it in source control. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Commit the connection string that includes the password",
+   "Copy all production rows into the repository",
+   "Commit a full backup file of the database",
+   "Import or extract the schema of the database into a SQL database project",
+   "Commit the project files to a Git repository"
+  ],
+  "answer": [
+   3,
+   4
+  ],
+  "explanation": "The schema is imported or extracted into a project, and the project source is committed. Backups, secrets, and data do not belong in the repository.",
+  "rationale": [
+   "Incorrect: a connection string with a password is a secret and must not be stored in Git.",
+   "Incorrect: production rows are data and can contain sensitive information.",
+   "Incorrect: a backup is a binary data file and not source code.",
+   "Correct: importing or extracting turns the live schema into source files for the project.",
+   "Correct: committing the project makes the history of schema changes available to the team."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.4-06",
+  "obj": "2.3.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team wants to keep the .dacpac of every pipeline run for later deployment stages. Which approach should the team use instead of committing the file?",
+  "choices": [
+   "Rebuild the .dacpac on every developer laptop",
+   "Commit the .dacpac to the main branch after every build",
+   "Store the .dacpac in a table of the development database",
+   "Upload the .dacpac as a pipeline artifact from the build job"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A pipeline artifact keeps the exact build output for later stages without adding generated binaries to the repository.",
+  "rationale": [
+   "Incorrect: laptop builds can differ from each other, so stages would not deploy the same package.",
+   "Incorrect: committing build output adds binaries and creates extra commits and conflicts.",
+   "Incorrect: a database table is not a build artifact store and ties the artifact to one server.",
+   "Correct: an artifact carries the same build output to the later stages and stays out of source control."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.5-01",
+  "obj": "2.3.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Contoso, Ltd. wants to change a table definition without affecting the main branch until the change is reviewed. Which workflow should the developer follow?",
+  "choices": [
+   "Edit the table in the production database first and copy it later",
+   "Commit the change directly to the main branch of the repository",
+   "Create a feature branch, commit, and open a pull request",
+   "Email the changed script to the team and wait for replies"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Changes are made on a feature branch and merged through a pull request, so reviewers can inspect them before they reach main.",
+  "rationale": [
+   "Incorrect: a production edit bypasses source control and causes schema drift.",
+   "Incorrect: a direct commit to main skips review and can break the build for everyone.",
+   "Correct: a feature branch isolates the work and the pull request gives reviewers a place to approve it.",
+   "Incorrect: an emailed script has no history, no review tracking, and no build check."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.5-02",
+  "obj": "2.3.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Two developers changed the same line of a table script, and Git reports a merge conflict in the second pull request. Which action should the second developer take?",
+  "choices": [
+   "Disable the build check so that the merge can continue anyway",
+   "Delete the branch of the first developer to remove the conflict",
+   "Force push the branch over the main branch to replace its content",
+   "Resolve the conflict markers in the file, build, and commit the result"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A conflict is resolved by editing the file to keep the intended result, removing the markers, verifying the build, and committing the resolution.",
+  "rationale": [
+   "Incorrect: turning off the check hides errors and does not resolve the conflict.",
+   "Incorrect: deleting another branch loses work and does not resolve the conflict in the file.",
+   "Incorrect: a force push over main rewrites history and discards the work of others.",
+   "Correct: resolving the markers keeps both intentions and a build confirms the model still compiles."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.5-03",
+  "obj": "2.3.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A team wants a pull request to merge only when its checks passed against the latest commit of the main branch. Which branch protection setting should the team enable?",
+  "choices": [
+   "Require linear history",
+   "Allow force pushes for administrators",
+   "Allow deletions of the protected branch",
+   "Require branches to be up to date before merging"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "With strict status checks, the head branch must be current with its base branch before it can merge, so checks run against the latest code.",
+  "rationale": [
+   "Incorrect: linear history restricts merge commits and does not require the branch to be current.",
+   "Incorrect: force pushes rewrite history and weaken the protection.",
+   "Incorrect: allowing deletions removes protection and does not control the checks.",
+   "Correct: the up-to-date requirement forces the branch to include the latest main before the merge."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.5-04",
+  "obj": "2.3.5",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Adventure Works uses pull requests for its SQL database project.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A pull request lets reviewers comment on a change before it is merged.",
+   "A build check can run automatically on every pull request.",
+   "After a conflict is resolved by hand, the project does not need to be built again."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Pull requests support review and automatic checks, and a resolved conflict still needs a build.",
+  "rationale": [
+   "Yes: review comments and approvals are recorded on the pull request before the merge.",
+   "Yes: a workflow triggered by the pull request can build the project and report the result.",
+   "No: the resolved result can still contain broken references, so the build must run again."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.5-05",
+  "obj": "2.3.5",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Wingtip Toys wants the main branch to stay deployable. Which two branch protection settings should you enable? Each correct answer presents part of the solution.",
+  "choices": [
+   "Allow force pushes to the main branch",
+   "Allow every developer to push directly to main",
+   "Require status checks such as the project build to pass",
+   "Remove the rule after the first merge",
+   "Require a pull request before merging"
+  ],
+  "answer": [
+   2,
+   4
+  ],
+  "explanation": "Pull request and status check requirements force review and a passing build before changes reach main.",
+  "rationale": [
+   "Incorrect: force pushes can rewrite history of the shared branch.",
+   "Incorrect: direct pushes skip review and the build check. It does not satisfy the requirement in the question.",
+   "Correct: a required build check stops merges of changes that do not compile.",
+   "Incorrect: removing the rule leaves main unprotected after the first merge.",
+   "Correct: a required pull request stops direct pushes and gives reviewers a gate."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.5-06",
+  "obj": "2.3.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Git merges two branches without a textual conflict, but one branch drops a column that a view from the other branch still references. Which check should the pipeline use to catch this problem?",
+  "choices": [
+   "A review by a code owner as the only check before the merge",
+   "A normalization of the line endings in all of the changed files",
+   "A build of the merged project that validates all references",
+   "The conflict detection that Git runs when it merges two branches"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A clean text merge does not prove the model is valid. Building the merged project validates references and reports the missing column.",
+  "rationale": [
+   "Incorrect: a reviewer can miss a cross-file reference, and the build is the reliable check.",
+   "Incorrect: line endings do not change the meaning of the references.",
+   "Correct: the build resolves references across all objects and fails on the missing column.",
+   "Incorrect: Git compares text and cannot see that a view needs the dropped column."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects"
+ },
+ {
+  "id": "2.3.6-01",
+  "obj": "2.3.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. must give a deployment workflow the connection string of the target database. Which location should the pipeline use to store the connection string of the target database?",
+  "choices": [
+   "In the README file that is shown on the repository page",
+   "In the .sqlproj file that is stored in the same repository",
+   "In plain text in the workflow YAML file of the repository",
+   "As an encrypted secret of the repository or environment"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Connection strings with credentials are stored as encrypted secrets, for example AZURE_SQL_CONNECTION_STRING, and read by the workflow at run time.",
+  "rationale": [
+   "Incorrect: a README is public documentation and must never contain credentials.",
+   "Incorrect: a project file is committed to source control and exposes the credentials.",
+   "Incorrect: plain text in YAML is visible to everyone who can read the repository.",
+   "Correct: secrets are stored encrypted and are not shown in the repository content."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.6-02",
+  "obj": "2.3.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A GitHub Actions workflow must sign in to Azure without a stored password. Which approach should the team use?",
+  "choices": [
+   "A federated credential (OIDC) with azure/login and secrets for the IDs",
+   "Anonymous access that is granted to the Azure subscription as a whole",
+   "The SQL administrator password written in the workflow file itself",
+   "A client secret that is committed in a shared configuration file"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "OIDC federation lets the workflow get a short-lived token, so no long-lived password is stored in GitHub. The IDs are passed as secrets.",
+  "rationale": [
+   "Correct: federation issues a short-lived token, so no password has to be stored.",
+   "Incorrect: Azure does not allow anonymous deployment to a subscription.",
+   "Incorrect: a password in the workflow is visible and long-lived.",
+   "Incorrect: a committed client secret can be read from the repository and its history."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.6-03",
+  "obj": "2.3.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A production database password must be exposed only to the deployment job and only after an approval. Which location should the team use to store the secret?",
+  "choices": [
+   "In an env block of the workflow file",
+   "As a plain repository variable",
+   "As a repository secret that every workflow can read",
+   "As an environment secret of the production environment"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Environment secrets are available only to jobs that reference the environment, and only after its protection rules, such as required reviewers, pass.",
+  "rationale": [
+   "Incorrect: a value in the workflow file is committed and visible in the repository.",
+   "Incorrect: a variable is not encrypted and is shown in logs and settings.",
+   "Incorrect: a repository secret is available to all workflows and is not gated by an approval.",
+   "Correct: the job gets the secret only after the approval rules of the environment are met."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.6-04",
+  "obj": "2.3.6",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Litware, Inc. reviews how its pipeline handles credentials.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A password in a workflow YAML file is visible to people who can read the repository.",
+   "OIDC federation avoids storing a long-lived Azure password in GitHub.",
+   "A secret that was committed by mistake is safe once a later commit deletes the file."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Secrets belong in a secret store, OIDC avoids long-lived passwords, and an exposed secret must be rotated.",
+  "rationale": [
+   "Yes: the file is part of the repository, so every reader sees the text and its history.",
+   "Yes: the workflow exchanges its identity for a short-lived token at run time.",
+   "No: the history still holds the value, so the secret must be rotated."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.6-05",
+  "obj": "2.3.6",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A developer committed a database password to the repository by mistake. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Rotate the exposed password so the old value no longer works",
+   "Delete the file in a later commit and keep the old password",
+   "Make the repository private and keep the old password",
+   "Rename the secret in the workflow and keep the old password",
+   "Store the new password as a secret and reference it from the workflow"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "The old value stays in the history, so it must be rotated. The new value goes into a secret store and is referenced by name.",
+  "rationale": [
+   "Correct: rotation makes the leaked value useless even though history still holds it.",
+   "Incorrect: deleting the file leaves the value in the earlier commits.",
+   "Incorrect: a private repository still exposes the value to everyone with access.",
+   "Incorrect: renaming the secret does not change the leaked password.",
+   "Correct: a secret reference keeps the new value out of the repository."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.6-06",
+  "obj": "2.3.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Settings such as the database name differ per environment but are not secret. Which approach should the project use so the same dacpac can be deployed to each environment?",
+  "choices": [
+   "Edit the T-SQL files with search and replace in the pipeline",
+   "SQLCMD variables with values supplied at publish time for each environment",
+   "Hard-code the production values and comment out the others",
+   "One branch per environment with hard-coded values"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "SQLCMD variables are defined in the project and receive their values at publish time, for example with /Variables, so one dacpac fits every environment.",
+  "rationale": [
+   "Incorrect: rewriting files per environment changes what was tested and risks mistakes.",
+   "Correct: variables keep the dacpac identical and the values are supplied when it is published.",
+   "Incorrect: commented values require manual edits and are easy to get wrong.",
+   "Incorrect: separate branches drift apart and no longer test the same code."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sqlpackage/sqlpackage-publish"
+ },
+ {
+  "id": "2.3.7-01",
+  "obj": "2.3.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A DBA at Fabrikam, Inc. adds a column directly in production with ALTER TABLE, and the SQL database project does not contain it. Which term should the team use to describe this situation?",
+  "choices": [
+   "Schema drift",
+   "Data skew",
+   "Parameter sniffing",
+   "Index fragmentation"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Schema drift is the gap between a SQL database project and the live database, for example after a manual change in production.",
+  "rationale": [
+   "Correct: drift means that the live schema no longer matches the source of truth in the project.",
+   "Incorrect: skew describes uneven data distribution and not a schema difference.",
+   "Incorrect: parameter sniffing describes plan reuse for parameter values.",
+   "Incorrect: fragmentation describes the physical order of index pages."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/05-detect-resolve-schema-drift"
+ },
+ {
+  "id": "2.3.7-02",
+  "obj": "2.3.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The team wants an XML report of the create, alter, and drop operations that a publish would perform, without deploying. Which SqlPackage action should the team run?",
+  "choices": [
+   "Publish",
+   "DeployReport",
+   "DriftReport",
+   "Extract"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "DeployReport produces an XML report of the changes a publish would make, which a pipeline can parse for drops or data motion.",
+  "rationale": [
+   "Incorrect: Publish changes the target database and does not only report the planned operations.",
+   "Correct: DeployReport compares the source with the target and reports planned operations without changing the target.",
+   "Incorrect: DriftReport compares a registered database with its registration and does not report what a publish would change.",
+   "Incorrect: Extract writes the schema of a database to a dacpac and does not report planned changes."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/05-detect-resolve-schema-drift"
+ },
+ {
+  "id": "2.3.7-03",
+  "obj": "2.3.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A team registered its database as a data-tier application and wants a report of changes made to the database since it was registered. Which SqlPackage action should the team run?",
+  "choices": [
+   "DeployReport",
+   "Publish",
+   "DriftReport",
+   "Script"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "DriftReport compares a registered database with its registration, so it needs only target parameters and no source file.",
+  "rationale": [
+   "Incorrect: DeployReport compares a source with a target and does not look at the registration.",
+   "Incorrect: Publish changes the target database and does not report drift.",
+   "Correct: DriftReport reports changes made after registration and uses only the target database.",
+   "Incorrect: Script generates the T-SQL of a deployment and does not report drift since registration."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sqlpackage/sqlpackage-deploy-drift-report"
+ },
+ {
+  "id": "2.3.7-04",
+  "obj": "2.3.7",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Litware, Inc. checks its database for schema drift.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Schema compare can compare a live database with a SQL database project.",
+   "The DriftReport action accepts the /SourceFile parameter.",
+   "The Script action generates the T-SQL of a deployment without running it."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Schema compare and Script help to find and review drift, and DriftReport uses only target parameters.",
+  "rationale": [
+   "Yes: the differences are grouped as create, alter, or delete and can be saved as an .scmp file.",
+   "No: DriftReport omits all source parameters and uses only the target database.",
+   "Yes: the output can be reviewed before any change is made to the target."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sqlpackage/sqlpackage-deploy-drift-report"
+ },
+ {
+  "id": "2.3.7-05",
+  "obj": "2.3.7",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A hotfix added an index in production, and the team agrees that the index is correct. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Drop the index in production to match the project",
+   "Import the difference into the project by using schema compare or a new extract",
+   "Publish the old project over production without review",
+   "Leave the project unchanged and ignore the difference",
+   "Commit the change to the project through a pull request"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "When the live change is correct, it is imported into the project and committed through the normal review flow so the project is the source of truth again.",
+  "rationale": [
+   "Incorrect: dropping a correct index in production removes the benefit of the hotfix.",
+   "Correct: importing the difference makes the project contain the index again.",
+   "Incorrect: publishing the old project can remove the index when the deployment is set to drop extra objects.",
+   "Incorrect: ignoring the difference keeps the drift and the next deployment can undo the hotfix.",
+   "Correct: a pull request keeps the change reviewed and in the history."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/05-detect-resolve-schema-drift"
+ },
+ {
+  "id": "2.3.7-06",
+  "obj": "2.3.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The project is correct and production has a manual change. Which step should the team take before it publishes the project to production?",
+  "choices": [
+   "Delete the manual change in production by hand before publishing",
+   "Extract production and overwrite the project files with the result",
+   "Generate and review the DeployReport and Script output for drops",
+   "Publish with the data loss checks turned off for this release"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Publishing computes a difference, so manual changes in the target can be affected. Reviewing the report and script shows planned drops before anything runs.",
+  "rationale": [
+   "Incorrect: a manual deletion is untracked and repeats the drift problem.",
+   "Incorrect: overwriting the project would import the unwanted change and lose the correct source.",
+   "Correct: the report and script show exactly what the deployment will change before it is executed.",
+   "Incorrect: turning off checks removes a safety net and does not explain the planned changes."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/05-detect-resolve-schema-drift"
+ },
+ {
+  "id": "2.3.8-01",
+  "obj": "2.3.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A pipeline must deploy a .dacpac to an existing Azure SQL database. Which SqlPackage action should the pipeline run?",
+  "choices": [
+   "DriftReport",
+   "Extract",
+   "Publish",
+   "Export"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Publish action updates a target database so its schema matches the dacpac.",
+  "rationale": [
+   "Incorrect: DriftReport reports changes of a registered database and does not deploy.",
+   "Incorrect: Extract reads the schema out of a database and does not deploy.",
+   "Correct: Publish incrementally updates the target database to match the dacpac.",
+   "Incorrect: Export writes a bacpac from a database and does not deploy a dacpac."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sqlpackage/sqlpackage-publish"
+ },
+ {
+  "id": "2.3.8-02",
+  "obj": "2.3.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which SqlPackage parameter should the pipeline use to name the .dacpac file that is published?",
+  "choices": [
+   "/TargetConnectionString",
+   "/Profile",
+   "/DeployReportPath",
+   "/SourceFile"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The /SourceFile parameter points to the dacpac. The target connection string names the database that is updated.",
+  "rationale": [
+   "Incorrect: TargetConnectionString identifies the database to update and not the package.",
+   "Incorrect: Profile names a publish profile with options and not the dacpac.",
+   "Incorrect: DeployReportPath names the file for the XML report and not the package.",
+   "Correct: SourceFile gives the path of the dacpac that holds the desired schema."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sqlpackage/sqlpackage-publish"
+ },
+ {
+  "id": "2.3.8-03",
+  "obj": "2.3.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A project change shortens a column that already holds data. Which behavior should the team expect from a publish with default settings?",
+  "choices": [
+   "The data is truncated silently and the publish completes",
+   "The publish stops with an error because BlockOnPossibleDataLoss is True by default",
+   "The column change is skipped and the rest of the publish completes",
+   "The database is dropped and created again"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "BlockOnPossibleDataLoss defaults to True, so a publish that could lose data stops instead of changing the column.",
+  "rationale": [
+   "Incorrect: a silent truncation would conflict with the data loss protection of the default.",
+   "Correct: the default setting protects data and stops the publish before the change.",
+   "Incorrect: the publish does not skip a single change and continue by default.",
+   "Incorrect: a publish alters the existing database and does not drop and create it."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sqlpackage/sqlpackage-publish"
+ },
+ {
+  "id": "2.3.8-04",
+  "obj": "2.3.8",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Contoso, Ltd. publishes a dacpac to an existing database by using SqlPackage.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The login that publishes to an existing database needs the db_owner role.",
+   "DropObjectsNotInSource is True by default.",
+   "The /DeployScriptPath parameter writes the generated T-SQL to a file."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Publishing needs db_owner, drops of extra objects are off by default, and a script file can be written.",
+  "rationale": [
+   "Yes: the permission is needed to alter the schema of the target database.",
+   "No: the default is False, so objects that are not in the dacpac are kept unless the option is set.",
+   "Yes: the script can be stored or reviewed as an audit record of the deployment."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sqlpackage/sqlpackage-publish"
+ },
+ {
+  "id": "2.3.8-05",
+  "obj": "2.3.8",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A GitHub Actions workflow must deploy a built dacpac to Azure SQL Database. Which two steps should you include? Each correct answer presents part of the solution.",
+  "choices": [
+   "Sign in by using the azure/login action",
+   "Run the azure/sql-action action with the publish action and the path of the dacpac",
+   "Run sqlcmd to drop and create the database",
+   "Commit the dacpac to the main branch",
+   "Upload the dacpac as an artifact and stop"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The workflow authenticates first and then uses the sql-action to publish the dacpac to the target database.",
+  "rationale": [
+   "Correct: the login step gives the job an identity to reach Azure.",
+   "Correct: the sql-action publishes the dacpac and updates the database to match it.",
+   "Incorrect: dropping and creating the database removes all data and is not an incremental deployment.",
+   "Incorrect: committing the dacpac does not deploy it to a database.",
+   "Incorrect: uploading an artifact stores the package but does not deploy it."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.8-06",
+  "obj": "2.3.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team wants the pipeline to save the T-SQL that a publish generates, for audit and review. Which parameter should the team add to the publish command?",
+  "choices": [
+   "/DeployReportPath",
+   "/Profile",
+   "/DeployScriptPath",
+   "/SourceFile"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "DeployScriptPath writes the generated deployment script, while DeployReportPath writes the XML report of planned operations.",
+  "rationale": [
+   "Incorrect: DeployReportPath writes an XML summary of operations and not the T-SQL script.",
+   "Incorrect: Profile loads publish options and does not write any output file.",
+   "Correct: DeployScriptPath writes the T-SQL file that the publish generates.",
+   "Incorrect: SourceFile names the dacpac to publish and not an output."
+  ],
+  "ref": "https://learn.microsoft.com/sql/tools/sqlpackage/sqlpackage-publish"
+ },
+ {
+  "id": "2.3.9-01",
+  "obj": "2.3.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys wants the owners of the schema folder to be requested automatically for review when a pull request changes it. Which file should the team create?",
+  "choices": [
+   "A .sqlproj file",
+   "A .gitignore file",
+   "A global.json file",
+   "A CODEOWNERS file"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A CODEOWNERS file maps file patterns to people or teams, who are requested for review when matching files change.",
+  "rationale": [
+   "Incorrect: a .sqlproj file defines how the database model is built and names no reviewers.",
+   "Incorrect: a .gitignore file lists files that Git ignores and names no reviewers.",
+   "Incorrect: a global.json file selects the tool version and names no reviewers.",
+   "Correct: CODEOWNERS lists patterns and owners, and owners are requested for review on matching changes."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.9-02",
+  "obj": "2.3.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Two patterns in a CODEOWNERS file match the same file. Which pattern should GitHub use to determine the owners of that file?",
+  "choices": [
+   "Both patterns, and every owner is required",
+   "The pattern with the longest path",
+   "The last matching pattern in the file",
+   "The first matching pattern in the file"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "When several patterns match a file, the last matching pattern takes precedence, so specific rules are placed after general ones.",
+  "rationale": [
+   "Incorrect: owners of the other pattern are not added, because only one pattern applies.",
+   "Incorrect: length of the path is not used, because the order of the lines decides.",
+   "Correct: the last match wins, so a later specific rule overrides an earlier general rule.",
+   "Incorrect: the first match does not win, because later lines override earlier ones."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.9-03",
+  "obj": "2.3.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team wants a pull request that changes the schema folder to merge only after an owner from CODEOWNERS approved it. Which setting should the team enable?",
+  "choices": [
+   "A wait timer on the production environment",
+   "Require branches to be up to date",
+   "Require review from Code Owners in the branch protection rule",
+   "Require linear history in the branch protection rule"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Code Owners review requirement is part of a branch protection rule. Approval from any one listed owner satisfies it.",
+  "rationale": [
+   "Incorrect: a wait timer delays a deployment job and does not affect pull request approval.",
+   "Incorrect: an up-to-date branch is about freshness and not about who approved.",
+   "Correct: the rule makes owner approval mandatory, and one listed owner is enough.",
+   "Incorrect: linear history only limits merge commits and does not require any approval."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.9-04",
+  "obj": "2.3.9",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Northwind Traders configures the production environment of its deployment workflow.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Only one of the required reviewers has to approve the job for it to proceed.",
+   "An environment can name up to 6 people or teams as required reviewers.",
+   "Prevent self-review lets the person who triggered the run approve it."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "One reviewer is enough, up to six can be named, and prevent self-review blocks self-approval.",
+  "rationale": [
+   "Yes: a single approval from any named reviewer releases the waiting job.",
+   "Yes: the limit of six applies to people and teams together. This matches the documented behavior.",
+   "No: the setting stops users from approving runs that they triggered themselves."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.9-05",
+  "obj": "2.3.9",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Adventure Works wants production deployments to wait for human approval and to run only for the main branch. Which two actions should you perform on the production environment? Each correct answer presents part of the solution.",
+  "choices": [
+   "Restrict the deployment branches to the main branch",
+   "Store the production password as a repository secret",
+   "Trigger the workflow on every push to any branch",
+   "Allow administrators to bypass the protection rules",
+   "Add required reviewers to the environment"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "Required reviewers pause the job until approved, and a branch restriction lets only the main branch deploy to the environment.",
+  "rationale": [
+   "Correct: the branch restriction stops other branches from deploying to production.",
+   "Incorrect: a repository secret is not gated by the approval of the environment.",
+   "Incorrect: running on every push does not add approval and starts more jobs.",
+   "Incorrect: bypass for administrators weakens the rules that should protect production.",
+   "Correct: a job that references the environment waits until a reviewer approves."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ },
+ {
+  "id": "2.3.9-06",
+  "obj": "2.3.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The deployment workflow must start when a change is merged into the main branch. Which trigger should the workflow use?",
+  "choices": [
+   "A trigger on every issue comment",
+   "A pull_request trigger on every branch",
+   "A schedule trigger that runs every minute",
+   "A push trigger filtered to the main branch"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A merge into main creates a push to main, so a push trigger filtered to that branch runs the deployment. This is general knowledge of GitHub Actions triggers.",
+  "rationale": [
+   "Incorrect: comments are unrelated to code changes and cannot signal a merge.",
+   "Incorrect: a pull_request trigger starts before the merge and on any branch, so it is not a merge trigger.",
+   "Incorrect: a schedule ignores merges and runs far too often for a deployment.",
+   "Correct: the filter makes the workflow start only for pushes, including merges, to main."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/implement-cicd-sql-database-projects/"
+ }
+]
