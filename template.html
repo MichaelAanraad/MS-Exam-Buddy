@@ -131,7 +131,7 @@ function md(s) {
   ).join("");
 }
 const inline = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-const why = s => `<div class="why">${inline(s)}</div>`;
+const why = s => s ? `<div class="why">${inline(s)}</div>` : "";
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const dom = q => q.obj.split(".")[0];
