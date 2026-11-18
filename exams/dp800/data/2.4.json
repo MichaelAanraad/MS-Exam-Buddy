@@ -1,0 +1,1007 @@
+[
+ {
+  "id": "2.4.1-01",
+  "obj": "2.4.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. starts a new Data API builder (DAB) project for Azure SQL Database. Which command should the developer run first to create the dab-config.json file?",
+  "choices": [
+   "dab add",
+   "dab init",
+   "dab start",
+   "dab validate"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "dab init creates the configuration file with the data source and runtime settings. dab add then adds entities to it.",
+  "rationale": [
+   "Incorrect: dab add adds an entity and needs a configuration file that already exists.",
+   "Correct: dab init creates the initial configuration file with the data source and the runtime settings.",
+   "Incorrect: dab start runs the API and needs a configuration file that already exists.",
+   "Incorrect: dab validate checks a configuration file that already exists and creates none."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/"
+ },
+ {
+  "id": "2.4.1-02",
+  "obj": "2.4.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The dab-config.json file already exists. Which command should the developer run to expose the dbo.Products table as an entity that anonymous users can read?",
+  "choices": [
+   "dab init --source dbo.Products --permissions \"anonymous:read\"",
+   "dab start --entity Product --permissions \"anonymous:read\"",
+   "dab validate --source dbo.Products --permissions \"anonymous:read\"",
+   "dab add Product --source dbo.Products --permissions \"anonymous:read\""
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "dab add registers a new entity with its source object and role permissions in the existing configuration file.",
+  "rationale": [
+   "Incorrect: dab init creates the file and the data source and does not add an entity to an existing file.",
+   "Incorrect: dab start runs the engine and does not change the configuration file.",
+   "Incorrect: dab validate checks the file and does not add an entity to it.",
+   "Correct: dab add writes the entity, its source, and the read permission for anonymous into the file."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/entities"
+ },
+ {
+  "id": "2.4.1-03",
+  "obj": "2.4.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team must not store the SQL connection string in dab-config.json. Which value should the connection-string setting use to read it from an environment variable at startup?",
+  "choices": [
+   "${SQL_CONNECTION}",
+   "@env('SQL_CONNECTION')",
+   "env:SQL_CONNECTION",
+   "%SQL_CONNECTION%"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "DAB resolves the @env() function at startup and reads the value from the named environment variable, so no secret is stored in the file.",
+  "rationale": [
+   "Incorrect: a dollar and brace pattern is not resolved by DAB when it reads the configuration.",
+   "Correct: the @env() function is the documented way to read a value from an environment variable.",
+   "Incorrect: a plain env: prefix is not a function that DAB resolves.",
+   "Incorrect: percent signs are not resolved by DAB when it reads the configuration."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/"
+ },
+ {
+  "id": "2.4.1-04",
+  "obj": "2.4.1",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. reviews a dab-config.json file.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The $schema property is required at the top level of the file.",
+   "The database-type value for SQL Server is mssql.",
+   "The same entity name can appear in two configuration files that are combined."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The schema property is required, SQL Server uses mssql, and entity names must be unique across files.",
+  "rationale": [
+   "Yes: the schema reference is one of the required top-level properties.",
+   "Yes: mssql is one of the documented data-source database types.",
+   "No: entity names must be unique across all configuration files that are combined."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/"
+ },
+ {
+  "id": "2.4.1-05",
+  "obj": "2.4.1",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A DAB configuration file is stored in source control. Which two actions should you perform to keep secrets out of the file? Each correct answer presents part of the solution.",
+  "choices": [
+   "Keep the password in the file and use a private repository",
+   "Put the password in the description of the entity",
+   "Reference a secret in Azure Key Vault with @akv() and set the endpoint",
+   "Write the SQL password in the connection string for the test database",
+   "Reference the connection string with @env() and set the variable on the host"
+  ],
+  "answer": [
+   2,
+   4
+  ],
+  "explanation": "DAB can read values with @env() or from Azure Key Vault with @akv(), so the file holds only a reference and no secret.",
+  "rationale": [
+   "Incorrect: a private repository still exposes the password to everyone with access.",
+   "Incorrect: a description is plain text in the same file and exposes the password.",
+   "Correct: @akv() reads the secret from Key Vault by name, using the configured endpoint.",
+   "Incorrect: a password in the file is stored in the history of the repository.",
+   "Correct: @env() keeps the value in the host and the file holds only the name."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/"
+ },
+ {
+  "id": "2.4.2-01",
+  "obj": "2.4.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A client of the DAB REST API must return only the rows of the book entity where the year is 1970 or later. Which query option should the client use?",
+  "choices": [
+   "$filter",
+   "$first",
+   "$select",
+   "$orderby"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The $filter option restricts rows by a condition. $select chooses columns, $orderby sorts, and $first limits the count.",
+  "rationale": [
+   "Correct: $filter restricts the rows with a condition such as year ge 1970.",
+   "Incorrect: $first limits how many rows return and does not test a condition.",
+   "Incorrect: $select chooses the returned fields and does not restrict rows.",
+   "Incorrect: $orderby sorts the rows and does not restrict them."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/rest"
+ },
+ {
+  "id": "2.4.2-02",
+  "obj": "2.4.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A DAB REST response contains a nextLink value. Which parameter should the client use to request the next page of results?",
+  "choices": [
+   "$next set to true",
+   "$after with the continuation token from nextLink",
+   "$page with the next page number",
+   "$skip with the number of rows already read"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "DAB uses continuation tokens. The nextLink holds the token, and the client passes it in the $after parameter.",
+  "rationale": [
+   "Incorrect: there is no $next parameter in the REST API of DAB.",
+   "Correct: $after continues from the token that the previous response returned.",
+   "Incorrect: DAB does not use page numbers for pagination. It does not satisfy the requirement in the question.",
+   "Incorrect: DAB pagination does not use an offset parameter such as $skip."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/rest"
+ },
+ {
+  "id": "2.4.2-03",
+  "obj": "2.4.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Wingtip Toys wants every REST request to return 50 items by default when the client sends no $first value. Which setting should the team change?",
+  "choices": [
+   "runtime.rest.path set to 50",
+   "The cache ttl-seconds value of the entity set to 50",
+   "$first=-1 on every request",
+   "runtime.pagination.default-page-size set to 50"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The default page size is 100 and is configured with runtime.pagination.default-page-size.",
+  "rationale": [
+   "Incorrect: rest.path sets the route of the endpoint and does not control the page size.",
+   "Incorrect: ttl-seconds controls how long cached results live and not the page size.",
+   "Incorrect: $first=-1 asks for the maximum page size, which is the opposite of the goal.",
+   "Correct: this setting controls how many items return when the client gives no $first value."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/rest"
+ },
+ {
+  "id": "2.4.2-04",
+  "obj": "2.4.2",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Adventure Works configures caching and calls the DAB REST API.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Level 1 caching stores results in memory.",
+   "A ttl-seconds value on an entity overrides the global ttl-seconds value.",
+   "A GET request for a primary key that does not exist returns 404."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "L1 is in memory, the entity TTL overrides the global TTL, and a missing key returns an empty value array.",
+  "rationale": [
+   "Yes: L1 uses the memory of the DAB host only, while L1L2 also adds a distributed cache.",
+   "Yes: the entity value wins, and an entity without a value inherits the global one.",
+   "No: the response is 200 OK with an empty value array. This does not match the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/cache/level-1"
+ },
+ {
+  "id": "2.4.2-05",
+  "obj": "2.4.2",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Northwind Traders wants results of the Product entity to be cached for 30 seconds. Which two settings should you configure? Each correct answer presents part of the solution.",
+  "choices": [
+   "Set graphql.operation to query on the Product entity",
+   "Set cache enabled to true with ttl-seconds 30 on the Product entity",
+   "Set cache enabled to true in the runtime section",
+   "Send $first=30 with every request",
+   "Set rest.methods to GET on the Product entity"
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "Caching is switched on globally and each entity opts in with its own cache block. The ttl-seconds value sets how long results stay.",
+  "rationale": [
+   "Incorrect: graphql.operation applies to stored procedures and does not control caching.",
+   "Correct: the entity block opts in and sets the lifetime to 30 seconds.",
+   "Correct: the global setting turns the cache on for the runtime.",
+   "Incorrect: $first limits the page size and has no effect on caching.",
+   "Incorrect: rest.methods applies to stored procedures and does not control caching."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/cache/level-1"
+ },
+ {
+  "id": "2.4.2-06",
+  "obj": "2.4.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A client sends $select=id,Secret to a REST entity, and the role of the caller has no access to the Secret field. Which response should the client expect?",
+  "choices": [
+   "500 Internal Server Error",
+   "200 OK with the Secret field omitted",
+   "400 Bad Request",
+   "404 Not Found"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A missing or inaccessible field in $select returns 400 Bad Request. DAB does not silently drop the field.",
+  "rationale": [
+   "Incorrect: 500 would mean a server fault, but the cause is an invalid request.",
+   "Incorrect: DAB does not silently omit a requested field that the role cannot read.",
+   "Correct: DAB rejects the request when a selected field is missing or not accessible.",
+   "Incorrect: 404 is used for a missing route and not for an inaccessible field in $select."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/rest"
+ },
+ {
+  "id": "2.4.3-01",
+  "obj": "2.4.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys runs DAB with the default settings. Which URL path should a client use to read the book entity through REST?",
+  "choices": [
+   "/rest/book",
+   "/dab/book",
+   "/graphql/book",
+   "/api/book"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Each entity is reachable at the base URL followed by /api and the entity name by default.",
+  "rationale": [
+   "Incorrect: /rest is not the default route of the DAB REST endpoint.",
+   "Incorrect: /dab is not a route that DAB registers for entities.",
+   "Incorrect: /graphql is the default route of the GraphQL endpoint and not of REST.",
+   "Correct: the default REST route is /api followed by the entity name."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/rest"
+ },
+ {
+  "id": "2.4.3-02",
+  "obj": "2.4.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The team must serve GraphQL at /data/graphql instead of the default path. Which setting should the team change in the configuration file?",
+  "choices": [
+   "data-source.options",
+   "runtime.rest.path",
+   "runtime.graphql.path",
+   "runtime.host.mode"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The GraphQL path is set in the graphql section of the runtime. This default path comes from general knowledge of DAB.",
+  "rationale": [
+   "Incorrect: data-source options describe the database and not the endpoint paths.",
+   "Incorrect: the rest section holds the path of the REST endpoint and not of GraphQL.",
+   "Correct: the graphql section of the runtime holds the path of the GraphQL endpoint.",
+   "Incorrect: host mode switches between development and production and sets no path."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/"
+ },
+ {
+  "id": "2.4.3-03",
+  "obj": "2.4.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An application uses only GraphQL, and the team wants the REST endpoints to be unavailable. Which setting should the team apply?",
+  "choices": [
+   "Set runtime.host.mode to development",
+   "Set runtime.rest.enabled to false",
+   "Set runtime.graphql.enabled to false",
+   "Remove all permissions from every role"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The enabled flag of the rest section switches the REST endpoints off while GraphQL stays available. This comes from general knowledge of DAB.",
+  "rationale": [
+   "Incorrect: development mode does not disable any endpoint. It does not satisfy the requirement in the question.",
+   "Correct: the flag turns off REST and keeps GraphQL available for the application.",
+   "Incorrect: this would turn off the endpoint that the application needs.",
+   "Incorrect: removing permissions blocks GraphQL too and does not switch off REST routes."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/"
+ },
+ {
+  "id": "2.4.3-04",
+  "obj": "2.4.3",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Litware, Inc. reviews the REST endpoint settings of DAB.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Path components and query parameters of REST requests are case sensitive.",
+   "The rest.path setting of an entity can contain slashes.",
+   "The compression level can be set to maximum."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "REST paths are case sensitive, an entity path can contain slashes, and the compression levels are optimal, fastest, and none.",
+  "rationale": [
+   "Yes: a request for /api/Book and /api/book can differ, as can $filter and $Filter.",
+   "Yes: version 2.0 and later allow paths such as shopping-cart/item.",
+   "No: the documented levels are optimal, fastest, and none. This does not match the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/rest"
+ },
+ {
+  "id": "2.4.3-05",
+  "obj": "2.4.3",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A DAB endpoint is going to production for a web app at https://app.contoso.com. Which two actions should you perform? This guidance comes from general knowledge of DAB. Each correct answer presents part of the solution.",
+  "choices": [
+   "Limit the CORS origins to the origin of the web app",
+   "Set the host mode to development to see detailed errors",
+   "Grant anonymous create on every entity",
+   "Allow all origins with a wildcard",
+   "Set the host mode to production"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "A production endpoint should run in production mode and accept browser calls only from the known origin.",
+  "rationale": [
+   "Correct: a fixed origin list stops other sites from calling the API from a browser.",
+   "Incorrect: development mode exposes details that a production endpoint should hide.",
+   "Incorrect: anonymous create lets anyone insert rows and widens the attack surface.",
+   "Incorrect: a wildcard allows every site to call the API from a browser.",
+   "Correct: production mode turns off development features and detailed error output."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/"
+ },
+ {
+  "id": "2.4.3-06",
+  "obj": "2.4.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A client wants the largest page that the REST endpoint allows in one request. Which value of the $first parameter should the client send?",
+  "choices": [
+   "1000000",
+   "-1",
+   "0",
+   "max"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Sending $first=-1 requests the maximum page size that is configured for the endpoint.",
+  "rationale": [
+   "Incorrect: a large number is not the documented way and can be rejected by the limit.",
+   "Correct: the value -1 asks for the maximum page size. This is the option that satisfies the requirement in the question.",
+   "Incorrect: 0 does not ask for the maximum and returns no useful page.",
+   "Incorrect: max is not a valid value of the $first parameter."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/rest"
+ },
+ {
+  "id": "2.4.4-01",
+  "obj": "2.4.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants to expose the stored procedure dbo.get_book_by_id through DAB. Which source type should the entity use?",
+  "choices": [
+   "stored-procedure",
+   "function",
+   "view",
+   "table"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The source type stored-procedure tells DAB that the object is executed and not read as a table.",
+  "rationale": [
+   "Correct: stored-procedure is the documented source type for procedures.",
+   "Incorrect: function is not a source type of an entity in DAB.",
+   "Incorrect: view is for views and a procedure cannot be queried like one.",
+   "Incorrect: table is for tables and a procedure cannot be queried like one."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/entities"
+ },
+ {
+  "id": "2.4.4-02",
+  "obj": "2.4.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which permission action should the configuration grant to a role so that the role can call a stored-procedure entity?",
+  "choices": [
+   "create",
+   "execute",
+   "update",
+   "read"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Stored-procedure entities use the execute action. The wildcard expands to execute for procedures.",
+  "rationale": [
+   "Incorrect: create inserts rows into a table and does not allow a procedure call.",
+   "Correct: execute is the action that allows a call of the stored procedure.",
+   "Incorrect: update changes rows of a table and does not allow a procedure call.",
+   "Incorrect: read is a table and view action and does not allow a procedure call."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/entities"
+ },
+ {
+  "id": "2.4.4-03",
+  "obj": "2.4.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A Book entity and an Author entity are linked through the join table dbo.books_authors. Which property of the relationship should name the join table?",
+  "choices": [
+   "target.entity",
+   "source.fields",
+   "cardinality",
+   "linking.object"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "For a many-to-many relationship, linking.object names the join table, and linking.source.fields and linking.target.fields name its columns.",
+  "rationale": [
+   "Incorrect: target.entity names the related entity and not the join table.",
+   "Incorrect: source.fields lists the columns of the source entity and not the join table.",
+   "Incorrect: cardinality says one or many and does not name a table.",
+   "Correct: linking.object holds the name of the join table of a many-to-many relationship."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/relationships"
+ },
+ {
+  "id": "2.4.4-04",
+  "obj": "2.4.4",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Adventure Works defines relationships between DAB entities.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Relationships can be traversed in GraphQL queries.",
+   "Relationships can be traversed in REST requests.",
+   "DAB supports navigation across only one hop of a relationship."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Relationships work in GraphQL only, and navigation is limited to one hop.",
+  "rationale": [
+   "Yes: related entities appear as nested objects in a single request.",
+   "No: relationships apply to GraphQL only and REST does not support them.",
+   "Yes: the documentation lists one-hop navigation as a limitation."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/relationships"
+ },
+ {
+  "id": "2.4.4-05",
+  "obj": "2.4.4",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A SQL view dbo.vw_Sales has no primary key, and the team wants to expose it through DAB. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Set the source type of the entity to view",
+   "Create a clustered index on the configuration file",
+   "Mark the key column with primary-key true in the fields of the entity",
+   "Set graphql.operation to mutation for the entity",
+   "Set the source type of the entity to table"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "A view is declared with the type view, and because a view has no key, DAB needs a field marked as the primary key.",
+  "rationale": [
+   "Correct: the type view tells DAB how to read the object. This is the option that satisfies the requirement in the question.",
+   "Incorrect: a configuration file has no indexes. It does not satisfy the requirement in the question.",
+   "Correct: DAB needs a key to address single rows, so one field is marked as the primary key.",
+   "Incorrect: graphql.operation applies to stored procedures and does not give a key.",
+   "Incorrect: the type table does not match the object and can cause errors."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/entities"
+ },
+ {
+  "id": "2.4.4-06",
+  "obj": "2.4.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A stored-procedure entity must be callable with an HTTP GET request. Which setting should the team change?",
+  "choices": [
+   "Set rest.methods to [\"GET\"] on the entity",
+   "Set the parameter of the procedure to not required",
+   "Grant the read action to the role",
+   "Set graphql.operation to query on the entity"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "By default a stored-procedure entity accepts POST. The rest.methods array lists the allowed HTTP methods.",
+  "rationale": [
+   "Correct: rest.methods lists the HTTP methods and the default is POST only.",
+   "Incorrect: making a parameter optional does not change the allowed HTTP method.",
+   "Incorrect: read is not an action for stored procedures, which use execute.",
+   "Incorrect: graphql.operation controls the GraphQL root type and not the REST method."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/configuration/entities"
+ },
+ {
+  "id": "2.4.5-01",
+  "obj": "2.4.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. builds a container image for DAB. Which base image should the Dockerfile start from?",
+  "choices": [
+   "docker.io/library/nginx",
+   "mcr.microsoft.com/mssql/server",
+   "mcr.microsoft.com/azure-sql-edge",
+   "mcr.microsoft.com/azure-databases/data-api-builder"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The DAB container image is published by Microsoft in the Microsoft Container Registry, and a custom image is built on top of it.",
+  "rationale": [
+   "Incorrect: nginx is a web server and contains no DAB engine.",
+   "Incorrect: the mssql/server image runs a SQL Server instance and not the DAB engine.",
+   "Incorrect: the Azure SQL Edge image runs a database engine and not the DAB engine.",
+   "Correct: this is the published image of Data API builder. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/azure/data-api-builder/deployment/azure-container-apps"
+ },
+ {
+  "id": "2.4.5-02",
+  "obj": "2.4.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A Dockerfile for a custom DAB image must include the configuration file. Which destination path should the COPY instruction use?",
+  "choices": [
+   "/var/lib/dab-config.json",
+   "/etc/dab-config.json",
+   "/App/dab-config.json",
+   "/home/dab-config.json"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The documented image expects the configuration file at /App/dab-config.json.",
+  "rationale": [
+   "Incorrect: the image does not look in /var/lib for its configuration file.",
+   "Incorrect: the image does not look in /etc for its configuration file.",
+   "Correct: the engine in the base image reads its configuration from the /App folder.",
+   "Incorrect: the image does not look in /home for its configuration file."
+  ],
+  "ref": "https://learn.microsoft.com/azure/data-api-builder/deployment/azure-container-apps"
+ },
+ {
+  "id": "2.4.5-03",
+  "obj": "2.4.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "DAB runs in Azure Container Apps, and the external ingress must reach the engine. Which target port should the ingress use?",
+  "choices": [
+   "8443",
+   "5000",
+   "1433",
+   "80"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The DAB container listens on port 5000, so the ingress target port is set to 5000.",
+  "rationale": [
+   "Incorrect: port 8443 is not the port of the DAB container. It does not satisfy the requirement in the question.",
+   "Correct: the engine in the DAB image listens on port 5000. This is the option that satisfies the requirement in the question.",
+   "Incorrect: port 1433 is the SQL Server port and not the port of the API engine.",
+   "Incorrect: port 80 is the HTTP default, but the DAB container does not listen on it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/data-api-builder/deployment/azure-container-apps"
+ },
+ {
+  "id": "2.4.5-04",
+  "obj": "2.4.5",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Northwind Traders deploys DAB to Azure Container Apps.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The connection string can be read from an environment variable that is set on the container app.",
+   "Managed identities are recommended instead of a connection string with keys.",
+   "The ingress target port of the DAB container should be 1433."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The connection string comes from an environment variable, managed identities are recommended, and the DAB port is 5000.",
+  "rationale": [
+   "Yes: the configuration uses @env() and the variable is set on the host.",
+   "Yes: role-based access with managed identities avoids storing keys.",
+   "No: the container listens on port 5000, and 1433 is the SQL Server port."
+  ],
+  "ref": "https://learn.microsoft.com/azure/data-api-builder/deployment/azure-container-apps"
+ },
+ {
+  "id": "2.4.5-05",
+  "obj": "2.4.5",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Wingtip Toys deploys DAB to Azure Container Apps. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Disable ingress so that clients use SQL directly",
+   "Write the database password in dab-config.json",
+   "Open the ingress target port 1433",
+   "Set the environment variable that the configuration references on the container app",
+   "Build a custom image from the DAB base image and copy dab-config.json into it"
+  ],
+  "answer": [
+   3,
+   4
+  ],
+  "explanation": "The image carries the configuration, and the container app provides the secret value through the environment variable the configuration names.",
+  "rationale": [
+   "Incorrect: disabling ingress stops clients from reaching the API.",
+   "Incorrect: a password in the file exposes it in the image and in source control.",
+   "Incorrect: port 1433 is the database port and is not the port of the API.",
+   "Correct: the variable supplies the connection string at start without storing it in the file.",
+   "Correct: the image packages the engine and the configuration file together."
+  ],
+  "ref": "https://learn.microsoft.com/azure/data-api-builder/deployment/azure-container-apps"
+ },
+ {
+  "id": "2.4.5-06",
+  "obj": "2.4.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "After the deployment, a team member wants to open the Swagger UI of the DAB container. Which path should the team member add to the app URL?",
+  "choices": [
+   "/api/swagger",
+   "/swagger/index.html",
+   "/graphql/swagger",
+   "/dab/docs"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The documentation shows the Swagger UI of the REST API at /api/swagger of the deployed app.",
+  "rationale": [
+   "Correct: the Swagger UI is served under the REST path at /api/swagger.",
+   "Incorrect: /swagger/index.html is not the documented location in DAB.",
+   "Incorrect: the GraphQL path does not serve a Swagger page. It does not satisfy the requirement in the question.",
+   "Incorrect: /dab/docs is not a path that DAB registers. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/azure/data-api-builder/deployment/azure-container-apps"
+ },
+ {
+  "id": "2.4.6-01",
+  "obj": "2.4.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which section of dab-config.json should hold the Application Insights settings of DAB?",
+  "choices": [
+   "runtime.telemetry.application-insights",
+   "azure-key-vault.telemetry",
+   "entities.telemetry",
+   "data-source.application-insights"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Application Insights is configured in the application-insights block under runtime.telemetry.",
+  "rationale": [
+   "Correct: the telemetry section of the runtime contains the application-insights block.",
+   "Incorrect: azure-key-vault describes where secrets are read from and has no telemetry block.",
+   "Incorrect: entities describe exposed objects and have no telemetry block.",
+   "Incorrect: data-source describes the database and has no telemetry block."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/monitor/application-insights"
+ },
+ {
+  "id": "2.4.6-02",
+  "obj": "2.4.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The team enables Application Insights for DAB. Which value should the connection-string setting contain?",
+  "choices": [
+   "The full Application Insights connection string",
+   "The name of the Log Analytics workspace",
+   "The URL of the DAB endpoint",
+   "Only the instrumentation key"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The documentation tells to use the full connection string and not only the instrumentation key.",
+  "rationale": [
+   "Correct: the full string identifies the resource and its ingestion endpoint.",
+   "Incorrect: a workspace name does not identify where telemetry is sent.",
+   "Incorrect: the URL of the API is not a destination for telemetry.",
+   "Incorrect: the documentation says to use the full string and not only the key."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/monitor/application-insights"
+ },
+ {
+  "id": "2.4.6-03",
+  "obj": "2.4.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The configuration sets application-insights enabled to true but has no connection string. Which behavior should the team expect when DAB starts?",
+  "choices": [
+   "DAB creates a new Application Insights resource",
+   "DAB starts and silently ignores the setting",
+   "DAB starts and sends telemetry to a default resource",
+   "DAB reports an error"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "When telemetry is enabled without a connection string, DAB reports an error at startup.",
+  "rationale": [
+   "Incorrect: DAB does not create Azure resources by itself. It does not satisfy the requirement in the question.",
+   "Incorrect: the setting is not ignored, because DAB validates it at startup.",
+   "Incorrect: DAB has no default Application Insights resource to send telemetry to.",
+   "Correct: a missing connection string with telemetry enabled is reported as an error."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/monitor/application-insights"
+ },
+ {
+  "id": "2.4.6-04",
+  "obj": "2.4.6",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Adventure Works monitors DAB with Application Insights.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Requests and response times of REST and GraphQL calls are logged.",
+   "Calls to SQL are logged as dependencies with their duration.",
+   "The connection string of Application Insights should be stored in source control."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Application Insights logs requests and SQL dependencies, and the connection string stays out of source control.",
+  "rationale": [
+   "Yes: request telemetry includes the response times and status codes.",
+   "Yes: dependency telemetry shows how long the database calls took.",
+   "No: it should be stored in an environment variable or Azure Key Vault."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/monitor/application-insights"
+ },
+ {
+  "id": "2.4.6-05",
+  "obj": "2.4.6",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Tailspin Toys wants to see slow SQL calls made by DAB and to query the data over time. Which two actions should you perform? The Log Analytics part comes from general knowledge. Each correct answer presents part of the solution.",
+  "choices": [
+   "Enable the level 2 cache for every entity",
+   "Turn off the traces that DAB writes",
+   "Query the telemetry with Kusto Query Language in a Log Analytics workspace",
+   "Set the host mode to development on the production host",
+   "Enable Application Insights telemetry in the DAB configuration"
+  ],
+  "answer": [
+   2,
+   4
+  ],
+  "explanation": "Dependency telemetry shows the SQL call durations, and a Log Analytics workspace lets the team query it with KQL over time.",
+  "rationale": [
+   "Incorrect: a cache can hide slow calls and does not record any of them.",
+   "Incorrect: turning off traces removes information that helps to diagnose problems.",
+   "Correct: KQL queries in Log Analytics find slow calls and trends across a time range.",
+   "Incorrect: development mode does not collect telemetry and exposes details on production.",
+   "Correct: Application Insights collects requests, dependencies, and exceptions from DAB."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/monitor/application-insights"
+ },
+ {
+  "id": "2.4.6-06",
+  "obj": "2.4.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The developer wants to add the telemetry settings to the configuration file without editing the JSON by hand. Which command should the developer run?",
+  "choices": [
+   "dab add-telemetry --app-insights-enabled true --app-insights-conn-string \"@env('app-insights-connection-string')\"",
+   "dab init --telemetry true",
+   "dab update --telemetry true",
+   "dab start --monitor application-insights"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The dab add-telemetry command writes the application-insights block into the configuration file.",
+  "rationale": [
+   "Correct: add-telemetry writes the block with the enabled flag and the connection string reference.",
+   "Incorrect: dab init creates a new file and does not add telemetry to an existing one.",
+   "Incorrect: dab update changes an entity and has no general telemetry switch.",
+   "Incorrect: dab start runs the engine and does not edit the configuration file."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/data-api-builder/concept/monitor/application-insights"
+ },
+ {
+  "id": "2.4.7-01",
+  "obj": "2.4.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. needs to know only which rows of dbo.Orders changed since the last synchronization, and the application reads the current values from the table. Which feature should the team enable?",
+  "choices": [
+   "Temporal tables",
+   "Change tracking",
+   "Query Store",
+   "Change data capture"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Change tracking records that a row changed, identified by its primary key, and not the old or new data. It has lower overhead than change data capture.",
+  "rationale": [
+   "Incorrect: temporal tables keep row history and are not a synchronization feed.",
+   "Correct: change tracking records the fact of a change by primary key at low cost.",
+   "Incorrect: Query Store records query performance data and not row changes.",
+   "Incorrect: change data capture stores the changed data and costs more than the stated need."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/track-data-changes-sql-server"
+ },
+ {
+  "id": "2.4.7-02",
+  "obj": "2.4.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An audit solution at Fabrikam, Inc. needs the history of each change, including the old and new values of the rows. Which feature should the team enable?",
+  "choices": [
+   "Change tracking",
+   "Resource Governor",
+   "Change data capture",
+   "Automatic tuning"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Change data capture reads the transaction log with a capture job and stores historical row data in change tables.",
+  "rationale": [
+   "Incorrect: change tracking records only that a row changed and not the data.",
+   "Incorrect: Resource Governor manages resource limits and does not record changes.",
+   "Correct: CDC stores the historical data of each change in change tables.",
+   "Incorrect: automatic tuning manages indexes and plans and does not record changes."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/track-data-changes-sql-server"
+ },
+ {
+  "id": "2.4.7-03",
+  "obj": "2.4.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A function with an Azure SQL trigger must run when rows of dbo.ToDo change. Which prerequisite should the team meet?",
+  "choices": [
+   "Enable Query Store on the database",
+   "Enable change data capture on the dbo.ToDo table",
+   "Enable change tracking on the database and on the dbo.ToDo table",
+   "Convert dbo.ToDo to a system-versioned temporal table"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Azure SQL trigger uses change tracking, which must be enabled on both the database and the monitored table.",
+  "rationale": [
+   "Incorrect: Query Store records query data and is not read by the trigger.",
+   "Incorrect: the trigger does not read CDC change tables. It does not satisfy the requirement in the question.",
+   "Correct: the trigger polls change tracking data, so it must be on for the database and the table.",
+   "Incorrect: a temporal table keeps history and is not read by the trigger."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-azure-sql-trigger"
+ },
+ {
+  "id": "2.4.7-04",
+  "obj": "2.4.7",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Litware, Inc. evaluates change event streaming (CES), which is in preview.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "CES publishes each change as a CloudEvent.",
+   "Azure Event Hubs is a supported destination of CES.",
+   "CES is generally available in every SQL product."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "CES publishes CloudEvents to Event Hubs or Fabric Eventstream, and it is a preview feature.",
+  "rationale": [
+   "Yes: the event carries the schema, the previous values, and the new values.",
+   "Yes: Event Hubs and Fabric Eventstream are the documented destinations.",
+   "No: CES is in preview and the support differs between SQL products."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/change-event-streaming/overview"
+ },
+ {
+  "id": "2.4.7-05",
+  "obj": "2.4.7",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Northwind Traders configures change event streaming (preview) from Azure SQL Database to Azure Event Hubs. Which five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run sys.sp_create_event_stream_group with the Event Hubs destination.",
+   "Run sys.sp_add_object_to_event_stream_group for the table.",
+   "Run sys.sp_cdc_enable_db on the database.",
+   "Create a master key and a database scoped credential.",
+   "Set the recovery model of the database to FULL.",
+   "Create a SQL Server Agent job that polls the table.",
+   "Run sys.sp_enable_event_stream."
+  ],
+  "answer": [
+   4,
+   3,
+   6,
+   0,
+   1
+  ],
+  "explanation": "CES needs the FULL recovery model, a credential, the feature enabled, a stream group with a destination, and then the tables added to the group.",
+  "rationale": [
+   "Step 4: the group defines the destination and must exist before tables are added.",
+   "Step 5: adding the table is the last step, because it needs the existing group.",
+   "Incorrect: CES does not use CDC, so enabling it is not part of this setup.",
+   "Step 2: the stream group refers to the credential, so it must exist before the group.",
+   "Step 1: the stream needs the transaction log, so the recovery model must be FULL first.",
+   "Incorrect: CES pushes events to the destination, and no polling job is needed.",
+   "Step 3: the feature must be enabled before a stream group can be created."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/change-event-streaming/configure"
+ },
+ {
+  "id": "2.4.7-06",
+  "obj": "2.4.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A workflow in Azure Logic Apps must start when a new row is added to a table in Azure SQL Database. Which trigger of the SQL Server connector should the workflow use? This comes from general knowledge of the connector.",
+  "choices": [
+   "When an item is created",
+   "When a message arrives in a queue",
+   "When an HTTP request is received",
+   "When a blob is added or modified"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The SQL Server connector provides a polling trigger that fires when an item, which is a row, is created in the table.",
+  "rationale": [
+   "Correct: the connector trigger checks the table and starts the workflow for a new row.",
+   "Incorrect: a queue trigger belongs to a messaging service and does not watch the table.",
+   "Incorrect: an HTTP trigger needs a caller to send a request and does not watch the table.",
+   "Incorrect: a blob trigger belongs to Azure Storage and not to a SQL table."
+  ],
+  "ref": "https://learn.microsoft.com/azure/connectors/connectors-create-api-sqlazure"
+ }
+]

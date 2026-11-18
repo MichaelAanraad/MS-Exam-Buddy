@@ -1,0 +1,1702 @@
+[
+ {
+  "id": "3.2.1-01",
+  "obj": "3.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. lets users search for exact part numbers and product names. Which search approach should the team use first?",
+  "choices": [
+   "Vector search only",
+   "Full-text search",
+   "A trained classification model",
+   "A semantic reranker"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Full-text search matches exact words, names, and identifiers well. Vector search is strong for meaning and can miss exact terms.",
+  "rationale": [
+   "Incorrect: vector search can miss exact terms such as part numbers.",
+   "Correct: full-text search matches exact words, names, and identifiers.",
+   "Incorrect: a classification model assigns labels and does not search text.",
+   "Incorrect: a reranker orders results and does not find exact terms by itself."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/02-choose-intelligent-search-approach"
+ },
+ {
+  "id": "3.2.1-02",
+  "obj": "3.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. users describe what they need in their own words, such as a warm jacket for cold hiking trips. Which search approach should the team use?",
+  "choices": [
+   "Semantic vector search",
+   "A search on the primary key",
+   "Search with LIKE and wildcards",
+   "A full-text search on stop words"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Vector search compares embeddings, so it finds items with a similar meaning even when the words differ.",
+  "rationale": [
+   "Correct: embeddings place similar meanings close together, even with different words.",
+   "Incorrect: a key lookup finds one row by its key and does not search text.",
+   "Incorrect: LIKE matches character patterns and does not understand meaning.",
+   "Incorrect: stop words are removed from the index and carry no meaning."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/02-choose-intelligent-search-approach"
+ },
+ {
+  "id": "3.2.1-03",
+  "obj": "3.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The queries of Wingtip Toys contain both exact SKU codes and descriptions in natural language, and neither approach alone returns good results. Which approach should the team choose?",
+  "choices": [
+   "An exact key lookup for every query",
+   "Full-text search with a larger stop list",
+   "Hybrid search that combines full-text and vector results",
+   "Vector search with a smaller number of dimensions"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Hybrid search combines keyword results for exact terms with vector results for meaning, and usually merges them with reciprocal rank fusion.",
+  "rationale": [
+   "Incorrect: a key lookup cannot search descriptions. It does not satisfy the requirement in the question.",
+   "Incorrect: a larger stop list removes more words and does not add meaning.",
+   "Correct: hybrid search covers both exact codes and paraphrased descriptions.",
+   "Incorrect: fewer dimensions reduce size and do not add exact matching."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/02-choose-intelligent-search-approach"
+ },
+ {
+  "id": "3.2.1-04",
+  "obj": "3.2.1",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Northwind Traders compares search approaches.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Vector search can miss exact terms such as product codes.",
+   "Full-text search finds synonyms such as MTB for mountain bike without any configuration.",
+   "Hybrid search usually merges the keyword and vector result lists."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Vector search can miss exact terms, full-text needs a thesaurus for synonyms, and hybrid search merges ranked lists.",
+  "rationale": [
+   "Yes: embeddings capture meaning, and codes carry little meaning for a model.",
+   "No: synonyms and abbreviations need a configured thesaurus. This does not match the documented behavior.",
+   "Yes: the lists are commonly merged with reciprocal rank fusion."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/02-choose-intelligent-search-approach"
+ },
+ {
+  "id": "3.2.1-05",
+  "obj": "3.2.1",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Adventure Works evaluates hybrid search. Which two situations should lead the team to choose it? Each correct answer presents part of the solution.",
+  "choices": [
+   "Users type both exact product codes and natural language phrases",
+   "The table has no text columns",
+   "Tests show that full-text alone misses paraphrases and vector alone misses exact terms",
+   "The table has fewer than ten rows and no searches",
+   "All queries are exact lookups on the primary key"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Hybrid search pays off when users need exact matches and meaning matches, and when each method alone shows gaps in tests.",
+  "rationale": [
+   "Correct: both kinds of queries are present, so one method alone leaves gaps.",
+   "Incorrect: without text columns there is nothing to search. It does not satisfy the requirement in the question.",
+   "Correct: the tests show that each method misses a part that the other finds.",
+   "Incorrect: a table with ten rows needs no search method at all.",
+   "Incorrect: key lookups need no text search. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/02-choose-intelligent-search-approach"
+ },
+ {
+  "id": "3.2.1-06",
+  "obj": "3.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A query with LIKE '%bike%' scans the whole table and does not return rows that contain riding or rides. Which feature should the team use instead?",
+  "choices": [
+   "A full-text index with CONTAINS or FREETEXT",
+   "A bigger clustered index key on the text column",
+   "A foreign key constraint on the text column",
+   "A SET STATISTICS IO setting for the session"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A full-text index stores word tokens in an inverted index and understands inflectional forms such as ride, rides, and riding.",
+  "rationale": [
+   "Correct: the index finds words and their forms without scanning every row.",
+   "Incorrect: a bigger key does not make word matching linguistic.",
+   "Incorrect: a foreign key enforces references and does not search text.",
+   "Incorrect: a statistics setting only reports I/O and changes no result."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/03-implement-full-text-search"
+ },
+ {
+  "id": "3.2.1-07",
+  "obj": "3.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A table of Tailspin Toys holds 20,000 short product names, and users search only by exact words from the names. Which approach should the team choose?",
+  "choices": [
+   "Vector search with an external embedding model",
+   "A chat model that rewrites every query",
+   "Hybrid search with reciprocal rank fusion and a vector index",
+   "Full-text search, because the users search for exact words"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "When users search for exact words, full-text search is enough, simple, and free of calls to a model.",
+  "rationale": [
+   "Incorrect: vector search adds cost and can miss exact words.",
+   "Incorrect: a chat model adds cost and delay for a need that an index covers.",
+   "Incorrect: hybrid search adds embeddings and ranking work that the users do not need.",
+   "Correct: full-text search matches the exact words and needs no model or vectors."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/02-choose-intelligent-search-approach"
+ },
+ {
+  "id": "3.2.2-01",
+  "obj": "3.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Litware, Inc. prepares full-text search on a table. Which statement should create the container for full-text indexes?",
+  "choices": [
+   "CREATE STATISTICS",
+   "CREATE VECTOR INDEX",
+   "CREATE EXTERNAL MODEL",
+   "CREATE FULLTEXT CATALOG"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A full-text catalog is the logical container for full-text indexes and is created with CREATE FULLTEXT CATALOG. This comes from general knowledge of full-text search.",
+  "rationale": [
+   "Incorrect: statistics describe the data distribution for the optimizer.",
+   "Incorrect: a vector index is an approximate nearest neighbor index on a vector column.",
+   "Incorrect: an external model stores an endpoint of an embeddings model.",
+   "Correct: the catalog is the container for full-text indexes."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-fulltext-index-transact-sql"
+ },
+ {
+  "id": "3.2.2-02",
+  "obj": "3.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The KEY INDEX clause of CREATE FULLTEXT INDEX must name an index. Which kind of index should the team name?",
+  "choices": [
+   "A nonclustered columnstore index on the whole table",
+   "Any nonunique rowstore index on the text column",
+   "A vector index that is created on the text column",
+   "A unique, non-nullable, single-column index such as the primary key"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The key index must be unique, single-column, and non-nullable, and the primary key is the usual choice. This comes from general knowledge of full-text search.",
+  "rationale": [
+   "Incorrect: a columnstore index is not unique and cannot be the key index.",
+   "Incorrect: a nonunique index cannot identify a row, so it is rejected.",
+   "Incorrect: a vector index is not a key index and is not for text.",
+   "Correct: the full-text index needs a unique key to identify each row."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-fulltext-index-transact-sql"
+ },
+ {
+  "id": "3.2.2-03",
+  "obj": "3.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A query must return a relevance RANK value for every matching row so the results can be sorted. Which function should the query use?",
+  "choices": [
+   "CONTAINS predicate",
+   "LIKE operator",
+   "CONTAINSTABLE",
+   "FREETEXT predicate"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "CONTAINSTABLE and FREETEXTTABLE return a table with KEY and RANK columns. CONTAINS and FREETEXT are predicates and return no rank.",
+  "rationale": [
+   "Incorrect: CONTAINS is a predicate and returns only the rows that match.",
+   "Incorrect: LIKE is a pattern match and has no relevance rank.",
+   "Correct: the table function returns the KEY and RANK columns for each match.",
+   "Incorrect: FREETEXT is a predicate and returns only the rows that match."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/03-implement-full-text-search"
+ },
+ {
+  "id": "3.2.2-04",
+  "obj": "3.2.2",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. writes full-text queries.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "CONTAINS supports exact words, phrases, prefixes, and proximity.",
+   "FREETEXT matches the meaning and the inflectional forms of the search terms.",
+   "A full-text index returns rows for MTB when the user searches for mountain bike without a thesaurus."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "CONTAINS is precise, FREETEXT is natural, and synonyms need a thesaurus.",
+  "rationale": [
+   "Yes: it is the predicate for precise matching conditions. This matches the documented behavior.",
+   "Yes: it is the predicate for natural phrases and word forms.",
+   "No: synonyms and abbreviations need a configured thesaurus. This does not match the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/03-implement-full-text-search"
+ },
+ {
+  "id": "3.2.2-05",
+  "obj": "3.2.2",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Which two statements should you run to enable full-text search on the Description column of dbo.Products, which has a primary key index named PK_Products? Each correct answer presents part of the solution.",
+  "choices": [
+   "CREATE FULLTEXT CATALOG ProductCatalog",
+   "ALTER DATABASE SET QUERY_STORE = ON",
+   "CREATE VECTOR INDEX ON dbo.Products (Description)",
+   "CREATE CLUSTERED COLUMNSTORE INDEX ON dbo.Products",
+   "CREATE FULLTEXT INDEX ON dbo.Products (Description) KEY INDEX PK_Products ON ProductCatalog"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "A full-text index needs a catalog and a unique key index. A columnstore index, a vector index, and Query Store do not enable full-text search.",
+  "rationale": [
+   "Correct: the catalog is the container that holds the full-text index.",
+   "Incorrect: Query Store records query data and has no effect on full-text search.",
+   "Incorrect: a vector index works on vector columns and not on text.",
+   "Incorrect: a columnstore index is for analytics and not for word search.",
+   "Correct: the index statement names the column, the key index, and the catalog."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-fulltext-index-transact-sql"
+ },
+ {
+  "id": "3.2.2-06",
+  "obj": "3.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which option of CREATE FULLTEXT INDEX should the team use so that the index is updated automatically when rows change?",
+  "choices": [
+   "KEY INDEX PK_Products",
+   "LANGUAGE 1033",
+   "WITH CHANGE_TRACKING AUTO",
+   "WITH STOPLIST = OFF"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "CHANGE_TRACKING AUTO updates the full-text index when the data changes. This comes from general knowledge of full-text search.",
+  "rationale": [
+   "Incorrect: the key index identifies rows and does not control updates.",
+   "Incorrect: the language sets word breaking and not when the index updates.",
+   "Correct: the option keeps the index current as rows change. This is the option that satisfies the requirement in the question.",
+   "Incorrect: a stoplist controls which words are ignored and not when the index updates."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-fulltext-index-transact-sql"
+ },
+ {
+  "id": "3.2.2-07",
+  "obj": "3.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Searches of Adventure Works must also find the words the and is, which the system stoplist removes. Which option should the team use for the full-text index?",
+  "choices": [
+   "A thesaurus file for the language",
+   "CHANGE_TRACKING = OFF",
+   "STOPLIST = OFF",
+   "LANGUAGE 0"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The STOPLIST option controls which noise words are skipped, and OFF turns the stoplist off so every word is indexed. This comes from general knowledge.",
+  "rationale": [
+   "Incorrect: a thesaurus handles synonyms and does not change the stoplist.",
+   "Incorrect: change tracking controls updates and not which words are skipped.",
+   "Correct: turning the stoplist off lets every word be indexed.",
+   "Incorrect: a neutral language changes word breaking and not the stoplist."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-fulltext-index-transact-sql"
+ },
+ {
+  "id": "3.2.3-01",
+  "obj": "3.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. stores embeddings that have 1,536 dimensions in an Azure SQL database. Which data type should the team use?",
+  "choices": [
+   "VARBINARY(1536)",
+   "DECIMAL(1536, 0)",
+   "VECTOR(1536)",
+   "NVARCHAR(1536)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The vector data type stores embeddings, and its length is the number of dimensions.",
+  "rationale": [
+   "Incorrect: VARBINARY(1536) is a byte array of 1,536 bytes and not a vector.",
+   "Incorrect: DECIMAL accepts a precision of at most 38 and is not a vector.",
+   "Correct: VECTOR(1536) is the native type for an embedding of that size.",
+   "Incorrect: NVARCHAR(1536) is text and the vector functions cannot use it."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.2.3-02",
+  "obj": "3.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A team wants a VECTOR column with the default base type. Which maximum number of dimensions should the team plan for?",
+  "choices": [
+   "3,996",
+   "8,000",
+   "1,024",
+   "1,998"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The default base type is float32, which supports up to 1,998 dimensions. The float16 base type supports up to 3,996.",
+  "rationale": [
+   "Incorrect: 3,996 is the limit of the float16 base type and not of the default.",
+   "Incorrect: 8,000 is more than any base type of the vector type allows.",
+   "Incorrect: 1,024 is below the limit and is not the maximum. It does not satisfy the requirement in the question.",
+   "Correct: float32 is the default and its limit is 1,998 dimensions."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.2.3-03",
+  "obj": "3.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam, Inc. embeddings have 3,000 dimensions, and the team uses Azure SQL Database. Which declaration should the team use for the column?",
+  "choices": [
+   "VECTOR(3000)",
+   "VECTOR(3000, float64)",
+   "VECTOR(3000, float16)",
+   "VECTOR(3000, float32)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Only float16 allows more than 1,998 dimensions, up to 3,996. In SQL Server 2025 this base type is a preview feature.",
+  "rationale": [
+   "Incorrect: the default float32 allows only 1,998 dimensions.",
+   "Incorrect: float64 is not a supported base type of the vector type.",
+   "Correct: float16 supports up to 3,996 dimensions, which covers 3,000.",
+   "Incorrect: float32 is the default type and has the same limit of 1,998 dimensions."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.2.3-04",
+  "obj": "3.2.3",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Wingtip Toys designs a table with a vector column.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A vector column can have a PRIMARY KEY constraint.",
+   "A vector column can be an included column of an index.",
+   "Vector values are exposed as JSON arrays."
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "Vector columns allow only nullability constraints, can be included columns, and are shown as JSON arrays.",
+  "rationale": [
+   "No: vector columns allow only NULL and NOT NULL constraints.",
+   "Yes: it cannot be a key column, but it can be an included column.",
+   "Yes: vectors are stored in binary form and shown as JSON arrays of numbers."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.2.3-05",
+  "obj": "3.2.3",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A developer at Northwind Traders works with a vector column. Which two operations should the developer avoid because they are not supported? Each correct answer presents part of the solution.",
+  "choices": [
+   "Add a PRIMARY KEY constraint on the vector column",
+   "Insert a JSON array string into the column",
+   "Convert the vector to nvarchar for display",
+   "Declare the column as NOT NULL",
+   "Use the vector column as a sort key in ORDER BY"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "Vectors cannot be sort keys, join keys, or keys of a constraint such as a primary key. Conversion to text, insert from a JSON array, and NOT NULL work.",
+  "rationale": [
+   "Correct: a primary key constraint is not supported on a vector column.",
+   "Incorrect: a JSON array string is the normal way to insert a vector.",
+   "Incorrect: conversion to nvarchar is supported for display. It does not satisfy the requirement in the question.",
+   "Incorrect: NOT NULL is one of the two constraints that are supported.",
+   "Correct: vectors cannot be sort keys, so ORDER BY on the column is not supported."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.2.3-06",
+  "obj": "3.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An INSERT into a VECTOR(1536) column fails with error 42204. Which cause should the developer check?",
+  "choices": [
+   "The value has a different number of dimensions than the column",
+   "The target string is too short for the value",
+   "The base type of the value differs from the column",
+   "The value is not a JSON array of numbers"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Error 42204 reports a dimension mismatch. Other errors cover a bad JSON value, a base type mismatch, and a target that is too short.",
+  "rationale": [
+   "Correct: 42204 is raised when the dimensions of the value and the column differ.",
+   "Incorrect: a too short target raises error 42211. It does not satisfy the requirement in the question.",
+   "Incorrect: a base type mismatch raises error 42238. It does not satisfy the requirement in the question.",
+   "Incorrect: a value that is not a JSON number array raises error 13670."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.2.3-07",
+  "obj": "3.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys stores 1,000,000 rows with a VECTOR(1536) column of the float32 type. Which amount of storage should the team plan for the vectors alone?",
+  "choices": [
+   "About 6 GB",
+   "About 1.5 GB",
+   "About 60 GB",
+   "About 600 MB"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Each element takes 4 bytes, so a vector needs 1,536 times 4 bytes, about 6 KB, and one million rows need about 6 GB.",
+  "rationale": [
+   "Correct: 1,536 times 4 bytes times one million rows is about 6 GB.",
+   "Incorrect: 1.5 GB would be about 1.5 KB per row, which is a quarter of the real size.",
+   "Incorrect: 60 GB would be about 60 KB per row and is ten times too large.",
+   "Incorrect: 600 MB would be about 0.6 KB per row and is ten times too small."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.2.4-01",
+  "obj": "3.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer needs the exact distance between two vectors with a chosen metric. Which function should the developer use?",
+  "choices": [
+   "VECTORPROPERTY",
+   "AI_GENERATE_CHUNKS",
+   "VECTOR_DISTANCE",
+   "VECTOR_NORMALIZE"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "VECTOR_DISTANCE returns the distance between two vectors for a metric such as cosine, euclidean, or dot.",
+  "rationale": [
+   "Incorrect: VECTORPROPERTY returns a property such as the dimensions.",
+   "Incorrect: AI_GENERATE_CHUNKS splits text and does not compare vectors.",
+   "Correct: the function calculates the distance for the metric that is passed.",
+   "Incorrect: VECTOR_NORMALIZE scales one vector and does not return a distance."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-distance-transact-sql"
+ },
+ {
+  "id": "3.2.4-02",
+  "obj": "3.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A developer must read the number of dimensions of a vector variable named @v. Which expression should the developer use? This uses general knowledge of the function.",
+  "choices": [
+   "LEN(@v)",
+   "VECTOR_DISTANCE('dot', @v, @v)",
+   "VECTORPROPERTY(@v, 'Dimensions')",
+   "VECTOR_NORM(@v, 'norm2')"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "VECTORPROPERTY returns properties of a vector, such as its dimensions and base type.",
+  "rationale": [
+   "Incorrect: LEN counts the characters of the text form and not the dimensions.",
+   "Incorrect: a distance returns a similarity value and not the dimensions.",
+   "Correct: the property name Dimensions returns the number of elements.",
+   "Incorrect: VECTOR_NORM returns the length of the vector and not its dimensions."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-functions-transact-sql"
+ },
+ {
+  "id": "3.2.4-03",
+  "obj": "3.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A query uses VECTOR_DISTANCE with the dot metric. Which result should the team treat as the most similar to the query vector?",
+  "choices": [
+   "A value of exactly two for the pair",
+   "The highest positive value that is returned",
+   "A value of exactly zero for the pair",
+   "The lowest value, which is the most negative"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The dot metric returns the negative dot product, so smaller values mean more similar vectors.",
+  "rationale": [
+   "Incorrect: two is the upper end of the cosine range and not a dot result.",
+   "Incorrect: the highest value would be the least similar after the negation.",
+   "Incorrect: zero means the vectors are orthogonal and not the most similar.",
+   "Correct: the function negates the dot product, so the smallest value is the best match."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-distance-transact-sql"
+ },
+ {
+  "id": "3.2.4-04",
+  "obj": "3.2.4",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Adventure Works calls vector functions.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "VECTOR_DISTANCE uses a vector index when one exists on the column.",
+   "The cosine distance of VECTOR_DISTANCE ranges from 0 to 2.",
+   "VECTOR_SEARCH returns a distance column in its result."
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "VECTOR_DISTANCE is exact, cosine ranges from 0 to 2, and VECTOR_SEARCH adds a distance column.",
+  "rationale": [
+   "No: the distance is always exact and does not use a vector index.",
+   "Yes: 0 means identical vectors and 2 means opposing vectors.",
+   "Yes: the result has all columns of the table plus a distance column."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ },
+ {
+  "id": "3.2.4-05",
+  "obj": "3.2.4",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A developer calls VECTOR_DISTANCE with two vector arguments. Which two conditions should you check? Each correct answer presents part of the solution.",
+  "choices": [
+   "Both vectors are stored in the same table",
+   "Both arguments are of the vector data type",
+   "Both vectors are already normalized to length 1",
+   "Both vectors have the same number of dimensions",
+   "Both vectors have a vector index"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "The function needs two vectors of the same dimensions. Where they are stored, whether they are indexed, and whether they are normalized do not matter.",
+  "rationale": [
+   "Incorrect: vectors can come from different tables or from variables.",
+   "Correct: the function raises an error when an argument is not a vector.",
+   "Incorrect: normalization is optional and the cosine metric ignores length.",
+   "Correct: a distance can be calculated only for vectors of equal dimensions.",
+   "Incorrect: the function is exact and does not use an index. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-distance-transact-sql"
+ },
+ {
+  "id": "3.2.4-06",
+  "obj": "3.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A developer wants to scale a vector to a length of 1 before it is stored. Which function should the developer use? This uses general knowledge of the function.",
+  "choices": [
+   "CAST",
+   "VECTOR_NORMALIZE",
+   "VECTOR_NORM",
+   "VECTOR_DISTANCE"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "VECTOR_NORMALIZE scales a vector to unit length for a given norm type. VECTOR_NORM only returns the length.",
+  "rationale": [
+   "Incorrect: CAST changes the type and not the length of a vector.",
+   "Correct: the function returns the vector scaled to unit length.",
+   "Incorrect: VECTOR_NORM returns the length as a number and does not scale the vector.",
+   "Incorrect: VECTOR_DISTANCE compares two vectors and does not scale one."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-functions-transact-sql"
+ },
+ {
+  "id": "3.2.4-07",
+  "obj": "3.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "On SQL Server 2025, a call of VECTOR_SEARCH fails because the feature is not available. Which action should the administrator take?",
+  "choices": [
+   "Create a full-text catalog in the database",
+   "Run ALTER DATABASE SCOPED CONFIGURATION SET PREVIEW_FEATURES = ON",
+   "Enable the external REST endpoints with sp_configure",
+   "Set the compatibility level of the database to 100"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "In SQL Server 2025, VECTOR_SEARCH and vector indexes are preview features that need PREVIEW_FEATURES set to ON. They are generally available in Azure SQL Database.",
+  "rationale": [
+   "Incorrect: a full-text catalog is not needed by VECTOR_SEARCH.",
+   "Correct: the preview features setting turns on VECTOR_SEARCH and vector indexes.",
+   "Incorrect: external endpoints are for calls to models and do not enable the function.",
+   "Incorrect: level 100 is very old and does not provide vector features."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ },
+ {
+  "id": "3.2.5-01",
+  "obj": "3.2.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A table of Contoso, Ltd. holds 5,000 vectors, and the application needs exact results. Which approach should the team use?",
+  "choices": [
+   "A full-text index on the vector column",
+   "Approximate search with a vector index",
+   "A clustered index on the vector column",
+   "Exact search with VECTOR_DISTANCE"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Exact nearest neighbor search compares the query with every vector. For a small table it is fast enough and returns exact results.",
+  "rationale": [
+   "Incorrect: a full-text index works on text and not on a vector column.",
+   "Incorrect: an approximate index trades exactness for speed that a small table does not need.",
+   "Incorrect: a vector column cannot be a key of a clustered index.",
+   "Correct: VECTOR_DISTANCE is always exact and a small table needs no index."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/04-prepare-sql-vector-search"
+ },
+ {
+  "id": "3.2.5-02",
+  "obj": "3.2.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A table of Fabrikam, Inc. holds 5 million vectors, queries must be fast, and a small loss of recall is acceptable. Which approach should the team use?",
+  "choices": [
+   "Exact search with VECTOR_DISTANCE over all rows",
+   "A LIKE query on the text form of the vector",
+   "Approximate search with VECTOR_SEARCH and a vector index",
+   "A full-text query on the vector column"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Approximate nearest neighbor search uses a DiskANN index to answer quickly on large tables and trades a little accuracy for speed.",
+  "rationale": [
+   "Incorrect: an exact scan of 5 million vectors is slow for each query.",
+   "Incorrect: text patterns do not find similar vectors. It does not satisfy the requirement in the question.",
+   "Correct: the index makes large tables fast, and a small loss of recall is accepted.",
+   "Incorrect: a vector column cannot be searched with a full-text query."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/04-prepare-sql-vector-search"
+ },
+ {
+  "id": "3.2.5-03",
+  "obj": "3.2.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A vector index exists on a column, but a report of Adventure Works must return the exact nearest neighbors. Which function should the query use?",
+  "choices": [
+   "VECTOR_SEARCH with a larger TOP value only",
+   "VECTOR_SEARCH with TOP (N) WITH APPROXIMATE",
+   "VECTOR_DISTANCE in the ORDER BY clause",
+   "VECTOR_NORMALIZE on the vector column"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "VECTOR_DISTANCE is always exact and does not use a vector index. VECTOR_SEARCH with an index returns approximate results.",
+  "rationale": [
+   "Incorrect: a larger TOP value does not make an approximate search exact.",
+   "Incorrect: WITH APPROXIMATE asks for approximate results from the index.",
+   "Correct: the distance function is always exact, even when an index exists.",
+   "Incorrect: VECTOR_NORMALIZE scales a vector and does not search."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-distance-transact-sql"
+ },
+ {
+  "id": "3.2.5-04",
+  "obj": "3.2.5",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Litware, Inc. compares ANN and ENN search.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "ENN search compares the query vector with every vector.",
+   "ANN search guarantees the exact nearest neighbors.",
+   "VECTOR_SEARCH uses an index only when the metric of the index matches the query."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "ENN is exact, ANN is approximate, and the metric of the index must match the query.",
+  "rationale": [
+   "Yes: this makes the result exact and the cost grows with the number of rows.",
+   "No: ANN results have high recall but are not guaranteed to be exact.",
+   "Yes: otherwise it falls back to exact search with a warning."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ },
+ {
+  "id": "3.2.5-05",
+  "obj": "3.2.5",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Northwind Traders has 10 million vectors. Which two reasons should lead the team to choose ANN search? Each correct answer presents part of the solution.",
+  "choices": [
+   "A vector index gives much lower latency at this scale",
+   "The table has fewer than 2,000 rows",
+   "A small loss of recall is acceptable for the application",
+   "No vector index can be created on the table",
+   "Every query must return the exact nearest neighbors"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "ANN suits large tables where speed matters more than perfect recall. Exact needs, small tables, or a table that cannot be indexed point to exact search.",
+  "rationale": [
+   "Correct: an index avoids comparing the query with every vector.",
+   "Incorrect: a table of that size does not need an index. It does not satisfy the requirement in the question.",
+   "Correct: the result may miss a true neighbor, so the application must accept that.",
+   "Incorrect: without a possible index ANN search is not available.",
+   "Incorrect: exact results are required, so exact search is the right choice."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/04-prepare-sql-vector-search"
+ },
+ {
+  "id": "3.2.5-06",
+  "obj": "3.2.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A query of Adventure Works first filters the table down to about 200 rows of one tenant and then ranks them by similarity. Which approach should the team use for the ranking?",
+  "choices": [
+   "A full table scan that uses LIKE on the text form",
+   "A second embeddings model for the tenant rows",
+   "A new vector index that is created for every tenant",
+   "Exact search with VECTOR_DISTANCE on the filtered rows"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A selective filter leaves few rows, so an exact distance calculation is cheap and returns exact results.",
+  "rationale": [
+   "Incorrect: LIKE does not rank by similarity. It does not satisfy the requirement in the question.",
+   "Incorrect: a second model adds cost and does not make the ranking cheaper.",
+   "Incorrect: an index per tenant adds a lot of maintenance for a small set.",
+   "Correct: exact distance on 200 rows is fast and exact. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/04-prepare-sql-vector-search"
+ },
+ {
+  "id": "3.2.5-07",
+  "obj": "3.2.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team of Wingtip Toys uses an earlier version of the vector index, and the table became read-only. Which change should the team make so that rows can be inserted and updated while the index exists?",
+  "choices": [
+   "Drop the clustered index of the table and recreate it",
+   "Change the metric of the index to dot and rebuild it",
+   "Use the latest index version, which allows INSERT, UPDATE, and DELETE",
+   "Truncate the table every night and load all rows again"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Earlier index versions make the table read-only. The latest version supports INSERT, UPDATE, DELETE, and MERGE. TRUNCATE is not allowed on a table with a vector index.",
+  "rationale": [
+   "Incorrect: dropping the clustered index does not remove the read-only state.",
+   "Incorrect: the metric does not affect whether rows can be changed.",
+   "Correct: the latest version lets the table change while the index exists.",
+   "Incorrect: TRUNCATE TABLE is not allowed on a table with a vector index."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-vector-index-transact-sql"
+ },
+ {
+  "id": "3.2.6-01",
+  "obj": "3.2.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which index type should the team use in the TYPE option of CREATE VECTOR INDEX?",
+  "choices": [
+   "IVFFlat",
+   "DiskANN",
+   "HNSW",
+   "KDTree"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "DiskANN is the only supported ANN algorithm and the default type.",
+  "rationale": [
+   "Incorrect: IVFFlat is not an accepted value of the TYPE option.",
+   "Correct: DiskANN is the only supported algorithm. This is the option that satisfies the requirement in the question.",
+   "Incorrect: HNSW is not an accepted value of the TYPE option.",
+   "Incorrect: KDTree is not an accepted value of the TYPE option."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-vector-index-transact-sql"
+ },
+ {
+  "id": "3.2.6-02",
+  "obj": "3.2.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The embeddings of Tailspin Toys come from a text model, and the team cares about the direction of vectors and not their length. Which metric should the team choose?",
+  "choices": [
+   "cosine",
+   "euclidean",
+   "hamming",
+   "dot"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Cosine distance measures the angle between vectors and ignores their length, which is the common choice for text embeddings.",
+  "rationale": [
+   "Correct: cosine looks at direction and ignores magnitude. This is the option that satisfies the requirement in the question.",
+   "Incorrect: euclidean measures straight-line distance and is affected by length.",
+   "Incorrect: hamming is not a supported metric. It does not satisfy the requirement in the question.",
+   "Incorrect: dot returns the negative dot product and is affected by length."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/04-prepare-sql-vector-search"
+ },
+ {
+  "id": "3.2.6-03",
+  "obj": "3.2.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A vector index was created with the cosine metric, and a query calls VECTOR_SEARCH with the euclidean metric on the same column. Which behavior should the team expect?",
+  "choices": [
+   "The index is rebuilt with the euclidean metric at once",
+   "The index is not used and exact search runs with a warning",
+   "The query uses the index and converts the metric on the fly",
+   "The query fails with an error about the metric of the index"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "An index is used only when the column and the metric match the query. With another metric the engine warns and uses exact search.",
+  "rationale": [
+   "Incorrect: the engine does not rebuild an index during a query.",
+   "Correct: the engine cannot use a cosine index for a euclidean query, so it warns and scans exactly.",
+   "Incorrect: the engine does not convert the metric of an index.",
+   "Incorrect: the query still runs because a fallback exists. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ },
+ {
+  "id": "3.2.6-04",
+  "obj": "3.2.6",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. creates a vector index.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "DiskANN is the only supported value of the TYPE option.",
+   "The table needs at least 100 rows that have non-NULL vectors.",
+   "A vector index can be partitioned."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "DiskANN is the only type, at least 100 non-NULL rows are needed, and the index cannot be partitioned.",
+  "rationale": [
+   "Yes: it is also the default algorithm. This matches the documented behavior.",
+   "Yes: otherwise the operation fails with error 42266. This matches the documented behavior.",
+   "No: vector indexes cannot be partitioned. This does not match the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-vector-index-transact-sql"
+ },
+ {
+  "id": "3.2.6-05",
+  "obj": "3.2.6",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Which two options should you specify in the WITH clause to create a vector index for cosine distance? Each correct answer presents part of the solution.",
+  "choices": [
+   "KEY INDEX = PK_Products",
+   "MODEL = 'text-embedding-3-small'",
+   "METRIC = 'cosine'",
+   "TYPE = 'DiskANN'",
+   "CHANGE_TRACKING = AUTO"
+  ],
+  "answer": [
+   2,
+   3
+  ],
+  "explanation": "The WITH clause of CREATE VECTOR INDEX takes the METRIC and the TYPE, and optionally MAXDOP. The other options belong to other statements.",
+  "rationale": [
+   "Incorrect: KEY INDEX is a clause of a full-text index. It does not satisfy the requirement in the question.",
+   "Incorrect: MODEL is an option of an external model and not of an index.",
+   "Correct: METRIC sets the distance function that the index serves.",
+   "Correct: TYPE names the algorithm, and DiskANN is the supported one.",
+   "Incorrect: CHANGE_TRACKING is an option of a full-text index."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-vector-index-transact-sql"
+ },
+ {
+  "id": "3.2.6-06",
+  "obj": "3.2.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "CREATE VECTOR INDEX on a table with 50 rows fails with error 42266. Which action should the team take?",
+  "choices": [
+   "Partition the table into two partitions before the index",
+   "Load at least 100 non-NULL vectors, or use exact search",
+   "Change the metric of the index to dot and run again",
+   "Set MAXDOP to 0 for the CREATE statement to run"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A vector index needs at least 100 rows with non-NULL vectors. For a small table exact search is enough.",
+  "rationale": [
+   "Incorrect: vector indexes cannot be partitioned and the row count would not grow.",
+   "Correct: the minimum row count is 100, and exact search needs no index.",
+   "Incorrect: the metric does not change the row requirement. It does not satisfy the requirement in the question.",
+   "Incorrect: MAXDOP changes parallelism and not the row requirement."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-vector-index-transact-sql"
+ },
+ {
+  "id": "3.2.6-07",
+  "obj": "3.2.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A pipeline deploys a .dacpac, and the vector index of the database is missing afterwards. Which approach should the team use to create the index as part of the deployment?",
+  "choices": [
+   "Create the index by hand after every release is done",
+   "Replace the vector column with a text column in the model",
+   "Run CREATE VECTOR INDEX in a post-deployment script that checks for the index",
+   "Add a CREATE VECTOR INDEX file to the model of the project"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A dacpac deployment does not create vector indexes. A post-deployment script can create it, with an existence check so that the script can run on every deployment. The scripted approach comes from general knowledge.",
+  "rationale": [
+   "Incorrect: a manual step is easy to forget and breaks automation.",
+   "Incorrect: a text column cannot be searched with vector search.",
+   "Correct: the script runs after the schema update and the check keeps it safe to run again.",
+   "Incorrect: a dacpac deployment does not create vector indexes, so a file in the model does not help."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-vector-index-transact-sql"
+ },
+ {
+  "id": "3.2.7-01",
+  "obj": "3.2.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Contoso, Ltd. writes a VECTOR_SEARCH query with a table alias r for the function. Which ORDER BY clause should the query use?",
+  "choices": [
+   "ORDER BY NEWID()",
+   "ORDER BY r.distance DESC",
+   "ORDER BY r.distance",
+   "ORDER BY the vector column"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "ORDER BY must reference only the distance column of the function, in ascending order.",
+  "rationale": [
+   "Incorrect: a random order does not rank by similarity. It does not satisfy the requirement in the question.",
+   "Incorrect: a descending sort would return the farthest rows, and only ascending is allowed.",
+   "Correct: the clause sorts by the distance column from the nearest to the farthest.",
+   "Incorrect: a vector column cannot be used as a sort key. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ },
+ {
+  "id": "3.2.7-02",
+  "obj": "3.2.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A developer needs the five closest products by exact cosine distance to the variable @q, and no vector index is used. Which query should the developer write?",
+  "choices": [
+   "SELECT TOP (5) ProductID FROM dbo.Products ORDER BY DescriptionVector",
+   "SELECT TOP (5) ProductID FROM dbo.Products ORDER BY VECTOR_NORM(DescriptionVector, 'norm2')",
+   "SELECT ProductID FROM dbo.Products WHERE DescriptionVector = @q",
+   "SELECT TOP (5) ProductID FROM dbo.Products ORDER BY VECTOR_DISTANCE('cosine', DescriptionVector, @q)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Exact search sorts all rows by VECTOR_DISTANCE and takes the first rows. Vectors cannot be compared with an equal sign or used as sort keys.",
+  "rationale": [
+   "Incorrect: a vector column cannot be used as a sort key. It does not satisfy the requirement in the question.",
+   "Incorrect: the norm is the length of one vector and does not compare it to the query.",
+   "Incorrect: vectors do not support the equal operator and a match would be exact only.",
+   "Correct: the distance function ranks the rows by similarity to the query vector."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-distance-transact-sql"
+ },
+ {
+  "id": "3.2.7-03",
+  "obj": "3.2.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A developer wants to run a VECTOR_SEARCH for each row of dbo.Queries by using CROSS APPLY together with TOP (N) WITH APPROXIMATE, and the statement fails. Which change should the developer make?",
+  "choices": [
+   "Replace CROSS APPLY with OUTER APPLY",
+   "Use a correlated subquery instead of CROSS APPLY",
+   "Put the VECTOR_SEARCH call in a view",
+   "Use a temporary table as the TABLE argument"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "CROSS APPLY and OUTER APPLY are not allowed with TOP (N) WITH APPROXIMATE. A correlated subquery is the documented alternative.",
+  "rationale": [
+   "Incorrect: OUTER APPLY is not allowed with this clause either.",
+   "Correct: a correlated subquery is the documented way to run the search per row.",
+   "Incorrect: VECTOR_SEARCH cannot be used in a view definition.",
+   "Incorrect: the TABLE argument must be a base table and not a temporary table."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ },
+ {
+  "id": "3.2.7-04",
+  "obj": "3.2.7",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. writes queries with VECTOR_SEARCH.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The TABLE argument can be a view.",
+   "The ORDER BY clause must use only the distance column in ascending order.",
+   "The result contains the columns of the table and a distance column."
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "TABLE must be a base table, the sort uses the distance column, and the function adds a distance column.",
+  "rationale": [
+   "No: it must be a base table, and views and temporary tables are not supported.",
+   "Yes: no other sort expression is allowed. This matches the documented behavior.",
+   "Yes: the distance column is generated by the function. This matches the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ },
+ {
+  "id": "3.2.7-05",
+  "obj": "3.2.7",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "An application of Wingtip Toys searches products with a text typed by the user. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Generate the embedding of the search text with the same model that created the stored vectors",
+   "Search the vector column with a metric that matches the vector index",
+   "Generate the query embedding with a model that has other dimensions",
+   "Create the vector index with a metric that differs from the query",
+   "Store the typed text in the vector column"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The query vector must come from the same model as the stored vectors, and the metric must match the index so that the index is used.",
+  "rationale": [
+   "Correct: only vectors of the same model and dimensions can be compared.",
+   "Correct: a matching metric lets the engine use the index instead of an exact scan.",
+   "Incorrect: vectors with other dimensions cannot be compared.",
+   "Incorrect: a metric that differs from the index is not served by it and falls back to exact search.",
+   "Incorrect: text cannot be stored in a vector column. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-embeddings-transact-sql"
+ },
+ {
+  "id": "3.2.7-06",
+  "obj": "3.2.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which clause should the developer add to the SELECT list of a VECTOR_SEARCH query to request approximate results from the index?",
+  "choices": [
+   "TOP (N) WITH TIES clause",
+   "OPTION (RECOMPILE) hint",
+   "TOP (N) WITH APPROXIMATE",
+   "DISTINCT keyword list"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The syntax uses SELECT TOP (N) WITH APPROXIMATE to ask for approximate nearest neighbors.",
+  "rationale": [
+   "Incorrect: WITH TIES includes extra rows that tie and is not approximate search.",
+   "Incorrect: RECOMPILE forces a new plan and does not ask for approximate results.",
+   "Correct: the clause is part of the documented VECTOR_SEARCH syntax.",
+   "Incorrect: DISTINCT removes duplicates and does not ask for approximate results."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ },
+ {
+  "id": "3.2.7-07",
+  "obj": "3.2.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A VECTOR_SEARCH query with a WHERE predicate uses an earlier-version vector index and returns fewer rows than the TOP value. Which cause should the team suspect?",
+  "choices": [
+   "The metric of the index is set to dot",
+   "The distance column is missing from the result",
+   "The table has more than 100 rows in total",
+   "The predicate is applied after retrieval, which is post-filtering"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Earlier index versions filter after retrieval, so rows can be removed and fewer rows return. The latest version filters during the search.",
+  "rationale": [
+   "Incorrect: the metric does not remove rows from the result. It does not satisfy the requirement in the question.",
+   "Incorrect: the function always returns a distance column. It does not satisfy the requirement in the question.",
+   "Incorrect: more than 100 rows is a requirement of the index and not a cause of missing rows.",
+   "Correct: post-filtering removes rows after the nearest ones were already chosen."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ },
+ {
+  "id": "3.2.8-01",
+  "obj": "3.2.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A hybrid search query of Litware, Inc. needs the keyword matches with a rank value from a full-text index. Which function should the query use?",
+  "choices": [
+   "STRING_SPLIT",
+   "OPENJSON",
+   "FREETEXTTABLE",
+   "VECTOR_DISTANCE"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "FREETEXTTABLE and CONTAINSTABLE return the KEY and RANK of each keyword match.",
+  "rationale": [
+   "Incorrect: STRING_SPLIT splits text and does not search an index.",
+   "Incorrect: OPENJSON reads JSON and does not search an index.",
+   "Correct: the function returns the key and a rank for each keyword match.",
+   "Incorrect: VECTOR_DISTANCE returns the vector side of the search."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.8-02",
+  "obj": "3.2.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The keyword list and the vector list are two separate result sets. Which join should combine them so that rows found by only one method are kept?",
+  "choices": [
+   "CROSS JOIN",
+   "LEFT OUTER JOIN from the keyword list",
+   "FULL OUTER JOIN",
+   "INNER JOIN"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A full outer join keeps rows from both lists, so a row that appears in only one list is not lost.",
+  "rationale": [
+   "Incorrect: a cross join pairs every row with every row and has no meaning here.",
+   "Incorrect: a left join drops rows that appear only in the vector list.",
+   "Correct: the join keeps the rows of both lists, even when a row is in one list only.",
+   "Incorrect: an inner join keeps only rows that appear in both lists."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.8-03",
+  "obj": "3.2.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A product appears only in the keyword list. Which expression should the query use so that the vector part of the score is zero for this product?",
+  "choices": [
+   "The plain term 1.0/(@rrfK + vs.vector_rank)",
+   "ISNULL(vs.vector_rank, 1) as the rank",
+   "NULLIF(vs.vector_rank, 0) as the rank",
+   "COALESCE(1.0/(@rrfK + vs.vector_rank), 0.0)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A missing rank is NULL, and COALESCE turns the NULL contribution into 0.0, so the product still gets a score from the keyword list.",
+  "rationale": [
+   "Incorrect: without COALESCE the NULL rank makes the whole sum NULL.",
+   "Incorrect: a rank of 1 would give the product the best possible vector rank.",
+   "Incorrect: NULLIF returns NULL for a zero and does not help for a missing rank.",
+   "Correct: COALESCE returns 0.0 when the rank is missing. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.8-04",
+  "obj": "3.2.8",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Adventure Works builds a hybrid search query.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The keyword list and the vector list each assign a rank to their rows.",
+   "Filters should be applied before the two lists are merged.",
+   "A TOP clause without ORDER BY in each list selects the best rows in a fixed way."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Both lists are ranked, filters come before the merge, and TOP needs ORDER BY to be deterministic.",
+  "rationale": [
+   "Yes: the ranks are what the fusion step combines. This matches the documented behavior.",
+   "Yes: a filter after the merge can remove highly ranked results.",
+   "No: without ORDER BY the rows that TOP returns are arbitrary."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.8-05",
+  "obj": "3.2.8",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "The two candidate lists of a hybrid query use TOP (@topN). Which two ORDER BY clauses should you add so that the candidates are chosen in a fixed way? Each correct answer presents part of the solution.",
+  "choices": [
+   "ORDER BY ftt.[RANK] ASC in the keyword list",
+   "ORDER BY distance DESC in the vector list",
+   "ORDER BY NEWID() in the keyword list",
+   "ORDER BY ftt.[RANK] DESC in the keyword list",
+   "ORDER BY distance in the vector list"
+  ],
+  "answer": [
+   3,
+   4
+  ],
+  "explanation": "The best keyword matches have the highest RANK, and the best vector matches have the lowest distance, so those orders pick the right candidates.",
+  "rationale": [
+   "Incorrect: an ascending rank picks the weakest keyword matches.",
+   "Incorrect: a descending distance picks the farthest vectors.",
+   "Incorrect: a random order gives different candidates every time.",
+   "Correct: the highest rank is the best keyword match. This is the option that satisfies the requirement in the question.",
+   "Correct: the lowest distance is the best vector match. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.8-06",
+  "obj": "3.2.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Users of Northwind Traders care more about meaning than about exact words, and the team wants the vector list to count twice as much in the fused score. Which change should the team make?",
+  "choices": [
+   "Remove the keyword list from the query completely",
+   "Set the TOP value of the keyword list to a value of 2",
+   "Double the number of dimensions of the embedding",
+   "Multiply the vector term by 2.0, as in 2.0/(@rrfK + vs.vector_rank)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A weight on one term of the fused score changes how much that list counts, and no score normalization is needed.",
+  "rationale": [
+   "Incorrect: removing the list ends the hybrid search and does not weight it.",
+   "Incorrect: the TOP value limits the candidates and does not weight the lists.",
+   "Incorrect: dimensions belong to the model and do not weight a list.",
+   "Correct: a weight on the vector term makes the vector list count more."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.8-07",
+  "obj": "3.2.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "With k = 60, product A has ranks 1 in the keyword list and 50 in the vector list, product B has ranks 3 and 3, and product C is rank 1 in the keyword list only. Which product should have the highest fused score?",
+  "choices": [
+   "Product C",
+   "Product B",
+   "Products A and B have the same score",
+   "Product A"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The scores are 1/61 plus 1/110 for A, which is about 0.0255, 2/63 for B, which is about 0.0317, and 1/61 for C, which is about 0.0164.",
+  "rationale": [
+   "Incorrect: C scores about 0.0164 because it is in one list only.",
+   "Correct: B scores about 0.0317 because it ranks high in both lists.",
+   "Incorrect: A and B differ, so they do not have the same score.",
+   "Incorrect: A scores about 0.0255, which is lower than B. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.9-01",
+  "obj": "3.2.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which formula should the team use to compute the reciprocal rank fusion score of a product that appears in two ranked lists?",
+  "choices": [
+   "The sum of 1/(k + rank) over the lists",
+   "The average of the two raw distances",
+   "The maximum of the two RANK values",
+   "The product of the two ranks"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RRF adds 1/(k + rank) for each list in which the item appears, where k is a constant such as 60.",
+  "rationale": [
+   "Correct: RRF sums a reciprocal of the rank plus a constant for each list.",
+   "Incorrect: raw distances are on different scales and are not used by RRF.",
+   "Incorrect: the maximum raw rank ignores one of the two lists.",
+   "Incorrect: multiplying ranks gives a larger value to worse items."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.9-02",
+  "obj": "3.2.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The keyword list has RANK values from full-text search, and the vector list has cosine distances. The two have different scales. Which approach should the team use to merge them without normalizing the scores?",
+  "choices": [
+   "Multiply the RANK value by the cosine distance",
+   "Add the RANK value and the cosine distance",
+   "Reciprocal rank fusion based on the positions of the rows",
+   "Sort by the RANK value only"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "RRF uses the positions of rows in each list and not the raw scores, so no normalization is needed.",
+  "rationale": [
+   "Incorrect: multiplying values of different scales has no meaningful result.",
+   "Incorrect: adding values of different scales lets one list dominate.",
+   "Correct: positions are comparable between lists even when the scores are not.",
+   "Incorrect: sorting by one score ignores the vector list. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.9-03",
+  "obj": "3.2.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team wants the first rows of each list to count more in the fused score. Which change should the team make?",
+  "choices": [
+   "Increase TOP (@topN) to 500",
+   "Use a smaller value of k, such as 10 instead of 60",
+   "Use a larger value of k, such as 600",
+   "Normalize the distances to the range 0 to 1"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A smaller k amplifies the difference between top ranks and lower ranks, so the first rows of each list count more.",
+  "rationale": [
+   "Incorrect: more candidates do not change how much a top rank counts.",
+   "Correct: with a small k the term 1/(k + rank) falls faster, so top ranks stand out.",
+   "Incorrect: a larger k makes all ranks count almost the same.",
+   "Incorrect: RRF uses ranks, so normalized distances change nothing."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.9-04",
+  "obj": "3.2.9",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. implements reciprocal rank fusion.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "RRF needs the scores of the two lists to be normalized first.",
+   "A product that is missing from one list adds 0 for that list.",
+   "A common value of k is 60."
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "RRF needs no normalization, missing items add 0, and k is commonly 60.",
+  "rationale": [
+   "No: RRF uses ranks and not scores, so no normalization is needed.",
+   "Yes: the missing part is handled with COALESCE, so the product keeps the other score.",
+   "Yes: 60 is the usual constant, and a smaller value amplifies the top ranks."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.9-05",
+  "obj": "3.2.9",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Which two inputs should the RRF calculation of Adventure Works use for each product? Each correct answer presents part of the solution.",
+  "choices": [
+   "The position of the product in the keyword list",
+   "The number of dimensions of the embedding",
+   "The raw RANK value of FREETEXTTABLE",
+   "The position of the product in the vector list",
+   "The raw cosine distance of the vector"
+  ],
+  "answer": [
+   0,
+   3
+  ],
+  "explanation": "RRF works on the positions of items in each list, so the keyword position and the vector position are the inputs.",
+  "rationale": [
+   "Correct: the keyword position is one of the ranks that RRF adds.",
+   "Incorrect: dimensions describe the model and do not rank a product.",
+   "Incorrect: raw scores are on different scales and are not used by RRF.",
+   "Correct: the vector position is the other rank that RRF adds.",
+   "Incorrect: the raw distance is a score and not a position. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.9-06",
+  "obj": "3.2.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "With k = 60, a product has rank 2 in the keyword list and rank 4 in the vector list. Which fused score should the query return?",
+  "choices": [
+   "About 0.0161",
+   "About 0.0156",
+   "About 0.0318",
+   "About 0.75"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The score is 1/(60 + 2) plus 1/(60 + 4), which is about 0.01613 plus 0.01563, or about 0.0318.",
+  "rationale": [
+   "Incorrect: 0.0161 is the part of the keyword list only. It does not satisfy the requirement in the question.",
+   "Incorrect: 0.0156 is the part of the vector list only. It does not satisfy the requirement in the question.",
+   "Correct: 1/62 plus 1/64 is about 0.0318. This is the option that satisfies the requirement in the question.",
+   "Incorrect: 0.75 comes from 1/2 plus 1/4 and leaves out the constant k."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.9-07",
+  "obj": "3.2.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Users of Tailspin Toys filter a hybrid search by category. Which placement should the team use for the filter?",
+  "choices": [
+   "On the final fused result only",
+   "Only in the vector list",
+   "In each candidate query before the fusion",
+   "In the application after the query"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A filter applied after the fusion can remove highly ranked results and leave too few rows, so it belongs in each candidate query.",
+  "rationale": [
+   "Incorrect: a filter after the fusion can remove many of the top results.",
+   "Incorrect: filtering one list only lets rows of other categories enter through the other list.",
+   "Correct: filtering first keeps both lists limited to the right category before the ranks are fused.",
+   "Incorrect: filtering in the application returns too few rows after the work is done."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.10-01",
+  "obj": "3.2.10",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants to measure the quality of the results of its search. Which two measures should the team use for this? Choose the answer that names them.",
+  "choices": [
+   "Dimensions and base type",
+   "Precision and recall",
+   "Page count and row size",
+   "Lock waits and latch waits"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Precision is the share of returned results that are relevant, and recall is the share of relevant results that were returned.",
+  "rationale": [
+   "Incorrect: dimensions and base type describe vectors and not result quality.",
+   "Correct: these two measures describe the quality of search results.",
+   "Incorrect: page count and row size describe storage and not result quality.",
+   "Incorrect: waits describe contention and not result quality."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.10-02",
+  "obj": "3.2.10",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which data should the team use to evaluate full-text only, vector only, and hybrid search against each other?",
+  "choices": [
+   "The largest table in the database",
+   "A labeled query set with known relevant results",
+   "The query plans of the last week",
+   "A random sample of vectors without queries"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A labeled query set lets the team compute precision, recall, and mean reciprocal rank for each approach on the same queries.",
+  "rationale": [
+   "Incorrect: a large table has no known relevant results to compare against.",
+   "Correct: known relevant results make the measures possible for every approach.",
+   "Incorrect: plans describe cost and not result quality. It does not satisfy the requirement in the question.",
+   "Incorrect: vectors without queries cannot measure the quality of an answer."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.10-03",
+  "obj": "3.2.10",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team wants a measure that shows how high the first relevant result appears in the list. Which measure should the team use?",
+  "choices": [
+   "The size of the vector index",
+   "Mean reciprocal rank",
+   "The number of dimensions",
+   "Recall at 100 only"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Mean reciprocal rank averages the reciprocal of the position of the first relevant result over many queries.",
+  "rationale": [
+   "Incorrect: index size describes storage and not rank. It does not satisfy the requirement in the question.",
+   "Correct: the measure rewards a relevant result that appears near the top.",
+   "Incorrect: dimensions describe the model and not rank. It does not satisfy the requirement in the question.",
+   "Incorrect: recall at 100 shows whether a result is in the list and not how high it is."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.10-04",
+  "obj": "3.2.10",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Wingtip Toys evaluates its search.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Hybrid search typically improves recall with minimal loss of precision.",
+   "Recall is the share of relevant results that the search returned.",
+   "A faster ANN query always has the same recall as an exact query."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Hybrid search improves recall, recall counts relevant results found, and ANN can have lower recall.",
+  "rationale": [
+   "Yes: it combines the strengths of keyword and vector search.",
+   "Yes: a high recall means few relevant results were missed. This matches the documented behavior.",
+   "No: ANN trades some accuracy for speed, so recall can be lower."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.10-05",
+  "obj": "3.2.10",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "The team of Northwind Traders compares three search approaches. Which two actions should you perform for a fair comparison? Each correct answer presents part of the solution.",
+  "choices": [
+   "Run the same labeled queries against full-text only, vector only, and hybrid search",
+   "Compare the best single query of each approach",
+   "Use different data for each approach",
+   "Judge the approaches by the number of dimensions",
+   "Measure the latency of each approach on a realistic data volume"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "A fair comparison uses the same queries and data, measures quality and speed, and uses a realistic volume.",
+  "rationale": [
+   "Correct: the same queries make the measures comparable. This is the option that satisfies the requirement in the question.",
+   "Incorrect: one query says little about the whole workload. It does not satisfy the requirement in the question.",
+   "Incorrect: different data makes the results incomparable. It does not satisfy the requirement in the question.",
+   "Incorrect: dimensions describe the model and are not a quality measure.",
+   "Correct: latency on a realistic volume shows the cost of each approach at scale."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-intelligent-search-with-sql/06-implement-hybrid-search-ranking"
+ },
+ {
+  "id": "3.2.10-06",
+  "obj": "3.2.10",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The team wants to track the duration of the vector search queries over time and compare plans. Which feature should the team use?",
+  "choices": [
+   "Query Store",
+   "External model",
+   "Full-text catalog",
+   "Change tracking"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Query Store captures query text, plans, and runtime statistics over time, so the team can compare durations. This comes from general knowledge of Query Store.",
+  "rationale": [
+   "Correct: Query Store records runtime statistics and plans for each query.",
+   "Incorrect: an external model stores an endpoint and not query statistics.",
+   "Incorrect: a full-text catalog stores keyword indexes and not query statistics.",
+   "Incorrect: change tracking records row changes and not query statistics."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store"
+ },
+ {
+  "id": "3.2.10-07",
+  "obj": "3.2.10",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team of Adventure Works wants to measure the recall of its vector index. Which approach should the team use?",
+  "choices": [
+   "Compare the size of the vector index with the size of the table",
+   "Compare the duration of two approximate queries in a test",
+   "Count the number of rows that the vector index contains",
+   "Compare VECTOR_SEARCH results with exact VECTOR_DISTANCE results"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Exact search gives the true nearest neighbors, so the share of them that the approximate search returns is its recall. This approach comes from general knowledge.",
+  "rationale": [
+   "Incorrect: index size says nothing about the accuracy of the results.",
+   "Incorrect: duration measures speed and not accuracy. It does not satisfy the requirement in the question.",
+   "Incorrect: a row count does not show whether the right neighbors are returned.",
+   "Correct: the exact results are the ground truth for the recall of the index."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/functions/vector-search-transact-sql"
+ }
+]

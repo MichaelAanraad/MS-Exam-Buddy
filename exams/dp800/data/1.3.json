@@ -1,0 +1,1337 @@
+[
+ {
+  "id": "1.3.1-01",
+  "obj": "1.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. has a query that uses the same subquery three times, and the team wants to define it once with a name. Which construct should you use?",
+  "choices": [
+   "A common table expression",
+   "A scalar function",
+   "A computed column",
+   "A temporary stored procedure"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A CTE names a query result once and lets the following statement refer to it by name several times. The other options do not provide a named result set inside a single statement.",
+  "rationale": [
+   "Correct: a CTE defines a named result set that the statement after it can reference as often as needed.",
+   "Incorrect: a scalar function returns one value, so it cannot stand in for a subquery that returns rows.",
+   "Incorrect: a computed column derives a value from a row of a table and does not name a query result.",
+   "Incorrect: a temporary stored procedure runs code, but it cannot be referenced like a table in a FROM clause."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/with-common-table-expression-transact-sql"
+ },
+ {
+  "id": "1.3.1-02",
+  "obj": "1.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. runs a batch that contains a SET statement followed immediately by a WITH clause that defines a CTE. The batch fails with a syntax error near WITH. What should you do?",
+  "choices": [
+   "Add OPTION (RECOMPILE) after the final SELECT",
+   "Replace the WITH clause with a CREATE VIEW statement",
+   "Move the whole CTE inside a pair of parentheses",
+   "End the statement before WITH with a semicolon"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "When a CTE is not the first statement in a batch, the statement before WITH must end with a semicolon, otherwise WITH is read as a table hint.",
+  "rationale": [
+   "Incorrect: OPTION (RECOMPILE) affects the plan and does not fix a syntax error.",
+   "Incorrect: a view is a different object, and creating it is not needed to define a CTE in a batch.",
+   "Incorrect: parentheses do not change how the parser reads WITH after an unterminated statement.",
+   "Correct: a terminated previous statement lets the parser read WITH as the start of a CTE."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/with-common-table-expression-transact-sql"
+ },
+ {
+  "id": "1.3.1-03",
+  "obj": "1.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank stores employees in a table with EmployeeId and ManagerId. The team must list every employee below a given manager at any depth. Which approach should you use?",
+  "choices": [
+   "A fixed number of self joins of the same table",
+   "A CTE with a GROUP BY on the ManagerId column",
+   "A recursive CTE that joins an anchor and a recursive member",
+   "A scalar function that returns the manager name"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A recursive CTE repeats its recursive member over the previous result, so it follows a hierarchy to any depth. A fixed number of self joins only reaches a fixed number of levels.",
+  "rationale": [
+   "Incorrect: two self joins reach only two levels, but the depth is unknown.",
+   "Incorrect: GROUP BY aggregates rows of one level and does not walk the hierarchy.",
+   "Correct: the anchor returns the manager and the recursive member keeps adding the next level of reports until no rows remain.",
+   "Incorrect: a scalar function returns one value and cannot return the whole subtree."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/with-common-table-expression-transact-sql"
+ },
+ {
+  "id": "1.3.1-04",
+  "obj": "1.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation runs a recursive CTE over an organization chart that is 150 levels deep. The query stops with an error that the maximum recursion of 100 was exhausted. Which change should you make?",
+  "choices": [
+   "Add a GROUP BY to the recursive member",
+   "Replace UNION ALL with UNION in the CTE",
+   "Add TOP (150) to the recursive member",
+   "Add OPTION (MAXRECURSION 200) to the outer query"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The default recursion limit is 100, and MAXRECURSION in the OPTION clause of the outer statement raises it. TOP and GROUP BY are not allowed in the recursive member.",
+  "rationale": [
+   "Incorrect: GROUP BY is not allowed in the recursive member and does not change the limit.",
+   "Incorrect: the recursive member requires UNION ALL, so UNION does not raise the recursion limit.",
+   "Incorrect: TOP is not allowed in the recursive member of a CTE.",
+   "Correct: MAXRECURSION raises the limit for this statement, and a value of 200 covers a depth of 150."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/with-common-table-expression-transact-sql"
+ },
+ {
+  "id": "1.3.1-05",
+  "obj": "1.3.1",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Relecloud uses common table expressions in its reporting queries.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A CTE can be used in the statements that follow the statement it is defined for.",
+   "The recursive member of a CTE can use an INNER JOIN.",
+   "The recursive member of a CTE can use an outer join."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A CTE is scoped to the single statement that follows it. The recursive member can use INNER JOIN, but outer joins are not allowed there.",
+  "rationale": [
+   "No: the scope of a CTE is only the one statement that follows it, so the next statement cannot use the name.",
+   "Yes: INNER JOIN is allowed in the recursive member, which is how the CTE joins to the source table.",
+   "No: LEFT, RIGHT, and FULL outer joins are not allowed in the recursive member."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/with-common-table-expression-transact-sql"
+ },
+ {
+  "id": "1.3.1-06",
+  "obj": "1.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys writes a recursive CTE for a bill of materials. The data can contain a cycle, which makes the query loop until the recursion limit is hit. Which change should you make in the CTE to stop the loop?",
+  "choices": [
+   "Track the visited path and skip parts that repeat",
+   "Set MAXRECURSION to 0 so that the loop ends by itself",
+   "Add SELECT DISTINCT to the recursive member of the CTE",
+   "Replace the anchor member with a cross join of parts"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Keeping the path of visited parts lets the recursive member skip a part that already appears in the path. MAXRECURSION 0 removes the limit, so a cycle would run forever.",
+  "rationale": [
+   "Correct: a path column lets the recursive member stop at a part that it already visited, which breaks the cycle.",
+   "Incorrect: MAXRECURSION 0 removes the limit, so a cycle would never stop.",
+   "Incorrect: DISTINCT is not allowed in the recursive member. It does not satisfy the requirement in the question.",
+   "Incorrect: a cross join as the anchor returns unrelated rows and does not stop a cycle."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/with-common-table-expression-transact-sql"
+ },
+ {
+  "id": "1.3.1-07",
+  "obj": "1.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders wants to delete the oldest 1,000 rows from an Orders table by using a CTE that selects those rows. Which statement should follow the CTE definition?",
+  "choices": [
+   "DROP the CTE name",
+   "ALTER the CTE name",
+   "DELETE FROM the CTE name",
+   "TRUNCATE the CTE name"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A CTE can be the target of a DELETE, INSERT, UPDATE, or MERGE when it refers to one base table, and the change applies to that table.",
+  "rationale": [
+   "Incorrect: a CTE is not an object, so DROP does not apply to it.",
+   "Incorrect: ALTER works on objects, and a CTE is not an object.",
+   "Correct: DELETE FROM the CTE deletes the selected rows from the underlying table.",
+   "Incorrect: TRUNCATE works on tables, not on a CTE name. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/with-common-table-expression-transact-sql"
+ },
+ {
+  "id": "1.3.2-01",
+  "obj": "1.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. needs each order to show the total sales of its customer next to the order row, without collapsing the rows. Which approach should you use?",
+  "choices": [
+   "SUM(Amount) OVER (PARTITION BY CustomerId)",
+   "SUM(Amount) with GROUP BY CustomerId",
+   "A scalar function that sums by customer",
+   "SELECT DISTINCT with SUM(Amount)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A window aggregate with OVER (PARTITION BY ...) adds the total to every row. GROUP BY collapses the rows to one per customer.",
+  "rationale": [
+   "Correct: the window sum is computed per customer and returned on each order row.",
+   "Incorrect: GROUP BY returns one row per customer, so the order rows disappear.",
+   "Incorrect: a scalar function can work but is slower, and the requirement points to a window function.",
+   "Incorrect: DISTINCT removes duplicate rows and does not add a per-customer total to each order."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/select-over-clause-transact-sql"
+ },
+ {
+  "id": "1.3.2-02",
+  "obj": "1.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. ranks products by sales. Two products tie for first place, and the next product must be ranked second, with no gap. Which function should you use?",
+  "choices": [
+   "RANK",
+   "ROW_NUMBER",
+   "NTILE",
+   "DENSE_RANK"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "DENSE_RANK gives tied rows the same rank and continues with the next number. RANK leaves a gap after a tie, and ROW_NUMBER never repeats a number.",
+  "rationale": [
+   "Incorrect: RANK would give 1, 1, 3, which leaves a gap. It does not satisfy the requirement in the question.",
+   "Incorrect: ROW_NUMBER gives unique numbers, so the tied products would not share a rank.",
+   "Incorrect: NTILE splits rows into groups of roughly equal size, not into ranks.",
+   "Correct: the sequence is 1, 1, 2, so the next product is ranked second."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/dense-rank-transact-sql"
+ },
+ {
+  "id": "1.3.2-03",
+  "obj": "1.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. needs, for each daily reading, the difference with the reading from the previous day. Which function should you use?",
+  "choices": [
+   "NTILE",
+   "FIRST_VALUE",
+   "LEAD",
+   "LAG"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "LAG returns a value from a previous row in the window order. LEAD returns a value from a following row.",
+  "rationale": [
+   "Incorrect: NTILE distributes rows into groups and returns a group number.",
+   "Incorrect: FIRST_VALUE returns the first value in the window, not the previous row.",
+   "Incorrect: LEAD returns the next row's value, not the previous one.",
+   "Correct: LAG(Value) OVER (ORDER BY ReadingDate) returns the previous day's value to subtract."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/lag-transact-sql"
+ },
+ {
+  "id": "1.3.2-04",
+  "obj": "1.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank calculates a running total with SUM(Amount) OVER (ORDER BY TransactionDate). Several transactions share the same date, and they all show the same running total. Which change should you make so that each row adds its own amount?",
+  "choices": [
+   "Add ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW",
+   "Add DISTINCT inside the SUM of the window function",
+   "Replace SUM with COUNT in the window function call",
+   "Add PARTITION BY TransactionDate to the OVER clause"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "With ORDER BY and no frame, the default is RANGE, which includes all rows with the same ordering value. A ROWS frame counts physical rows, so each row adds its own amount.",
+  "rationale": [
+   "Correct: the ROWS frame ends at the current row, so tied dates no longer share one total.",
+   "Incorrect: DISTINCT in a window sum is not supported and does not change the frame.",
+   "Incorrect: COUNT counts rows and does not sum the amounts. It does not satisfy the requirement in the question.",
+   "Incorrect: PARTITION BY TransactionDate restarts the total for each date, which is not a running total."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/select-over-clause-transact-sql"
+ },
+ {
+  "id": "1.3.2-05",
+  "obj": "1.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation must return only the three most recent orders for each customer. Which approach should you use?",
+  "choices": [
+   "ROW_NUMBER() OVER (PARTITION BY CustomerId ORDER BY OrderDate DESC) filtered to 3 or less",
+   "GROUP BY CustomerId with MAX(OrderDate) and a HAVING clause that counts to three",
+   "TOP (3) in the outer query with ORDER BY OrderDate DESC and a join to the customers",
+   "LAG(OrderDate, 3) OVER (PARTITION BY CustomerId ORDER BY OrderDate DESC) in the list"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Numbering the rows per customer by date descending and filtering in an outer query returns three orders per customer. A window function cannot be filtered in the same SELECT, so a CTE is used.",
+  "rationale": [
+   "Correct: the numbering restarts for each customer, and the filter keeps the first three.",
+   "Incorrect: GROUP BY with MAX returns one row per customer. It does not satisfy the requirement in the question.",
+   "Incorrect: TOP (3) returns three rows in total, not three per customer.",
+   "Incorrect: LAG returns one value from an earlier row and does not filter rows."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/row-number-transact-sql"
+ },
+ {
+  "id": "1.3.2-06",
+  "obj": "1.3.2",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Tailspin Toys uses window functions in a sales report.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A window function can appear in the WHERE clause of the same SELECT.",
+   "With ORDER BY and no frame clause, the default frame is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW.",
+   "RANK leaves a gap in the numbers after tied rows."
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "Window functions are allowed only in the SELECT list and ORDER BY, so they cannot be used in WHERE. The default frame with ORDER BY is RANGE, and RANK leaves gaps after ties.",
+  "rationale": [
+   "No: window functions are not allowed in WHERE, so a CTE or subquery is needed to filter on them.",
+   "Yes: this is the default frame when ORDER BY is given and no frame is written.",
+   "Yes: after tied rows, RANK skips numbers, for example 1, 1, 3."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/select-over-clause-transact-sql"
+ },
+ {
+  "id": "1.3.2-07",
+  "obj": "1.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud wants to divide customers into four groups of roughly equal size by revenue. Which function should you use?",
+  "choices": [
+   "RANK()",
+   "NTILE(4)",
+   "LEAD()",
+   "ROW_NUMBER()"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "NTILE(n) divides the ordered rows into n groups of about equal size and returns the group number.",
+  "rationale": [
+   "Incorrect: RANK numbers rows by position with gaps, not into groups of equal size.",
+   "Correct: NTILE(4) OVER (ORDER BY Revenue) returns a group from 1 to 4.",
+   "Incorrect: LEAD returns a value from a following row. It does not satisfy the requirement in the question.",
+   "Incorrect: ROW_NUMBER gives each row a unique number and does not create groups."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ntile-transact-sql"
+ },
+ {
+  "id": "1.3.3-01",
+  "obj": "1.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. stores order data as JSON text. A query must return one scalar value, the customer name at the path $.customer.name. Which function should you use?",
+  "choices": [
+   "JSON_QUERY",
+   "JSON_ARRAY",
+   "OPENJSON",
+   "JSON_VALUE"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "JSON_VALUE extracts a scalar value from a JSON string. JSON_QUERY returns an object or an array, and OPENJSON returns rows.",
+  "rationale": [
+   "Incorrect: JSON_QUERY returns a JSON object or array, not a scalar value.",
+   "Incorrect: JSON_ARRAY builds a JSON array and does not read a property.",
+   "Incorrect: OPENJSON returns a rowset, not a single value. It does not satisfy the requirement in the question.",
+   "Correct: JSON_VALUE(@json, '$.customer.name') returns the name as a scalar."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/json-value-transact-sql"
+ },
+ {
+  "id": "1.3.3-02",
+  "obj": "1.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. stores order lines in a JSON array. A query must return each line as a row with typed columns Sku and Qty. Which approach should you use?",
+  "choices": [
+   "JSON_ARRAYAGG over the lines of the document",
+   "OPENJSON with a WITH clause that defines the columns",
+   "JSON_OBJECT with the lines passed as arguments",
+   "JSON_VALUE called once for each line of the array"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "OPENJSON with a WITH clause shreds an array into rows and gives each column a name and type. The other functions read one value or build JSON.",
+  "rationale": [
+   "Incorrect: JSON_ARRAYAGG builds a JSON array from rows, which is the opposite direction.",
+   "Correct: the WITH clause maps the JSON properties to typed columns for each array element.",
+   "Incorrect: JSON_OBJECT builds a JSON object from key and value pairs and does not read JSON.",
+   "Incorrect: JSON_VALUE returns one value, so it cannot return all the lines as rows."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/openjson-transact-sql"
+ },
+ {
+  "id": "1.3.3-03",
+  "obj": "1.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank must return, per customer, a JSON array that contains the invoice numbers ordered by date. Which function should you use on SQL Server 2025?",
+  "choices": [
+   "JSON_OBJECT with a GROUP BY on the customer column",
+   "JSON_ARRAYAGG with an ORDER BY inside the function",
+   "OPENJSON with a GROUP BY on the customer column",
+   "JSON_ARRAY with a GROUP BY on the customer column"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "JSON_ARRAYAGG is an aggregate function that builds an array from rows, and it accepts an ORDER BY to set the order of the elements.",
+  "rationale": [
+   "Incorrect: JSON_OBJECT builds an object, not an array of values.",
+   "Correct: JSON_ARRAYAGG(InvoiceNo ORDER BY InvoiceDate) builds the ordered array for each group.",
+   "Incorrect: OPENJSON reads JSON and returns rows, which is the opposite direction.",
+   "Incorrect: JSON_ARRAY builds an array from a fixed list of expressions, not from the rows of a group."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/json-arrayagg-transact-sql"
+ },
+ {
+  "id": "1.3.3-04",
+  "obj": "1.3.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation calls JSON_ARRAY('a', NULL, 'b') and receives [\"a\",\"b\"]. The team needs the SQL NULL to appear as a JSON null. Which change should you make?",
+  "choices": [
+   "Add RETURNING json to the function call",
+   "Add ABSENT ON NULL to the function call",
+   "Wrap the NULL in JSON_VALUE",
+   "Add NULL ON NULL to the function call"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "ABSENT ON NULL is the default and omits NULL elements. NULL ON NULL keeps them as JSON null.",
+  "rationale": [
+   "Incorrect: RETURNING json changes the return type and does not change the NULL handling.",
+   "Incorrect: ABSENT ON NULL is the default behavior that already drops the NULL.",
+   "Incorrect: JSON_VALUE reads from JSON and does not control how NULL is written.",
+   "Correct: NULL ON NULL converts the SQL NULL into a JSON null element."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/json-array-transact-sql"
+ },
+ {
+  "id": "1.3.3-05",
+  "obj": "1.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys has a json column Tags with arrays such as [\"red\",\"sale\"]. A query must return the products whose Tags contain the value sale. Which function should you use on SQL Server 2025?",
+  "choices": [
+   "JSON_CONTAINS",
+   "JSON_ARRAYAGG",
+   "JSON_OBJECT",
+   "ISJSON"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "JSON_CONTAINS searches for a value at a path in a JSON document and returns 1 when it finds it.",
+  "rationale": [
+   "Correct: JSON_CONTAINS(Tags, 'sale', '$[*]') returns 1 for the products that have the tag.",
+   "Incorrect: JSON_ARRAYAGG builds arrays from rows and does not search.",
+   "Incorrect: JSON_OBJECT builds an object and does not search a document.",
+   "Incorrect: ISJSON only tests whether text is valid JSON. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/json-contains-transact-sql"
+ },
+ {
+  "id": "1.3.3-06",
+  "obj": "1.3.3",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Contoso, Ltd. reads JSON documents with OPENJSON.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Without a WITH clause, OPENJSON returns the columns key, value, and type.",
+   "In the default output, type 4 means that the value is an array.",
+   "In lax mode, a missing path raises an error."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The default schema is key, value, and type, where type 4 is an array and type 5 an object. Lax mode returns NULL for a missing path, and strict mode raises the error.",
+  "rationale": [
+   "Yes: the default schema has these three columns. This matches the documented behavior.",
+   "Yes: type codes are 0 null, 1 string, 2 number, 3 boolean, 4 array, 5 object.",
+   "No: lax mode returns NULL for a missing path, and strict mode raises an error."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/openjson-transact-sql"
+ },
+ {
+  "id": "1.3.3-07",
+  "obj": "1.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud needs the nested object at $.shipping from a JSON string, returned as JSON text and not as a scalar. Which function should you use?",
+  "choices": [
+   "ISJSON",
+   "JSON_QUERY",
+   "JSON_VALUE",
+   "JSON_ARRAY"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "JSON_QUERY returns a JSON object or array, while JSON_VALUE returns a scalar. For an object path, JSON_VALUE returns NULL in lax mode.",
+  "rationale": [
+   "Incorrect: ISJSON tests validity and returns 1 or 0. It does not satisfy the requirement in the question.",
+   "Correct: JSON_QUERY returns the nested object as JSON text. This is the option that satisfies the requirement in the question.",
+   "Incorrect: JSON_VALUE returns a scalar, and on an object path it returns NULL in lax mode.",
+   "Incorrect: JSON_ARRAY builds a new array and does not read a path."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/json-query-transact-sql"
+ },
+ {
+  "id": "1.3.4-01",
+  "obj": "1.3.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders runs SQL Server 2025 and must return rows where the Email column matches a regular expression. Which function should you use in the WHERE clause?",
+  "choices": [
+   "REGEXP_SUBSTR",
+   "REGEXP_LIKE",
+   "REGEXP_COUNT",
+   "REGEXP_REPLACE"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "REGEXP_LIKE returns true or false for a match, so it works as a predicate in WHERE. The others return strings or numbers.",
+  "rationale": [
+   "Incorrect: REGEXP_SUBSTR returns the matching part of a string.",
+   "Correct: REGEXP_LIKE returns a Boolean, so it fits a WHERE clause.",
+   "Incorrect: REGEXP_COUNT returns the number of matches, not a Boolean.",
+   "Incorrect: REGEXP_REPLACE returns a changed string, not a true or false value."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/regexp-like-transact-sql"
+ },
+ {
+  "id": "1.3.4-02",
+  "obj": "1.3.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank wants a CHECK constraint that enforces an email pattern on SQL Server 2025. The database is at compatibility level 160. What should you do first?",
+  "choices": [
+   "Add the i flag to the CHECK constraint",
+   "Convert the column to nvarchar(max) first",
+   "Create a computed column that holds the pattern",
+   "Set the database compatibility level to 170 or higher"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "REGEXP_LIKE is available in SQL Server 2025 at compatibility level 170 or higher. It can be used in a CHECK constraint.",
+  "rationale": [
+   "Incorrect: the i flag makes the match case-insensitive and does not enable the function.",
+   "Incorrect: the length of the column does not affect availability of the function.",
+   "Incorrect: a computed column does not make the function available.",
+   "Correct: compatibility level 170 or higher is required for the regular expression functions."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/regexp-like-transact-sql"
+ },
+ {
+  "id": "1.3.4-03",
+  "obj": "1.3.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. stores phone numbers as 123-456-7890 and must reformat them to (123) 456-7890. Which function should you use?",
+  "choices": [
+   "REGEXP_LIKE with the i flag and the same pattern",
+   "REGEXP_SUBSTR with group 0 and the same pattern",
+   "REPLACE with a single fixed search string",
+   "REGEXP_REPLACE with capture groups in the replacement"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "REGEXP_REPLACE can insert the text of a capture group by number, for example \\1, into the replacement string.",
+  "rationale": [
+   "Incorrect: REGEXP_LIKE only tests for a match and returns true or false.",
+   "Incorrect: REGEXP_SUBSTR returns a part of the string and does not reformat it.",
+   "Incorrect: REPLACE replaces a fixed string and cannot reuse parts of a match.",
+   "Correct: groups for the three parts are placed in the new order, for example '(\\1) \\2-\\3'."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/regexp-replace-transact-sql"
+ },
+ {
+  "id": "1.3.4-04",
+  "obj": "1.3.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation must return only the domain part of an email address by using REGEXP_SUBSTR. The pattern is '@(.+)$'. Which group argument should you pass?",
+  "choices": [
+   "0",
+   "2",
+   "1",
+   "-1"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Group 0 returns the whole match, including the at sign. Group 1 returns the text matched by the first set of parentheses, which is the domain.",
+  "rationale": [
+   "Incorrect: group 0 is the default and returns the whole match, including the at sign.",
+   "Incorrect: the pattern has only one group, so group 2 does not exist.",
+   "Correct: group 1 returns the text captured by the first parenthesized group.",
+   "Incorrect: a negative group number is not valid. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/regexp-substr-transact-sql"
+ },
+ {
+  "id": "1.3.4-05",
+  "obj": "1.3.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys must match product codes without regard to upper or lower case with REGEXP_LIKE. Which flags value should you pass?",
+  "choices": [
+   "'c'",
+   "'m'",
+   "'i'",
+   "'s'"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The i flag makes the match case-insensitive. The c flag is case-sensitive and is the default, m is multi-line, and s lets the dot match a newline.",
+  "rationale": [
+   "Incorrect: c is case-sensitive, which is the default behavior.",
+   "Incorrect: m changes how the start and end anchors work on multiple lines.",
+   "Correct: i turns on case-insensitive matching. This is the option that satisfies the requirement in the question.",
+   "Incorrect: s lets the dot match a newline character. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/regexp-like-transact-sql"
+ },
+ {
+  "id": "1.3.4-06",
+  "obj": "1.3.4",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud uses regular expression functions on SQL Server 2025.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "REGEXP_REPLACE replaces all matches by default.",
+   "REGEXP_SUBSTR returns the whole match by default.",
+   "REGEXP_LIKE is available in SQL Server 2022."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The default occurrence of REGEXP_REPLACE is 0, which replaces all matches, and the default group of REGEXP_SUBSTR is 0, the whole match. REGEXP_LIKE is not available in SQL Server 2022.",
+  "rationale": [
+   "Yes: the occurrence argument defaults to 0, which replaces every match.",
+   "Yes: the group argument defaults to 0, which returns the whole match.",
+   "No: the regular expression functions are available from SQL Server 2025 and in Azure SQL Database."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/regexp-replace-transact-sql"
+ },
+ {
+  "id": "1.3.4-07",
+  "obj": "1.3.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants to split a text column into one row per match of a pattern. Which kind of regular expression function should you use?",
+  "choices": [
+   "An aggregate function that returns one value per group",
+   "A function that only returns the count of the matches",
+   "A scalar function such as REGEXP_LIKE in the WHERE clause",
+   "A table-valued function such as REGEXP_SPLIT_TO_TABLE"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "REGEXP_SPLIT_TO_TABLE and REGEXP_MATCHES are table-valued, so they return rows that a query can read in the FROM clause.",
+  "rationale": [
+   "Incorrect: an aggregate function returns one value for a group.",
+   "Incorrect: a count returns one number and cannot return the pieces.",
+   "Incorrect: REGEXP_LIKE returns one Boolean per input value, not rows.",
+   "Correct: table-valued functions return rows, so each match becomes a row."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/regexp-substr-transact-sql"
+ },
+ {
+  "id": "1.3.5-01",
+  "obj": "1.3.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants to find customer names that are close to a typed name, such as Colour and Color, on SQL Server 2025. The team accepts preview features. Which function should you use to count the single-character edits between two strings?",
+  "choices": [
+   "DIFFERENCE(a, b)",
+   "CHARINDEX(a, b)",
+   "EDIT_DISTANCE(a, b)",
+   "LEN(a) - LEN(b)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "EDIT_DISTANCE returns the number of insertions, deletions, substitutions, and transpositions needed to turn one string into another. EDIT_DISTANCE('Colour','Color') returns 1.",
+  "rationale": [
+   "Incorrect: DIFFERENCE compares SOUNDEX codes and returns a value from 0 to 4, which is not an edit count.",
+   "Incorrect: CHARINDEX finds the position of an exact substring.",
+   "Correct: it returns the number of edits between the two strings.",
+   "Incorrect: LEN returns the length of a string. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/edit-distance-transact-sql"
+ },
+ {
+  "id": "1.3.5-02",
+  "obj": "1.3.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. calls EDIT_DISTANCE(a, b, 2) on a large table to find strings within two edits. Which value should the function return when the real distance is 7?",
+  "choices": [
+   "2",
+   "7",
+   "3",
+   "0"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "When the actual distance is greater than the maximum_distance argument, the function returns maximum_distance plus one, which here is 3. It then stops counting early.",
+  "rationale": [
+   "Incorrect: 2 would mean that the distance is exactly 2. It does not satisfy the requirement in the question.",
+   "Incorrect: 7 is returned only when the distance does not exceed the limit or when the argument is omitted.",
+   "Correct: the distance is above the limit of 2, so the function returns 2 + 1.",
+   "Incorrect: 0 means that the strings are identical. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/edit-distance-transact-sql"
+ },
+ {
+  "id": "1.3.5-03",
+  "obj": "1.3.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank wants a fuzzy match that favors strings that agree at the beginning, such as first letters of surnames. Which function should you use on SQL Server 2025, where it is in preview?",
+  "choices": [
+   "STRING_SPLIT(a, b)",
+   "EDIT_DISTANCE(a, b, 1)",
+   "SOUNDEX(a) = SOUNDEX(b)",
+   "JARO_WINKLER_DISTANCE(a, b)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The Jaro-Winkler algorithm gives extra weight to a common prefix, which suits names. EDIT_DISTANCE counts edits and does not favor the start of the string.",
+  "rationale": [
+   "Incorrect: STRING_SPLIT splits a string by a separator and does not compare strings.",
+   "Incorrect: EDIT_DISTANCE counts edits and treats every position the same.",
+   "Incorrect: SOUNDEX compares sounds in English and is not a Jaro-Winkler measure.",
+   "Correct: JARO_WINKLER_DISTANCE implements the Jaro-Winkler algorithm, which favors matches at the beginning."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/jaro-winkler-distance-transact-sql"
+ },
+ {
+  "id": "1.3.5-04",
+  "obj": "1.3.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation compares JARO_WINKLER_DISTANCE('Colour','Color'), which returns about 0.033. Which conclusion should you draw from the result, based on the documented example?",
+  "choices": [
+   "A lower value means that the strings are closer",
+   "The value is a percentage of the string length",
+   "A higher value means that the strings are closer",
+   "The value is the number of edits"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The documented example returns a small value for two strings that differ by one letter, so a lower distance means closer strings. The function returns a float and not an edit count.",
+  "rationale": [
+   "Correct: the small value for two very similar strings shows that lower means closer.",
+   "Incorrect: the value is not a percentage of the length. It does not satisfy the requirement in the question.",
+   "Incorrect: a larger value means a larger distance between the strings.",
+   "Incorrect: the function returns a float, not an integer edit count, which is what EDIT_DISTANCE does."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/jaro-winkler-distance-transact-sql"
+ },
+ {
+  "id": "1.3.5-05",
+  "obj": "1.3.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys passes a varchar(max) column to EDIT_DISTANCE and receives an error. Which change should you make?",
+  "choices": [
+   "Change the column to the json data type first",
+   "Cast the value to a limited length such as varchar(4000)",
+   "Wrap the column in ISNULL before the function call",
+   "Add the maximum_distance argument to the function call"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The fuzzy matching functions do not accept varchar(max) or nvarchar(max) input, so the value must be cast to a limited length.",
+  "rationale": [
+   "Incorrect: a json column is not a character type for this function.",
+   "Correct: a limited-length type is accepted as input. This is the option that satisfies the requirement in the question.",
+   "Incorrect: ISNULL handles NULL values and does not change the data type.",
+   "Incorrect: the maximum_distance argument limits the work and does not change the type rules."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/edit-distance-transact-sql"
+ },
+ {
+  "id": "1.3.5-06",
+  "obj": "1.3.5",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Contoso, Ltd. evaluates the fuzzy string matching functions on SQL Server 2025.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "EDIT_DISTANCE returns NULL when one of its inputs is NULL.",
+   "EDIT_DISTANCE returns a value of type int.",
+   "JARO_WINKLER_DISTANCE returns a value of type int."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "EDIT_DISTANCE returns an int, or NULL if an input is NULL. JARO_WINKLER_DISTANCE returns a float.",
+  "rationale": [
+   "Yes: the function returns NULL if any input is NULL. This matches the documented behavior.",
+   "Yes: the return type is int. This matches the documented behavior.",
+   "No: JARO_WINKLER_DISTANCE returns a float. This does not match the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/edit-distance-transact-sql"
+ },
+ {
+  "id": "1.3.5-07",
+  "obj": "1.3.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud wants to treat two names as duplicates when they differ by at most one edit. Which condition should you use with EDIT_DISTANCE?",
+  "choices": [
+   "EDIT_DISTANCE(a.Name, b.Name) = 0",
+   "EDIT_DISTANCE(a.Name, b.Name) <= 1",
+   "EDIT_DISTANCE(a.Name, b.Name) IS NULL",
+   "EDIT_DISTANCE(a.Name, b.Name) >= 1"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A distance of 0 or 1 means the names are identical or differ by one edit, so the condition is less than or equal to 1.",
+  "rationale": [
+   "Incorrect: a distance of 0 finds only identical names. It does not satisfy the requirement in the question.",
+   "Correct: it keeps identical names and names with one edit. This is the option that satisfies the requirement in the question.",
+   "Incorrect: the result is NULL only when an input is NULL. It does not satisfy the requirement in the question.",
+   "Incorrect: a distance of 1 or more excludes identical names and includes very different names."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/edit-distance-transact-sql"
+ },
+ {
+  "id": "1.3.6-01",
+  "obj": "1.3.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders stores people in a node table Person and friendships in an edge table FriendOf. Which query should you use to return the friends of Alice?",
+  "choices": [
+   "SELECT p2.Name FROM FriendOf WHERE MATCH('Alice') AND p2.Name IS NOT NULL ORDER BY p2.Name",
+   "SELECT p2.Name FROM Person p1 JOIN Person p2 ON MATCH(p1-(f)->p2) WHERE p1.Name = 'Alice'",
+   "SELECT p2.Name FROM Person p1, FriendOf f, Person p2 WHERE MATCH(p1-(f)->p2) AND p1.Name = 'Alice'",
+   "SELECT p2.Name FROM Person p1, Person p2 WHERE p1-(f)->p2 AND p1.Name = 'Alice'"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "MATCH is used in the WHERE clause with node and edge tables listed in the FROM clause. The arrow shows the direction of the edge.",
+  "rationale": [
+   "Incorrect: MATCH requires a pattern with nodes and edges, not a name.",
+   "Incorrect: MATCH cannot be used in a JOIN condition and the edge table is missing.",
+   "Correct: the nodes and the edge are in the FROM clause and MATCH is in the WHERE clause.",
+   "Incorrect: the arrow pattern is valid only inside MATCH. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/match-sql-graph"
+ },
+ {
+  "id": "1.3.6-02",
+  "obj": "1.3.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank wants friends of friends of Alice, two hops through the FriendOf edge table. Which MATCH pattern should you use?",
+  "choices": [
+   "MATCH(p1-(f1)->p2-(f2)->p3)",
+   "MATCH(p1-(f1)->p2 OR p2-(f2)->p3)",
+   "MATCH(p1-(f1)->p2, p3)",
+   "MATCH(p1-(f)->p2-(f)->p3)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A multi-hop pattern chains nodes and edges, and every edge in a pattern needs its own alias. Edge aliases cannot repeat and OR is not allowed in the pattern.",
+  "rationale": [
+   "Correct: two different edge aliases chain three nodes in two hops.",
+   "Incorrect: OR is not supported inside a MATCH pattern. It does not satisfy the requirement in the question.",
+   "Incorrect: a pattern must chain the nodes with edges. It does not satisfy the requirement in the question.",
+   "Incorrect: an edge alias cannot be repeated within one MATCH."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/match-sql-graph"
+ },
+ {
+  "id": "1.3.6-03",
+  "obj": "1.3.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. must find the shortest chain of 1 to 3 FriendOf hops from Jacob on SQL Server 2022. Which construct should you use?",
+  "choices": [
+   "MATCH with a recursive CTE only",
+   "A MATCH pattern repeated three times with OR",
+   "A cross join of the edge table",
+   "MATCH with SHORTEST_PATH and the quantifier {1,3}"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "SHORTEST_PATH supports arbitrary-length patterns on SQL Server 2019 and later, with the quantifiers + or {1,n}.",
+  "rationale": [
+   "Incorrect: MATCH cannot be combined with a recursive CTE as the only construct for arbitrary length.",
+   "Incorrect: OR is not supported in a MATCH pattern. It does not satisfy the requirement in the question.",
+   "Incorrect: a cross join returns all combinations and does not find paths.",
+   "Correct: SHORTEST_PATH with {1,3} returns the shortest path of one to three hops."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/match-sql-graph"
+ },
+ {
+  "id": "1.3.6-04",
+  "obj": "1.3.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation writes WHERE MATCH(a-(e)->b) OR a.Name = 'Alice'. The query fails. What should you do?",
+  "choices": [
+   "Add NOT before the MATCH condition in the query",
+   "Combine MATCH with other conditions only by using AND",
+   "Use a LEFT JOIN instead of the WHERE clause",
+   "Move the MATCH condition to the HAVING clause"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "MATCH can be combined with other conditions only through AND. OR and NOT with MATCH are not supported.",
+  "rationale": [
+   "Incorrect: NOT with MATCH is not supported. It does not satisfy the requirement in the question.",
+   "Correct: use AND, or filter the other condition separately. This is the option that satisfies the requirement in the question.",
+   "Incorrect: MATCH is not a join condition. It does not satisfy the requirement in the question.",
+   "Incorrect: MATCH is valid only in the WHERE clause. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/match-sql-graph"
+ },
+ {
+  "id": "1.3.6-05",
+  "obj": "1.3.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys needs to find the customers who bought a product that Alice also bought, using a Customer node table, a Product node table, and a Bought edge table. Which pattern should you use?",
+  "choices": [
+   "MATCH(c1-(b1)->c2)",
+   "MATCH(c1-(b1)->p<-(b2)-c2)",
+   "MATCH(c1-(b)->p-(b)->c2)",
+   "MATCH(p-(b)->c1)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Both customers point to the same product, so the pattern uses a forward edge to the product and a backward edge from the second customer.",
+  "rationale": [
+   "Incorrect: it links two customers directly and skips the product.",
+   "Correct: c1 and c2 both have a Bought edge to p. This is the option that satisfies the requirement in the question.",
+   "Incorrect: the edge alias repeats and the second edge goes from a product to a customer.",
+   "Incorrect: it has only one customer and the wrong direction."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/match-sql-graph"
+ },
+ {
+  "id": "1.3.6-06",
+  "obj": "1.3.6",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud queries a graph in Azure SQL Database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "MATCH can be used only in the WHERE clause.",
+   "An edge alias can be repeated within one MATCH pattern.",
+   "MATCH works with node and edge tables."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "MATCH is used only in WHERE and only with node and edge tables. An edge alias cannot repeat in a single MATCH.",
+  "rationale": [
+   "Yes: MATCH is a WHERE clause predicate. This matches the documented behavior.",
+   "No: an edge alias cannot repeat within one MATCH. This does not match the documented behavior.",
+   "Yes: MATCH needs graph node and edge tables. This matches the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/match-sql-graph"
+ },
+ {
+  "id": "1.3.6-07",
+  "obj": "1.3.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants MATCH to follow an edge from the second node back to the first. Which arrow should you use in the pattern?",
+  "choices": [
+   "-(e)->",
+   "<-(e)-",
+   "--(e)--",
+   "(e)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The arrow shows the direction of the edge, and an edge must have an explicit direction. <-(e)- follows it backward.",
+  "rationale": [
+   "Incorrect: it traverses forward. It does not satisfy the requirement in the question.",
+   "Correct: it traverses the edge in the backward direction. This is the option that satisfies the requirement in the question.",
+   "Incorrect: an edge without a direction is not valid in MATCH.",
+   "Incorrect: a name without arrows is not a pattern. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/match-sql-graph"
+ },
+ {
+  "id": "1.3.7-01",
+  "obj": "1.3.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. needs the customers that have at least one order, and the query must stop looking at a customer after the first order is found. Which construct should you use?",
+  "choices": [
+   "WHERE EXISTS with a correlated subquery on Orders",
+   "SELECT DISTINCT over all Orders columns",
+   "WHERE CustomerId IN (SELECT COUNT(*) FROM Orders)",
+   "A cross join of Customers and Orders"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "EXISTS with a correlated subquery returns true as soon as one matching row is found, so it does not read all orders.",
+  "rationale": [
+   "Correct: EXISTS stops at the first matching order of each customer.",
+   "Incorrect: DISTINCT removes duplicates but does not select customers.",
+   "Incorrect: COUNT(*) returns one number and does not match customer IDs.",
+   "Incorrect: a cross join pairs every customer with every order."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/subqueries"
+ },
+ {
+  "id": "1.3.7-02",
+  "obj": "1.3.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. needs for each customer the most recent order, with all order columns. Which construct should you use?",
+  "choices": [
+   "GROUP BY CustomerId with MAX applied to every column",
+   "A scalar function in the WHERE clause of the query",
+   "UNION of the Customers table and the Orders table",
+   "CROSS APPLY with a TOP (1) subquery ordered by date"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "CROSS APPLY runs the subquery once per outer row, so TOP (1) with ORDER BY returns the latest order of each customer with every column.",
+  "rationale": [
+   "Incorrect: MAX per column can combine values from different orders.",
+   "Incorrect: a scalar function returns one value, not the full order row.",
+   "Incorrect: UNION stacks rows of tables and does not pair customers with orders.",
+   "Correct: the correlated subquery returns one latest order per customer row."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/from-transact-sql"
+ },
+ {
+  "id": "1.3.7-03",
+  "obj": "1.3.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank must keep customers that have no orders in the result, with NULL in the order columns, while using a table-valued function per customer. Which operator should you use?",
+  "choices": [
+   "INTERSECT",
+   "CROSS APPLY",
+   "INNER JOIN",
+   "OUTER APPLY"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "OUTER APPLY keeps the outer row when the right side returns no rows, like a left outer join. CROSS APPLY drops those rows.",
+  "rationale": [
+   "Incorrect: INTERSECT returns rows that appear in both sets. It does not satisfy the requirement in the question.",
+   "Incorrect: CROSS APPLY removes customers that have no rows on the right side.",
+   "Incorrect: an inner join cannot pass the customer value into a function.",
+   "Correct: it returns the customer with NULL values when the function returns no rows."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/queries/from-transact-sql"
+ },
+ {
+  "id": "1.3.7-04",
+  "obj": "1.3.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation has a correlated subquery in the SELECT list that returns two rows for some customers, and the query fails. Which change should you make?",
+  "choices": [
+   "Add a DISTINCT to the outer query",
+   "Replace the subquery with a CTE that has no correlation",
+   "Return one row, for example with an aggregate or TOP (1)",
+   "Add OPTION (RECOMPILE)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A subquery used as an expression must return at most one row. An aggregate or TOP (1) with ORDER BY limits the result to one row.",
+  "rationale": [
+   "Incorrect: DISTINCT on the outer query does not change the rows of the subquery.",
+   "Incorrect: removing the correlation changes the meaning of the query.",
+   "Correct: a scalar subquery must return a single value per outer row.",
+   "Incorrect: OPTION (RECOMPILE) affects the plan, not the number of rows returned."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/subqueries"
+ },
+ {
+  "id": "1.3.7-05",
+  "obj": "1.3.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys must return customers that have no orders. Which pattern should you use?",
+  "choices": [
+   "WHERE NOT EXISTS with a correlated subquery on Orders",
+   "WHERE EXISTS with a correlated subquery",
+   "An INNER JOIN of Customers and Orders",
+   "WHERE CustomerId NOT IN (SELECT CustomerId FROM Orders) when CustomerId can be NULL"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "NOT EXISTS returns customers without a matching row and handles NULL values correctly. NOT IN returns no rows when the subquery contains a NULL.",
+  "rationale": [
+   "Correct: it returns the customers for which no order exists.",
+   "Incorrect: EXISTS returns the customers that have orders. It does not satisfy the requirement in the question.",
+   "Incorrect: an inner join returns only customers that have orders.",
+   "Incorrect: NOT IN returns no rows when the list contains a NULL."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/subqueries"
+ },
+ {
+  "id": "1.3.7-06",
+  "obj": "1.3.7",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud writes correlated queries against Orders and Customers.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A correlated subquery refers to a column of the outer query.",
+   "CROSS APPLY can pass a column of the outer row into a table-valued function.",
+   "A correlated subquery can be run once before the outer query starts."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "A correlated subquery depends on the outer row, so it is evaluated for each outer row, logically. CROSS APPLY passes values from the outer row into the function.",
+  "rationale": [
+   "Yes: the reference to the outer column makes the subquery correlated.",
+   "Yes: APPLY passes outer column values to the table-valued function.",
+   "No: the subquery depends on the outer row, so it cannot be evaluated once beforehand."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/subqueries"
+ },
+ {
+  "id": "1.3.7-07",
+  "obj": "1.3.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Northwind Traders needs each employee's salary compared to the average salary of the employee's department, in the same row. Which query should you use?",
+  "choices": [
+   "SELECT e.*, (SELECT AVG(Salary) FROM Employees) AS AvgSalary FROM Employees AS e",
+   "SELECT DISTINCT DeptId, AVG(Salary) AS AvgSalary FROM Employees",
+   "SELECT e.*, AVG(Salary) AS AvgSalary FROM Employees AS e GROUP BY e.DeptId",
+   "SELECT e.*, (SELECT AVG(Salary) FROM Employees WHERE DeptId = e.DeptId) FROM Employees e"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A correlated scalar subquery calculates the average of the department of each outer row, so it returns a different value per row.",
+  "rationale": [
+   "Incorrect: it returns one company-wide average for all rows.",
+   "Incorrect: DISTINCT returns the list of departments, not the comparison.",
+   "Incorrect: GROUP BY without aggregation of the other columns is invalid.",
+   "Correct: the subquery uses e.DeptId from the outer row. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/subqueries"
+ },
+ {
+  "id": "1.3.8-01",
+  "obj": "1.3.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants a stored procedure to catch run-time errors and handle them in code. Which construct should you use?",
+  "choices": [
+   "WAITFOR",
+   "TRY...CATCH",
+   "SET NOCOUNT ON",
+   "GOTO with a label"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A TRY...CATCH block runs the statements in TRY and transfers control to CATCH when an error occurs.",
+  "rationale": [
+   "Incorrect: WAITFOR delays execution. It does not satisfy the requirement in the question.",
+   "Correct: errors in the TRY block move control to the CATCH block.",
+   "Incorrect: NOCOUNT suppresses row count messages. It does not satisfy the requirement in the question.",
+   "Incorrect: GOTO jumps to a label and does not catch errors. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/language-elements/try-catch-transact-sql"
+ },
+ {
+  "id": "1.3.8-02",
+  "obj": "1.3.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. catches an error in a CATCH block, rolls back, and must pass the original error to the caller with its number and severity. Which statement should you use?",
+  "choices": [
+   "RETURN 0",
+   "RAISERROR with a new message",
+   "THROW without arguments",
+   "PRINT ERROR_MESSAGE()"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "THROW without arguments inside a CATCH block re-raises the caught error with its original number and severity.",
+  "rationale": [
+   "Incorrect: RETURN 0 ends the procedure and signals success. It does not satisfy the requirement in the question.",
+   "Incorrect: RAISERROR creates a new error with the message and severity that you give.",
+   "Correct: it re-raises the original error. This is the option that satisfies the requirement in the question.",
+   "Incorrect: PRINT shows text but does not raise an error to the caller."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/language-elements/throw-transact-sql"
+ },
+ {
+  "id": "1.3.8-03",
+  "obj": "1.3.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank has the statement SET @x = 1 directly before THROW 50001, 'Invalid', 1 and the batch fails with a syntax error. Which change should you make?",
+  "choices": [
+   "Add BEGIN TRANSACTION before THROW",
+   "Remove the error number",
+   "Change THROW to RAISERROR without parentheses",
+   "End the statement before THROW with a semicolon"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The statement before THROW must end with a semicolon, otherwise the parser cannot read THROW as a new statement.",
+  "rationale": [
+   "Incorrect: a transaction is not needed to parse THROW. It does not satisfy the requirement in the question.",
+   "Incorrect: THROW needs an error number of 50000 or higher. It does not satisfy the requirement in the question.",
+   "Incorrect: RAISERROR requires parentheses and a different syntax.",
+   "Correct: a terminated previous statement lets THROW parse. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/language-elements/throw-transact-sql"
+ },
+ {
+  "id": "1.3.8-04",
+  "obj": "1.3.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation wants any run-time error in a procedure to roll back the open transaction automatically. Which setting should you use?",
+  "choices": [
+   "SET NOCOUNT ON",
+   "SET XACT_ABORT ON",
+   "SET IMPLICIT_TRANSACTIONS OFF",
+   "SET ANSI_WARNINGS OFF"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "With XACT_ABORT ON, a run-time error terminates the batch and rolls back the transaction. THROW honors this setting.",
+  "rationale": [
+   "Incorrect: NOCOUNT only suppresses row count messages. It does not satisfy the requirement in the question.",
+   "Correct: XACT_ABORT ON rolls back the transaction on a run-time error.",
+   "Incorrect: IMPLICIT_TRANSACTIONS controls how transactions start.",
+   "Incorrect: ANSI_WARNINGS controls warnings about NULL and truncation."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/set-xact-abort-transact-sql"
+ },
+ {
+  "id": "1.3.8-05",
+  "obj": "1.3.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys needs to log the error message of a failed statement in a CATCH block. Which function should you use?",
+  "choices": [
+   "XACT_STATE()",
+   "SCOPE_IDENTITY()",
+   "ERROR_MESSAGE()",
+   "@@ROWCOUNT"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "ERROR_MESSAGE() returns the text of the error that caused the CATCH block to run, and it can be called only in a CATCH block.",
+  "rationale": [
+   "Incorrect: XACT_STATE reports the state of the transaction. It does not satisfy the requirement in the question.",
+   "Incorrect: SCOPE_IDENTITY returns the last identity value. It does not satisfy the requirement in the question.",
+   "Correct: it returns the message of the caught error. This is the option that satisfies the requirement in the question.",
+   "Incorrect: @@ROWCOUNT returns the number of rows affected. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/error-message-transact-sql"
+ },
+ {
+  "id": "1.3.8-06",
+  "obj": "1.3.8",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud handles errors in T-SQL procedures.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A new THROW exception always has severity 16.",
+   "RAISERROR honors the XACT_ABORT setting.",
+   "A THROW without arguments must be used inside a CATCH block."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "A new THROW exception has severity 16, and a parameterless THROW must be inside a CATCH block. RAISERROR does not honor XACT_ABORT, while THROW does.",
+  "rationale": [
+   "Yes: a new exception raised with THROW has severity 16. This matches the documented behavior.",
+   "No: RAISERROR does not honor the XACT_ABORT setting. This does not match the documented behavior.",
+   "Yes: a parameterless THROW re-raises the caught exception and is valid only in CATCH."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/language-elements/throw-transact-sql"
+ },
+ {
+  "id": "1.3.8-07",
+  "obj": "1.3.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. has a CATCH block that must roll back only when a transaction is open. Which check should you use?",
+  "choices": [
+   "IF @@SPID > 0 ROLLBACK TRANSACTION",
+   "IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION",
+   "IF @@ROWCOUNT = 0 ROLLBACK TRANSACTION",
+   "IF @@ERROR = 0 COMMIT TRANSACTION"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "@@TRANCOUNT is the number of open transactions, so testing it avoids an error from a rollback when no transaction is open.",
+  "rationale": [
+   "Incorrect: @@SPID is the session ID and is always above zero.",
+   "Correct: it rolls back only when a transaction is open. This is the option that satisfies the requirement in the question.",
+   "Incorrect: @@ROWCOUNT counts rows and does not show open transactions.",
+   "Incorrect: @@ERROR = 0 means no error and a commit is not wanted in a CATCH block."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/trancount-transact-sql"
+ }
+]

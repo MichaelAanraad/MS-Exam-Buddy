@@ -1,0 +1,770 @@
+[
+ {
+  "id": "2.2.1-01",
+  "obj": "2.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. runs several databases on one Azure SQL Managed Instance. One database runs reporting queries that perform best with serial plans. The other databases must keep their parallelism. Which setting should you change?",
+  "choices": [
+   "ALTER DATABASE SCOPED CONFIGURATION SET MAXDOP = 1 in the reporting database",
+   "The compatibility level of the instance",
+   "The service tier of the managed instance",
+   "sp_configure max degree of parallelism set to 1 for the instance"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "ALTER DATABASE SCOPED CONFIGURATION overrides defaults for one database only, so MAXDOP can be changed for the reporting database without affecting the others.",
+  "rationale": [
+   "Correct: the database scoped setting applies to the reporting database only, and the other databases keep their parallelism.",
+   "Incorrect: a compatibility level is a setting per database and does not control the degree of parallelism.",
+   "Incorrect: changing the service tier changes resources and cost, and it does not set parallelism for one database.",
+   "Incorrect: an instance-wide max degree of parallelism of 1 would also remove parallelism from every other database."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql"
+ },
+ {
+  "id": "2.2.1-02",
+  "obj": "2.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants SQL Server to detect when a query gets a worse plan after a plan change, and to go back to the last good plan automatically. Which setting should you enable?",
+  "choices": [
+   "LEGACY_CARDINALITY_ESTIMATION = ON",
+   "ALLOW_SNAPSHOT_ISOLATION = ON",
+   "OPTIMIZE_FOR_AD_HOC_WORKLOADS = ON",
+   "Automatic tuning with FORCE_LAST_GOOD_PLAN"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Automatic plan correction forces the last known good plan when a plan choice regression is detected. It requires Query Store to be enabled.",
+  "rationale": [
+   "Incorrect: LEGACY_CARDINALITY_ESTIMATION switches to the older estimator and does not revert plans.",
+   "Incorrect: ALLOW_SNAPSHOT_ISOLATION enables a transaction isolation level and has no relation to plan regressions.",
+   "Incorrect: OPTIMIZE_FOR_AD_HOC_WORKLOADS caches small plan stubs to save memory and does not correct regressions.",
+   "Correct: FORCE_LAST_GOOD_PLAN detects the regression and forces the earlier plan, so no person needs to act."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/automatic-tuning/automatic-tuning"
+ },
+ {
+  "id": "2.2.1-03",
+  "obj": "2.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. enables automatic tuning with FORCE_LAST_GOOD_PLAN on a SQL Server 2022 database, and the command fails. Which feature should be on before the setting works?",
+  "choices": [
+   "Always Encrypted",
+   "Transparent data encryption",
+   "Query Store",
+   "Change tracking"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Automatic tuning relies on the history of plans and runtime statistics in Query Store, so Query Store must be enabled.",
+  "rationale": [
+   "Incorrect: Always Encrypted protects column data and does not support tuning.",
+   "Incorrect: transparent data encryption protects files at rest and has no role in plan correction.",
+   "Correct: Query Store holds the plans and statistics that automatic tuning uses to find regressions.",
+   "Incorrect: change tracking records data changes for synchronization and does not support tuning."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/automatic-tuning/automatic-tuning"
+ },
+ {
+  "id": "2.2.1-04",
+  "obj": "2.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank has a server with many single-use ad hoc queries, and the plan cache uses too much memory. Which database scoped configuration should you recommend?",
+  "choices": [
+   "QUERY_OPTIMIZER_HOTFIXES = ON",
+   "LAST_QUERY_PLAN_STATS = ON",
+   "PARAMETER_SNIFFING = OFF",
+   "OPTIMIZE_FOR_AD_HOC_WORKLOADS = ON"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "OPTIMIZE_FOR_AD_HOC_WORKLOADS caches a small plan stub on first compilation, which uses less memory than a full plan for queries that run only once.",
+  "rationale": [
+   "Incorrect: QUERY_OPTIMIZER_HOTFIXES enables optimizer fixes and has no effect on the memory used by cached plans.",
+   "Incorrect: LAST_QUERY_PLAN_STATS collects extra plan statistics and uses more resources.",
+   "Incorrect: turning off parameter sniffing changes how plans use parameter values and does not reduce the cache size.",
+   "Correct: a stub is stored the first time, and the full plan is cached only if the query runs again, which saves plan cache memory."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql"
+ },
+ {
+  "id": "2.2.1-05",
+  "obj": "2.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation upgrades a database to a newer compatibility level, and one important query becomes slower because of a different row estimate. The team needs a short-term fix with no query changes. Which setting should you use?",
+  "choices": [
+   "LEGACY_CARDINALITY_ESTIMATION = ON for the database",
+   "Restore the database to an older server",
+   "Switch the database to the simple recovery model",
+   "Delete the statistics of every table"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "LEGACY_CARDINALITY_ESTIMATION = ON uses the older estimator regardless of the compatibility level, which can restore the earlier plan quality without changing the query.",
+  "rationale": [
+   "Correct: the older estimator gives the earlier estimates for this database, so the earlier plan can return without any code change.",
+   "Incorrect: restoring to an older server is a heavy change and gives up the benefits of the upgrade.",
+   "Incorrect: the recovery model controls logging and backups and has no effect on row estimates.",
+   "Incorrect: deleting statistics removes the information that the optimizer needs and usually makes plans worse."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql"
+ },
+ {
+  "id": "2.2.1-06",
+  "obj": "2.2.1",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Tailspin Toys reviews the database settings of its Azure SQL Database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Database scoped configurations apply to one database and not to the whole server.",
+   "Changing a database scoped configuration clears the procedure cache of that database.",
+   "Automatic index management is available on SQL Server 2017 on premises."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Scoped configurations apply to a single database, and changing them clears the procedure cache of that database. Automatic index management is available only in Azure SQL Database and SQL database in Fabric.",
+  "rationale": [
+   "Yes: the settings are stored with the database and override the server defaults for that database only.",
+   "Yes: a change clears the procedure cache for the database, so plans are compiled again afterwards.",
+   "No: automatic index management exists only in Azure SQL Database and SQL database in Fabric."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql"
+ },
+ {
+  "id": "2.2.1-07",
+  "obj": "2.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders sees that the first execution of a stored procedure caches a plan for a rare parameter value, and later calls with common values are slow. The team wants to test turning off parameter sniffing for one database. Which statement should you run?",
+  "choices": [
+   "ALTER DATABASE SalesDb SET QUERY_STORE = OFF for the whole database",
+   "ALTER DATABASE SET AUTO_UPDATE_STATISTICS OFF",
+   "ALTER DATABASE SCOPED CONFIGURATION SET PARAMETER_SNIFFING = OFF",
+   "ALTER DATABASE SCOPED CONFIGURATION SET MAXDOP = 0"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "PARAMETER_SNIFFING = OFF as a database scoped configuration disables parameter sniffing for that database, like trace flag 4136. The default is ON.",
+  "rationale": [
+   "Incorrect: turning off Query Store removes the history needed for tuning and does not change how plans are compiled.",
+   "Incorrect: turning off automatic statistics updates would make estimates worse and does not address sniffing.",
+   "Correct: the database scoped option turns off sniffing for this database, so plans no longer depend on the first parameter value.",
+   "Incorrect: MAXDOP controls parallelism and does not influence which parameter values compile a plan."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql"
+ },
+ {
+  "id": "2.2.1-08",
+  "obj": "2.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud wants to see the last actual execution plan statistics of a query without running the query again, and accepts the added overhead. Which database scoped configuration should you enable?",
+  "choices": [
+   "LAST_QUERY_PLAN_STATS = ON",
+   "LEGACY_CARDINALITY_ESTIMATION = ON",
+   "OPTIMIZE_FOR_AD_HOC_WORKLOADS = ON",
+   "MAXDOP = 1"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "LAST_QUERY_PLAN_STATS = ON collects the last actual execution plan statistics, which can be read from sys.dm_exec_query_plan_stats.",
+  "rationale": [
+   "Correct: the setting keeps the statistics of the last actual plan, so they can be read afterwards without another run.",
+   "Incorrect: the legacy estimator changes row estimates and does not record actual plan statistics.",
+   "Incorrect: the ad hoc option stores plan stubs and does not collect actual plan statistics.",
+   "Incorrect: MAXDOP 1 limits parallelism and does not collect plan statistics."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql"
+ },
+ {
+  "id": "2.2.2-01",
+  "obj": "2.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. has readers that are blocked by writers on SQL Server. The team wants readers to see the last committed version of a row without waiting for locks. Which database option should you enable?",
+  "choices": [
+   "ALLOW_SNAPSHOT_ISOLATION only",
+   "SERIALIZABLE as the default level",
+   "READ UNCOMMITTED for every query",
+   "READ_COMMITTED_SNAPSHOT"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "With READ_COMMITTED_SNAPSHOT on, the READ COMMITTED level uses row versioning, so readers do not take shared locks and do not wait for writers.",
+  "rationale": [
+   "Incorrect: ALLOW_SNAPSHOT_ISOLATION makes the SNAPSHOT level available, but queries use it only when a session requests it.",
+   "Incorrect: SERIALIZABLE holds range locks and increases blocking instead of reducing it.",
+   "Incorrect: READ UNCOMMITTED avoids waits but allows dirty reads, which gives the readers uncommitted data.",
+   "Correct: statements read the committed version of rows from the version store, so readers and writers do not block each other."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql"
+ },
+ {
+  "id": "2.2.2-02",
+  "obj": "2.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. needs a transaction to prevent dirty reads, nonrepeatable reads, and phantom reads by locking key ranges. Which isolation level should you use?",
+  "choices": [
+   "READ UNCOMMITTED",
+   "REPEATABLE READ",
+   "READ COMMITTED",
+   "SERIALIZABLE"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "SERIALIZABLE prevents dirty reads, nonrepeatable reads, and phantoms by using range locks. REPEATABLE READ still allows phantoms.",
+  "rationale": [
+   "Incorrect: READ UNCOMMITTED allows all three problems. It does not satisfy the requirement in the question.",
+   "Incorrect: REPEATABLE READ prevents dirty and nonrepeatable reads but still allows phantom rows.",
+   "Incorrect: READ COMMITTED prevents dirty reads only, and nonrepeatable reads and phantoms are still possible.",
+   "Correct: range locks keep other transactions from inserting rows into the range that the transaction has read."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql"
+ },
+ {
+  "id": "2.2.2-03",
+  "obj": "2.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank asks which isolation behavior is the default on Azure SQL Database. Which answer should you give?",
+  "choices": [
+   "READ COMMITTED with row versioning (RCSI) on",
+   "SNAPSHOT for every transaction by default",
+   "SERIALIZABLE with range locks by default",
+   "READ UNCOMMITTED for every transaction by default"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "READ_COMMITTED_SNAPSHOT is on by default in Azure SQL Database and in SQL database in Microsoft Fabric, while on SQL Server it is off by default.",
+  "rationale": [
+   "Correct: Azure SQL Database uses READ COMMITTED with row versioning by default, which reduces blocking between readers and writers.",
+   "Incorrect: SNAPSHOT is available only when a session requests it, and it is not the default for every transaction.",
+   "Incorrect: SERIALIZABLE is not the default, because it uses range locks and increases blocking.",
+   "Incorrect: READ UNCOMMITTED is never the default, because it allows dirty reads."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql"
+ },
+ {
+  "id": "2.2.2-04",
+  "obj": "2.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation wants a long reporting transaction to see a consistent snapshot of the data from the start of the transaction on SQL Server. Which steps should the team take?",
+  "choices": [
+   "Set ALLOW_SNAPSHOT_ISOLATION ON, and use SET TRANSACTION ISOLATION LEVEL SNAPSHOT",
+   "Use the NOLOCK table hint on every table",
+   "Set READ_COMMITTED_SNAPSHOT OFF, and use READ COMMITTED",
+   "Run the report inside a SERIALIZABLE transaction with a range lock"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The SNAPSHOT level needs ALLOW_SNAPSHOT_ISOLATION on in the database, and the session then requests it. The transaction reads data as it was at its start.",
+  "rationale": [
+   "Correct: the database option makes the level available, and the session setting gives a consistent view as of the start of the transaction.",
+   "Incorrect: NOLOCK allows dirty reads and does not give a consistent snapshot.",
+   "Incorrect: READ COMMITTED gives each statement its own view and not one view for the whole transaction.",
+   "Incorrect: SERIALIZABLE would hold range locks for a long time and block writers, which a long report should avoid."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql"
+ },
+ {
+  "id": "2.2.2-05",
+  "obj": "2.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys has a SNAPSHOT transaction that updates a row, and another transaction changed and committed the same row after the snapshot transaction started. Which result should you expect?",
+  "choices": [
+   "The update overwrites the other change without any error",
+   "The update fails with a conflict error and is rolled back",
+   "The update waits forever for a shared lock",
+   "The other transaction is rolled back automatically"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Snapshot isolation detects update conflicts: when a row was changed and committed by another transaction after the snapshot began, the update fails with error 3960.",
+  "rationale": [
+   "Incorrect: overwriting would silently lose the other change, which snapshot isolation prevents.",
+   "Correct: the engine detects the conflict and rolls back the snapshot transaction, so the application must retry it.",
+   "Incorrect: the update does not wait for a lock, because the conflict is found by comparing row versions.",
+   "Incorrect: the other transaction has already committed, so it cannot be rolled back."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql"
+ },
+ {
+  "id": "2.2.2-06",
+  "obj": "2.2.2",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Relecloud reviews transaction isolation on a SQL Server database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "READ COMMITTED is the default isolation level on SQL Server.",
+   "A transaction always holds exclusive locks on rows that it modifies until it completes.",
+   "REPEATABLE READ prevents phantom reads."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "READ COMMITTED is the SQL Server default, and write locks are held until the transaction completes at every level. REPEATABLE READ prevents dirty and nonrepeatable reads but not phantoms.",
+  "rationale": [
+   "Yes: SQL Server uses READ COMMITTED unless the session sets another level.",
+   "Yes: the isolation level does not change write locks, so exclusive locks stay until the end of the transaction.",
+   "No: REPEATABLE READ still allows phantoms, and SERIALIZABLE or SNAPSHOT is needed to prevent them."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql"
+ },
+ {
+  "id": "2.2.2-07",
+  "obj": "2.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders has a transaction that spans two databases and uses the SNAPSHOT isolation level. The transaction fails when it touches the second database. Which setting should you check?",
+  "choices": [
+   "The compatibility level must be the same in both databases",
+   "Both databases must be in the simple recovery model",
+   "Both databases must use the same collation",
+   "ALLOW_SNAPSHOT_ISOLATION must be ON in each database"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "If a snapshot transaction touches several databases, ALLOW_SNAPSHOT_ISOLATION must be on in each of them.",
+  "rationale": [
+   "Incorrect: the compatibility level does not decide whether the SNAPSHOT level can be used.",
+   "Incorrect: the recovery model controls logging and has no relation to snapshot isolation.",
+   "Incorrect: the collation affects string comparison and does not block a snapshot transaction.",
+   "Correct: each database needs the option before a snapshot transaction can read it."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql"
+ },
+ {
+  "id": "2.2.2-08",
+  "obj": "2.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. updates an account balance in two steps: read the balance, then write the new value. Two sessions can read the same old balance at the same time and overwrite each other. Which approach should you use to prevent the lost update with the least blocking?",
+  "choices": [
+   "Run the two steps in separate transactions",
+   "Check a rowversion column in the UPDATE statement",
+   "Remove the primary key from the table to speed it up",
+   "Use READ UNCOMMITTED for both the read and write steps"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Optimistic concurrency compares a rowversion value in the UPDATE, so the second writer finds that the row changed and can retry, without holding locks while the user thinks.",
+  "rationale": [
+   "Incorrect: separate transactions remove any protection between the read and the write.",
+   "Correct: the UPDATE checks that the rowversion has not changed, and a changed row is detected instead of being overwritten.",
+   "Incorrect: removing the key weakens integrity and does not prevent lost updates.",
+   "Incorrect: READ UNCOMMITTED allows dirty reads and does not prevent the second writer from overwriting the first."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/data-types/rowversion-transact-sql"
+ },
+ {
+  "id": "2.2.3-01",
+  "obj": "2.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants to see how the optimizer would run a query without executing it. Which output should the developer request?",
+  "choices": [
+   "The Windows performance log",
+   "The estimated execution plan",
+   "The SQL Server error log",
+   "The actual execution plan"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "An estimated plan is produced without running the query, for example with SET SHOWPLAN_XML ON. An actual plan includes run-time row counts and needs the query to run.",
+  "rationale": [
+   "Incorrect: a Windows performance log shows operating system counters and not the plan of a query.",
+   "Correct: the estimated plan shows the chosen operators and estimates, and the query is not executed.",
+   "Incorrect: the error log records server events and does not show query plans.",
+   "Incorrect: the actual plan is available only after the query has run, because it contains run-time statistics."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/execution-plans"
+ },
+ {
+  "id": "2.2.3-02",
+  "obj": "2.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. wants to find the queries that used the most CPU on an Azure SQL database over the last week, using a built-in portal view. Which tool should you use?",
+  "choices": [
+   "Azure Policy compliance view",
+   "Azure Advisor cost recommendations",
+   "Microsoft Entra sign-in logs",
+   "Query Performance Insight"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Query Performance Insight identifies the top resource-consuming and long-running queries for Azure SQL Database, based on Query Store data.",
+  "rationale": [
+   "Incorrect: Azure Policy shows compliance with rules and not query performance.",
+   "Incorrect: cost recommendations help to reduce spending and do not rank queries by CPU.",
+   "Incorrect: sign-in logs show authentication events and not query resource use.",
+   "Correct: it shows the top queries by CPU, duration, and execution count over periods such as the last week."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-sql/database/query-performance-insight-use"
+ },
+ {
+  "id": "2.2.3-03",
+  "obj": "2.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank needs the history of plans and runtime statistics of a query, so the team can see when the plan changed. Which feature should you use?",
+  "choices": [
+   "Query Store",
+   "The plan cache only",
+   "SQL Server Agent history",
+   "The default trace"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Query Store keeps a history of queries, plans, and runtime statistics, while the plan cache keeps only the latest plan.",
+  "rationale": [
+   "Correct: Query Store retains several plans per query with their statistics over time windows, which shows plan changes.",
+   "Incorrect: the plan cache holds only the current plan and loses it on a restart or recompile.",
+   "Incorrect: SQL Server Agent history records job runs and not query plans.",
+   "Incorrect: the default trace records server events and does not store plans and runtime statistics."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store"
+ },
+ {
+  "id": "2.2.3-04",
+  "obj": "2.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation sees in an actual plan that the optimizer estimated 10 rows for an operator, but 2 million rows passed through it. Which cause should you investigate first?",
+  "choices": [
+   "A full transaction log file on disk",
+   "Outdated statistics or a poor cardinality estimate",
+   "A missing primary key on the table itself",
+   "An expired SSL certificate on the server"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A large gap between estimated and actual rows usually points to outdated statistics or poor cardinality estimates, which lead to a plan that does not fit the data.",
+  "rationale": [
+   "Incorrect: a full log stops writes and does not change row estimates.",
+   "Correct: statistics describe the data distribution, and old or missing statistics cause wrong estimates and wrong plan choices.",
+   "Incorrect: a missing primary key can matter for design, but it is not the usual reason for such a large estimate error.",
+   "Incorrect: a certificate protects connections and has no effect on estimates."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/execution-plans"
+ },
+ {
+  "id": "2.2.3-05",
+  "obj": "2.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys wants to see, per operator, how many rows have passed and how much time has elapsed while a long query is still running. Which feature should you use?",
+  "choices": [
+   "A SQL Server Agent alert",
+   "Live Query Statistics",
+   "The error log viewer",
+   "The estimated plan"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Live Query Statistics shows run-time statistics per operator while the query runs, and it uses the sys.dm_exec_query_profiles DMV.",
+  "rationale": [
+   "Incorrect: an Agent alert reacts to conditions and does not show per-operator progress.",
+   "Correct: the live plan shows rows produced and elapsed time per operator while the query is still executing.",
+   "Incorrect: the error log lists server events and does not show query progress.",
+   "Incorrect: the estimated plan is produced without running the query and has no run-time progress."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/live-query-statistics"
+ },
+ {
+  "id": "2.2.3-06",
+  "obj": "2.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud wants to enable Query Store on a SQL Server 2019 database so that it collects data. Which statement should you run?",
+  "choices": [
+   "ALTER DATABASE SalesDb SET AUTOMATIC_TUNING = ON (FORCE_LAST_GOOD_PLAN = ON)",
+   "DBCC TRACEON (4199, -1) for the whole instance",
+   "EXEC sp_configure 'query store enabled', 1 with RECONFIGURE",
+   "ALTER DATABASE SalesDb SET QUERY_STORE = ON (OPERATION_MODE = READ_WRITE)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Query Store is enabled per database with ALTER DATABASE SET QUERY_STORE = ON and the READ_WRITE operation mode lets it collect data.",
+  "rationale": [
+   "Incorrect: automatic tuning needs Query Store and is not the setting that turns it on.",
+   "Incorrect: trace flag 4199 enables optimizer hotfixes and has no relation to Query Store.",
+   "Incorrect: there is no sp_configure option named query store, so the statement fails.",
+   "Correct: the statement turns Query Store on for the database in a mode in which it writes data."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store"
+ },
+ {
+  "id": "2.2.3-07",
+  "obj": "2.2.3",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Northwind Traders analyzes workloads with Query Store and Query Performance Insight.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Query Performance Insight requires Query Store to be active.",
+   "Query Store can be enabled on the tempdb database.",
+   "Query Store can capture wait statistics when WAIT_STATS_CAPTURE_MODE is ON."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Query Performance Insight needs Query Store, and wait statistics are captured with WAIT_STATS_CAPTURE_MODE = ON. Query Store cannot be enabled for master or tempdb.",
+  "rationale": [
+   "Yes: the portal view reads its data from Query Store, so Query Store must be running.",
+   "No: Query Store cannot be enabled for the master or tempdb databases.",
+   "Yes: with wait statistics capture on, the waits are grouped in categories and linked to specific queries."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store"
+ },
+ {
+  "id": "2.2.3-08",
+  "obj": "2.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants to compare the plans of one query before and after a deployment, and to find which plan used the most logical reads. Which Query Store view should the team use in SSMS?",
+  "choices": [
+   "Database Diagrams",
+   "The SQL Server Agent job activity monitor",
+   "The Object Explorer details tab",
+   "Regressed Queries, filtered by Logical Reads"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The Regressed Queries view in SSMS lets you filter by metrics such as duration, CPU time, and logical reads, and compare the plans of a query.",
+  "rationale": [
+   "Incorrect: Database Diagrams shows table relationships and not query plans.",
+   "Incorrect: the Agent job activity monitor shows job runs and not query plans.",
+   "Incorrect: the Object Explorer details tab lists objects and does not compare plans.",
+   "Correct: the view lists queries whose metrics got worse, and it lets you compare their plans by the selected metric."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store"
+ },
+ {
+  "id": "2.2.4-01",
+  "obj": "2.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. needs to find which session is blocking others on SQL Server right now. Which column should you check in sys.dm_exec_requests?",
+  "choices": [
+   "last_wait_type only",
+   "granted_query_memory",
+   "blocking_session_id",
+   "plan_handle"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The blocking_session_id column shows the session that blocks a request. The session whose ID is blocking others but is not itself blocked is the head blocker.",
+  "rationale": [
+   "Incorrect: last_wait_type shows the kind of wait and not which session blocks the request.",
+   "Incorrect: granted_query_memory shows memory that was granted and not blocking sessions.",
+   "Correct: the column holds the ID of the session that blocks the request, so following it leads to the head blocker.",
+   "Incorrect: plan_handle identifies the cached plan and not the blocker."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/system-dynamic-management-views/sys-dm-exec-requests-transact-sql"
+ },
+ {
+  "id": "2.2.4-02",
+  "obj": "2.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. gets error 1205 in an application. Which cause should the team investigate?",
+  "choices": [
+   "An expired password of the application login",
+   "A full tempdb database on the server",
+   "A deadlock where the session was the victim",
+   "A missing network route to the server"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Error 1205 is returned to the transaction that the engine chooses as the deadlock victim and rolls back.",
+  "rationale": [
+   "Incorrect: an expired password causes a login failure and not error 1205.",
+   "Incorrect: a full tempdb raises space errors and not a deadlock error.",
+   "Correct: the lock monitor found a cycle, rolled back one transaction, and returned error 1205 to it.",
+   "Incorrect: a missing route causes a connection failure and not error 1205."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/sql-server-deadlocks-guide"
+ },
+ {
+  "id": "2.2.4-03",
+  "obj": "2.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank wants to capture deadlock graphs on SQL Server without turning on trace flags. Which source should you use?",
+  "choices": [
+   "The Query Store runtime statistics view",
+   "The Windows application log of the server",
+   "Trace flag 1204 turned on for a busy server",
+   "The system_health session xml_deadlock_report"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The system_health Extended Events session captures xml_deadlock_report events by default, and SSMS can show them as deadlock graphs. This is preferred over trace flags 1204 and 1222.",
+  "rationale": [
+   "Incorrect: Query Store runtime statistics show query metrics and not deadlock graphs.",
+   "Incorrect: the Windows application log does not hold deadlock graphs.",
+   "Incorrect: trace flags can hurt performance on busy systems and are not the recommended method.",
+   "Correct: the event is captured by default, and the graph shows which sessions and resources took part in the deadlock."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/sql-server-deadlocks-guide"
+ },
+ {
+  "id": "2.2.4-04",
+  "obj": "2.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation has two procedures that update the Orders and Customers tables in opposite order, and they deadlock under load. Which change should you make first?",
+  "choices": [
+   "Add WITH (NOLOCK) to both update statements",
+   "Disable the clustered index on the Orders table",
+   "Access the tables in the same order in both",
+   "Increase the size of the transaction log file"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A common cause of deadlocks is that transactions take locks in different orders. Accessing objects in the same order removes the cycle.",
+  "rationale": [
+   "Incorrect: NOLOCK is not valid on the target of an update and does not remove the lock cycle.",
+   "Incorrect: disabling the clustered index makes the table unreadable and does not fix a lock order problem.",
+   "Correct: when both transactions take locks in the same order, one waits for the other and a cycle cannot form.",
+   "Incorrect: the size of the log has no effect on lock ordering."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/sql-server-deadlocks-guide"
+ },
+ {
+  "id": "2.2.4-05",
+  "obj": "2.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys has a batch job that must never be chosen as a deadlock victim when it conflicts with a reporting query. Which setting should you use in the job session?",
+  "choices": [
+   "SET NOCOUNT ON",
+   "SET LOCK_TIMEOUT 0",
+   "SET DEADLOCK_PRIORITY HIGH",
+   "SET IMPLICIT_TRANSACTIONS ON"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The victim is the session with the lowest DEADLOCK_PRIORITY. Setting the job to HIGH makes the other session the preferred victim.",
+  "rationale": [
+   "Incorrect: NOCOUNT suppresses row count messages and has no effect on deadlocks.",
+   "Incorrect: LOCK_TIMEOUT 0 makes the statement fail immediately when it meets a lock and does not control victim selection.",
+   "Correct: a higher priority makes the job less likely to be chosen, because the lowest priority becomes the victim first.",
+   "Incorrect: IMPLICIT_TRANSACTIONS changes how transactions start and does not set a victim priority."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/sql-server-deadlocks-guide"
+ },
+ {
+  "id": "2.2.4-06",
+  "obj": "2.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud finds that a query slows down when many sessions run it, and the wait statistics show high LCK_M_S waits. Which cause should you investigate?",
+  "choices": [
+   "A missing Always Encrypted key",
+   "A slow network between the client and the server",
+   "An outdated client driver",
+   "Blocking by sessions that hold exclusive locks"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "LCK_M waits are lock waits, so high LCK_M_S waits show that sessions wait for shared locks that other sessions block with exclusive locks.",
+  "rationale": [
+   "Incorrect: a missing key affects encrypted columns and does not cause lock waits.",
+   "Incorrect: a slow network shows up as network waits and not as lock waits.",
+   "Incorrect: an outdated driver does not cause lock waits inside the engine.",
+   "Correct: lock waits point to blocking, and long transactions that hold exclusive locks are a common cause."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/sql-server-transaction-locking-and-row-versioning-guide"
+ },
+ {
+  "id": "2.2.4-07",
+  "obj": "2.2.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Northwind Traders reduces blocking between readers and writers in a busy OLTP database. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Keep transactions short and avoid user interaction inside them",
+   "Enable READ_COMMITTED_SNAPSHOT on the database",
+   "Add a NOLOCK hint to every update statement",
+   "Disable lock escalation on every table without testing",
+   "Use SERIALIZABLE for every transaction"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Short transactions shorten the time that locks are held, and row versioning with READ_COMMITTED_SNAPSHOT lets readers avoid shared locks. SERIALIZABLE increases blocking.",
+  "rationale": [
+   "Correct: locks are held until the transaction ends, so a short transaction reduces how long other sessions wait.",
+   "Correct: row versioning removes the shared locks of readers, so readers and writers do not block each other.",
+   "Incorrect: NOLOCK does not apply to the target of an update and allows dirty reads on readers.",
+   "Incorrect: disabling lock escalation without testing can increase lock memory use and is not a general fix.",
+   "Incorrect: SERIALIZABLE takes range locks and increases blocking."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/sql-server-deadlocks-guide"
+ },
+ {
+  "id": "2.2.4-08",
+  "obj": "2.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. fixed a plan regression by forcing a known good plan for query 42 in Query Store. Which statement should the team use to force plan 7?",
+  "choices": [
+   "DBCC FREEPROCCACHE (plan_handle of plan 7)",
+   "EXEC sp_query_store_force_plan @query_id = 42, @plan_id = 7",
+   "ALTER DATABASE SET PLAN_FORCING = 7",
+   "EXEC sp_recompile @objname = 'query 42', @plan_id = 7"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "sp_query_store_force_plan forces a plan for a query without changing application code, or the Force Plan button in SSMS can be used.",
+  "rationale": [
+   "Incorrect: DBCC FREEPROCCACHE clears cached plans and does not take a plan ID to force.",
+   "Correct: the procedure takes the query ID and the plan ID, and the optimizer then uses that plan for the query.",
+   "Incorrect: there is no PLAN_FORCING database option, so the statement fails.",
+   "Incorrect: sp_recompile marks an object for recompilation and does not force a plan."
+  ],
+  "ref": "https://learn.microsoft.com/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store"
+ }
+]

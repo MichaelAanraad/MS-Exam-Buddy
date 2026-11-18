@@ -1,0 +1,1022 @@
+[
+ {
+  "id": "3.1.1-01",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. stores product descriptions in French, German, and Japanese, and users search in English. Which characteristic should the team look for when it evaluates embedding models?",
+  "choices": [
+   "Support for several languages in one vector space",
+   "A fixed output of zero dimensions for every input",
+   "Support for returning structured JSON answers",
+   "Support for image input as the only supported input"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A multilingual embedding model maps text in different languages to a shared vector space, so an English query can match descriptions in other languages.",
+  "rationale": [
+   "Correct: a multilingual model places the same meaning in different languages close together.",
+   "Incorrect: a model must return vectors with dimensions, and zero is not useful.",
+   "Incorrect: JSON answers belong to chat models and are not an embedding property.",
+   "Incorrect: image input is for multimodal models and does not help with text in other languages."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/"
+ },
+ {
+  "id": "3.1.1-02",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants to search product photos and text captions with one query vector. Which kind of embedding model should the team evaluate?",
+  "choices": [
+   "A model that returns only keywords",
+   "A speech-to-text model",
+   "A text-only embedding model",
+   "A multimodal embedding model"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A multimodal embedding model puts different kinds of input, such as text and images, in the same vector space so they can be compared.",
+  "rationale": [
+   "Incorrect: keywords are not vectors and cannot be compared by distance.",
+   "Incorrect: a speech model converts audio to text and does not embed images.",
+   "Incorrect: a text-only model cannot embed the photos. It does not satisfy the requirement in the question.",
+   "Correct: a multimodal model embeds text and images into one comparable space."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/"
+ },
+ {
+  "id": "3.1.1-03",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The embedding model of Wingtip Toys returns 3,072 dimensions by default, and the team stores the vectors in a float32 vector column. Which action should the team take?",
+  "choices": [
+   "Store the vectors as VARCHAR(MAX) text in the column",
+   "Declare the column as VECTOR(3072) with the float32 type",
+   "Request fewer dimensions, such as 1,536, in PARAMETERS",
+   "Cut the JSON array with LEFT before the insert is run"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A float32 vector supports up to 1,998 dimensions. A model that allows it can return fewer dimensions when PARAMETERS carries a dimensions value. The default size of this model comes from general knowledge.",
+  "rationale": [
+   "Incorrect: text cannot be used with vector functions or indexes.",
+   "Incorrect: float32 allows only 1,998 dimensions, so 3,072 is rejected.",
+   "Correct: a smaller dimension count fits the column limit and the model still returns usable vectors.",
+   "Incorrect: cutting the array changes the vector and breaks the meaning of the embedding."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.1.1-04",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Northwind Traders sizes the storage for its embeddings.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "A float32 vector with 1,536 dimensions needs about 6 KB per row.",
+   "A smaller number of dimensions reduces the storage that each vector needs.",
+   "A float16 vector column supports up to 1,998 dimensions."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Storage follows dimensions times element size, and float16 doubles the allowed dimensions compared with float32.",
+  "rationale": [
+   "Yes: each element uses 4 bytes, and 1,536 times 4 bytes is about 6 KB.",
+   "Yes: storage grows with the number of elements, so fewer dimensions use less space.",
+   "No: float16 supports up to 3,996 dimensions, and 1,998 is the limit of float32."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.1.1-05",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Adventure Works compares embedding models for a large product catalog. Which two factors should the team compare? Each correct answer presents part of the solution.",
+  "choices": [
+   "The number of indexes on the source table",
+   "The collation of the database name",
+   "The languages that the model supports for the text in the catalog",
+   "The size of the transaction log of the source table",
+   "The number of dimensions that the model returns"
+  ],
+  "answer": [
+   2,
+   4
+  ],
+  "explanation": "Dimensions decide storage, index size, and cost, and the language coverage decides whether the model understands the catalog text.",
+  "rationale": [
+   "Incorrect: indexes on the source table do not describe the model.",
+   "Incorrect: a collation of a database name is not a property of an embedding model.",
+   "Correct: a model that does not cover the languages of the data returns weak matches.",
+   "Incorrect: the log size belongs to the source table and is not a property of a model.",
+   "Correct: more dimensions use more storage and make search slower and costlier."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/"
+ },
+ {
+  "id": "3.1.1-06",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A RAG application of Tailspin Toys needs the answer of the language model as JSON with fixed property names. Which capability should the team look for in the language model?",
+  "choices": [
+   "More embedding dimensions",
+   "Structured output",
+   "Multimodal input",
+   "A larger vector index"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Structured output lets a model return JSON that follows a given schema, which makes the answer easy to parse in T-SQL.",
+  "rationale": [
+   "Incorrect: embedding dimensions apply to vectors and not to the answer format.",
+   "Correct: structured output makes the model return JSON with the requested shape.",
+   "Incorrect: multimodal input accepts images and does not fix the shape of the answer.",
+   "Incorrect: a vector index speeds up search and does not shape an answer."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/"
+ },
+ {
+  "id": "3.1.1-07",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A developer tries to register a chat completion model with CREATE EXTERNAL MODEL and sets MODEL_TYPE to a value other than EMBEDDINGS. Which result should the developer expect?",
+  "choices": [
+   "The statement fails because only EMBEDDINGS is accepted",
+   "The statement succeeds and the model returns text answers",
+   "The statement creates a local ONNX model",
+   "The statement succeeds and the model can be used in AI_GENERATE_EMBEDDINGS"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "CREATE EXTERNAL MODEL accepts only EMBEDDINGS as the model type. Chat models are called with sp_invoke_external_rest_endpoint.",
+  "rationale": [
+   "Correct: only EMBEDDINGS is accepted, so another model type is rejected.",
+   "Incorrect: the object registers embeddings models and does not generate text answers.",
+   "Incorrect: the ONNX format is set in API_FORMAT and not by another model type.",
+   "Incorrect: a model of another type cannot be accepted and so cannot be used for embeddings."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "3.1.2-01",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. creates an external model for an embedding endpoint. Which option of CREATE EXTERNAL MODEL should name the model that the provider hosts, such as text-embedding-3-large?",
+  "choices": [
+   "LOCATION",
+   "API_FORMAT",
+   "MODEL_TYPE",
+   "MODEL"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The MODEL option names the model that the provider hosts. LOCATION is the endpoint, API_FORMAT is the request format, and MODEL_TYPE is the purpose of the model.",
+  "rationale": [
+   "Incorrect: LOCATION holds the address of the endpoint and not the model name.",
+   "Incorrect: API_FORMAT holds the request format such as Azure OpenAI.",
+   "Incorrect: MODEL_TYPE holds the purpose, which is EMBEDDINGS.",
+   "Correct: MODEL holds the name of the model at the provider. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "3.1.2-02",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The embeddings model of Contoso, Ltd. is deployed in Azure OpenAI. Which API_FORMAT value should the CREATE EXTERNAL MODEL statement use?",
+  "choices": [
+   "Cognitive Search",
+   "ONNX Runtime",
+   "Ollama",
+   "Azure OpenAI"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "API_FORMAT names the request format of the endpoint. Azure OpenAI deployments use the Azure OpenAI value.",
+  "rationale": [
+   "Incorrect: Cognitive Search is not an accepted API format value.",
+   "Incorrect: ONNX Runtime is for a model that runs locally. It does not satisfy the requirement in the question.",
+   "Incorrect: Ollama is the format of an Ollama server. It does not satisfy the requirement in the question.",
+   "Correct: this value matches the request format of an Azure OpenAI deployment."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "3.1.2-03",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An external model must authenticate to its endpoint. Which object should the CREDENTIAL option of CREATE EXTERNAL MODEL refer to?",
+  "choices": [
+   "A database scoped credential",
+   "A secret name in Azure Key Vault",
+   "A certificate in the master database",
+   "A server-level login"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "CREDENTIAL takes a database scoped credential that follows the URL matching rules for the endpoint.",
+  "rationale": [
+   "Correct: a database scoped credential stores the identity or key for the endpoint.",
+   "Incorrect: T-SQL does not read a Key Vault secret by name in this option.",
+   "Incorrect: a certificate is used for signing or encryption and is not accepted here.",
+   "Incorrect: a login authenticates to the server and not to a web endpoint."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "3.1.2-04",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. manages external models in its database.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "MODEL_TYPE accepts only the value EMBEDDINGS.",
+   "A principal needs EXECUTE permission on the model to use it in AI functions.",
+   "An existing external model can be changed only by dropping it and creating it again."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Only embeddings are supported, EXECUTE controls use, and ALTER EXTERNAL MODEL modifies a model.",
+  "rationale": [
+   "Yes: embedding models are the only type that can be registered at this time.",
+   "Yes: the grant is given with GRANT EXECUTE ON EXTERNAL MODEL.",
+   "No: ALTER EXTERNAL MODEL changes an existing model. This does not match the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "3.1.2-05",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "The key of the embedding endpoint of Fabrikam, Inc. is rotated, and the external model uses a database scoped credential. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Update the secret of the credential with ALTER DATABASE SCOPED CREDENTIAL",
+   "Restart the instance to load the new key",
+   "Test the model with a call of AI_GENERATE_EMBEDDINGS after the change",
+   "Drop and create the vector index again",
+   "Create all embeddings again from the source text"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The model refers to the credential by name, so changing the secret of the credential is enough, and a test call proves that the new key works. The credential statement comes from general knowledge.",
+  "rationale": [
+   "Correct: the new secret is stored in the credential that the model already uses.",
+   "Incorrect: a restart is not needed to use a changed credential.",
+   "Correct: a test call shows that the endpoint accepts the new key.",
+   "Incorrect: a vector index does not hold the key of the endpoint.",
+   "Incorrect: existing embeddings stay valid because the model did not change."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "3.1.2-06",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A DBA at Adventure Works wants to list the external models that exist in a database. Which catalog view should the DBA query?",
+  "choices": [
+   "sys.external_tables",
+   "sys.sql_modules",
+   "sys.database_scoped_credentials",
+   "sys.external_models"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The view sys.external_models returns metadata of the external models that the user is allowed to see.",
+  "rationale": [
+   "Incorrect: external_tables lists tables on external data sources and not models.",
+   "Incorrect: sql_modules holds the definitions of procedures and functions.",
+   "Incorrect: scoped credentials lists credentials and not the models that use them.",
+   "Correct: this view returns the metadata of external models. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "3.1.2-07",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "On SQL Server 2025, a call of AI_GENERATE_EMBEDDINGS fails because external REST endpoints are disabled. Which action should an administrator take?",
+  "choices": [
+   "Restart the SQL Server Agent service on the instance",
+   "Run sp_configure to enable external rest endpoint, then RECONFIGURE",
+   "Create a clustered columnstore index on the embeddings table",
+   "Run ALTER DATABASE SCOPED CONFIGURATION to turn on Query Store"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "External REST endpoints are off by default on SQL Server 2025 and must be enabled with sp_configure. Azure SQL Database has them on by default.",
+  "rationale": [
+   "Incorrect: the Agent runs jobs and does not control endpoint calls.",
+   "Correct: the option allows the engine to call HTTPS endpoints, which the AI functions need.",
+   "Incorrect: an index does not change whether the engine may call an endpoint.",
+   "Incorrect: Query Store records query data and does not control endpoint calls."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-embeddings-transact-sql"
+ },
+ {
+  "id": "3.1.3-01",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants INSERT statements of its application never to wait for the embedding model. Which maintenance method should the team avoid?",
+  "choices": [
+   "A queue that is filled by a trigger and read later",
+   "An AFTER trigger that calls the model inside the transaction",
+   "A scheduled batch that embeds changed rows",
+   "A function that reads changes after the transaction"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A call to an external model inside a trigger runs in the transaction of the user, so every write waits for the network call. This comes from general knowledge of triggers.",
+  "rationale": [
+   "Incorrect: a queue moves the slow call out of the transaction.",
+   "Correct: the trigger holds the transaction open during the call, so writes become slow and can fail.",
+   "Incorrect: a scheduled batch runs outside the user transaction.",
+   "Incorrect: a function that runs after the commit does not delay the user transaction."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/track-data-changes-sql-server"
+ },
+ {
+  "id": "3.1.3-02",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants code to run in batches whenever rows of a table change, and the code recomputes the embeddings of those rows. Which feature should start the code?",
+  "choices": [
+   "A foreign key with cascading updates",
+   "A SQL Server Agent job that runs a full table scan",
+   "The Resource Governor",
+   "Azure Functions with the Azure SQL trigger binding"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The Azure SQL trigger polls change tracking and starts the function with batches of changed rows.",
+  "rationale": [
+   "Incorrect: cascading updates change related rows and do not start code.",
+   "Incorrect: a full scan every run is not change-based and wastes calls to the model.",
+   "Incorrect: Resource Governor limits resources and does not react to changes.",
+   "Correct: the trigger starts the function with the changed rows in batches."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-azure-sql-trigger"
+ },
+ {
+  "id": "3.1.3-03",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A function with the Azure SQL trigger throws an error for the same changed row five times in a row. Which behavior should the team expect?",
+  "choices": [
+   "The row is ignored for future changes after the fifth failure",
+   "The function is disabled until an administrator restarts it",
+   "The row is deleted from the monitored table",
+   "The trigger switches to change data capture"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A failed batch is retried after 60 seconds, and a row that fails five times in a row is ignored for future changes.",
+  "rationale": [
+   "Correct: after five failures the trigger stops processing that row.",
+   "Incorrect: the trigger does not disable the whole function for one row.",
+   "Incorrect: the trigger never changes the data of the monitored table.",
+   "Incorrect: the trigger always uses change tracking and does not switch."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-azure-sql-trigger"
+ },
+ {
+  "id": "3.1.3-04",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Wingtip Toys compares ways to detect changes for embedding maintenance.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Change event streaming sends changes as events to Azure Event Hubs.",
+   "Change tracking stores the old values of the changed columns.",
+   "Change data capture uses a capture job that reads the transaction log."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "CES publishes events, change tracking keeps only keys, and CDC reads the transaction log.",
+  "rationale": [
+   "Yes: Event Hubs and Fabric Eventstream are the destinations of CES.",
+   "No: change tracking records only that a row changed, identified by its primary key.",
+   "Yes: the job reads the log asynchronously and writes the changes to change tables."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/track-data-changes-sql-server"
+ },
+ {
+  "id": "3.1.3-05",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Northwind Traders wants to react to row changes without adding work to the user transaction. Which two methods should the team consider? Each correct answer presents part of the solution.",
+  "choices": [
+   "Change event streaming to Azure Event Hubs (preview)",
+   "A call to the model by the application inside the same transaction",
+   "Azure Functions with the Azure SQL trigger binding",
+   "A full rebuild of all embeddings after every statement",
+   "An AFTER INSERT trigger that calls the model for each row"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Both the SQL trigger and CES read changes after they are committed, so the user transaction does not wait for the model.",
+  "rationale": [
+   "Correct: CES publishes committed changes as events for consumers to process.",
+   "Incorrect: the application call inside the transaction makes the transaction wait.",
+   "Correct: the function polls changes after the commit and processes them in batches.",
+   "Incorrect: a rebuild after every statement is very costly and is not change-based.",
+   "Incorrect: the trigger runs in the user transaction and waits for the call."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/change-event-streaming/overview"
+ },
+ {
+  "id": "3.1.3-06",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adventure Works prefers a low-code solution that embeds new rows by using connector actions and an HTTP call to the embedding endpoint. Which service should the team use?",
+  "choices": [
+   "Query Performance Insight",
+   "The Database Engine Tuning Advisor",
+   "Azure Logic Apps with a SQL connector trigger",
+   "Azure SQL Database elastic jobs only for index rebuilds"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Azure Logic Apps provides a workflow with a SQL connector trigger and actions such as an HTTP call. This comes from general knowledge of Logic Apps.",
+  "rationale": [
+   "Incorrect: Query Performance Insight shows query statistics and does not run workflows.",
+   "Incorrect: the tuning advisor recommends indexes and does not run workflows.",
+   "Correct: a workflow can react to a new row and call the endpoint without custom code.",
+   "Incorrect: an elastic job for index rebuilds does not react to new rows."
+  ],
+  "ref": "https://learn.microsoft.com/azure/connectors/connectors-create-api-sqlazure"
+ },
+ {
+  "id": "3.1.3-07",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys turns on change event streaming (preview) for a table that already holds one million rows. Which action should the team take to also embed the existing rows?",
+  "choices": [
+   "Wait, because CES streams the existing rows automatically",
+   "Run a one-time batch that embeds the existing rows",
+   "Truncate the table and load the rows again",
+   "Disable CES and enable change tracking"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Only changes made after the configuration are streamed, and existing rows are not seeded. A one-time batch handles the existing rows.",
+  "rationale": [
+   "Incorrect: existing rows are not seeded into the stream. It does not satisfy the requirement in the question.",
+   "Correct: the stream does not contain old rows, so an initial batch is needed.",
+   "Incorrect: truncating the table loses data and is not needed.",
+   "Incorrect: switching the feature does not create embeddings for old rows."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/change-event-streaming/configure"
+ },
+ {
+  "id": "3.1.4-01",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A table of Contoso, Ltd. has the columns ProductID, ProductDescription, ListPrice, and ModifiedDate. Which column should the team include in the embedding?",
+  "choices": [
+   "ProductID identifier",
+   "ListPrice amount",
+   "ModifiedDate value",
+   "ProductDescription text"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Free-form text such as a description carries the meaning that an embedding captures. Identifiers, numbers, and dates add little.",
+  "rationale": [
+   "Incorrect: an identifier has no meaning and only adds tokens.",
+   "Incorrect: a number has little semantic value and is better used as a filter.",
+   "Incorrect: a date is operational metadata and has little semantic value.",
+   "Correct: a description has semantic content that a model can embed."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/04-design-embeddings-sql-database-workloads"
+ },
+ {
+  "id": "3.1.4-02",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants one vector to represent both the title and the description of an article. Which input should the team send to the embedding model?",
+  "choices": [
+   "Only the primary key of the article",
+   "Only the data type names of both columns",
+   "The title and description joined into one text value",
+   "Two separate vectors that are added by SQL operators"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The model embeds one text value, so the meaningful columns are combined into a single string. Vectors do not support arithmetic operators.",
+  "rationale": [
+   "Incorrect: a key has no meaning and gives a useless vector. It does not satisfy the requirement in the question.",
+   "Incorrect: type names describe the structure and not the content.",
+   "Correct: one combined text lets a single vector represent both columns.",
+   "Incorrect: vectors cannot be added with operators, because arithmetic is not supported."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.1.4-03",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The Notes column of Litware, Inc. contains customer e-mail addresses and phone numbers mixed with free text, and the team wants semantic search on it. Which action should the team take before generating embeddings? This comes from general knowledge.",
+  "choices": [
+   "Send the text as it is because vectors cannot be read",
+   "Embed only the e-mail address of each customer",
+   "Mask the personal data in the text before it is sent",
+   "Store the notes inside the model endpoint itself"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The text is sent to an external endpoint, so personal data should be removed or masked first. A vector can leak information and does not make data anonymous.",
+  "rationale": [
+   "Incorrect: vectors are derived from the text and are not guaranteed to be anonymous.",
+   "Incorrect: an e-mail address has no semantic value and is personal data.",
+   "Correct: masking keeps personal data away from the endpoint and out of the vectors.",
+   "Incorrect: a model endpoint does not store the source data of the table."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/04-design-embeddings-sql-database-workloads"
+ },
+ {
+  "id": "3.1.4-04",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Adventure Works decides which columns to embed.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Identifiers add little semantic value to an embedding.",
+   "Leaving out columns that carry no meaning reduces token use and cost.",
+   "Vectors must always be stored in the same table as the source text."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Meaningful text is embedded, other columns are left out, and vectors can live in a separate table.",
+  "rationale": [
+   "Yes: they carry no meaning and only increase the number of tokens.",
+   "Yes: fewer tokens are sent to the model, so each request costs less.",
+   "No: a separate embeddings table is easier to rebuild without affecting the source data."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/04-design-embeddings-sql-database-workloads"
+ },
+ {
+  "id": "3.1.4-05",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A Reviews table of Northwind Traders has the columns ReviewID, ReviewTitle, ReviewText, StarRating, and CreatedAtUtc. Which two columns should you include in the embedding? Each correct answer presents part of the solution.",
+  "choices": [
+   "CreatedAtUtc",
+   "ReviewID",
+   "ReviewText",
+   "StarRating",
+   "ReviewTitle"
+  ],
+  "answer": [
+   2,
+   4
+  ],
+  "explanation": "The title and the text hold the meaning of a review. The key, the rating, and the date are better used as filters or sort keys.",
+  "rationale": [
+   "Incorrect: the date is metadata that works better as a filter.",
+   "Incorrect: the key is an identifier without meaning. It does not satisfy the requirement in the question.",
+   "Correct: the text holds the opinion and the details of the review.",
+   "Incorrect: the rating is a number that works better as a filter.",
+   "Correct: the title summarizes the content in a few words. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/04-design-embeddings-sql-database-workloads"
+ },
+ {
+  "id": "3.1.4-06",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which location should the team use to store the generated vectors so that it can rebuild them without touching the source data?",
+  "choices": [
+   "In a variable that lives for one session only",
+   "In the transaction log of the database itself",
+   "In a separate embeddings table with the source key",
+   "In the primary key column of the source table"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Storing vectors in a separate table keyed to the source row makes it easy to track storage and rebuild embeddings without changing the source.",
+  "rationale": [
+   "Incorrect: a variable is lost at the end of the session and cannot be searched later.",
+   "Incorrect: the log is internal and is not a storage place for application data.",
+   "Correct: a separate table can be rebuilt or dropped without affecting the source rows.",
+   "Incorrect: vectors cannot be used as a primary key and the key must stay unique."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/04-design-embeddings-sql-database-workloads"
+ },
+ {
+  "id": "3.1.4-07",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Queries of Wingtip Toys combine a semantic search on the description with filters on category and price. Which design should the team use?",
+  "choices": [
+   "Embed only the category and the price of each product",
+   "Embed only the description and filter on category and price columns",
+   "Replace the filters by vector distance on the price column",
+   "Embed category, price, and description into one text value"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The embedding captures free text, while exact conditions on category and price are handled better by normal columns and predicates.",
+  "rationale": [
+   "Incorrect: category and price carry little meaning to match descriptions.",
+   "Correct: filters stay exact and fast, and the vector covers the meaning of the text.",
+   "Incorrect: distance on a price is not an exact filter and returns the wrong rows.",
+   "Incorrect: numbers inside the text blur the meaning and cannot be filtered exactly."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/04-design-embeddings-sql-database-workloads"
+ },
+ {
+  "id": "3.1.5-01",
+  "obj": "3.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. must split a long text column into smaller fragments in T-SQL before it generates embeddings. Which function should the team use?",
+  "choices": [
+   "AI_GENERATE_CHUNKS",
+   "AI_GENERATE_EMBEDDINGS",
+   "OPENJSON",
+   "STRING_SPLIT"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "AI_GENERATE_CHUNKS is a table-valued function that splits text into chunks of a given size. STRING_SPLIT splits on a separator character.",
+  "rationale": [
+   "Correct: the function returns the chunks of a text with a chunk size and an overlap.",
+   "Incorrect: AI_GENERATE_EMBEDDINGS turns text into a vector and does not split it.",
+   "Incorrect: OPENJSON reads JSON text and does not split free text into chunks.",
+   "Incorrect: STRING_SPLIT splits on a separator and has no size or overlap option."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-chunks-transact-sql"
+ },
+ {
+  "id": "3.1.5-02",
+  "obj": "3.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which value should the CHUNK_TYPE argument of AI_GENERATE_CHUNKS have?",
+  "choices": [
+   "FIXED",
+   "SENTENCE",
+   "SEMANTIC",
+   "PARAGRAPH"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "FIXED is the only accepted chunk type, and it splits the text by a number of characters.",
+  "rationale": [
+   "Correct: FIXED is the only accepted value. This is the option that satisfies the requirement in the question.",
+   "Incorrect: SENTENCE is not an accepted chunk type. It does not satisfy the requirement in the question.",
+   "Incorrect: SEMANTIC is not an accepted chunk type. It does not satisfy the requirement in the question.",
+   "Incorrect: PARAGRAPH is not an accepted chunk type. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-chunks-transact-sql"
+ },
+ {
+  "id": "3.1.5-03",
+  "obj": "3.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A query uses CHUNK_SIZE = 200 and OVERLAP = 10 with AI_GENERATE_CHUNKS. How many characters of the previous chunk should each later chunk repeat?",
+  "choices": [
+   "200",
+   "20",
+   "2000",
+   "10"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "OVERLAP is a percentage of CHUNK_SIZE, so 10 percent of 200 characters is 20 characters.",
+  "rationale": [
+   "Incorrect: 200 is the full chunk size and would repeat the entire chunk.",
+   "Correct: 10 percent of 200 characters is 20 characters. This is the option that satisfies the requirement in the question.",
+   "Incorrect: 2000 is more than the chunk size and cannot be repeated.",
+   "Incorrect: 10 is the percentage and not the number of characters."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-chunks-transact-sql"
+ },
+ {
+  "id": "3.1.5-04",
+  "obj": "3.1.5",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Fabrikam, Inc. configures AI_GENERATE_CHUNKS.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The OVERLAP value is a whole number from 0 to 50.",
+   "The CHUNK_SIZE value is the number of characters of each chunk.",
+   "The function works at any database compatibility level."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Overlap is 0 to 50 percent, the size is in characters, and compatibility level 170 or higher is required.",
+  "rationale": [
+   "Yes: the number is a percentage of the chunk size, and the default is 0.",
+   "Yes: the size is a character count and cannot be NULL, negative, or zero.",
+   "No: the function requires compatibility level 170 or higher."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-chunks-transact-sql"
+ },
+ {
+  "id": "3.1.5-05",
+  "obj": "3.1.5",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Adventure Works must chunk the Body column of dbo.Docs and keep the key of each document next to its chunks. Which two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Call AI_GENERATE_CHUNKS without a table and use SELECT *",
+   "Select the document key from dbo.Docs together with the chunk column",
+   "Use OPENROWSET to read the Body column",
+   "Call AI_GENERATE_CHUNKS with CROSS APPLY and SOURCE set to the Body column",
+   "Set CHUNK_TYPE to SENTENCE"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "CROSS APPLY runs the function for each row, so the key of the row can be selected next to each chunk.",
+  "rationale": [
+   "Incorrect: the function needs a source text and cannot run without one.",
+   "Correct: the key of the row links every chunk back to its document.",
+   "Incorrect: OPENROWSET reads external files and is not needed for a column.",
+   "Correct: the apply runs the function once per document row. This is the option that satisfies the requirement in the question.",
+   "Incorrect: SENTENCE is not an accepted chunk type. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-chunks-transact-sql"
+ },
+ {
+  "id": "3.1.5-06",
+  "obj": "3.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Search results of Northwind Traders are vague because each chunk holds a whole chapter. Which change should the team make?",
+  "choices": [
+   "Remove all overlap and keep the size",
+   "Switch to a model with more dimensions only",
+   "Increase the chunk size",
+   "Reduce the chunk size"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Chunks that are too large dilute the meaning of the text in one vector. Smaller chunks keep each vector focused.",
+  "rationale": [
+   "Incorrect: overlap does not fix chunks that are too large. It does not satisfy the requirement in the question.",
+   "Incorrect: more dimensions do not fix text that mixes many topics in one chunk.",
+   "Incorrect: bigger chunks dilute the meaning even more and can exceed token limits.",
+   "Correct: smaller chunks give each vector a focused meaning. This is the option that satisfies the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/training/modules/design-implement-models-embeddings-with-sql/04-design-embeddings-sql-database-workloads"
+ },
+ {
+  "id": "3.1.5-07",
+  "obj": "3.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team wants the result of AI_GENERATE_CHUNKS to include a column that groups the chunks of the same source row. Which argument should the team set?",
+  "choices": [
+   "ENABLE_CHUNK_SET_ID = 1",
+   "CHUNK_TYPE = GROUPED",
+   "OVERLAP = 50",
+   "SOURCE = NULL"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "ENABLE_CHUNK_SET_ID set to 1 adds the chunk_set_id column, which groups chunks that come from the same source row or document.",
+  "rationale": [
+   "Correct: the argument returns the chunk_set_id column for each chunk.",
+   "Incorrect: GROUPED is not an accepted chunk type, because only FIXED is accepted.",
+   "Incorrect: overlap repeats text between chunks and does not add a column.",
+   "Incorrect: a NULL source returns no chunks. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-chunks-transact-sql"
+ },
+ {
+  "id": "3.1.6-01",
+  "obj": "3.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wingtip Toys generates embeddings in T-SQL. Which clause should the developer use to name the external model in AI_GENERATE_EMBEDDINGS?",
+  "choices": [
+   "WITH MODEL",
+   "FROM MODEL",
+   "AS MODEL",
+   "USE MODEL"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The syntax is AI_GENERATE_EMBEDDINGS(source USE MODEL model_name), and an optional PARAMETERS clause follows.",
+  "rationale": [
+   "Incorrect: WITH MODEL is not part of the syntax of the function.",
+   "Incorrect: FROM MODEL is not part of the syntax of the function.",
+   "Incorrect: AS MODEL is not part of the syntax of the function.",
+   "Correct: USE MODEL is the clause that names the model in the function."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-embeddings-transact-sql"
+ },
+ {
+  "id": "3.1.6-02",
+  "obj": "3.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The team must store an embedding for each chunk of a text column. Which statement pattern should the team use?",
+  "choices": [
+   "SELECT AI_GENERATE_CHUNKS(txt USE MODEL m) AS chunk_vector FROM t WHERE txt IS NOT NULL AND LEN(txt) > 500 ORDER BY 1",
+   "INSERT INTO emb SELECT c.chunk, AI_GENERATE_EMBEDDINGS(c.chunk USE MODEL m) FROM t CROSS APPLY AI_GENERATE_CHUNKS(SOURCE = t.txt, CHUNK_TYPE = FIXED, CHUNK_SIZE = 500) AS c",
+   "INSERT INTO emb SELECT VECTOR_NORMALIZE(txt, 'norm2') FROM t WHERE txt IS NOT NULL AND LEN(txt) > 500 ORDER BY 1",
+   "UPDATE t SET txt = AI_GENERATE_EMBEDDINGS(txt USE MODEL m) WHERE txt IS NOT NULL AND LEN(txt) > 500 AND txt LIKE '%a%'"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The pattern chunks the text with CROSS APPLY and passes each chunk to AI_GENERATE_EMBEDDINGS, then inserts the result next to the chunk.",
+  "rationale": [
+   "Incorrect: the chunk function does not accept a model and the call is invalid.",
+   "Correct: this pattern chunks the text and embeds each chunk in one statement.",
+   "Incorrect: VECTOR_NORMALIZE scales a vector and does not create one from text.",
+   "Incorrect: an update would replace the source text with a vector and loses the text."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-embeddings-transact-sql"
+ },
+ {
+  "id": "3.1.6-03",
+  "obj": "3.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Calls of the embedding endpoint sometimes fail with throttling errors. Which setting should the team change so the engine retries a failed call up to three times?",
+  "choices": [
+   "Set LOCK_TIMEOUT of the session to a value of 3 for retries",
+   "Set PARAMETERS of the model with retry_count of 3",
+   "Set MAXDOP of the database to a value of 3 for retries",
+   "Set the compatibility level of the database to a value of 3"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The retry_count in sql_rest_options accepts a whole number from 0 to 10 and can be set in the PARAMETERS of the model.",
+  "rationale": [
+   "Incorrect: LOCK_TIMEOUT controls waits for locks and not endpoint calls.",
+   "Correct: retry_count in sql_rest_options controls how often the call is repeated.",
+   "Incorrect: MAXDOP controls parallelism and does not repeat endpoint calls.",
+   "Incorrect: a compatibility level of 3 is not valid and has no effect on retries."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/statements/create-external-model-transact-sql"
+ },
+ {
+  "id": "3.1.6-04",
+  "obj": "3.1.6",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Litware, Inc. reviews how AI_GENERATE_EMBEDDINGS works.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The source can be a character type such as nvarchar.",
+   "The PARAMETERS clause adds JSON to the body of the request.",
+   "A retry_count of 25 is valid."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The source is a character type, PARAMETERS adds JSON, and retry_count allows 0 to 10.",
+  "rationale": [
+   "Yes: the source accepts char, varchar, nchar, and nvarchar expressions.",
+   "Yes: the values can override matching settings of the model at run time.",
+   "No: the retry count must be a whole number from 0 to 10. This does not match the documented behavior."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-embeddings-transact-sql"
+ },
+ {
+  "id": "3.1.6-05",
+  "obj": "3.1.6",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "A developer calls AI_GENERATE_EMBEDDINGS and must name the model and set the number of dimensions for this call only. Which two clauses should the call contain? Each correct answer presents part of the solution.",
+  "choices": [
+   "OPTION (MODEL = 'name') at the end of the query",
+   "WITH MODEL followed by the name of the external model",
+   "PARAMETERS with a JSON object that sets dimensions",
+   "USE MODEL followed by the name of the external model",
+   "DIMENSIONS = 755 placed after the source text"
+  ],
+  "answer": [
+   2,
+   3
+  ],
+  "explanation": "The syntax uses USE MODEL to name the model and an optional PARAMETERS clause with a JSON object, for example one that sets dimensions.",
+  "rationale": [
+   "Incorrect: a query hint with MODEL is not part of the syntax.",
+   "Incorrect: WITH MODEL is not part of the syntax. It does not satisfy the requirement in the question.",
+   "Correct: PARAMETERS passes JSON values such as dimensions with the request.",
+   "Correct: USE MODEL is the clause that names the model. This is the option that satisfies the requirement in the question.",
+   "Incorrect: DIMENSIONS = 755 is not part of the syntax. It does not satisfy the requirement in the question."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-embeddings-transact-sql"
+ },
+ {
+  "id": "3.1.6-06",
+  "obj": "3.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An embeddings model returns 1,536 dimensions. Which data type should the team use for the target column?",
+  "choices": [
+   "VARBINARY(1536)",
+   "VECTOR(1536)",
+   "FLOAT(1536)",
+   "NVARCHAR(1536)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The vector type stores embeddings and the number of dimensions must match the model, so VECTOR(1536) is correct.",
+  "rationale": [
+   "Incorrect: VARBINARY(1536) holds 1,536 bytes and is not a vector.",
+   "Correct: VECTOR(1536) matches the model output and works with the vector functions.",
+   "Incorrect: FLOAT(1536) is not valid because float takes a precision of 1 to 53.",
+   "Incorrect: NVARCHAR(1536) holds text and cannot be used by the vector functions."
+  ],
+  "ref": "https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type"
+ },
+ {
+  "id": "3.1.6-07",
+  "obj": "3.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The team wants the model to return 755 dimensions for one call. Which PARAMETERS value should the team pass to AI_GENERATE_EMBEDDINGS?",
+  "choices": [
+   "A JSON object such as {\"vector_size\":\"755 bytes\"}",
+   "An array such as [755] that holds the number",
+   "A JSON object such as {\"dimensions\":755}",
+   "A plain pair such as dimensions=755 in the call"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "PARAMETERS takes a valid JSON object that is added to the request body, for example one that sets dimensions.",
+  "rationale": [
+   "Incorrect: a property named vector_size is not recognized by the model.",
+   "Incorrect: an array is valid JSON but not a JSON object, so it is rejected.",
+   "Correct: a JSON object with a dimensions property is appended to the request body.",
+   "Incorrect: a key and value pair outside JSON is not a valid JSON object."
+  ],
+  "ref": "https://learn.microsoft.com/sql/t-sql/functions/ai-generate-embeddings-transact-sql"
+ }
+]
