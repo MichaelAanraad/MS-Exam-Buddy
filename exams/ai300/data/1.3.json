@@ -1,0 +1,1116 @@
+[
+ {
+  "id": "1.3.1-01",
+  "obj": "1.3.1",
+  "difficulty": "easy",
+  "type": "order",
+  "stem": "Contoso, Ltd. has a private GitHub repository that contains training code. User1 works on a compute instance in an Azure Machine Learning workspace and must clone the repository to the compute instance by using the SSH protocol. Company policy does not allow personal access tokens for GitHub.\n\nWhich three actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "In a terminal on the compute instance, run `ssh-keygen -t ed25519 -C \"user1@contoso.com\"` and save the key in /home/azureuser/.ssh.",
+   "Run `cat ~/.ssh/id_ed25519.pub` and add the output as a new SSH key in the GitHub account of User1.",
+   "Run `git clone git@github.com:contoso/churn-model.git` and verify the SSH fingerprint of the host.",
+   "Add the contents of the ~/.ssh/id_ed25519 file as a new SSH key in the GitHub account of User1.",
+   "Create a personal access token in GitHub and run `git clone https://github.com/contoso/churn-model.git`."
+  ],
+  "answer": [
+   0,
+   1,
+   2
+  ],
+  "explanation": "To clone over SSH from a compute instance, you generate a key pair in the terminal, register the public key with the Git service, and then clone by using the SSH URL. The private key stays on the compute instance, where only the owner of the instance can access it. HTTPS with a personal access token is the alternative when SSH is not an option.",
+  "rationale": [
+   "Step 1: ssh-keygen creates the public and private key pair on the compute instance. Save it in /home/azureuser/.ssh, where the key is accessible only to the compute instance owner and where SSH looks for it.",
+   "Step 2: GitHub authenticates the compute instance by its public key, so the contents of id_ed25519.pub must be added to the GitHub account before an SSH clone can succeed.",
+   "Step 3: with the public key registered, git clone with the SSH URL succeeds. On the first connection SSH shows the host fingerprint, which you verify to protect against a man-in-the-middle attack.",
+   "Incorrect: id_ed25519 without the .pub extension is the private key. It must stay on the compute instance; GitHub needs only the public key, and uploading the private key would expose the credential.",
+   "Incorrect: cloning over HTTPS with a personal access token is the documented alternative to SSH, but the policy forbids personal access tokens and the requirement is SSH. Use HTTPS with a token when SSH cannot be used."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-train-model-git-integration"
+ },
+ {
+  "id": "1.3.1-02",
+  "obj": "1.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "series": "S-iac",
+  "stem": "Fabrikam, Inc. stores Azure Machine Learning job definitions in a GitHub repository. A GitHub Actions workflow that runs on GitHub-hosted runners must sign in to Azure and submit jobs to a workspace named Workspace1. Company policy prohibits storing a client secret, a password, or any other long-lived Azure credential in GitHub.\n\nYou need to configure how the workflow authenticates to Azure.\n\nSolution: You create a service principal that has a client secret and assign it a role on Workspace1. You save the JSON output of the service principal in a repository secret named AZURE_CREDENTIALS and set the creds input of the azure/login action to that secret.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The azure/login action supports two sign-in methods: a service principal with a client secret (the creds input) and OpenID Connect with a federated identity credential. Only OpenID Connect avoids a stored secret, because GitHub issues a short-lived token that Microsoft Entra ID exchanges for an Azure access token.",
+  "rationale": [
+   "Incorrect: the JSON in AZURE_CREDENTIALS contains the client secret of the service principal, which is a long-lived credential stored in GitHub. Learn describes this method as less secure and not recommended.",
+   "Correct: the solution does not meet the goal because the client secret is stored in GitHub. The secret-based method is an option only when OpenID Connect cannot be used and policy allows a stored secret."
+  ],
+  "ref": "https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect"
+ },
+ {
+  "id": "1.3.1-03",
+  "obj": "1.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "series": "S-iac",
+  "stem": "Fabrikam, Inc. stores Azure Machine Learning job definitions in a GitHub repository. A GitHub Actions workflow that runs on GitHub-hosted runners must sign in to Azure and submit jobs to a workspace named Workspace1. Company policy prohibits storing a client secret, a password, or any other long-lived Azure credential in GitHub.\n\nYou need to configure how the workflow authenticates to Azure.\n\nSolution: You create a user-assigned managed identity, assign it a role on Workspace1, and add a federated identity credential that trusts the repository. You store the client ID, tenant ID, and subscription ID as GitHub secrets, grant the workflow the id-token: write permission, and pass the three IDs to the azure/login action.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "OpenID Connect sign-in needs three parts: an identity (a Microsoft Entra application or a user-assigned managed identity) with a role assignment, a federated identity credential that matches the GitHub subject, and a workflow that has the id-token: write permission and passes client-id, tenant-id, and subscription-id to azure/login.",
+  "rationale": [
+   "Correct: the federated identity credential lets the workflow exchange its GitHub OIDC token for an Azure access token. The client, tenant, and subscription IDs are identifiers, not credentials, and id-token: write lets the job request the token.",
+   "Incorrect: the solution meets the goal. No would apply if the workflow lacked the id-token: write permission or if the credential subject did not match the branch, environment, or pull request that runs the job."
+  ],
+  "ref": "https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect"
+ },
+ {
+  "id": "1.3.1-04",
+  "obj": "1.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "series": "S-iac",
+  "stem": "Fabrikam, Inc. stores Azure Machine Learning job definitions in a GitHub repository. A GitHub Actions workflow that runs on GitHub-hosted runners must sign in to Azure and submit jobs to a workspace named Workspace1. Company policy prohibits storing a client secret, a password, or any other long-lived Azure credential in GitHub.\n\nYou need to configure how the workflow authenticates to Azure.\n\nSolution: You enable the system-assigned managed identity of Workspace1, assign the identity a role on Workspace1, and configure the azure/login action to sign in as that identity.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A GitHub-hosted runner runs outside Azure, so it cannot sign in as the managed identity of an Azure resource. For secretless sign-in, Learn lists two options: a Microsoft Entra application or a user-assigned managed identity, each with a federated identity credential that trusts tokens that GitHub issues for the repository.",
+  "rationale": [
+   "Incorrect: the system-assigned identity belongs to the workspace and is used by the workspace itself. A GitHub workflow signs in without a secret through a federated identity credential, and Learn states that configuring one on a system-assigned managed identity is not supported.",
+   "Correct: the solution does not meet the goal because the workflow cannot sign in as the system-assigned identity of Workspace1. The workspace identity is the right choice when the workspace accesses its own storage account or key vault."
+  ],
+  "ref": "https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust-user-assigned-managed-identity"
+ },
+ {
+  "id": "1.3.1-05",
+  "obj": "1.3.1",
+  "difficulty": "hard",
+  "type": "yesno",
+  "case": "C-a",
+  "stem": "You plan the federated identity credentials of id-mlops-gh for the GitHub workflows.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The deploy job needs a federated credential that has the entity type Environment and the value production.",
+   "A federated credential that has the entity type Branch and the value main lets the deploy job sign in.",
+   "The validate-infra.yml workflow needs a federated credential that has the entity type Pull request."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Microsoft Entra ID compares the issuer and subject of the GitHub token with each federated identity credential. The subject depends on how the job runs: environment:<name> for jobs tied to an environment, ref:refs/heads/<branch> or a tag ref for other push jobs, and pull_request for pull request events. A subject that does not match makes the token exchange fail.",
+  "rationale": [
+   "Yes: the deploy job runs in the production environment, so its token subject names the environment, for example repo:lamna/mlops-infra:environment:production. The credential must match that subject exactly, which requires the entity type Environment and the value production.",
+   "No: a Branch credential has the subject repo:lamna/mlops-infra:ref:refs/heads/main, which matches jobs that are not tied to an environment. Because the deploy job runs in an environment, its token carries the environment subject instead.",
+   "Yes: validate-infra.yml runs on pull_request events, which produce a subject that ends in :pull_request. A Pull request credential matches it, so the workflow can sign in as id-mlops-gh to preview the changes."
+  ],
+  "ref": "https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust"
+ },
+ {
+  "id": "1.3.1-06",
+  "obj": "1.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. uses an app registration named App1 to sign in to Azure from GitHub Actions by using OpenID Connect. App1 has one federated identity credential that has the entity type Branch and the value main. A workflow that runs on pushes to the main branch contains a job that includes the setting environment: staging. The azure/login step of this job fails because Microsoft Entra ID rejects the token exchange. Other workflows that sign in as App1 must keep working.\n\nWhat should you do?",
+  "choices": [
+   "Add a federated credential to App1 that has the entity type Pull request",
+   "Add a federated credential to App1 that has the entity type Environment and the value staging",
+   "Change the existing credential of App1 to the entity type Tag and the value main",
+   "Change the audience of the existing credential to https://token.actions.githubusercontent.com"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A GitHub job that references an environment gets a token whose subject names the environment instead of the branch. Each subject that must sign in needs its own federated identity credential, because a standard credential matches one exact subject. An app or user-assigned managed identity can have up to 20 credentials.",
+  "rationale": [
+   "Incorrect: the Pull request entity type produces the subject repo:<org>/<repo>:pull_request, which matches workflows triggered by pull_request events. The failing job runs on a push and is tied to an environment.",
+   "Correct: a job that references an environment presents the subject repo:<org>/<repo>:environment:staging. A new Environment credential fixes the job, and keeping the Branch credential keeps the other workflows working.",
+   "Incorrect: a Tag credential matches workflows triggered by a pushed tag, and changing the existing credential breaks the workflows that rely on the main branch credential. Use Tag when release workflows run on tags.",
+   "Incorrect: https://token.actions.githubusercontent.com is the issuer of GitHub tokens, not the audience. The recommended audience is api://AzureADTokenExchange, and this failure is caused by the subject."
+  ],
+  "ref": "https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust"
+ },
+ {
+  "id": "1.3.1-07",
+  "obj": "1.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank uses a user-assigned managed identity named Identity1 to run a GitHub Actions workflow. The workflow submits training jobs to an existing compute cluster in a workspace named Workspace1 and registers the resulting models. Identity1 must not be able to create or delete compute resources or change the workspace. You need to grant Identity1 access by following the principle of least privilege.\n\nWhich role assignment should you create?",
+  "choices": [
+   "Contributor on the resource group that contains Workspace1",
+   "AzureML Compute Operator on Workspace1",
+   "AzureML Data Scientist on Workspace1",
+   "Reader on Workspace1"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A workflow identity needs a role assignment just like a user. Azure Machine Learning has built-in roles for typical duties: AzureML Data Scientist for experiments, jobs, and models, and AzureML Compute Operator for compute. Scope the assignment to the workspace, and combine roles only when the workflow also manages compute.",
+  "rationale": [
+   "Incorrect: Contributor can create, edit, and delete assets and compute, and at resource group scope it covers every other resource in the group too. Use it for an identity that deploys the templates that create the workspace.",
+   "Incorrect: AzureML Compute Operator can create, manage, and delete compute resources, which the requirements forbid, and it does not cover job submission or model registration. Assign it to an identity that manages clusters.",
+   "Correct: AzureML Data Scientist can perform all actions in a workspace except creating or deleting compute resources and modifying the workspace itself, so the workflow can submit jobs and register models within the stated limits.",
+   "Incorrect: Reader allows read-only actions, so the workflow could list jobs and models but not submit jobs or register models. Use Reader for an identity that only reports on workspace assets."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-assign-roles?view=azureml-api-2#default-roles"
+ },
+ {
+  "id": "1.3.1-08",
+  "obj": "1.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud configures a federated identity credential on a Microsoft Entra application so that a GitHub Actions workflow can sign in to the public Azure cloud by using the azure/login action. The workflow uses the default settings of the action.\n\nWhich audience value should you set in the federated identity credential?",
+  "choices": [
+   "api://AzureADTokenExchangeUSGov",
+   "https://management.azure.com",
+   "https://token.actions.githubusercontent.com",
+   "api://AzureADTokenExchange"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A federated identity credential has three matching fields: the issuer (the GitHub OIDC provider), the subject (the repository plus a branch, environment, tag, or pull request), and the audience. The token exchange succeeds only when all three match the claims in the token that GitHub issues.",
+  "rationale": [
+   "Incorrect: api://AzureADTokenExchangeUSGov is the audience that Learn shows for signing in to Azure US Government, together with the environment input set to AzureUSGovernment. It does not apply to the public cloud.",
+   "Incorrect: https://management.azure.com is the Azure Resource Manager endpoint that the access token is used against after sign-in. It is not the audience of the GitHub token that Microsoft Entra ID exchanges.",
+   "Incorrect: https://token.actions.githubusercontent.com is the issuer of GitHub OIDC tokens. It belongs in the issuer field of the credential, which the portal fills in for the GitHub Actions scenario.",
+   "Correct: in public clouds, the azure/login action uses the audience api://AzureADTokenExchange by default, and it is the recommended audience value for a federated identity credential."
+  ],
+  "ref": "https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect"
+ },
+ {
+  "id": "1.3.2-01",
+  "obj": "1.3.2",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Northwind Traders has a file named main.bicep that defines an Azure Machine Learning workspace named mlw-prod and its dependent resources. The file targets a resource group. A resource group named rg-mlprod does not exist yet. The Azure CLI and its ml extension are installed.\n\nYou need to preview the changes that main.bicep makes, deploy the file, and then use the ml extension to display the properties of the new workspace.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`az group create --name rg-mlprod --location westeurope`",
+   "`az deployment group what-if --resource-group rg-mlprod --template-file main.bicep`",
+   "`az deployment group create --resource-group rg-mlprod --template-file main.bicep`",
+   "`az ml workspace show --name mlw-prod --resource-group rg-mlprod`",
+   "`az deployment sub create --location westeurope --template-file main.bicep`",
+   "`az ml workspace create --name mlw-prod --resource-group rg-mlprod`",
+   "`bicep build main.bicep`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A Bicep deployment from the Azure CLI follows the target scope of the file: a resource group file uses the az deployment group commands, and the resource group must exist first. Run what-if before create to preview the changes, and use az ml workspace show to display the new workspace.",
+  "rationale": [
+   "Step 1: a resource group deployment needs an existing resource group, and both what-if and create run at resource group scope. az group create makes rg-mlprod in the chosen region.",
+   "Step 2: what-if lists the resources that the file would create, modify, or delete without changing anything, and it also validates the file. It runs against the existing resource group, so it follows az group create.",
+   "Step 3: az deployment group create compiles main.bicep and deploys the workspace and its dependent resources into rg-mlprod after you review the preview.",
+   "Step 4: az ml workspace show uses the ml extension to return the properties of mlw-prod, such as its storage account, key vault, and MLflow tracking URI. It runs last because the workspace exists only after the deployment.",
+   "Incorrect: az deployment sub create deploys at subscription scope, which you use for a file that sets targetScope to subscription, for example to create resource groups. main.bicep targets a resource group.",
+   "Incorrect: az ml workspace create would create the workspace outside the Bicep file, with new dependent resources. Use it when you manage the workspace with the CLI and a YAML file instead of Bicep.",
+   "Incorrect: the Azure CLI compiles a .bicep file during what-if and deployment, so a separate build is not needed. Use bicep build when you need the compiled JSON template, for example to inspect or publish it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/deploy-cli"
+ },
+ {
+  "id": "1.3.2-02",
+  "obj": "1.3.2",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Proseware, Inc. writes a Bicep file that creates an Azure Machine Learning workspace. The file already declares resources that have the symbolic names storage, vault, and appInsights. The workspace must meet the following requirements:\n\n- Use a managed identity that does not have to be created as a separate resource.\n- Use the key vault that the file declares.\n- Reject requests from the public internet.\n- Access the system datastores in the default storage account by using Microsoft Entra ID instead of account keys.\n\nHow should you complete the Bicep code? To answer, select the appropriate options in the answer area.\n\n```bicep\nresource workspace 'Microsoft.MachineLearningServices/workspaces@2024-04-01' = {\n  name: workspaceName\n  location: location\n  identity: {\n    type: '[[1]]'\n  }\n  properties: {\n    storageAccount: storage.id\n    keyVault: [[2]]\n    applicationInsights: appInsights.id\n    publicNetworkAccess: '[[3]]'\n    systemDatastoresAuthMode: '[[4]]'\n  }\n}\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "SystemAssigned",
+     "UserAssigned",
+     "None"
+    ],
+    "why": [
+     "Correct: SystemAssigned enables an identity that belongs to the workspace itself, so no separate identity resource is needed. The workspace uses it to access its storage account and key vault.",
+     "Incorrect: UserAssigned requires a separate Microsoft.ManagedIdentity resource that you list in userAssignedIdentities. Use it when several resources share one identity or it must exist before the workspace.",
+     "Incorrect: None disables the managed identity, so the workspace has no identity to use for identity-based access to its storage account and key vault."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "vault.id",
+     "vault.name",
+     "vault.properties.vaultUri"
+    ],
+    "why": [
+     "Correct: the keyVault property expects the Azure Resource Manager resource ID of the key vault, and vault.id returns it. storageAccount and applicationInsights follow the same pattern.",
+     "Incorrect: vault.name returns only the name of the key vault. A name alone does not identify the resource across resource groups and subscriptions, so the workspace properties take full resource IDs.",
+     "Incorrect: vault.properties.vaultUri is the data-plane URI that applications use to read secrets. The workspace property takes the Azure Resource Manager resource ID, not the vault URI."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "Disabled",
+     "Enabled"
+    ],
+    "why": [
+     "Correct: Disabled makes the workspace reject requests from the public network, so clients must connect through a private endpoint.",
+     "Incorrect: Enabled accepts requests from the public network. Combine Enabled with IP network rules when only selected public IP ranges must reach the workspace."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "identity",
+     "accesskey"
+    ],
+    "why": [
+     "Correct: identity makes the workspace use Microsoft Entra ID, through its managed identity or the identity of the user, to access the system datastores instead of the shared key of the storage account.",
+     "Incorrect: accesskey keeps shared key access to the default storage account. It is the value you set to revert a workspace when key-based access to the storage account is required again."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "explanation": "In Bicep, the workspace properties reference dependent resources by resource ID (symbolicName.id). The identity block sets the managed identity type, publicNetworkAccess controls inbound public access, and systemDatastoresAuthMode set to identity switches the system datastores from shared keys to Microsoft Entra ID authorization, as in the Learn template sample for API version 2024-04-01.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-disable-local-auth-storage?view=azureml-api-2"
+ },
+ {
+  "id": "1.3.2-03",
+  "obj": "1.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Alpine Ski House must create a new Azure Machine Learning workspace by using the Azure CLI. The workspace must use an existing storage account and an existing key vault. The CLI can create any other dependent resources automatically.\n\nWhat should you do?",
+  "choices": [
+   "Run `az ml workspace create -n ws1 -g rg1` without a YAML file and let the CLI create the dependent resources",
+   "Add the storage_account and key_vault resource IDs to a YAML file and run `az ml workspace create -g rg1 --file ws1.yml`",
+   "Run `az ml workspace create -n ws1 -g rg1` and then run `az ml workspace sync-keys -n ws1 -g rg1`",
+   "Add the storage_account and key_vault resource IDs to a YAML file and run `az ml workspace update -g rg1 --file ws1.yml`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The CLI v2 creates a workspace with new dependent resources by default. To bring your own storage account, key vault, container registry, or Application Insights resource, put their Azure Resource Manager IDs in a workspace YAML file and pass it with --file (the command also accepts IDs in parameters such as --storage-account and --key-vault). You can mix existing and automatically created resources.",
+  "rationale": [
+   "Incorrect: with no YAML file and no resource ID parameters, az ml workspace create creates new dependent services, such as a storage account and a key vault. Use it when you have no existing resources to reuse.",
+   "Correct: a workspace YAML file lists the resource IDs of existing resources in storage_account and key_vault. Resources that you leave out, such as Application Insights, are created automatically.",
+   "Incorrect: the first command creates new dependent resources, and sync-keys only makes the workspace pick up regenerated access keys immediately instead of after about an hour. It does not change which resources it uses.",
+   "Incorrect: az ml workspace update changes settings of a workspace that already exists, such as public network access. The workspace in this scenario must be created, so the update command does not apply."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-workspace-cli"
+ },
+ {
+  "id": "1.3.2-04",
+  "obj": "1.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fourth Coffee deploys a Bicep file that creates an Azure Machine Learning workspace and sets an existing storage account as the default storage account of the workspace. The deployment fails because the storage account is not supported as default storage. The storage account has the following settings:\n\n- Performance: Standard\n- Redundancy: Standard_GRS\n- Hierarchical namespace: Enabled\n- Minimum TLS version: 1.2\n\nWhich setting should you change so that the deployment succeeds?",
+  "choices": [
+   "Standard performance",
+   "Standard_GRS redundancy",
+   "Minimum TLS version 1.2",
+   "Hierarchical namespace"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The default storage account of a workspace must be a standard account, not a premium one, with both Blob and File capabilities and no hierarchical namespace. Premium storage and Data Lake Storage accounts can still be attached to the workspace as additional datastores.",
+  "rationale": [
+   "Incorrect: Standard performance is supported for the default storage account. The default storage account cannot be a premium account, such as Premium_LRS or Premium_GRS.",
+   "Incorrect: geo-redundant storage is a standard SKU and is supported. Only premium accounts are excluded, so Standard_GRS does not cause the failure.",
+   "Incorrect: a minimum TLS version of 1.2 is a common security setting and is not one of the requirements for the default storage account, so it does not cause the failure.",
+   "Correct: the default storage account cannot have a hierarchical namespace, which is the Azure Data Lake Storage feature. A hierarchical namespace account can still be used as a non-default datastore."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-workspace-template"
+ },
+ {
+  "id": "1.3.2-05",
+  "obj": "1.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Trey Research has a main.bicep file and a main.bicepparam file that starts with the statement using './main.bicep'. The team must keep using the .bicepparam file. A deployment script contains the following commands:\n\n```bash\nbicep build main.bicep\naz deployment group create --resource-group rg-ml --template-file main.json --parameters main.bicepparam\n```\n\nThe deployment fails with the message \"Only a .bicep file is allowed with a .bicepparam file\".\n\nWhat should you do?",
+  "choices": [
+   "Pass the parameters file as --parameters @main.bicepparam",
+   "Remove the --template-file parameter and keep --parameters main.bicepparam",
+   "Run the deployment by using az deployment sub create instead",
+   "Convert main.bicepparam to a JSON parameters file and pass it by using @"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A .bicepparam file links itself to its template with a using statement, so the Azure CLI 2.53.0 or later deploys it with --parameters alone. JSON parameters files use the @ prefix and work with --template-file. A .bicepparam file can be passed to --parameters only once per command.",
+  "rationale": [
+   "Incorrect: the @ prefix is the syntax for loading a JSON parameters file, such as @storage.parameters.json. It is not how you pass a .bicepparam file, and the command would still combine it with a JSON template.",
+   "Correct: the using statement already points to main.bicep, so the CLI needs only --parameters main.bicepparam. A .bicepparam file works with its .bicep template, and Learn states that adding --template-file causes this error.",
+   "Incorrect: az deployment sub create targets subscription scope and is used for files that set targetScope to subscription. The file deploys to a resource group, and the scope does not cause this error.",
+   "Incorrect: a JSON parameters file works with --template-file, but the team must keep using the .bicepparam file. Use JSON parameters files when your Azure CLI or Bicep CLI version does not support .bicepparam files."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/deploy-cli"
+ },
+ {
+  "id": "1.3.2-06",
+  "obj": "1.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Wide World Importers has a Bicep file named main.bicep that starts with targetScope = 'subscription'. The file creates a resource group and uses a module to deploy an Azure Machine Learning workspace into that resource group.\n\nWhich command should you use to deploy main.bicep?",
+  "choices": [
+   "`az deployment group create --resource-group rg-ml --template-file main.bicep`",
+   "`az deployment mg create --location westeurope --template-file main.bicep`",
+   "`az deployment sub create --location westeurope --template-file main.bicep`",
+   "`az deployment tenant create --location westeurope --template-file main.bicep`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Each Bicep file has one target scope, and the Azure CLI command must match it: az deployment group, sub, mg, or tenant. To create a resource group and deploy into it in one operation, use a subscription scope file with a module whose scope is the new resource group.",
+  "rationale": [
+   "Incorrect: az deployment group create deploys into an existing resource group, for files with the default resource group scope. This file creates the resource group itself, so it runs at subscription scope.",
+   "Incorrect: az deployment mg create deploys files that set targetScope to managementGroup, for example to deploy policies across subscriptions. It does not match a subscription scope file.",
+   "Correct: a file with targetScope set to subscription is deployed with az deployment sub create and a location for the deployment metadata. The module then deploys the workspace into the new resource group.",
+   "Incorrect: az deployment tenant create is for files with targetScope set to tenant, such as files that create management groups. It needs tenant-level permissions and does not match this file."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/create-resource-group"
+ },
+ {
+  "id": "1.3.2-07",
+  "obj": "1.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery runs az deployment group create to deploy a Bicep file that creates the first Azure Machine Learning workspace in a new subscription. The deployment fails with the message \"The subscription is not registered to use namespace Microsoft.MachineLearningServices\".\n\nWhat should you do before you run the deployment again?",
+  "choices": [
+   "Register the Microsoft.MachineLearningServices resource provider in the subscription",
+   "Install the ml extension of the Azure CLI on the computer that runs the deployment",
+   "Assign the AzureML Data Scientist role to your account on the resource group",
+   "Request a quota increase for compute cores in the region of the workspace"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Azure Machine Learning depends on several resource providers, such as Microsoft.MachineLearningServices, Microsoft.Storage, Microsoft.KeyVault, and Microsoft.ContainerRegistry, plus Microsoft.Network for a managed virtual network. An error about an unregistered namespace is fixed by registering that provider.",
+  "rationale": [
+   "Correct: the error means that the subscription has not registered the resource provider for Azure Machine Learning. Most providers register automatically, but not all, and the workspace cannot be created until it is registered.",
+   "Incorrect: the ml extension adds the az ml commands to the Azure CLI. A Bicep deployment with az deployment group create does not use the extension, and the error comes from Azure Resource Manager.",
+   "Incorrect: AzureML Data Scientist grants actions inside an existing workspace and cannot create workspaces. A missing permission returns an authorization error, not a namespace registration error.",
+   "Incorrect: quota limits apply to compute resources such as clusters and instances. The error names an unregistered namespace, not an exceeded quota."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-workspace-template?view=azureml-api-2#troubleshooting"
+ },
+ {
+  "id": "1.3.2-08",
+  "obj": "1.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "case": "C-a",
+  "stem": "You need to resolve the compute instance failures that User1 and User2 report. The solution must meet the deployment requirements.\n\nWhat should you do?",
+  "choices": [
+   "Run the deployment in Complete mode so that the template defines the full state of the resource group",
+   "Give each deployment of main.bicep a unique name so that earlier deployments stay in the history",
+   "Remove the key vault from main.bicep and pass the resource ID of the existing key vault as a parameter",
+   "Change deploy-infra.yml so that a team member starts it manually instead of on each push"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Most resource deployments from a template are idempotent, but a key vault that a template declares has its access policies cleared on each deployment, which can break stop and create operations of compute instances. Reference the existing vault by ID, set accessPolicies to the current policies, or avoid redeploying the vault.",
+  "rationale": [
+   "Incorrect: Complete mode deletes resources in the resource group that the template does not define. It does not stop the key vault declaration from clearing the access policies on every deployment.",
+   "Incorrect: unique deployment names keep separate history entries and stop concurrent runs from replacing each other. Each deployment would still redeploy the key vault with an empty access policy list.",
+   "Correct: redeploying a key vault from a template clears its access policies, which breaks compute instance operations. Referencing the existing vault by ID stops the reset, and the workflow keeps deploying on every merge.",
+   "Incorrect: deploying less often reduces how often the access policies are cleared but does not prevent it, and the requirements state that deploy-infra.yml must keep deploying on every merge to main."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-workspace-template"
+ },
+ {
+  "id": "1.3.3-01",
+  "obj": "1.3.3",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Tailspin Toys adds a job to a GitHub Actions workflow. An earlier step of the job checks out the repository and installs the ml extension of the Azure CLI. The remaining steps must sign in to Azure by using OpenID Connect, deploy the infra/main.bicep file, which defines a workspace named Workspace1, to an existing resource group named rg-ml, create a compute cluster from the infra/cluster.yml file, and submit the training job in the jobs/train.yml file, which runs on the new cluster. Workspace1 does not use a managed virtual network.\n\nWhich four steps should you add to the job in sequence? To answer, move the appropriate steps from the list of steps to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run the azure/login action with the client-id, tenant-id, and subscription-id inputs.",
+   "Run `az deployment group create --resource-group rg-ml --template-file infra/main.bicep`.",
+   "Run `az ml compute create --file infra/cluster.yml --resource-group rg-ml --workspace-name Workspace1`.",
+   "Run `az ml job create --file jobs/train.yml --resource-group rg-ml --workspace-name Workspace1`.",
+   "Run the azure/login action with the creds input set to the AZURE_CREDENTIALS secret.",
+   "Run `az deployment sub create --location westeurope --template-file infra/main.bicep`.",
+   "Run `az ml workspace provision-network -g rg-ml -n Workspace1`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "In a provisioning workflow, order the steps by dependency: authenticate, deploy the infrastructure that contains everything else, create the compute, and then submit work to it. GitHub Actions runs the steps of a job in the listed order, so a wrong order fails at the first missing dependency.",
+  "rationale": [
+   "Step 1: every later step calls Azure, so the job signs in first. With OpenID Connect, azure/login receives the client, tenant, and subscription IDs and exchanges the GitHub token for an Azure access token.",
+   "Step 2: the Bicep deployment creates Workspace1 in rg-ml. The compute cluster and the job both belong to the workspace, so the workspace must exist before they are created.",
+   "Step 3: az ml compute create builds the cluster from its YAML definition in Workspace1. The training job targets this cluster, so the cluster must exist before the job is submitted.",
+   "Step 4: az ml job create submits the job definition in jobs/train.yml to Workspace1, where it runs on the cluster that the previous step created.",
+   "Incorrect: the creds input passes the JSON of a service principal that includes a client secret. That method is less secure and does not meet the requirement to sign in by using OpenID Connect.",
+   "Incorrect: az deployment sub create deploys a file that targets subscription scope. This file deploys Workspace1 into the existing resource group rg-ml, so it uses az deployment group create.",
+   "Incorrect: provision-network provisions the managed virtual network of a workspace before compute is created. Workspace1 has no managed virtual network, so the step is not needed."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-github-actions-machine-learning"
+ },
+ {
+  "id": "1.3.3-02",
+  "obj": "1.3.3",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Adventure Works Cycles creates a GitHub Actions workflow that provisions machine learning infrastructure. The workflow must meet the following requirements:\n\n- Run after a pull request is merged into the main branch, and also when a team member starts it manually.\n- Run the Azure CLI commands in a step that installs the latest Azure CLI version.\n- Apply the changes in the infra/main.bicep file to the rg-mlops resource group.\n\nHow should you complete the workflow? To answer, select the appropriate options in the answer area.\n\n```yaml\nname: provision-ml-infra\non:\n  [[1]]:\n    branches: [ main ]\n  workflow_dispatch:\npermissions:\n  id-token: write\n  contents: read\njobs:\n  provision:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v4\n    - uses: azure/login@v2\n      with:\n        client-id: ${{ secrets.AZURE_CLIENT_ID }}\n        tenant-id: ${{ secrets.AZURE_TENANT_ID }}\n        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}\n    - uses: [[2]]\n      with:\n        azcliversion: latest\n        inlineScript: |\n          az deployment group [[3]] --resource-group rg-mlops --template-file infra/main.bicep\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "push",
+     "pull_request"
+    ],
+    "why": [
+     "Correct: merging a pull request adds a commit to main, so a push trigger filtered to the main branch runs the workflow after each merge.",
+     "Incorrect: pull_request runs when a pull request that targets main is opened or updated, before the change is merged. Use it for validation workflows, such as a what-if preview."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "azure/cli@v2",
+     "azure/powershell@v2",
+     "azure/arm-deploy@v1"
+    ],
+    "why": [
+     "Correct: the Azure CLI action runs the commands in inlineScript with the CLI version set in azcliversion, here the latest version, and it uses the session that azure/login created.",
+     "Incorrect: the Azure PowerShell action runs Azure PowerShell cmdlets and takes azPSVersion instead of azcliversion. Use it when the deployment script is written in Azure PowerShell.",
+     "Incorrect: arm-deploy deploys a template that you pass in its template and parameters inputs instead of running a script. For Bicep files, Learn recommends the azure/bicep-deploy action."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "create",
+     "what-if",
+     "validate"
+    ],
+    "why": [
+     "Correct: az deployment group create deploys the Bicep file and applies its changes to rg-mlops, which the workflow must do after each merge.",
+     "Incorrect: what-if previews the changes that the deployment would make without applying them. Run it in a pull request workflow so that reviewers see the impact before merging.",
+     "Incorrect: validate checks whether the template is valid and deployable but deploys nothing. Use it in a unit test workflow that runs on every commit."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0
+  ],
+  "explanation": "A typical IaC setup uses two triggers: pull_request for validation and what-if, and push to main, optionally with workflow_dispatch for manual runs, for the deployment. After azure/login, the azure/cli action runs Azure CLI scripts, such as az deployment group create for Bicep files.",
+  "ref": "https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect"
+ },
+ {
+  "id": "1.3.3-03",
+  "obj": "1.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel has a GitHub Actions workflow that retrains a model in Azure Machine Learning. The workflow must run automatically every night and must also run when a team member selects Run workflow on the Actions tab of the repository.\n\nWhich triggers should you configure in the on section of the workflow?",
+  "choices": [
+   "workflow_dispatch and schedule",
+   "push and schedule",
+   "pull_request and workflow_dispatch",
+   "push and pull_request"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "GitHub Actions triggers are events in the on section. schedule runs on a cron timetable, workflow_dispatch enables manual runs, pull_request reacts to pull request activity, and push reacts to commits. The Azure Machine Learning sample workflow runs on a cron schedule and on pull requests, and you can also start it with Run workflow.",
+  "rationale": [
+   "Correct: schedule with a cron expression starts the nightly run, and workflow_dispatch adds the Run workflow option so that a team member can start the workflow manually.",
+   "Incorrect: schedule covers the nightly run, but push starts the workflow on commits instead of on demand. Use push when code that is merged into a branch must trigger the workflow.",
+   "Incorrect: workflow_dispatch covers manual runs, but pull_request runs when a pull request is opened or updated, not on a timetable. Use pull_request to validate changes before merging.",
+   "Incorrect: neither trigger runs on a timetable or on demand. These are the code event triggers that validate pull requests and deploy merged changes."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-github-actions-machine-learning"
+ },
+ {
+  "id": "1.3.3-04",
+  "obj": "1.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "City Power & Light has a GitHub Actions workflow that runs on every pull request to the main branch. Reviewers must see which Azure resources a change to the main.bicep file would create, modify, or delete. The workflow must not change any resources in the rg-ml resource group.\n\nWhich command should the workflow run?",
+  "choices": [
+   "`az deployment group validate --resource-group rg-ml --template-file main.bicep`",
+   "`az deployment group create --resource-group rg-ml --template-file main.bicep`",
+   "`bicep build main.bicep`",
+   "`az deployment group what-if --resource-group rg-ml --template-file main.bicep`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "In an IaC pipeline, the pull request stage runs a what-if analysis and attaches the report to the pull request, and the deploy stage runs after the merge. What-if changes nothing, but Learn states that it has the same permission requirements as a deployment.",
+  "rationale": [
+   "Incorrect: validate checks that the template is valid and deployable at the resource group, but it does not list the resource changes. Use it in a unit test workflow that runs on every commit.",
+   "Incorrect: create deploys the file and changes resources in rg-ml before the pull request is reviewed. Run it in the workflow that triggers on pushes to main after the merge.",
+   "Incorrect: bicep build compiles main.bicep into an ARM JSON template, which catches syntax errors but does not compare the file with the resources in Azure.",
+   "Correct: what-if compares the file with the current state of rg-ml and reports each resource as Create, Modify, Delete, NoChange, or another change type, without deploying anything."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/deploy-what-if"
+ },
+ {
+  "id": "1.3.3-05",
+  "obj": "1.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Consolidated Messenger has a GitHub Actions job that signs in to Azure and then runs az ml job create --file train.yml. The step fails because the az ml command group is not available on the runner. The job must use the Azure Machine Learning CLI v2.\n\nWhat should you add before the failing step?",
+  "choices": [
+   "A step that runs `az extension add -n azure-cli-ml`",
+   "A step that runs `pip install azure-ai-ml`",
+   "A step that runs `az upgrade`",
+   "A step that runs `az extension add -n ml`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The Azure Machine Learning CLI v2 is the ml extension of the Azure CLI and requires Azure CLI 2.38.0 or later. On a fresh runner, install it with az extension add -n ml before the first az ml command. The older azure-cli-ml extension is CLI v1.",
+  "rationale": [
+   "Incorrect: azure-cli-ml is the deprecated CLI v1 extension. Learn tells you to remove it before you install the ml extension, so it does not provide the CLI v2 commands.",
+   "Incorrect: pip install azure-ai-ml installs the Python SDK v2, which you use from Python code through MLClient. It does not add commands to the Azure CLI.",
+   "Incorrect: az upgrade updates the Azure CLI and the extensions that are already installed. It does not install an extension that is missing on the runner.",
+   "Correct: the ml extension adds the az ml command group, which is the Azure Machine Learning CLI v2. Install it before any az ml command, and update it later with az extension update -n ml."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-cli"
+ },
+ {
+  "id": "1.3.3-06",
+  "obj": "1.3.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Humongous Insurance has a GitHub Actions workflow that has two jobs. The inventory job runs az ml compute list against a workspace and must sign in as Identity1, which has only the Reader role. The deploy job references the production environment, deploys a Bicep file, and must sign in as Identity2, which has the Contributor role on the resource group. Each identity already has a federated credential that matches the subject of its job. Both jobs pass ${{ secrets.AZURE_CLIENT_ID }} to the azure/login action, and the repository secret AZURE_CLIENT_ID contains the client ID of Identity1. You must not change the workflow file.\n\nWhat should you do?",
+  "choices": [
+   "Replace the value of the repository secret AZURE_CLIENT_ID with the client ID of Identity2",
+   "Create an environment secret named AZURE_CLIENT_ID in production that contains the client ID of Identity2",
+   "Add a federated credential to Identity1 for the production environment",
+   "Assign the Contributor role to Identity1 at the resource group scope"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "GitHub environments can hold their own secrets. When a job references an environment, a secret of that environment takes precedence over a repository secret with the same name, and when the environment requires approval the job cannot read its secrets until a required reviewer approves. Learn's IaC reference architecture uses this to give the deploy stage a read/write identity while other jobs keep a read-only one.",
+  "rationale": [
+   "Incorrect: replacing the repository secret gives both jobs the client ID of Identity2, so the inventory job would run with Contributor access instead of as the Reader-only Identity1. Replace a repository secret when every job should use the new value.",
+   "Correct: a job that references an environment reads the secrets of that environment, and an environment secret overrides a repository secret with the same name. The deploy job gets the client ID of Identity2; the inventory job keeps Identity1.",
+   "Incorrect: a federated credential controls which GitHub subjects can sign in as an identity. The deploy job could then sign in, but as Identity1, which has only the Reader role and cannot deploy the Bicep file.",
+   "Incorrect: Contributor would let Identity1 deploy, but the inventory job would then also run with write access, which removes the separation between the two identities. Grant a role only when every job that uses the identity needs it."
+  ],
+  "ref": "https://learn.microsoft.com/devops/deliver/iac-github-actions"
+ },
+ {
+  "id": "1.3.3-07",
+  "obj": "1.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Blue Yonder Airlines has a GitHub Actions workflow that runs the following command:\n\n```bash\naz deployment group create --name mlinfra --resource-group rg-ml --template-file main.bicep\n```\n\nWhen two workflow runs start at the same time with different parameter values, only the resources of the last run are deployed, and the deployment history shows a single entry.\n\nWhat should you change so that concurrent runs do not replace each other?",
+  "choices": [
+   "Add a value that is unique for each run to the deployment name",
+   "Add --mode Complete to the deployment command",
+   "Run az deployment group what-if before the deployment command",
+   "Deploy the file by using az deployment sub create instead"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Each deployment name is an entry in the deployment history of the resource group. Reusing a name replaces the earlier entry, and concurrent deployments with the same name are replaced by the last one. Automation should give each deployment a unique name, for example by adding a random number or the date.",
+  "rationale": [
+   "Correct: deployments with the same name in the same resource group replace each other, so only the last one completes. A unique name per run lets the runs proceed side by side and keeps separate history entries.",
+   "Incorrect: Complete mode deletes resources in the resource group that the template does not define, which makes concurrent runs more destructive. It does not change how deployments with the same name replace each other.",
+   "Incorrect: what-if previews the changes of one deployment. It does not stop two deployments with the same name from replacing each other when they run at the same time.",
+   "Incorrect: subscription scope is for files that set targetScope to subscription. Changing the scope does not fix the shared deployment name, and a resource group file does not deploy that way."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-resource-manager/bicep/deploy-cli"
+ },
+ {
+  "id": "1.3.3-08",
+  "obj": "1.3.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "case": "C-a",
+  "stem": "You need to configure the job in validate-infra.yml so that it meets the deployment requirements and the security requirements.\n\nWhich two steps should the job include? Each correct answer presents part of the solution.",
+  "choices": [
+   "A step that runs azure/login with the client ID, tenant ID, and subscription ID of id-mlops-gh",
+   "A step that runs azure/login with the creds input set to the AZURE_CREDENTIALS secret",
+   "A step that runs `az deployment group what-if --resource-group rg-noshow-prod --template-file infra/main.bicep`",
+   "A step that runs `az deployment group create --resource-group rg-noshow-prod --template-file infra/main.bicep`",
+   "A step that runs `az deployment group validate --resource-group rg-noshow-prod --template-file infra/main.bicep`"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "A pull request workflow for infrastructure signs in with a secretless identity, runs a read-only what-if analysis, and posts the result for reviewers. The deploy workflow applies the change only after the merge, here gated by the approval rule of the production environment.",
+  "rationale": [
+   "Correct: id-mlops-gh signs in by using OpenID Connect, so azure/login needs only its client, tenant, and subscription IDs. No client secret is stored in GitHub, which meets the security requirement.",
+   "Incorrect: AZURE_CREDENTIALS holds the JSON of a service principal with a client secret. The security requirements forbid long-lived credentials in GitHub, and the planned changes replace this sign-in method.",
+   "Correct: what-if lists the resources that the change to infra/main.bicep would create, modify, or delete in rg-noshow-prod without deploying, which previews the change in each pull request.",
+   "Incorrect: create would deploy unmerged and unapproved changes from a pull request. Deployment belongs in deploy-infra.yml after the merge and after a member of the platform team approves it.",
+   "Incorrect: validate confirms that the template is deployable but does not show which resources change. It is a useful extra check, but it does not meet the preview requirement."
+  ],
+  "ref": "https://learn.microsoft.com/devops/deliver/iac-github-actions"
+ },
+ {
+  "id": "1.3.4-01",
+  "obj": "1.3.4",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "VanArsdel, Ltd. creates a new Azure Machine Learning workspace named Workspace1 in a resource group named rg1. Managed compute in Workspace1 must reach only approved destinations to minimize the risk of data exfiltration. The first compute instance must not time out while the network is provisioned, so you must confirm that network provisioning completed before you create the compute instance.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`az ml workspace create --name Workspace1 --resource-group rg1 --managed-network allow_only_approved_outbound`",
+   "`az ml workspace provision-network -g rg1 -n Workspace1`",
+   "`az ml workspace show -n Workspace1 -g rg1 --query managed_network`",
+   "`az ml compute create --file instance.yml --resource-group rg1 --workspace-name Workspace1`",
+   "`az ml workspace create --name Workspace1 --resource-group rg1 --managed-network allow_internet_outbound`",
+   "`az network private-endpoint create --name pe1 --vnet-name VNet1 --subnet Subnet1 --private-connection-resource-id <Workspace1 ID> --group-id amlworkspace --connection-name workspace`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A managed virtual network isolates outbound traffic from managed compute, and its creation is deferred until the first compute resource is created or provisioning is started manually. Provision the network manually and check its status before you create compute, so that compute creation does not time out.",
+  "rationale": [
+   "Step 1: the allow_only_approved_outbound mode creates a managed virtual network that allows outbound traffic only to approved destinations and enables data exfiltration protection. The workspace must exist before its network is provisioned.",
+   "Step 2: otherwise the managed network is created together with the first compute, which can take about 30 minutes and can cause a timeout. provision-network starts the provisioning manually.",
+   "Step 3: az ml workspace show with --query managed_network returns the status of the managed network, which confirms that provisioning completed before any compute is created.",
+   "Step 4: the compute instance is created in the provisioned managed network, so its creation does not wait for the network and does not time out.",
+   "Incorrect: allow_internet_outbound allows all outbound internet traffic from the managed network. Use it when compute must download packages and models freely, not when only approved destinations are allowed.",
+   "Incorrect: a private endpoint for the workspace in your own virtual network secures inbound access to the workspace. The requirement is about outbound traffic from managed compute, which the managed network controls."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-managed-network"
+ },
+ {
+  "id": "1.3.4-02",
+  "obj": "1.3.4",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Nod Publishers configures a workspace named Workspace1 to use a managed virtual network in the allow only approved outbound mode.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Later, you can change the isolation mode of Workspace1 to allow internet outbound.",
+   "Adding an FQDN outbound rule to Workspace1 deploys an Azure Firewall, which adds charges to your bill.",
+   "You can add an FQDN outbound rule so that compute in Workspace1 can reach an Azure Storage account."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "In the allow only approved outbound mode, you add outbound rules of three types: private endpoint rules for Azure resources, service tag rules, and FQDN rules, which support ports 80 and 443 and use Azure Firewall. Plan the mode up front, because you cannot move from allow only approved outbound back to allow internet outbound or disable managed network isolation.",
+  "rationale": [
+   "No: after a managed network is set to allow only approved outbound, it cannot be reconfigured to allow internet outbound, and managed network isolation cannot be disabled once enabled. Choose the mode before you create compute.",
+   "Yes: FQDN outbound rules are implemented by an Azure Firewall that is created when you add the first FQDN rule. A Standard firewall is used by default, and you can select the Basic version instead.",
+   "No: in the allow only approved outbound mode, you cannot use an FQDN rule to access an Azure Storage account. Add a private endpoint outbound rule for the storage account instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-managed-network"
+ },
+ {
+  "id": "1.3.4-03",
+  "obj": "1.3.4",
+  "difficulty": "easy",
+  "type": "dragdrop",
+  "stem": "Graphic Design Institute has three Azure Machine Learning workspaces that have different network requirements.\n\nWhich network configuration should you use for each workspace? To answer, drag the appropriate configurations to the correct workspaces. Each configuration may be used once, more than once, or not at all.",
+  "choices": [
+   "Public network access Disabled with a private endpoint",
+   "Public network access Enabled from selected IP addresses",
+   "Managed virtual network that allows only approved outbound",
+   "Managed virtual network that allows internet outbound"
+  ],
+  "targets": [
+   "Workspace1: reject all requests from the internet; users connect from a peered virtual network",
+   "Workspace2: accept requests to the workspace only from the public IP range of the main office",
+   "Workspace3: let managed compute reach only approved destinations to limit data exfiltration"
+  ],
+  "answer": [
+   0,
+   1,
+   2
+  ],
+  "rationale": [
+   "Workspace1 needs inbound isolation. Disabling public network access blocks requests from the internet, and a private endpoint in the virtual network gives users a private path to the workspace.",
+   "Workspace2 needs inbound filtering by public IP address. Enabled from selected IP addresses adds IP network rules that allow up to 200 public IPv4 ranges and block other internet traffic.",
+   "Workspace3 needs outbound control for managed compute. The allow only approved outbound mode limits traffic to approved rules and enables data exfiltration protection."
+  ],
+  "notes": [
+   "Inbound control. Clients reach the workspace only through a private endpoint in your virtual network. Use it when the workspace must not be reachable from the internet.",
+   "Inbound control. IP network rules allow specific public IPv4 addresses or CIDR ranges and block general internet traffic. Private address ranges are not allowed in the rules.",
+   "Outbound control. Managed compute can reach only destinations that default or added outbound rules approve. Use it to minimize the risk of data exfiltration.",
+   "Outbound control. Managed compute can reach any internet destination, such as public package indexes. Use it when unrestricted downloads matter more than exfiltration protection."
+  ],
+  "explanation": "Workspace network isolation has two directions. The public network access setting and private endpoints control inbound access to the workspace, and the managed virtual network isolation mode controls outbound access from managed compute. A secure workspace often combines one inbound and one outbound setting.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-network-isolation-planning?view=azureml-api-2#inbound-and-outbound-access"
+ },
+ {
+  "id": "1.3.4-04",
+  "obj": "1.3.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Wingtip Toys creates a private endpoint for an Azure Machine Learning workspace in a virtual network named VNet1 by using az network private-endpoint create with the group ID amlworkspace. Clients in VNet1 must resolve the workspace endpoints to private IP addresses. The storage account, key vault, and container registry of the workspace already have their own private endpoints and private DNS zones.\n\nWhich two private DNS zones should you create and link to VNet1? Each correct answer presents part of the solution.",
+  "choices": [
+   "privatelink.api.azureml.ms",
+   "privatelink.notebooks.azure.net",
+   "privatelink.blob.core.windows.net",
+   "privatelink.vaultcore.azure.net",
+   "privatelink.azurecr.io"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Each private endpoint needs DNS records in the zone that matches its resource type. A workspace private endpoint with the group ID amlworkspace uses privatelink.api.azureml.ms and privatelink.notebooks.azure.net, while dependent resources such as storage, Key Vault, and Container Registry use their own zones.",
+  "rationale": [
+   "Correct: privatelink.api.azureml.ms resolves the workspace API endpoints to the private endpoint. You create the zone, link it to the virtual network, and add it to the DNS zone group of the private endpoint.",
+   "Correct: privatelink.notebooks.azure.net resolves the notebook endpoints of the workspace. The workspace private endpoint needs this zone in addition to privatelink.api.azureml.ms.",
+   "Incorrect: privatelink.blob.core.windows.net is the zone for private endpoints of the blob service of a storage account. The storage account already has its own private endpoint and zone.",
+   "Incorrect: privatelink.vaultcore.azure.net is the zone for Azure Key Vault private endpoints. The key vault of the workspace is already covered by its own private endpoint and zone.",
+   "Incorrect: privatelink.azurecr.io is the zone for Azure Container Registry private endpoints. It is needed when the registry has a private endpoint, which already exists with its zone in this scenario."
+  ],
+  "ref": "https://learn.microsoft.com/azure/private-link/private-endpoint-dns#commercial"
+ },
+ {
+  "id": "1.3.4-05",
+  "obj": "1.3.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Southridge Video has an Azure Machine Learning workspace named Workspace1. Data scientists connect to a virtual network named VNet1 through a VPN. Workspace1 must accept requests only from clients in VNet1 and must reject requests from the internet.\n\nWhat should you do?",
+  "choices": [
+   "Enable a managed virtual network for Workspace1 in the allow only approved outbound mode",
+   "Enable public access from selected IP addresses and add the address range of VNet1",
+   "Add a private endpoint for Workspace1 in VNet1 and disable public network access",
+   "Enable a managed virtual network in the allow internet outbound mode with private endpoint rules"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Inbound access to a workspace is set by the public network access flag: Disabled requires a private endpoint, Enabled from selected IP addresses allows listed public IP addresses, and Enabled allows all networks. Outbound traffic from managed compute is a separate setting that the managed virtual network controls.",
+  "rationale": [
+   "Incorrect: a managed virtual network isolates outbound traffic from managed compute. It does not stop clients on the internet from reaching the workspace, so it does not meet the inbound requirement.",
+   "Incorrect: IP network rules accept only public internet addresses; private ranges such as those of VNet1 are not allowed. Use selected IP addresses when clients connect from known public IP addresses.",
+   "Correct: a private endpoint in VNet1 gives clients there a private path to Workspace1, and disabling public network access rejects all requests from the public internet.",
+   "Incorrect: private endpoint outbound rules let managed compute reach Azure resources privately. Like every managed network mode, this controls outbound traffic, not inbound access to the workspace."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-private-link?view=azureml-api-2#enable-public-access-only-from-internet-ip-ranges"
+ },
+ {
+  "id": "1.3.4-06",
+  "obj": "1.3.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Lucerne Publishing has a workspace that uses a managed virtual network in the allow only approved outbound mode. A training job on a compute cluster fails because pip cannot download packages from pypi.org. All other outbound traffic must stay restricted to minimize the risk of data exfiltration.\n\nWhat should you do?",
+  "choices": [
+   "Add an FQDN outbound rule for pypi.org to the managed network",
+   "Add a private endpoint outbound rule for pypi.org to the managed network",
+   "Change the isolation mode of the managed network to allow internet outbound",
+   "Set the image build compute of the workspace to the compute cluster"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "In the allow only approved outbound mode, you allow extra destinations with outbound rules: private endpoint rules for Azure resources, service tag rules for Azure services, and FQDN rules for named internet hosts such as package indexes. Each added rule can increase exfiltration risk, so keep the list short.",
+  "rationale": [
+   "Correct: an FQDN rule allows outbound traffic to one named host on ports 80 and 443 while all other destinations stay blocked. The first FQDN rule deploys an Azure Firewall, which adds cost.",
+   "Incorrect: private endpoint rules connect the managed network to Azure resources, such as a storage account, by their resource ID. pypi.org is a public internet service, not an Azure resource.",
+   "Incorrect: a managed network in the allow only approved outbound mode cannot be changed to allow internet outbound, and opening all internet traffic would break the exfiltration requirement.",
+   "Incorrect: the image build compute builds Docker environment images when the container registry cannot build them behind a virtual network. It does not change which hosts a training job can reach."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-managed-network"
+ },
+ {
+  "id": "1.3.4-07",
+  "obj": "1.3.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "First Up Consultants has an existing workspace named Workspace1 that contains two compute instances, a compute cluster, and a managed online endpoint. You must enable a managed virtual network for Workspace1 in the allow internet outbound mode, and all managed compute must run in the managed network.\n\nWhat should you do first?",
+  "choices": [
+   "Stop the compute instances and set the cluster minimum node count to zero",
+   "Run az ml workspace update with --managed-network allow_internet_outbound",
+   "Delete the compute instances, the compute cluster, and the managed online endpoint",
+   "Run az ml workspace provision-network to create the managed network"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "There is no migration path for existing managed compute when you enable a managed virtual network on a workspace. Delete the compute instances, compute clusters, and managed online endpoints, update the workspace, optionally provision the network, and then recreate the compute in the managed network.",
+  "rationale": [
+   "Incorrect: stopped compute instances and an idle cluster still exist in the workspace. Existing managed compute cannot be migrated, so these resources must be deleted, not stopped.",
+   "Incorrect: this update command enables the managed network, but Learn requires that you delete all compute instances, compute clusters, and managed online endpoints before you update an existing workspace.",
+   "Correct: before you update an existing workspace to use a managed virtual network, you must delete all its managed compute resources. Recreate them after the update so that they run in the managed network.",
+   "Incorrect: provision-network provisions a managed network that is already configured on the workspace. Workspace1 has no managed network yet; you configure it with az ml workspace update after deleting the compute."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-managed-network"
+ },
+ {
+  "id": "1.3.4-08",
+  "obj": "1.3.4",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "case": "C-a",
+  "stem": "You need to complete the network settings of the workspace in the infra/main.bicep file to meet the security requirements.\n\nHow should you complete the Bicep code? To answer, select the appropriate options in the answer area.\n\n```bicep\nresource mlw 'Microsoft.MachineLearningServices/workspaces@2024-04-01' = {\n  name: 'mlw-noshow-prod'\n  location: location\n  identity: {\n    type: 'SystemAssigned'\n  }\n  properties: {\n    storageAccount: storage.id\n    keyVault: vault.id\n    applicationInsights: appInsights.id\n    containerRegistry: registry.id\n    publicNetworkAccess: '[[1]]'\n    managedNetwork: {\n      isolationMode: '[[2]]'\n      outboundRules: {\n        pypi: {\n          type: '[[3]]'\n          destination: 'pypi.org'\n        }\n        claims: {\n          type: '[[4]]'\n          destination: {\n            serviceResourceId: claimsStorage.id\n            subresourceTarget: 'blob'\n          }\n        }\n      }\n    }\n  }\n}\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "Disabled",
+     "Enabled"
+    ],
+    "why": [
+     "Correct: the workspace must not accept requests from the public internet. Disabled rejects public requests, and users connect from VNet-Hub through the private endpoint.",
+     "Incorrect: Enabled accepts requests from the public network, optionally limited by IP network rules. Users connect through VNet-Hub, so the workspace needs no public access."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "AllowOnlyApprovedOutbound",
+     "AllowInternetOutbound",
+     "Disabled"
+    ],
+    "why": [
+     "Correct: compute must reach only pypi.org and stclaimsdata, and exfiltration risk must be minimized. AllowOnlyApprovedOutbound blocks other destinations and enables data exfiltration protection.",
+     "Incorrect: AllowInternetOutbound lets compute reach any internet destination. It suits teams that need unrestricted downloads, not a requirement to reach only approved destinations.",
+     "Incorrect: Disabled turns off the managed network, which you choose when your own virtual network isolates compute or no isolation is needed. The outbound rules would then have no effect."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "FQDN",
+     "ServiceTag",
+     "PrivateEndpoint"
+    ],
+    "why": [
+     "Correct: pypi.org is a public internet host, and an FQDN rule allows outbound traffic to a named host on ports 80 and 443. The first FQDN rule deploys an Azure Firewall.",
+     "Incorrect: ServiceTag rules allow traffic to Azure services by service tag, such as Azure Data Factory, and need a serviceTag destination. pypi.org is not an Azure service.",
+     "Incorrect: PrivateEndpoint rules connect to Azure resources by their resource ID. pypi.org is not an Azure resource, so a private endpoint cannot be created for it."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "PrivateEndpoint",
+     "FQDN",
+     "ServiceTag"
+    ],
+    "why": [
+     "Correct: stclaimsdata is an Azure Storage account, and a PrivateEndpoint rule with the subresourceTarget blob connects the managed network privately to its blob service.",
+     "Incorrect: in the allow only approved outbound mode, an FQDN rule cannot be used to access an Azure Storage account. You must use a private endpoint rule instead.",
+     "Incorrect: a ServiceTag rule needs a serviceTag destination instead of a resource ID, and a service tag covers a whole Azure service rather than the single storage account that the requirement allows."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "explanation": "In Bicep, publicNetworkAccess controls inbound access, and the managedNetwork block controls outbound access from managed compute. Each outbound rule has a type that matches its destination: FQDN with a host name, PrivateEndpoint with an Azure resource ID and subresource, and ServiceTag with a service tag destination.",
+  "ref": "https://learn.microsoft.com/azure/templates/microsoft.machinelearningservices/workspaces?pivots=deployment-language-bicep"
+ },
+ {
+  "id": "1.3.5-01",
+  "obj": "1.3.5",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Bellows College stores training code for Azure Machine Learning in a GitHub repository. You cloned the repository to a compute instance and have the main branch checked out. Team policy requires that the feature branch exists before any file is changed, and that changes reach main only through a reviewed pull request. You must change the src/train.py file and publish the work so that a pull request can be opened.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `git checkout -b feature/drift-check`.",
+   "Edit the src/train.py file.",
+   "Run `git add src/train.py`.",
+   "Run `git commit -m \"Add drift check\"`.",
+   "Run `git push --set-upstream origin feature/drift-check`.",
+   "Run `git stash`.",
+   "Run `git merge feature/drift-check` on the main branch."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "The basic Git workflow is branch, change, stage, commit, push, and then open a pull request for review. For machine learning projects this keeps changes to training code isolated until reviewers approve them, and each job that you submit from the branch records the commit it ran.",
+  "rationale": [
+   "Step 1: git checkout -b creates the feature branch and switches to it in one step. The policy requires the branch before any file changes, so it comes first.",
+   "Step 2: you change src/train.py while the feature branch is checked out, so the work stays isolated from main until it is reviewed.",
+   "Step 3: git add stages the changed file. Only staged changes are included in the next commit, so staging comes before the commit.",
+   "Step 4: git commit saves the staged change as a commit on the current branch, feature/drift-check, with a short message that describes the change.",
+   "Step 5: git push --set-upstream origin creates the same-named remote branch, sets it as the tracked branch, and publishes the commit so that a pull request into main can be opened.",
+   "Incorrect: git stash saves uncommitted changes and reverts the working tree to the last commit. Use it to put work aside before you switch branches, not to publish changes.",
+   "Incorrect: merging the feature branch into main locally bypasses the reviewed pull request that the policy requires. The merge happens when the pull request is completed after approval."
+  ],
+  "ref": "https://learn.microsoft.com/azure/devops/user-guide/code-with-git?view=azure-devops#2-work-in-a-branch"
+ },
+ {
+  "id": "1.3.5-02",
+  "obj": "1.3.5",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Contoso Pharmaceuticals has a GitHub repository that User1 cloned to a compute instance. Git is installed on the compute instance. User1 submits a command job by running az ml job create --file job.yml from the directory of the cloned repository.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The commit hash of the submitted code is stored in the mlflow.source.git.commit property of the job.",
+   "The azureml.git.repository_uri property of the job contains the URL that the repository was cloned from.",
+   "If Git is not installed in the environment that submits a job, Azure Machine Learning rejects the job."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Azure Machine Learning captures Git metadata automatically when you submit a job from a Git working directory by using the Python SDK or the CLI. It records the repository URI, branch, commit, and a dirty flag in the job properties, which links each model back to the exact code that trained it.",
+  "rationale": [
+   "Yes: when the source files are in a Git repository, the upload records the commit hash from git rev-parse HEAD in the job properties azureml.git.commit and mlflow.source.git.commit.",
+   "Yes: azureml.git.repository_uri, and also mlflow.source.git.repoURL, holds the result of git ls-remote --get-url, which is the URI that the repository was cloned from.",
+   "No: if the git command is not available, or the files are not in a Git repository, the job still runs, but no Git information is tracked. Run git --version to check that Git is available."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-train-model-git-integration"
+ },
+ {
+  "id": "1.3.5-03",
+  "obj": "1.3.5",
+  "difficulty": "easy",
+  "type": "dragdrop",
+  "stem": "A. Datum Corporation has three Git repositories that contain Azure Machine Learning training code. You submit jobs from each repository by using the CLI v2.\n\nWhich file or command should you use for each repository? To answer, drag the appropriate files or commands to the correct repositories. Each file or command may be used once, more than once, or not at all.",
+  "choices": [
+   ".amlignore",
+   ".gitignore",
+   "git rm --cached",
+   "git update-index --skip-worktree",
+   "git stash"
+  ],
+  "targets": [
+   "Repo1: exclude the data/ folder from the snapshot that each job uploads, while Git keeps tracking data/",
+   "Repo2: stop tracking the model.pkl file, which is already committed, without deleting the local file",
+   "Repo3: keep notebook checkpoint files out of both the repository and the job snapshots; Repo3 has no .amlignore file"
+  ],
+  "answer": [
+   0,
+   2,
+   1
+  ],
+  "rationale": [
+   "Repo1 needs a rule that affects only the job snapshot. Entries in .amlignore exclude files from the snapshot, and because .gitignore is not changed, Git keeps tracking data/.",
+   "Repo2 has a file that Git already tracks, and .gitignore entries do not affect tracked files. git rm --cached removes model.pkl from the index but keeps it on disk; you then commit the change.",
+   "Repo3 needs one rule for both Git and the snapshots. Without an .amlignore file, Azure Machine Learning uses .gitignore for the snapshot, so a single .gitignore entry covers both."
+  ],
+  "notes": [
+   ".amlignore uses the .gitignore syntax and excludes files only from the job snapshot. If both files exist, .amlignore is used and .gitignore is ignored for the snapshot.",
+   ".gitignore tells Git not to track matching untracked files. Azure Machine Learning also uses it to exclude files from the job snapshot when no .amlignore file exists.",
+   "git rm --cached stops Git from tracking a committed file without deleting it from the file system. Add a .gitignore entry afterwards so that Git also ignores later changes.",
+   "git update-index --skip-worktree temporarily ignores local changes to a tracked file, such as a personal settings file, while the file stays in the repository.",
+   "git stash saves uncommitted changes and reverts the working tree to the last commit, so that you can switch branches and apply the changes later."
+  ],
+  "explanation": "Use .gitignore for files that must never enter the repository and .amlignore for files that stay in Git but must not be uploaded with each job. Ignore files have no effect on files that Git already tracks; remove those from the index with git rm --cached.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-train-machine-learning-model?view=azureml-api-2#python-sdk"
+ },
+ {
+  "id": "1.3.5-04",
+  "obj": "1.3.5",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Fabrikam Residences has data scientists who submit training jobs by using the CLI v2. The properties of recent jobs contain no repository, branch, or commit information. You need to ensure that future jobs record this Git information.\n\nWhich two conditions should you verify? Each correct answer presents part of the solution.",
+  "choices": [
+   "The git --version command succeeds in the environment from which the jobs are submitted.",
+   "The training source files are inside the directory of a cloned Git repository.",
+   "The repository is hosted on GitHub instead of another Git service.",
+   "The jobs run on a compute instance instead of a compute cluster.",
+   "The repository was cloned by using SSH instead of HTTPS."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Git tracking in Azure Machine Learning happens on the client: when you submit a job, the SDK or CLI runs git commands in the source directory and stores the results as job properties. It needs a working git command and source files inside a Git working tree; the hosting service and the compute target do not matter.",
+  "rationale": [
+   "Correct: the upload process uses the git command to read the repository, branch, and commit. If git is not available in the environment that submits the job, no Git information is tracked.",
+   "Correct: the upload process checks whether the source files are stored in a Git repository. Files outside the cloned repository directory are uploaded without any Git properties.",
+   "Incorrect: the information comes from the local repository, so it is not tied to a central service. Repositories cloned from GitHub, GitLab, Bitbucket, or Azure DevOps all work.",
+   "Incorrect: Git information is collected in the environment that submits the job, not where the job runs. Jobs that run on compute clusters or serverless compute record it too.",
+   "Incorrect: SSH and HTTPS are two ways to authenticate when you clone. The protocol does not decide whether a job records Git information; the recorded repository URI reflects the clone URL."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-train-model-git-integration"
+ },
+ {
+  "id": "1.3.5-05",
+  "obj": "1.3.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Best For You Organics Company has two data scientists, User1 and User2, who each work on their own compute instance in the same workspace. They often delete and recreate their compute instances. Each user needs a working copy of a shared Git repository that survives when a compute instance is recreated, without sharing a checkout and its working branch with the other user.\n\nWhich location should each user use to clone the repository?",
+  "choices": [
+   "In the home directory on the local disk of their compute instance",
+   "In their own user folder under ~/cloudfiles/code on the workspace file share",
+   "In one shared folder under ~/cloudfiles/code that both users open",
+   "In the /tmp directory of their compute instance, linked from the file share"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A compute instance offers two places for a Git clone: the local disk, which is faster but lost when the instance is deleted and recreated, and the mounted workspace file share at ~/cloudfiles/code, which persists. Clone into your own user directory so that other users do not collide on your working branch.",
+  "rationale": [
+   "Incorrect: the local file system of a compute instance gives better Git performance, but it is lost when the compute instance is deleted and recreated, so the working copy would not survive.",
+   "Correct: ~/cloudfiles/code is the mounted shared file system of the workspace, which is kept when a compute instance is recreated. Cloning into each user's own directory prevents collisions on the working branch.",
+   "Incorrect: a single shared clone survives recreation, but both users would work in the same checkout and collide on its branch. Learn recommends that you clone into your user directory.",
+   "Incorrect: /tmp is on the local disk, so the clone is lost when the compute instance is recreated. Learn suggests /tmp only as a workaround for slow clones in workspaces with identity-based storage access."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-train-model-git-integration"
+ },
+ {
+  "id": "1.3.5-06",
+  "obj": "1.3.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso Suites requires every production model to be traceable to committed code. User1 changed the src/train.py file in a cloned repository and submitted a job that uses the changed script. The job properties show azureml.git.dirty set to True. The next job must use the same changes and record a clean state.\n\nWhat should User1 do before submitting the next job?",
+  "choices": [
+   "Commit the changes to src/train.py",
+   "Run git stash in the repository directory",
+   "Add src/train.py to an .amlignore file",
+   "Push the current branch to origin"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The dirty flag records whether the working tree had uncommitted changes when the job was submitted. A clean flag together with the recorded commit hash means that the exact code can be recovered from the repository, which is what traceability needs. Commit first, and push so that others can retrieve the commit.",
+  "rationale": [
+   "Correct: azureml.git.dirty is True when git status --porcelain reports uncommitted changes. After the commit, the job records a clean state and the commit hash that contains the changed script.",
+   "Incorrect: git stash removes the uncommitted changes from the working tree, so the flag clears but the next job runs the old version of src/train.py. Stash when you need to put work aside.",
+   "Incorrect: .amlignore removes src/train.py from the job snapshot, so the job would not even get the training script. It also does not change what git status reports for the repository.",
+   "Incorrect: pushing publishes commits that already exist. The changes are still uncommitted, so the working tree stays dirty and the flag stays True."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-train-model-git-integration"
+ },
+ {
+  "id": "1.3.5-07",
+  "obj": "1.3.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Vineyard has a private GitHub repository. User1 must clone the repository from the terminal of an Azure Machine Learning compute instance. Company policy does not allow SSH keys on compute instances, so User1 must clone over HTTPS.\n\nWhich credential should User1 provide to the Git CLI?",
+  "choices": [
+   "An SSH private key from the ~/.ssh directory",
+   "The client ID of a user-assigned managed identity",
+   "The access key of the workspace default storage account",
+   "A personal access token for the GitHub account"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A compute instance has a full Git client in its terminal. You can clone any repository that you can authenticate to: over SSH with a key pair whose public key is registered with the Git service, or over HTTPS with a personal access token.",
+  "rationale": [
+   "Incorrect: an SSH key pair is how you clone over the SSH protocol, which the policy rules out. With SSH you register the public key, not the private key, with the Git account.",
+   "Incorrect: a managed identity client ID identifies an Azure identity for sign-in to Azure, for example from GitHub Actions with a federated credential. GitHub does not accept it for Git operations.",
+   "Incorrect: the storage account key authorizes access to Azure Storage, such as the workspace file share. It is not a credential that GitHub accepts for cloning.",
+   "Correct: to clone over HTTPS from a compute instance terminal, you use the Git CLI with a personal access token, which GitHub accepts in place of a password."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-train-model-git-integration"
+ }
+]

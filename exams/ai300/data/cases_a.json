@@ -1,0 +1,24 @@
+[
+ {
+  "id": "C-a",
+  "title": "Lamna Healthcare Company",
+  "sections": [
+   [
+    "Overview",
+    "Lamna Healthcare Company is a healthcare provider that runs clinics in Amsterdam, Brussels, and Copenhagen. A data science team of six people builds a machine learning model that predicts which patients might miss an appointment. A platform team owns the Azure subscription, the network, and the deployment pipelines.\n\nLamna Healthcare Company plans to manage all its machine learning infrastructure as code and to tighten the security of the environment before the model goes into production."
+   ],
+   [
+    "Existing environment",
+    "**Azure environment**\n\n- The company has a Microsoft Entra ID tenant and an Azure subscription named Sub1.\n- A resource group named rg-noshow-prod in the West Europe region contains an Azure Machine Learning workspace named mlw-noshow-prod and its dependent resources: a storage account, a key vault, an Application Insights resource, and a container registry.\n- A separate storage account named stclaimsdata stores 2 TB of historical claims data in a blob container. Training jobs read this data.\n- A virtual network named VNet-Hub connects to the clinics by using a site-to-site VPN.\n- Data scientists use compute instances in mlw-noshow-prod and install Python packages from pypi.org.\n\n**GitHub environment**\n\n- A GitHub organization named lamna contains a repository named mlops-infra.\n- The infra/main.bicep file in the repository defines the workspace, its dependent resources, and its network settings. The file declares the key vault with an empty accessPolicies list.\n- A workflow file named deploy-infra.yml runs on every push to the main branch. The workflow has one job named deploy that runs az deployment group create for the infra/main.bicep file.\n- The deploy job signs in by using a service principal. The client secret of the service principal is stored in a repository secret named AZURE_CREDENTIALS.\n\n**Problem statements**\n\nSince deploy-infra.yml started to run on every merge, User1 and User2 report that compute instance start and stop operations fail intermittently after a deployment completes."
+   ],
+   [
+    "Planned changes",
+    "Lamna Healthcare Company plans to implement the following changes:\n\n- Create a user-assigned managed identity named id-mlops-gh. All GitHub workflows will sign in to Azure as id-mlops-gh.\n- Add a workflow named validate-infra.yml that runs on every pull request that targets the main branch. The workflow will have one job that previews the changes in the infra/main.bicep file and posts the result to the pull request.\n- Create a GitHub environment named production that requires approval by a member of the platform team. The deploy job in deploy-infra.yml will run in the production environment.\n- Move the clinic reporting dashboards from an on-premises Power BI Report Server to the Power BI service."
+   ],
+   [
+    "Requirements",
+    "**Security requirements**\n\n- No client secret, password, or other long-lived Azure credential can be stored in GitHub.\n- The workspace must not accept requests from the public internet. Users must connect from VNet-Hub through a private endpoint.\n- Managed compute in the workspace must reach only two destinations: the pypi.org package index and the blob service of stclaimsdata. The risk of data exfiltration must be minimized.\n\n**Deployment requirements**\n\n- deploy-infra.yml must continue to deploy the complete infra/main.bicep file on every merge to the main branch.\n- Every deployment to production must be approved by a member of the platform team before it runs.\n- Infrastructure changes must be previewed in each pull request before the change is merged.\n\n**Business requirements**\n\n- The model must score the appointments of the next day every night by 05:00.\n- Clinic managers must see the predictions in their existing Power BI reports."
+   ]
+  ]
+ }
+]

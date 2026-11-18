@@ -1,0 +1,28 @@
+[
+ {
+  "id": "C-b",
+  "title": "Best For You Organics Company",
+  "sections": [
+   [
+    "Overview",
+    "Best For You Organics Company is a grocery retailer that runs 120 stores in the United States and Canada. The head office is in Toronto. A data science team of eight people and one MLOps engineer build the machine learning models that support store operations.\n\nThe company plans to move all model training to Azure Machine Learning and to automate the retraining of its production models."
+   ],
+   [
+    "Existing environment",
+    "**Azure Machine Learning**\n\n- An Azure Machine Learning workspace named mlw-forecast is in the East US region.\n- A compute cluster named cpu-cluster uses the Standard_DS3_v2 size and scales from zero to eight nodes.\n- A compute cluster named gpu-cluster uses the Standard_ND96asr_v4 size and scales from zero to four nodes. Each node has eight GPUs and InfiniBand support.\n- A data asset named daily-sales is an MLTable that has one row per store, product category, and day. Its columns are sale_date, store_id, category, units_sold, promo_flag, and avg_temp. The data covers three years.\n\n**Azure Databricks**\n\n- The pricing analysts use a shared Azure Databricks cluster named dbx-shared. The mlflow and azureml-mlflow packages are installed on dbx-shared.\n- During the day, the analysts run notebooks interactively on dbx-shared. At night, the same notebooks run as scheduled Databricks jobs.\n- A Key Vault-backed secret scope named kv-scope contains a secret named sp-secret. The secret holds the client secret of a service principal named sp-mlops, which has the AzureML Data Scientist role on mlw-forecast.\n\n**Other systems**\n\n- Store managers view sales reports in Power BI.\n- Supplier cost prices are available from a supplier REST API that the suppliers update several times a week.\n- The source code of all training scripts is stored in a GitHub repository."
+   ],
+   [
+    "Planned projects",
+    "**Demand forecasting**\n\nThe team will use AutoML to forecast the units sold for each combination of store and product category. The daily-sales data asset is the training data.\n\n**Price elasticity model**\n\nThe team will train an XGBoost regression model and tune it with a sweep job on cpu-cluster.\n\n**Shelf defect detection**\n\nThe team will train an image model that detects damaged products on shelf photos. The training script uses PyTorch DistributedDataParallel and runs as a command job on three nodes of gpu-cluster, with one process per GPU.\n\n**Nightly retraining pipeline**\n\nA pipeline job will retrain the demand forecasting model. The pipeline has four steps: ingest_supplier, prep, train, and evaluate. The ingest_supplier step calls the supplier REST API to get the latest cost prices. The inputs of the ingest_supplier step are the same for every run."
+   ],
+   [
+    "Requirements",
+    "**Tracking requirements**\n\n- All runs from dbx-shared, including the scheduled Databricks jobs, must be tracked in mlw-forecast.\n- The analysts must not add tracking or authentication code to individual notebooks.\n- Secret values must not be stored in plain text in notebooks or in cluster settings.\n\n**Forecasting requirements**\n\n- Forecasts must be produced per store and product category, as weekly totals.\n- Forecast quality is judged by the average size of the errors, and large misses must weigh more than small ones.\n\n**Tuning requirements**\n\n- The sweep for the price elasticity model tunes three hyperparameters: learning_rate as a uniform range from 0.01 to 0.3, max_depth as a choice of 4, 6, 8, or 10, and subsample as a uniform range from 0.5 to 1.0.\n- Each new trial must choose its values based on the results of earlier trials.\n- The team prefers better convergence over a shorter total run time.\n\n**Pipeline requirements**\n\n- The retraining pipeline must run every day at 01:30 in the local time of the head office, Eastern Standard Time.\n- The ingest_supplier step must run in every pipeline job. The other steps must reuse their earlier outputs when nothing in them changes.\n- Each scheduled pipeline job must write its evaluation report to a folder that is named after the triggered job."
+   ],
+   [
+    "Constraints",
+    "- Minimize custom code.\n- Store managers must receive the weekly forecasts in Power BI by 06:00 on Monday.\n- The company prefers to use the existing compute clusters instead of creating new ones."
+   ]
+  ]
+ }
+]

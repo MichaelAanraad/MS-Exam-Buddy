@@ -1,0 +1,828 @@
+[
+ {
+  "id": "2.2.1-01",
+  "obj": "2.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. trains a fraud model on training data that the built-in feature retrieval component generated from features in an Azure Machine Learning managed feature store. After the model is registered in the project workspace, the model detail page shows no lineage between the model and its feature sets.\n\nWhich location should the training job use for the feature retrieval specification?",
+  "choices": [
+   "In the code folder of the online deployment, next to the scoring script, as feature_retrieval_spec.yaml",
+   "In the root folder of the model artifact, under a name that matches the model, such as fraud_model_spec.yaml",
+   "In the root folder of the model artifact, as feature_retrieval_spec.yaml",
+   "In a spec subfolder of the model artifact, as feature_retrieval_spec.yaml"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A feature retrieval specification lists the features, feature set versions, and feature stores that a model uses. Package it with the model in the root folder of the model artifact under the fixed name feature_retrieval_spec.yaml. The workspace uses it to track lineage between the model and its feature sets, and scoring code and the feature retrieval component use it to look up the same features at inference time.",
+  "rationale": [
+   "Incorrect: the code folder of a deployment holds the scoring script and is not part of the registered model, so the workspace cannot link the model to its feature sets. Scoring code loads the specification from the model artifact folder, not from its code folder.",
+   "Incorrect: the root folder is the right location, but the file name of the specification cannot be changed. The system recognizes the specification only as feature_retrieval_spec.yaml, so a model-specific name breaks lineage tracking and feature lookup.",
+   "Correct: the specification must sit in the root folder of the model artifact with the fixed name feature_retrieval_spec.yaml. Only then does the workspace track lineage between the registered model and its feature sets and show it on the model and feature set pages.",
+   "Incorrect: the file name is right, but Learn requires the specification directly in the root folder of the model artifact. In a subfolder, lineage is not tracked, and a feature retrieval job that receives the model as input fails because it looks for the file in the model artifact root."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/feature-retrieval-concepts?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.1-02",
+  "obj": "2.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. runs a training pipeline in an Azure Machine Learning workspace. The first step is the built-in feature retrieval component, which receives a feature retrieval specification and observation data. Its output_data output is passed to a training step as the training_data input, and the training step writes the model to an output named model_output. The model must carry exactly the specification that the feature retrieval component used to generate training_data, and the training script does not receive a list of features.\n\nYou need the trained model to carry the feature retrieval specification.\n\nWhat should the training script do?",
+  "choices": [
+   "Copy feature_retrieval_spec.yaml from the root of training_data to the root of model_output.",
+   "Copy feature_retrieval_spec.yaml from the data subfolder of training_data to the root of model_output.",
+   "Copy feature_retrieval_spec.yaml from the root of training_data to a spec subfolder of model_output.",
+   "Call generate_feature_retrieval_spec() and write the new file to the root of model_output."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When the built-in feature retrieval component generates training data, its output folder contains a data subfolder with parquet files and feature_retrieval_spec.yaml in the root. The training script packages the specification by copying it to the root of the model output. When training data comes from another method, pass the specification to the training job as an input and copy it the same way.",
+  "rationale": [
+   "Correct: the built-in component already packages the specification in the root of its output folder, next to the data subfolder. Copying it to the root of model_output, for example with shutil.copy(os.path.join(args.training_data, \"feature_retrieval_spec.yaml\"), args.model_output), packages it with the model.",
+   "Incorrect: the data subfolder of the component output holds only the parquet files of the training data, which the training script reads. The specification is in the root of the output folder, so this source path does not contain it.",
+   "Incorrect: the source is right, but the specification must be in the root folder of the model artifact. In a subfolder, lineage is not tracked, and a feature retrieval job that receives the model as input fails because it looks for the file in the model artifact root.",
+   "Incorrect: generate_feature_retrieval_spec() writes a new specification from a list of features resolved from registered feature sets, for example with resolve_feature_uri(). The training script has no such list, and a regenerated file might not match the one that built training_data. Generate the specification once, during feature selection."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/feature-retrieval-concepts?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.1-03",
+  "obj": "2.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. deploys a fraud model to a managed online endpoint. The model artifact contains feature_retrieval_spec.yaml, and the features are materialized to the online store of a managed feature store. When a request arrives, the scoring script must look up the current feature values for the account in the request. Later model versions will use different features, and the scoring script must not change when the feature list changes.\n\nWhat should the init() function of the scoring script do?",
+  "choices": [
+   "Call resolve_feature_retrieval_spec() on the model folder, and then call get_offline_features() with the returned features.",
+   "Call resolve_feature_uri() with a list of feature names, and then call init_online_lookup() with the returned features.",
+   "Call generate_feature_retrieval_spec() on the model folder, and then call init_online_lookup() with the returned features.",
+   "Call resolve_feature_retrieval_spec() on the model folder, and then call init_online_lookup() with the returned features."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "At inference time, scoring code reads the feature list from the feature retrieval specification that is packaged with the model instead of hard-coding it. In init(), call resolve_feature_retrieval_spec() with the path to the model folder under AZUREML_MODEL_DIR and pass the result to init_online_lookup(). Online feature lookup requires azureml-featurestore version 1.2.1 or later.",
+  "rationale": [
+   "Incorrect: get_offline_features() runs a point-in-time join against offline feature data in a Spark session to build training or batch inference data. It does not serve low-latency lookups for single requests; use it in training or batch pipelines.",
+   "Incorrect: resolve_feature_uri() resolves an explicit list of feature names, so the list would be hard-coded in the scoring script and would change for every model version that uses different features. Use it when you select features to create a specification.",
+   "Incorrect: generate_feature_retrieval_spec() writes a new specification file from a list of features; it does not read one. Use it during feature selection, before training, to create the file that is then packaged with the model.",
+   "Correct: resolve_feature_retrieval_spec() loads the feature list from the specification packaged in the model folder, so the script follows whatever features each model version uses. init_online_lookup() then prepares online store lookups for the run() function."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/feature-retrieval-concepts?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.1-04",
+  "obj": "2.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys registered a model named churn-model, version 3, whose model artifact contains feature_retrieval_spec.yaml in its root folder. A batch inference pipeline starts with the built-in feature retrieval component to generate inference data from new observation data. The data scientists want to pass azureml:churn-model:3 to the component instead of maintaining a separate folder that holds the specification.\n\nWhich input of the component should receive azureml:churn-model:3?",
+  "choices": [
+   "feature_retrieval_spec",
+   "input_model",
+   "observation_data",
+   "timestamp_column"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The built-in feature retrieval component needs one source for the feature list: either feature_retrieval_spec, a folder that directly hosts the specification, or input_model, a model whose artifact contains it. When the specification is packaged with the model, passing the model keeps batch inference in sync with the features the model was trained on. The component always outputs parquet data plus the specification.",
+  "rationale": [
+   "Incorrect: feature_retrieval_spec is a uri_folder input whose folder must directly host feature_retrieval_spec.yaml, such as a data asset or a datastore path. Training pipelines usually use it, but the requirement is to pass the registered model instead of a separate folder.",
+   "Correct: input_model accepts an Azure Machine Learning model asset in the form azureml:<name>:<version>. The component reads feature_retrieval_spec.yaml from the model artifact folder, which is why batch inference pipelines commonly use this input in their first step.",
+   "Incorrect: observation_data receives the new records to which the component joins feature values, for example the customers to score. It does not tell the component which features to retrieve, so the model cannot be passed here.",
+   "Incorrect: timestamp_column is a string that names the timestamp column in the observation data for the point-in-time join. It is needed alongside the observation data, but it cannot carry a model or a specification."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/feature-retrieval-concepts?view=azureml-api-2#built-in-feature-retrieval-component"
+ },
+ {
+  "id": "2.2.1-05",
+  "obj": "2.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank runs a batch inference pipeline that passes a registered model, risk-model version 2, to the input_model input of the built-in feature retrieval component. The job fails because the component cannot find feature_retrieval_spec.yaml. You confirm that the specification was never added to the model artifact when risk-model version 2 was registered.\n\nWhat should you do?",
+  "choices": [
+   "Assign the AzureML Data Scientist role on the feature store to the managed identity that runs the job.",
+   "Add the file to risk-model version 2 by running az ml model update with the path of the specification.",
+   "Package the file in the root folder of the model artifact and register the model as a new version.",
+   "Extend temporal_join_lookback in the feature set specifications that the model uses."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "When a model is the input of the feature retrieval component, the component reads feature_retrieval_spec.yaml from the root folder of the model artifact and fails if the file is missing. Package the specification before you register the model. The files of a registered model version cannot change, because an update changes metadata such as the description and tags, so fixing an existing model means registering a new version that contains the file.",
+  "rationale": [
+   "Incorrect: this role assignment fixes a feature retrieval job that fails with a permission error on the feature store. The job here fails because the model artifact has no specification, which no role assignment can add.",
+   "Incorrect: az ml model update changes metadata of a model version, such as its description and tags, but the path and files of a registered version are immutable. It cannot add the specification; to change the files of a model, register a new version.",
+   "Correct: the component expects feature_retrieval_spec.yaml in the root folder of the model artifact. Because the files of a model version cannot change, package the file with the artifact, register a new version, and then point input_model at that version.",
+   "Incorrect: extending temporal_join_lookback fixes a point-in-time join that returns null feature values. It does not help when the job cannot read the feature list at all, because the specification is missing from the model artifact."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/troubleshooting-managed-feature-store?view=azureml-api-2#feature-retrieval-job-and-query-errors"
+ },
+ {
+  "id": "2.2.1-06",
+  "obj": "2.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud selects features for a new model in an Azure Machine Learning Spark notebook. The feature list combines features from a registered feature set named transactions and from a local feature set specification named accounts that was created with create_feature_set_spec() and is not registered yet. The call featurestore.generate_feature_retrieval_spec(spec_folder, features) fails with the error AttributeError: 'FeatureSetSpec' object has no attribute 'id'.\n\nWhat should you do?",
+  "choices": [
+   "Register the accounts specification as a feature set in the feature store, and then rebuild the feature list from the registered feature sets.",
+   "Upgrade the azureml-featurestore package to version 1.2.1 or later, and then call generate_feature_retrieval_spec() again.",
+   "Assign the AzureML Data Scientist role on the feature store to your user identity, and then call generate_feature_retrieval_spec() again.",
+   "Extend temporal_join_lookback in the accounts specification, and then call generate_feature_retrieval_spec() again."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Local feature set specifications are for development: you can combine them with registered feature sets in get_offline_features() to experiment, but a feature retrieval specification can be generated only from feature sets that are registered in a feature store. Register the local specification as a feature set asset first, and then generate the retrieval specification from registered features only.",
+  "rationale": [
+   "Correct: a feature retrieval specification can be generated only from features of feature sets registered in a feature store. Register the local accounts specification, get the registered feature set, rebuild the list from registered feature sets only, and generate the specification again.",
+   "Incorrect: version 1.2.1 or later fixes init_online_lookup() failing with a KeyError for the storage scope during online lookup. The error here comes from a feature of an unregistered specification, which an SDK upgrade does not register.",
+   "Incorrect: this role assignment fixes feature retrieval that fails with a permission error on the feature store. The registered transactions features resolve fine; the failure is caused by the unregistered accounts specification, which no role can fix.",
+   "Incorrect: temporal_join_lookback controls how far back a point-in-time join looks for feature values, and extending it fixes empty feature values in retrieved data. It does not register the specification, so the AttributeError remains."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/troubleshooting-managed-feature-store?view=azureml-api-2#feature-retrieval-job-and-query-errors"
+ },
+ {
+  "id": "2.2.1-07",
+  "obj": "2.2.1",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Northwind Traders trains a demand model on features from two managed feature stores, one in each of two Azure regions. The training job copies the feature retrieval specification into the model artifact before the model is registered in the project workspace.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "One feature retrieval specification can list features from both feature stores.",
+   "The training job can save the specification as demand_features.yaml if the scoring script loads the file by that name.",
+   "The model detail page shows the lineage to the feature sets only if the specification is part of the model artifact."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "The feature retrieval specification is a portable list of features, feature set versions, and feature stores that connects training and inference. Packaged in the root folder of the model artifact under its fixed name, it gives the workspace lineage from the model to its feature sets and gives scoring code and batch pipelines the exact feature list.",
+  "rationale": [
+   "Yes: the features in a specification can come from multiple feature sets and from multiple feature stores. The YAML file lists each feature store by URI, location, and workspace ID, with the features and feature set versions that the model uses from it.",
+   "No: the specification must be named feature_retrieval_spec.yaml in the root folder of the model artifact, and its name cannot be changed. Another name breaks lineage tracking and the feature retrieval component, even if your own scoring code can read the file.",
+   "Yes: lineage between a registered model and its feature sets is tracked only when the specification exists in the model artifact. The model detail page and the feature set detail page then show the dependency in both directions."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/feature-retrieval-concepts?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.1-08",
+  "obj": "2.2.1",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "A. Datum Corporation selects features from registered feature sets in a managed feature store for a new loan model. You need to create a feature retrieval specification, train the model on data that the built-in feature retrieval component generates, and register the trained model so that it carries the specification. The training step writes its model to an output named model_output, and the name of that training step job is stored in the TRAIN_JOB variable.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `features = featurestore.resolve_feature_uri([\"accounts:1:numPaymentRejects1dPerUser\", \"transactions:1:transaction_amount_7d_avg\"])`.",
+   "Run `featurestore.generate_feature_retrieval_spec(\"./spec_folder\", features)`.",
+   "Submit the training pipeline, in which ./spec_folder is the feature_retrieval_spec input of the feature retrieval component and the training step copies feature_retrieval_spec.yaml to model_output.",
+   "Run `az ml model create --name loan-model --version 1 --type custom_model --path azureml://jobs/$TRAIN_JOB/outputs/model_output`.",
+   "Run `init_online_lookup(features, AzureMLOnBehalfOfCredential())`.",
+   "Submit the training pipeline, in which ./spec_folder is the input_model input of the feature retrieval component.",
+   "Run `az ml model update --name loan-model --version 1 --set tags.spec=feature_retrieval_spec.yaml`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "The specification flows through the whole lifecycle: you generate it from registered features, the feature retrieval component uses it to build the training data and passes it on, the training step packages it with the model, and registration makes it part of the model artifact. Inference then reuses the same file to look up the features.",
+  "rationale": [
+   "Step 1: resolve_feature_uri() resolves the selected feature names, such as accounts:1:numPaymentRejects1dPerUser, into feature objects from registered feature sets. The specification is generated from this list, so it comes first.",
+   "Step 2: generate_feature_retrieval_spec() writes feature_retrieval_spec.yaml for the resolved features into ./spec_folder. It needs the feature list from step 1, and the pipeline in step 3 consumes the folder.",
+   "Step 3: the feature retrieval component joins the features to the observation data and outputs the training data with the specification in its root. The training step trains the model and copies the specification to the root of model_output.",
+   "Step 4: registering from the training step output creates a model whose artifact contains feature_retrieval_spec.yaml, so the workspace tracks lineage to the feature sets. It can run only after the pipeline has produced model_output.",
+   "Incorrect: init_online_lookup() prepares lookups against the online store at inference time, typically in the init() function of a scoring script. Training data comes from the offline retrieval that the feature retrieval component performs.",
+   "Incorrect: input_model expects a model asset whose artifact already contains the specification, which batch inference pipelines use. A folder that directly hosts the specification belongs in the feature_retrieval_spec input.",
+   "Incorrect: tags are metadata only, and az ml model update changes metadata such as the description and tags, not the files of a model version. It cannot add the specification file; the training step must package it before registration."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/tutorial-experiment-train-models-using-features?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.2-01",
+  "obj": "2.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "series": "S-reg",
+  "stem": "Fabrikam, Inc. trains scikit-learn models in Azure Databricks notebooks. MLflow in the notebooks uses the default Azure Databricks configuration and also tracks runs in a linked Azure Machine Learning workspace named Workspace1, so each run appears in both workspaces. A trained model must be registered in the model registry of Workspace1 so that it can be deployed to a managed online endpoint in Workspace1. Runs must keep appearing in both Azure Databricks and Workspace1.\n\nSolution: You call mlflow.set_registry_uri() with the MLflow tracking URI of Workspace1, and then you call mlflow.sklearn.log_model() with the registered_model_name parameter set.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Unlike tracking, model registries cannot work in Azure Databricks and Azure Machine Learning at the same time. With dual tracking, the registry defaults to the Azure Databricks workspace. Set the MLflow registry URI to the Azure Machine Learning MLflow URI, which has the same value as its tracking URI, to register models in Workspace1 while runs keep appearing in both workspaces.",
+  "rationale": [
+   "Correct: setting the MLflow model registry URI to the URI of Workspace1 sends registrations to Azure Machine Learning while tracking stays dual, so runs still appear in both workspaces. log_model() with registered_model_name then logs the model and registers it in Workspace1.",
+   "Incorrect: the solution meets the goal. No would be right if the registry URI still pointed to Azure Databricks, which is the default registry when MLflow tracks in both workspaces."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-mlflow-azure-databricks?view=azureml-api-2#register-models-in-the-registry-with-mlflow"
+ },
+ {
+  "id": "2.2.2-02",
+  "obj": "2.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "series": "S-reg",
+  "stem": "Fabrikam, Inc. trains scikit-learn models in Azure Databricks notebooks. MLflow in the notebooks uses the default Azure Databricks configuration and also tracks runs in a linked Azure Machine Learning workspace named Workspace1, so each run appears in both workspaces. A trained model must be registered in the model registry of Workspace1 so that it can be deployed to a managed online endpoint in Workspace1. Runs must keep appearing in both Azure Databricks and Workspace1.\n\nSolution: You keep the default configuration and call mlflow.sklearn.log_model() with the registered_model_name parameter set.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "With the default configuration, log_model() logs the model inside the runs of both Azure Databricks and Azure Machine Learning, but it registers the model only in Azure Databricks. Models must be registered in Azure Machine Learning before they can be deployed to its endpoints, so you must redirect the registry.",
+  "rationale": [
+   "Incorrect: with the default configuration, log_model() logs the model in the runs of both workspaces but registers it only in Azure Databricks. Workspace1 then has no registered model that its managed online endpoint can deploy.",
+   "Correct: the solution does not meet the goal, because the default model registry is the Azure Databricks workspace. A model registered there must be registered again in Azure Machine Learning before you can deploy it to Workspace1."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-mlflow-azure-databricks?view=azureml-api-2#register-models-in-the-registry-with-mlflow"
+ },
+ {
+  "id": "2.2.2-03",
+  "obj": "2.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "series": "S-reg",
+  "stem": "Fabrikam, Inc. trains scikit-learn models in Azure Databricks notebooks. MLflow in the notebooks uses the default Azure Databricks configuration and also tracks runs in a linked Azure Machine Learning workspace named Workspace1, so each run appears in both workspaces. A trained model must be registered in the model registry of Workspace1 so that it can be deployed to a managed online endpoint in Workspace1. Runs must keep appearing in both Azure Databricks and Workspace1.\n\nSolution: You configure the MLflow tracking URI of the notebooks to track only in Workspace1, and then you call mlflow.sklearn.log_model() with the registered_model_name parameter set.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "When MLflow tracks exclusively in an Azure Machine Learning workspace, that workspace is both the tracking server and the model registry, which is the simplest setup when you no longer need runs in Azure Databricks. When runs must stay in both workspaces, keep dual tracking and redirect only the registry with mlflow.set_registry_uri().",
+  "rationale": [
+   "Incorrect: when MLflow tracks only in Workspace1, the model registry also becomes Workspace1, so the registration works. But runs no longer appear in Azure Databricks, which breaks the requirement to keep runs in both workspaces.",
+   "Correct: the solution does not meet the goal. Tracking only in Azure Machine Learning is the recommended configuration when runs are not needed in Azure Databricks, because it removes ambiguity about where models are registered."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-mlflow-azure-databricks?view=azureml-api-2#register-models-in-the-registry-with-mlflow"
+ },
+ {
+  "id": "2.2.2-04",
+  "obj": "2.2.2",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Lucerne Publishing submits a training job from the job.yml file to an Azure Machine Learning workspace named Workspace1 in a resource group named rg-ml. The training script calls mlflow.sklearn.log_model() with artifact_path set to model and does not register the model. After the job completes, you must register the logged model as credit-model version 1 so that it can be deployed later without a scoring script or an environment, and then display the properties of the registered model. The commands must not include the --workspace-name or --resource-group parameters, and the name of the submitted job is saved in the JOB_NAME variable.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`az configure --defaults workspace=Workspace1 group=rg-ml`",
+   "`az ml job create --file job.yml`",
+   "`az ml model create --name credit-model --version 1 --path azureml://jobs/$JOB_NAME/outputs/artifacts/paths/model/ --type mlflow_model`",
+   "`az ml model show --name credit-model --version 1`",
+   "`az ml model create --name credit-model --version 1 --path azureml://jobs/$JOB_NAME/outputs/artifacts/paths/model/`",
+   "`az ml model share --name credit-model --version 1 --registry-name reg-ml --share-with-name credit-model --share-with-version 1`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "To register an MLflow model that a job logged without registering it, point az ml model create at the default artifact location of the job with azureml://jobs/<job-name>/outputs/artifacts/paths/<path> (equivalent to runs:/<run-id>/<path>) and set --type mlflow_model. Registering from the job output also keeps the lineage between the model and the job that trained it.",
+  "rationale": [
+   "Step 1: az configure --defaults sets the default workspace and resource group for later az ml commands, so they can omit --workspace-name and --resource-group. It must run before any command that relies on the defaults.",
+   "Step 2: az ml job create submits the training job to Workspace1. The MLflow model exists in the default artifact location of the job only after the script runs log_model(), so registration comes after the job.",
+   "Step 3: the azureml://jobs/<job>/outputs/artifacts/paths/model/ path points to the default artifact location where MLflow logged the model, equivalent to runs:/<run-id>/model. The mlflow_model type enables deployment without a scoring script or an environment.",
+   "Step 4: az ml model show returns the properties of credit-model version 1, such as its type and path, so you can confirm that it was registered as an MLflow model. It can run only after the model exists.",
+   "Incorrect: without --type, az ml model create registers the model with the default type custom_model. Azure Machine Learning then treats it as plain files, so a later deployment needs a scoring script and an environment.",
+   "Incorrect: az ml model share copies a model from a workspace to a registry for cross-workspace reuse. No other workspace is involved here, and the model must exist in Workspace1 before it could be shared."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-models?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.2-05",
+  "obj": "2.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adventure Works Cycles runs a scikit-learn training script as a command job in an Azure Machine Learning workspace. When the job finishes, the trained classifier clf must be registered in the workspace as an MLflow model named bike-demand, with lineage to the job, and without a separate registration step after the job.\n\nWhich call should you add to the training script?",
+  "choices": [
+   "`mlflow.sklearn.save_model(sk_model=clf, path=\"bike-demand\")`",
+   "`mlflow.log_artifact(\"outputs/bike-demand.pkl\", artifact_path=\"model\")`",
+   "`mlflow.sklearn.log_model(clf, \"model\")`",
+   "`mlflow.sklearn.log_model(clf, \"model\", registered_model_name=\"bike-demand\")`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "MLflow model logging writes a model folder with an MLmodel file that Azure Machine Learning understands, and adding registered_model_name to mlflow.<flavor>.log_model() also registers the model. If a registered model with that name already exists, MLflow creates a new version. Registering from inside the run, or from the artifacts of the run, keeps the lineage to the job that trained the model.",
+  "rationale": [
+   "Incorrect: save_model() writes the model in MLflow format to the local file system of the compute, not into the run, and it registers nothing. Use it when you want an MLflow model folder on disk, for example to register it later from a file:// path.",
+   "Incorrect: log_artifact() uploads a pickle file as a plain artifact of the run. It is not an MLflow model with an MLmodel file, and nothing is registered, so the model could not be deployed without a scoring script.",
+   "Incorrect: log_model() without registered_model_name logs an MLflow model inside the run but does not register it. You would need a separate registration step after the job, such as az ml model create or mlflow.register_model().",
+   "Correct: log_model() logs the classifier as an MLflow model inside the run of the job, and registered_model_name registers it in the workspace in the same call. Registering from inside the run preserves the lineage between the model and the job."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/tutorial-train-model?view=azureml-api-2#create-training-script"
+ },
+ {
+  "id": "2.2.2-06",
+  "obj": "2.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A data scientist at Trey Research trains a model on a local workstation and saves it with mlflow.sklearn.save_model() to a local folder that contains an MLmodel file. No MLflow run was started, and the folder was not uploaded anywhere. MLflow on the workstation is already configured with the tracking URI of an Azure Machine Learning workspace.\n\nWhich model URI should you pass to mlflow.register_model() to register the model in the workspace?",
+  "choices": [
+   "`runs:/<run-id>/model`",
+   "`file://<absolute-path-to-folder>`",
+   "`models:/<model-name>/latest`",
+   "`azureml://jobs/<job-name>/outputs/artifacts/paths/model/`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "MLflow can register a model from a run (runs:/<run-id>/<path>) or directly from an MLflow model folder in the local file system (file://<path>), which does not need a run. Registering from a run preserves lineage; registering from local files suits models that were trained outside a tracked run. Both require MLflow to point to the tracking URI of the workspace.",
+  "rationale": [
+   "Incorrect: a runs:/ URI points to a model logged inside an MLflow run, by run ID and artifact path. No run was started, so there is no run ID to reference. Use runs:/ to register a model that a run logged, which also keeps lineage.",
+   "Correct: mlflow.register_model() accepts a file:// URI for an MLflow model folder in the local file system, so the model does not need to be in the context of a run. The folder must contain the MLmodel file, which save_model() created.",
+   "Incorrect: a models:/ URI references a model that is already registered, for example to load its latest version with mlflow.pyfunc.load_model(). This model is not registered yet, so there is nothing for the URI to reference.",
+   "Incorrect: an azureml://jobs URI points to the outputs of an Azure Machine Learning job and is typically used with az ml model create or the Python SDK v2. The model was trained locally, not in a job, so no job output exists."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-models-mlflow?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.2-07",
+  "obj": "2.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Blue Yonder Airlines trains an image classification model whose inputs are tensors of shape (-1, 224, 224, 3). The training script calls mlflow.autolog(), but the signature in the MLmodel file of the logged model has the wrong input shape. The registered MLflow model must enforce the correct input types and must stay deployable without a scoring script.\n\nWhat should you do?",
+  "choices": [
+   "Keep mlflow.autolog(), and add the expected input shape to the conda.yaml file of the logged model.",
+   "Keep mlflow.autolog(), and log a JSON file that describes the input shape by calling mlflow.log_artifact().",
+   "Call mlflow.autolog(log_models=False), and pass a signature from infer_signature() to mlflow.<flavor>.log_model().",
+   "Register the model files with az ml model create --type custom_model, and check the shape in a scoring script."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The model signature in the MLmodel file is the data contract between the model and the server that runs it: MLflow enforces the input types, and Azure Machine Learning generates a swagger file for deployments of MLflow models that have a signature. Autolog infers signatures on a best-effort basis; when it gets them wrong, typically for tensor inputs, turn off autolog model logging and log the model manually with an explicit signature.",
+  "rationale": [
+   "Incorrect: conda.yaml lists the packages that the model needs to run, not its input schema. MLflow reads the signature only from the signature section of the MLmodel file, so the wrong shape would still be enforced.",
+   "Incorrect: log_artifact() stores the JSON as a plain file in the run. MLflow does not use it for signature enforcement and deployments do not read it, so the MLmodel file keeps the wrong signature.",
+   "Correct: log_models=False stops autolog from logging the model so that you can log it manually. infer_signature() builds the signature from real inputs and outputs, and log_model() writes it to the MLmodel file, where MLflow enforces it and deployments use it.",
+   "Incorrect: a custom_model is treated as plain files, so it loses MLflow signature enforcement and deployment without a scoring script, which the requirements keep. Use custom_model when you manage the scoring script and environment yourself."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-log-mlflow-models?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.2-08",
+  "obj": "2.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. rebuilds the environment of its training jobs in an Azure Machine Learning workspace. The new conda file installs the latest mlflow 3.x release together with azureml-mlflow. Since the rebuild, training jobs fail when they call mlflow.xgboost.log_model() with registered_model_name, although the same code worked with mlflow 2.16.2.\n\nWhat should you do?",
+  "choices": [
+   "Pin the mlflow package to version 2.16.2 or earlier in the conda file of the environment.",
+   "Replace the mlflow package with the mlflow-skinny package of the same release in the conda file.",
+   "Set the MLFLOW_TRACKING_URI environment variable of the job to the tracking URI of the workspace.",
+   "Remove the azureml-mlflow package from the conda file, and keep the latest mlflow 3.x release."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "MLflow logging and registration in Azure Machine Learning go through the azureml-mlflow plugin, which supports MLflow 2.16 and earlier. MLflow 2.17 and later change the artifact repository and LoggedModels APIs, so pin mlflow (Learn uses mlflow<=2.16.2) in environments that log or register models in a workspace. Check the Log MLflow models page for the currently supported range.",
+  "rationale": [
+   "Correct: Azure Machine Learning is compatible with MLflow 2.16 and earlier. MLflow 2.17 and later introduce artifact repository and LoggedModels API changes that the azureml-mlflow plugin does not currently support, so Learn recommends pinning mlflow, for example to mlflow<=2.16.2.",
+   "Incorrect: mlflow-skinny is a lightweight MLflow package without SQL storage, server, UI, or data science dependencies, recommended when you need only tracking and logging. The same release has the same API changes, so the incompatibility remains.",
+   "Incorrect: jobs that run on Azure Machine Learning compute have the tracking URI configured automatically. Set MLFLOW_TRACKING_URI when you track from outside Azure Machine Learning, such as a local machine or an Azure Databricks cluster.",
+   "Incorrect: azureml-mlflow is the Azure Machine Learning plugin for MLflow, which Learn lists as a prerequisite next to mlflow for tracking and model management in a workspace. Removing it does not make the latest MLflow release supported."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-log-mlflow-models?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.3-01",
+  "obj": "2.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Humongous Insurance uses a binary classification model to approve insurance applications. Before deployment, the compliance team asks you to compare the approval rate and the accuracy of the model across groups that are defined by the age band and gender of applicants.\n\nWhich Responsible AI dashboard component should you use?",
+  "choices": [
+   "Error analysis (error tree and heat map)",
+   "Model overview and fairness assessment",
+   "Data analysis (dataset distributions)",
+   "Counterfactual what-if (feature perturbations)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The Responsible AI dashboard maps its tools to the Responsible AI principles: model overview and fairness assessment (based on Fairlearn) for fairness, error analysis for reliability and safety, and interpretability and counterfactual what-if for transparency. Fairness assessment uses group fairness: it compares disparity in performance metrics and disparity in selection rate across groups defined by sensitive features.",
+  "rationale": [
+   "Incorrect: error analysis builds an error tree and heat map that find cohorts with error rates above the overall benchmark. It does not compute selection rates or disparity metrics across sensitive groups. Use it to support the reliability and safety principle.",
+   "Correct: this component computes performance metrics such as accuracy and the selection rate, here the approval rate, for subgroups defined by sensitive features and reports the disparities between them, based on Fairlearn. It supports the fairness and inclusiveness principle.",
+   "Incorrect: data analysis shows dataset distributions and statistics so that you can find overrepresented and underrepresented cohorts. It helps explain why a disparity might exist, but it does not compare model accuracy and approval rate across groups.",
+   "Incorrect: counterfactual what-if generates the closest data points with a different prediction and lets you perturb the features of one data point. It probes individual cases, but it does not compute group metrics such as the approval rate per group."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-responsible-ai-dashboard?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.3-02",
+  "obj": "2.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank generates a Responsible AI scorecard for a binary classification model that approves loans. In the Fairness section of the scorecard configuration, age_band is the sensitive feature. The scorecard must show whether the largest gap in loan approval rate between any two age bands stays at or below 0.05.\n\nWhich fairness configuration should you use?",
+  "choices": [
+   "metric set to accuracy_score and fairness_evaluation_kind set to difference",
+   "metric set to selection_rate and fairness_evaluation_kind set to ratio",
+   "metric set to error_rate and fairness_evaluation_kind set to difference",
+   "metric set to selection_rate and fairness_evaluation_kind set to difference"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The fairness section of the scorecard pairs a metric with fairness_evaluation_kind. Selection rate measures how often each group receives the favorable prediction (disparity in selection rate), while accuracy, precision, recall, and error rate measure disparity in model performance. Difference expresses the gap between groups and ratio their proportion, so the choice changes the scale of the threshold. Learn's metric table capitalizes the metric as Selection_rate, while its configuration sample uses selection_rate.",
+  "rationale": [
+   "Incorrect: accuracy_score with difference reports the largest gap in accuracy between groups, which is a disparity in model performance. Use it when the concern is that the model is less accurate for some groups, not that it approves them at different rates.",
+   "Incorrect: the metric is right, but ratio compares the selection rates of groups as a ratio instead of a gap, so a threshold of 0.05 means something different. Use ratio when the target is expressed as a proportion between groups.",
+   "Incorrect: error_rate with difference reports the largest gap in misclassification rate between groups, another disparity in model performance. It says nothing about how often each age band gets the favorable loan decision.",
+   "Correct: selection rate is the fraction of data points classified as 1, here the loan approval rate. With difference, the scorecard reports the maximum difference in selection rate between any two groups, which you compare with the threshold <= 0.05."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-responsible-ai-insights-sdk-cli?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.3-03",
+  "obj": "2.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Lamna Healthcare Company trains a regression model that predicts the length of hospital stays. A fairness assessment shows that the prediction error is much larger for patients aged 75 or older than for younger patients, which is a quality-of-service harm. You plan to mitigate the issue by using the Fairlearn open-source package.\n\nWhich parity constraint should you use?",
+  "choices": [
+   "Demographic parity",
+   "Equalized odds",
+   "Bounded group loss",
+   "Equal opportunity"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Fairlearn mitigation algorithms enforce parity constraints, and you pick the constraint by harm and task: demographic parity mitigates allocation harms (binary classification and regression), equalized odds and equal opportunity diagnose allocation and quality-of-service harms (binary classification), and bounded group loss mitigates quality-of-service harms (regression). Mitigation reduces unfairness but does not eliminate it, so you still judge the result.",
+  "rationale": [
+   "Incorrect: demographic parity mitigates allocation harms, which concern who receives an opportunity or resource. It applies to binary classification and regression, but it does not target a group that suffers larger prediction errors.",
+   "Incorrect: equalized odds diagnoses allocation and quality-of-service harms, but Fairlearn supports it only for binary classification. A model that predicts a continuous length of stay is a regression model, so this constraint does not fit.",
+   "Correct: bounded group loss is the Fairlearn parity constraint for mitigating quality-of-service harms in regression models, where one group experiences worse prediction quality. Fairlearn applies it, for example, with the GridSearch reduction algorithm for regression.",
+   "Incorrect: equal opportunity diagnoses allocation and quality-of-service harms for binary classification models only. Predicting a continuous value such as the length of a stay needs a constraint that supports regression."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-fairness-ml?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.3-04",
+  "obj": "2.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso Pharmaceuticals generates a Responsible AI dashboard with error analysis and counterfactual components for a registered classification model. The precomputed counterfactual examples appear in Azure Machine Learning studio. However, when a user selects Create what-if counterfactual to perturb a data point, no new counterfactual is generated, and the error tree is disabled when the user switches to a different cohort.\n\nWhat should you do?",
+  "choices": [
+   "Select a running compute instance in the Compute list at the top of the dashboard.",
+   "Regenerate the dashboard with total_CFs in the counterfactual component set to 10.",
+   "Regenerate the dashboard with a larger maximum_rows_for_test_dataset value.",
+   "Regenerate the dashboard with two features in filter_features of error analysis."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A generated dashboard shows precomputed insights. Features that compute on the fly, such as what-if counterfactuals, updating the error tree for a new global cohort, ICE plots, and causal what-if, need a running compute instance connected to the dashboard. Users also need permission to start compute, for example Reader combined with AzureML Compute Operator.",
+  "rationale": [
+   "Correct: generating a what-if counterfactual and updating the error tree for a new cohort need on-the-fly computation. When you select a running compute instance, the dashboard starts a Responsible AI endpoint on it and unlocks these real-time features.",
+   "Incorrect: total_CFs sets how many counterfactuals are precomputed per data point, and at least 10 are needed for the top-ranked features chart. Precomputed examples already appear, and more of them do not enable live what-if generation.",
+   "Incorrect: maximum_rows_for_test_dataset limits the test rows that the dashboard visualizes, 5,000 by default, for performance. More rows change what is shown, not whether interactive computation is available.",
+   "Incorrect: filter_features pregenerates the error heat map for one or two features. It does not let the error tree update for new cohorts, which needs a compute resource connected to the dashboard."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-responsible-ai-dashboard?view=azureml-api-2#full-functionality-with-an-integrated-compute-resource"
+ },
+ {
+  "id": "2.2.3-05",
+  "obj": "2.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel has a Responsible AI dashboard for a pricing model in an Azure Machine Learning workspace. The risk officers who must approve the model have no access to the workspace. They need an offline report of the model performance, fairness, and feature importance that they can attach to compliance records.\n\nWhat should you generate?",
+  "choices": [
+   "A link to the Responsible AI dashboard in Azure Machine Learning studio",
+   "A Responsible AI scorecard in PDF format from the dashboard",
+   "The ux_json output of the Gather RAI Insights dashboard component",
+   "Tags on the registered model that hold the dashboard metrics"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The Responsible AI scorecard turns dashboard insights into a PDF report that you configure with target values for performance and fairness metrics, and then download and share offline. It supports the accountability and transparency principles by letting technical and nontechnical stakeholders review model health before they approve deployment.",
+  "rationale": [
+   "Incorrect: the dashboard in studio is interactive, but viewing it requires access to the workspace, which the risk officers do not have. Share the dashboard with data scientists and reviewers who work in the workspace.",
+   "Correct: the Responsible AI scorecard is a customizable PDF report generated from the dashboard insights. It summarizes model performance, fairness, and feature importance, and you can download it and share it with stakeholders who have no workspace access.",
+   "Incorrect: the ux_json output contains the data required to display a minimal dashboard. It is input for a dashboard viewer, not a readable report that nontechnical reviewers can attach to compliance records.",
+   "Incorrect: model tags are key-value metadata that only people with access to the workspace can see. They suit filtering and tracking of models, not an offline report with charts and target values for compliance."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.3-06",
+  "obj": "2.2.3",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Fourth Coffee builds a model that decides which customers receive a loyalty offer and generates a Responsible AI dashboard for it. Stakeholders ask four questions.\n\nWhich dashboard component should you use to answer each question? To answer, drag the appropriate components to the correct questions. Each component may be used once, more than once, or not at all.",
+  "choices": [
+   "Causal analysis",
+   "Counterfactual what-if",
+   "Data analysis",
+   "Error analysis",
+   "Model interpretability",
+   "Model overview and fairness assessment"
+  ],
+  "targets": [
+   "Question1: In which customer cohorts does the model make more errors than on the whole dataset?",
+   "Question2: What is the smallest change to the features of one customer that would change the prediction for that customer?",
+   "Question3: Based on historical data, how would revenue change if the company gave a discount to more customers?",
+   "Question4: Which features drive the predictions of the model overall and for one specific customer?"
+  ],
+  "answer": [
+   3,
+   1,
+   0,
+   4
+  ],
+  "rationale": [
+   "Question1: error analysis finds cohorts whose error rate is higher than the overall benchmark, by using an error tree and a heat map. Data analysis can help diagnose those cohorts afterward, but it does not rank cohorts by error.",
+   "Question2: counterfactual what-if generates the closest data points with a different prediction, which shows the minimum feature change for a different outcome. Interpretability explains a prediction but does not propose changes.",
+   "Question3: causal analysis estimates how a real-world outcome changes when you apply a treatment, such as a discount, by using historical data only. Counterfactuals describe model behavior, not real-world effects.",
+   "Question4: model interpretability gives global explanations, the features that drive overall behavior, and local explanations, why one prediction was made, based on InterpretML."
+  ],
+  "notes": [
+   "Causal analysis: estimates the causal effect of treatment features on a real-world outcome from historical data, based on EconML. Use it for policy questions, such as which intervention helps which cohort.",
+   "Counterfactual what-if: generates the closest data points with a different prediction and supports custom perturbations, based on DiCE. Use it to show users what they can change to get a different outcome.",
+   "Data analysis: shows dataset distributions and statistics to reveal overrepresentation and underrepresentation. Use it to diagnose errors or fairness issues that come from imbalanced data.",
+   "Error analysis: builds an error tree and heat map to find cohorts with higher error rates than the benchmark. Use it for the reliability and safety principle, to see where the model fails.",
+   "Model interpretability: provides global and local feature importance, based on InterpretML. Use it to explain how the model makes overall and individual predictions, which supports transparency.",
+   "Model overview and fairness assessment: shows performance metrics for the dataset and cohorts and compares disparities across sensitive groups, based on Fairlearn. Use it for fairness questions such as approval rate by gender."
+  ],
+  "explanation": "Each dashboard component answers one kind of question: error analysis shows where errors concentrate, interpretability explains predictions, counterfactual what-if shows the minimum change for a different prediction, and causal analysis estimates the real-world effect of an intervention from historical data. Data analysis and fairness assessment cover data imbalance and group disparities.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-responsible-ai-dashboard?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.3-07",
+  "obj": "2.2.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Coho Winery wants to generate a Responsible AI dashboard by using the Responsible AI pipeline components in Azure Machine Learning. The candidate model is a scikit-learn gradient boosting classifier that is currently saved as a pickle file. The training and test data are CSV files in a datastore.\n\nWhich two actions should you perform before you submit the pipeline? Each correct answer presents part of the solution.",
+  "choices": [
+   "Log the classifier with mlflow.sklearn.log_model() and register it in MLflow format.",
+   "Create mltable data assets for the training data and the test data.",
+   "Register the classifier as a custom_model and add a scoring script to the pipeline.",
+   "Convert the test data to a SciPy sparse matrix to reduce its size.",
+   "Retrain the classifier with automated ML and use its best MLflow model."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "The Responsible AI components accept a model registered in Azure Machine Learning in MLflow format with a sklearn flavor (pickleable, loadable in the component environment, and implementing predict and predict_proba) and tabular data in mltable format for training and test. They support classification and regression on tabular data; AutoML MLflow models and sparse data are not supported. The concept page describes the dashboard data as pandas DataFrames in Parquet format; for the pipeline components, Learn requires mltable data assets.",
+  "rationale": [
+   "Correct: the components require a model registered in Azure Machine Learning in MLflow format with a sklearn flavor that is pickleable and loadable in the component environment. mlflow.sklearn.log_model() produces that format from the existing classifier.",
+   "Correct: the dataset inputs of the Responsible AI components must be tabular data in mltable format. The constructor uses the training data for insights such as explanations and the test data to populate the dashboard visualizations.",
+   "Incorrect: the components support only models in MLflow format with a sklearn flavor, so a custom_model cannot be used. A scoring script belongs to deployments of custom models and is not an input of the Responsible AI components.",
+   "Incorrect: NumPy and SciPy sparse data is not supported by the Responsible AI dashboard. To keep the dashboard responsive, downsample the test data to 5,000 rows or fewer instead.",
+   "Incorrect: the Responsible AI dashboard does not currently support AutoML MLflow models. For automated ML, you generate a dashboard for the best model during a new automated ML job by selecting the Explain best model option."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-responsible-ai-insights-sdk-cli?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.3-08",
+  "obj": "2.2.3",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Tailspin Toys has a scikit-learn regression model saved in MLflow format in the ./price_model folder and mltable data assets for its training and test data. You need a pipeline job that produces a Responsible AI dashboard with error analysis and a Responsible AI scorecard in PDF format for compliance reviewers.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `az ml model create --name price-model --version 1 --path ./price_model --type mlflow_model`.",
+   "Add a `microsoft_azureml_rai_tabular_insight_constructor` job that receives the model, the training and test data, and the target column.",
+   "Add a `microsoft_azureml_rai_tabular_erroranalysis` job that receives the rai_insights_dashboard output of the constructor job.",
+   "Add a `microsoft_azureml_rai_tabular_insight_gather` job that receives the constructor output and the error analysis output.",
+   "Add a `rai_score_card` job that receives the dashboard output of the gather job and a PDF generation configuration file.",
+   "Run `az ml model create --name price-model --version 1 --path ./price_model --type custom_model`.",
+   "Add a `microsoft_azureml_rai_tabular_causal` job that receives the dashboard output of the gather job."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "A Responsible AI pipeline always has a constructor component and a gather component plus at least one tool component. The tools (explanation, causal, counterfactuals, and error analysis) read the constructor output, the gather component assembles their outputs into the dashboard, and the scorecard component turns the gathered dashboard into a PDF report.",
+  "rationale": [
+   "Step 1: the components need a model registered in MLflow format with a sklearn flavor, which the constructor references as azureml:<name>:<version>. Registering with --type mlflow_model makes the model available before the pipeline runs.",
+   "Step 2: the constructor creates an empty RAI insights dashboard from the model, the training data, the test data, the target column, and the task type. Every tool component and the gather component consume its output.",
+   "Step 3: the error analysis tool component reads the constructor output and computes the error tree and heat map. Its output connects to one of the insight_[n] ports of the gather component.",
+   "Step 4: the gather component assembles the constructor output and the tool outputs into the completed dashboard. It needs at least one tool output, so it runs after error analysis.",
+   "Step 5: the scorecard component takes the completed dashboard from the gather job plus the PDF generation configuration, which sets the metrics and target values, and produces the PDF for the reviewers.",
+   "Incorrect: the Responsible AI components do not support custom_model, because they require an MLflow model with a sklearn flavor. Register a custom_model when you deploy with your own scoring script and environment.",
+   "Incorrect: tool components such as causal analysis receive the constructor output, not the gather output, and the gather component collects their results. Causal analysis is also not required for this dashboard."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-responsible-ai-insights-sdk-cli?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.4-01",
+  "obj": "2.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Alpine Ski House retires a model named lift-demand that has seven registered versions in an Azure Machine Learning workspace. All seven versions must be hidden from the default output of az ml model list by using a single command, and a batch pipeline that references lift-demand version 7 must keep working.\n\nWhich command should you run?",
+  "choices": [
+   "`az ml model archive --name lift-demand`",
+   "`az ml model archive --name lift-demand --version 7`",
+   "`az ml model restore --name lift-demand`",
+   "`az ml model list --name lift-demand --archived-only`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Archiving hides a model from list queries such as az ml model list by default, without breaking workflows that reference it. You can archive a whole model container, which archives all its versions, or a single version, and a new version created under an archived container is archived automatically. Use az ml model restore to reverse an archive.",
+  "rationale": [
+   "Correct: without --version, az ml model archive archives the model container, which archives all versions of lift-demand. Archived models are hidden from list queries by default but can still be referenced and used, so the pipeline keeps working.",
+   "Incorrect: --version 7 archives only that version, so versions 1 through 6 stay visible in az ml model list. Archive a single version when you retire one version and keep the others active.",
+   "Incorrect: az ml model restore reverses an archive and makes archived models visible in list queries again. Use it when a retired model must return to the default listing.",
+   "Incorrect: --archived-only lists models that are already archived and does not change their state. Use it, or --include-archived, to review archived models after you archive them."
+  ],
+  "ref": "https://learn.microsoft.com/cli/azure/ml/model?view=azure-cli-latest"
+ },
+ {
+  "id": "2.2.4-02",
+  "obj": "2.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "In an Azure Machine Learning workspace, a colleague ran az ml model archive --name fraud-model without the --version parameter. Version 3 of fraud-model must appear again in the default output of az ml model list.\n\nWhat should you do?",
+  "choices": [
+   "Run az ml model restore --name fraud-model --version 3.",
+   "Run az ml model list --name fraud-model --include-archived.",
+   "Register the files of version 3 again as version 4 of fraud-model.",
+   "Run az ml model restore --name fraud-model."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Archive and restore work at the level you choose: a model container, which covers all versions, or one version. If the whole container is archived, restore the container, because individual versions cannot be restored and new versions inherit the archived state. If only one version was archived, restore that version.",
+  "rationale": [
+   "Incorrect: when the entire model container is archived, you cannot restore an individual version; you must restore the container. Restoring a single version works only when that version alone was archived.",
+   "Incorrect: --include-archived shows archived and active models in that one query, but the model stays archived and remains hidden from the default output. Use it to inspect archived models.",
+   "Incorrect: a new version created under an archived model container is automatically set as archived too, so version 4 would also be hidden from the default list.",
+   "Correct: the colleague archived the model container, so restoring the container restores all versions of fraud-model, including version 3, to the default output of list queries."
+  ],
+  "ref": "https://learn.microsoft.com/cli/azure/ml/model?view=azure-cli-latest"
+ },
+ {
+  "id": "2.2.4-03",
+  "obj": "2.2.4",
+  "difficulty": "medium",
+  "type": "dropdown",
+  "stem": "Wide World Importers uses the Azure Machine Learning Python SDK v2. A script must print the versions of the shipment-eta model that are archived, and then make version 2, which was archived on its own, appear again in the default results of ml_client.models.list(name=\"shipment-eta\").\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nfrom azure.ai.ml.constants import ListViewType\n\nfor m in ml_client.models.list(name=\"shipment-eta\", list_view_type=[[1]]):\n    print(m.version)\n\nml_client.models.[[2]](name=\"shipment-eta\", version=\"2\")\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "ListViewType.ALL",
+     "ListViewType.ARCHIVED_ONLY",
+     "ListViewType.ACTIVE_ONLY"
+    ],
+    "why": [
+     "Incorrect: ALL returns archived and active versions together, so the output would not show which versions are archived. Use it when you need a complete inventory of a model.",
+     "Correct: ARCHIVED_ONLY returns only archived model versions, which is exactly the list that the script must print.",
+     "Incorrect: ACTIVE_ONLY is the default view and excludes archived versions, so the script would print the active versions instead. Use it, or omit the parameter, for normal listings."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "archive",
+     "get",
+     "restore"
+    ],
+    "why": [
+     "Incorrect: archive() hides a version from the default list results, which is the opposite of the requirement. Use it to retire a version while keeping it usable by reference.",
+     "Incorrect: get() returns the details of a model version, but it does not change whether the version is archived. Use it to inspect one specific version.",
+     "Correct: restore() makes an archived model version visible again in list queries, so version 2 returns to the default results. Restoring one version works because only that version was archived."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "Model listing in the SDK v2 takes a list_view_type keyword: ACTIVE_ONLY (the default) hides archived assets, ARCHIVED_ONLY shows only archived assets, and ALL shows both. Like the CLI, archive() and restore() take a model name and an optional version or label. Import ListViewType from azure.ai.ml.constants, the public module that the SDK reference documents.",
+  "ref": "https://learn.microsoft.com/python/api/azure-ai-ml/azure.ai.ml.operations.modeloperations?view=azure-python"
+ },
+ {
+  "id": "2.2.4-04",
+  "obj": "2.2.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Nod Publishers has a model named title-ranker with versions 1 through 5 in an Azure Machine Learning workspace. You must clean up the model registry as follows:\n\n- Version 5 must stay in the default output of az ml model list.\n- Versions 1, 2, and 3 must be hidden from the default output of az ml model list, but an audit pipeline that references version 2 must keep working.\n- Version 4 failed validation, nothing references it, and it must be removed from the registry permanently.\n\nWhich two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Run az ml model archive --name title-ranker once for each of versions 1, 2, and 3 by using the --version parameter.",
+   "Call client.delete_model_version(\"title-ranker\", version=\"4\") by using the MLflow client.",
+   "Run az ml model archive --name title-ranker without the --version parameter.",
+   "Call client.delete_registered_model(\"title-ranker\") by using the MLflow client, and then register version 5 again.",
+   "Call client.transition_model_version_stage() to move versions 1, 2, and 3 to the Archived stage."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Pick the lifecycle action by what must happen to a version: archive it to hide it from default listings while keeping it usable, restore it to bring it back, and delete it only when nothing depends on it and it must be gone. Archive individual versions when other versions must stay active, because archiving the model container affects every version, including versions that you register later.",
+  "rationale": [
+   "Correct: archiving each version hides versions 1, 2, and 3 from the default output of list queries, and archived versions can still be referenced and used, so the audit pipeline keeps working. Version 5 stays active because only the named versions are archived.",
+   "Correct: the MLflow client can delete any model version in the registry of an Azure Machine Learning workspace. Deletion removes the version instead of hiding it, which fits version 4 because nothing references it and it must be removed permanently.",
+   "Incorrect: without --version, the command archives the whole model container, including version 5, which must stay in the default output. A new version created under an archived container is also archived automatically.",
+   "Incorrect: Azure Machine Learning does not support deleting an entire model container. To remove a model completely, you delete all its versions, which would also remove the versions that must be kept here.",
+   "Incorrect: Learn states that MLflow stages can be accessed only through the MLflow SDK; they are not visible in studio and cannot be retrieved with the Azure Machine Learning SDK or CLI. Moving versions to the Archived stage does not archive them, so they still appear in the default output of az ml model list."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-models?view=azureml-api-2#archive"
+ },
+ {
+  "id": "2.2.4-05",
+  "obj": "2.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. manages model lifecycle stages by using the MLflow client with an Azure Machine Learning workspace. When version 6 of the forecast model moves to the Staging stage, every version that is currently in Staging must move to the Archived stage in the same operation.\n\nWhich call should you use?",
+  "choices": [
+   "`client.transition_model_version_stage(\"forecast\", version=6, stage=\"Staging\")`",
+   "`client.update_model_version(\"forecast\", version=6, description=\"Staging; archive older versions\")`",
+   "`client.transition_model_version_stage(\"forecast\", version=6, stage=\"Staging\", archive_existing_versions=True)`",
+   "`client.set_model_version_tag(\"forecast\", \"6\", key=\"stage\", value=\"Staging\")`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "MLflow stages are assigned to individual model versions, and several versions can share a stage. transition_model_version_stage() moves one version; with archive_existing_versions=True it also moves the versions that are currently in the target stage to Archived. Stage names are case sensitive, and in Azure Machine Learning, MLflow stages can be accessed only through the MLflow SDK and are not visible in studio.",
+  "rationale": [
+   "Incorrect: by default, transitioning a version to a stage leaves the versions already in that stage unchanged, so several versions would be in Staging at the same time. Use the default when versions can share a stage.",
+   "Incorrect: update_model_version() edits the description of a version. The text documents the intent, but it changes no stage, so neither version 6 nor the older versions move.",
+   "Correct: transition_model_version_stage() moves version 6 to Staging, and archive_existing_versions=True moves the versions that were in Staging to the Archived stage in the same call.",
+   "Incorrect: set_model_version_tag() adds a key-value tag to a version. A tag named stage is only metadata; it does not change the MLflow stage of any version."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-models-mlflow?view=azureml-api-2"
+ },
+ {
+  "id": "2.2.4-06",
+  "obj": "2.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "At Bellows College, data scientists retire model versions by calling client.transition_model_version_stage() with stage=\"Archived\" in MLflow. The operations team uses az ml model list and ml_client.models.list() in the Python SDK v2, and reports that the retired versions still appear in the results. The retired versions must disappear from the default results of both, while existing jobs that reference them keep working.\n\nWhat should you do?",
+  "choices": [
+   "Transition the retired versions again by using the stage name archived in lowercase.",
+   "Archive the retired versions by running az ml model archive with their version numbers.",
+   "Add a tag named stage with the value Archived to each retired version.",
+   "Delete the retired versions by calling client.delete_model_version()."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "MLflow model stages and the Azure Machine Learning archive state are separate. Learn states that MLflow stages can be accessed only through the MLflow SDK: they are not visible in studio and cannot be retrieved by using the Azure Machine Learning SDK, CLI, or REST API. Archiving with az ml model archive or ml_client.models.archive() hides a model version from default list queries without breaking workflows that reference it.",
+  "rationale": [
+   "Incorrect: MLflow stage names are case sensitive, but the casing is not the problem. MLflow stages cannot be retrieved by using the Azure Machine Learning SDK, CLI, or REST API, so no MLflow stage name changes what those listings return.",
+   "Correct: the Azure Machine Learning archive operation hides a model version from list queries by default, and archived versions can still be referenced and used. This is the state that az ml model list and ml_client.models.list() respect.",
+   "Incorrect: a tag is key-value metadata on a model version. It does not change whether the version appears in default list queries, so a stage tag only records the MLflow stage without hiding anything. Use tags for metadata such as a validation status.",
+   "Incorrect: deleting a model version removes it, so jobs that reference it can no longer use it, which breaks the requirement. Delete a version only when nothing depends on it anymore."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-models-mlflow?view=azureml-api-2#work-with-model-stages"
+ },
+ {
+  "id": "2.2.4-07",
+  "obj": "2.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wingtip Toys retrains a recommendation model and produces new model files. Version 3 of the recommender model is registered in an Azure Machine Learning workspace and is referenced by a running deployment. The new files must be tracked in the registry under the recommender model name.\n\nWhat should you do?",
+  "choices": [
+   "Run az ml model update on version 3 and set its path to the new files.",
+   "Run az ml model update on version 3 and set a tag that points to the new files.",
+   "Register the new files as a new version of the recommender model.",
+   "Call update_model_version() in MLflow to replace the files of version 3."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In Azure Machine Learning, the files of a registered model version cannot change: Learn lists the description and tags as the properties you update, and the path is immutable. New files always become a new version under the same name, which keeps older versions intact for deployments that reference them and gives a clear version history.",
+  "rationale": [
+   "Incorrect: the path of a registered model version is immutable; az ml model update changes metadata such as the description and tags. To change the files, create a new version of the model.",
+   "Incorrect: a tag can hold any text, but it does not change the files of version 3, and the files of the new model are not registered. Use tags for metadata such as a validation status.",
+   "Correct: model versions are immutable, so new files become a new version under the same name. Version 3 stays unchanged for the running deployment, and you can move the deployment to the new version after validation.",
+   "Incorrect: update_model_version() in MLflow edits the description of a version, not its files. Registered models are immutable in Azure Machine Learning, so the files of a version never change in place."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-models?view=azureml-api-2#update"
+ },
+ {
+  "id": "2.2.4-08",
+  "obj": "2.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "City Power & Light runs a batch scoring notebook that loads the registered meter-forecast model by calling mlflow.pyfunc.load_model(). A new version of the model is registered every month, and the team does not use MLflow stages. The notebook must always load the most recent version without code changes.\n\nWhich model URI should the notebook use?",
+  "choices": [
+   "`models:/meter-forecast/1`",
+   "`models:/meter-forecast/Staging`",
+   "`runs:/<run-id>/model`",
+   "`models:/meter-forecast/latest`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "MLflow loads registered models through models:/ URIs: latest for the last registered version, a version number to pin one version, or a stage name for a version in that stage. Pinning a version gives reproducible scoring, while latest follows new registrations automatically.",
+  "rationale": [
+   "Incorrect: models:/<name>/<version-number> loads one specific version, version 1 here. It suits reproducible scoring against a pinned version, but it never picks up the monthly versions.",
+   "Incorrect: models:/<name>/<stage-name> loads a version in a given stage. The team does not assign stages, so the URI cannot follow the monthly versions. Use it when a team promotes versions through MLflow stages.",
+   "Incorrect: a runs:/ URI loads the model that one specific run logged. Each month a new run produces the model, so the run ID in the notebook would have to change every time.",
+   "Correct: models:/<name>/latest loads the last registered version of the model, so each new monthly version is picked up without changing the notebook."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-manage-models-mlflow?view=azureml-api-2#load-models-from-registry"
+ }
+]

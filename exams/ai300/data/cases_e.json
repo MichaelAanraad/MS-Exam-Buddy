@@ -1,0 +1,24 @@
+[
+ {
+  "id": "C-e",
+  "title": "Woodgrove Bank",
+  "sections": [
+   [
+    "Overview",
+    "Woodgrove Bank is a retail bank that has its headquarters in Amsterdam and branches in the Netherlands, Belgium, and Germany. The bank uses generative AI for customer service and for internal operations. A central AI platform team owns all model deployments for the business units, and a model risk team must validate every model and every model version before it is used in production.\n\nWoodgrove Bank plans to move its customer chat assistant to dedicated capacity and to launch two new AI applications this year."
+   ],
+   [
+    "Existing environment",
+    "**Azure environment**\n\n- An Azure subscription named Sub-AI-Prod contains a resource group named rg-assist-prod.\n- rg-assist-prod contains a Microsoft Foundry resource named ai-woodgrove-prod in the Sweden Central region and a Foundry project named proj-assist.\n- ai-woodgrove-prod has one model deployment named chat-dzs. chat-dzs uses the Data Zone Standard deployment type and runs an Azure OpenAI chat model at a version that the model risk team validated in March. chat-dzs has a capacity of 30, which gives it a rate limit of 30,000 tokens per minute (TPM). Nobody has set the version upgrade option of chat-dzs, and `az cognitiveservices account deployment show` returns null for that property.\n- Last month, the procurement team purchased an Azure reservation for 300 PTUs of Data Zone Provisioned throughput in the Sweden Central region. The reservation is scoped to Sub-AI-Prod. No provisioned deployment exists yet.\n- The platform team creates and changes all deployments from an Azure DevOps pipeline that runs `az cognitiveservices` commands.\n- Branch managers view weekly call center reports in Power BI.\n\n**Applications**\n\n- App1 is a customer chat assistant on the public website. App1 sends all its requests to chat-dzs. App1 reads the name of the deployment that it calls from an application setting.\n- App2 is a knowledge assistant for employees. App2 is in development and does not have a deployment yet.\n- App3 is a back-office agent that handles payment disputes. Its prompts range from simple status lookups to complex analyses of transaction histories.\n\n**Problem statements**\n\n- Between 09:00 and 11:00 on weekdays, App1 users report slow and inconsistent response times, and the App1 logs show HTTP 429 responses from chat-dzs.\n- Last quarter, a model version that a test application used reached its retirement date before the model risk team finished validating the replacement version, and the test application stopped working."
+   ],
+   [
+    "Requirements",
+    "**Data residency requirements**\n\n- The prompts and responses of App1, App2, and App3 must be processed only within the EU data zone.\n\n**App1 requirements**\n\n- App1 must have consistent low latency for its baseline load during business hours, and that capacity must be covered by the existing reservation.\n- Requests that exceed the reserved capacity during bursts must still be served without any change to the App1 code. Pay-per-token billing for those requests is acceptable.\n\n**App2 requirements**\n\n- App2 must use a new deployment named kb-chat of the same chat model and validated version as chat-dzs.\n- kb-chat must use pay-per-token billing, must have a rate limit of 50,000 tokens per minute, and must use the deployment type that offers the highest default quota within the EU data zone.\n\n**App3 requirements**\n\n- The compliance team approved three chat models for App3. App3 must never send a prompt to any other model.\n- Cost must be minimized as long as the answer quality stays within a narrow margin of the best approved model for each prompt.\n- App3 must continue to work when one of the approved models is temporarily unavailable.\n\n**Model lifecycle requirements**\n\n- A production deployment must stay on its validated model version until the model risk team validates a newer version or the validated version reaches its retirement date.\n- If a retirement date is reached before the validation is complete, the deployment must keep serving requests."
+   ],
+   [
+    "Planned changes",
+    "- The platform team will add a provisioned deployment for App1 to ai-woodgrove-prod. It will run the same chat model and validated version as chat-dzs.\n- The finance team proposes to reduce PTU costs by scaling the App1 provisioned deployment down every evening at 18:00 and back up every morning at 08:00.\n- The bank will move its call center telephony to a new cloud platform next year."
+   ]
+  ]
+ }
+]

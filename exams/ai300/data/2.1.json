@@ -1,0 +1,1820 @@
+[
+ {
+  "id": "2.1.1-01",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. submits a training script named train.py as a command job to an Azure Machine Learning compute cluster. The script calls mlflow.log_param() and mlflow.log_metric(). The job uses a curated environment.\n\nYou need to ensure that the parameters and metrics appear on the job in the workspace. The solution must minimize changes to train.py.\n\nWhat should you do?",
+  "choices": [
+   "Add a call to mlflow.set_tracking_uri() with the workspace tracking URI to train.py",
+   "Keep the MLflow calls unchanged because the job sets the tracking URI automatically",
+   "Add AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET to the job environment",
+   "Replace the MLflow calls with Run.get_context().log() from the azureml-core package"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "An Azure Machine Learning workspace acts as an MLflow tracking server. Jobs that run on Azure Machine Learning compute, notebooks on compute instances, and the studio notebooks get the tracking URI and authentication configured automatically, and curated environments already contain MLflow. You configure the tracking URI and credentials yourself only when code runs outside Azure Machine Learning.",
+  "rationale": [
+   "Incorrect: set_tracking_uri() is needed when code runs outside Azure Machine Learning, such as on a laptop or in Azure Databricks. Inside a job the URI is already set, so this adds code without benefit.",
+   "Correct: jobs on Azure Machine Learning compute clusters have the MLflow tracking URI configured automatically, and curated environments include MLflow, so the existing calls log to the job without any change to train.py.",
+   "Incorrect: service principal variables let MLflow authenticate in unattended runs outside Azure, such as an on-premises scheduler. A job already authenticates to its workspace, and secrets in job variables add risk.",
+   "Incorrect: Run.get_context().log() belongs to SDK v1 (azureml-core), which is deprecated. SDK v2 has no logging API of its own; Microsoft recommends MLflow for tracking, so this is a step backward."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-mlflow-configure-tracking"
+ },
+ {
+  "id": "2.1.1-02",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys runs a nightly training script on Server1, an on-premises Linux server that is not onboarded to Azure Arc. A cron schedule starts the script, and no user is signed in when it runs. The script already sets the MLflow tracking URI to an Azure Machine Learning workspace and logs metrics with MLflow.\n\nYou need to configure authentication so that the script can log to the workspace without user interaction.\n\nWhat should you do?",
+  "choices": [
+   "Set the AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET variables for a service principal",
+   "Enable a system-assigned managed identity and grant it the AzureML Data Scientist role",
+   "Rely on the browser sign-in that the azureml-mlflow plugin uses by default",
+   "Run Connect-AzAccount in Azure PowerShell at the start of each nightly run"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The azureml-mlflow plugin uses the azure-identity credential chain: environment variables, managed identity, Azure CLI, Azure PowerShell, and finally an interactive browser. Unattended runs outside Azure need a non-interactive method, so you configure a service principal through the AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET environment variables (or a certificate path) and give it a role such as AzureML Data Scientist.",
+  "rationale": [
+   "Correct: the environment credential is the first method in the chain. A service principal with a tenant ID, client ID, and secret signs in without user interaction, which suits an unattended cron schedule on Server1.",
+   "Incorrect: the credential chain uses a managed identity when the code runs on an Azure host that has one enabled. Server1 is on premises and not onboarded to Azure Arc, so no managed identity is available to the script.",
+   "Incorrect: the interactive browser method blocks code execution while it waits for credentials, which never arrive when no user is signed in. Use it for interactive sessions such as a notebook on a laptop.",
+   "Incorrect: Connect-AzAccount without service principal parameters signs a user in interactively, so it needs a user at every run. The Azure PowerShell credential in the chain suits a developer who has already signed in to a session, not a nightly unattended schedule."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-mlflow-configure-tracking"
+ },
+ {
+  "id": "2.1.1-03",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "A data scientist at Relecloud trains a model in Visual Studio Code on a laptop. The config.json file of an Azure Machine Learning workspace is in the project folder. Python is installed, but no Azure or MLflow packages are installed yet.\n\nYou need to track the local training run in an experiment named churn-local in the workspace.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`pip install mlflow azureml-mlflow azure-ai-ml azure-identity`",
+   "`ml_client = MLClient.from_config(credential=DefaultAzureCredential())`",
+   "`mlflow.set_tracking_uri(ml_client.workspaces.get(ml_client.workspace_name).mlflow_tracking_uri)`",
+   "`mlflow.set_experiment(\"churn-local\")`",
+   "`with mlflow.start_run(run_name=\"rf-baseline\"):` followed by the training code and `mlflow.log_metric()` calls",
+   "`pip install azureml-core`",
+   "`az ml job create --file job.yml --web`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "Code that runs outside Azure Machine Learning must be pointed at the workspace: install mlflow and the azureml-mlflow plugin, get the workspace tracking URI (here through MLClient), set it, then set the experiment and start the run. The first call that contacts the server, such as set_experiment(), triggers authentication, so the URI must be set before it.",
+  "rationale": [
+   "Step 1: mlflow and the azureml-mlflow plugin provide tracking against the workspace, and azure-ai-ml plus azure-identity provide MLClient and DefaultAzureCredential. Every later step imports from these packages.",
+   "Step 2: MLClient.from_config() reads config.json from the project folder and signs in with DefaultAzureCredential, which gives a handle to the workspace whose tracking URI you need next.",
+   "Step 3: the workspace object exposes mlflow_tracking_uri, which starts with azureml://. Setting it points every later MLflow call at the workspace instead of a local mlruns folder.",
+   "Step 4: set_experiment() creates or activates churn-local on the tracking server. It must follow set_tracking_uri(), or the experiment is created in the local store.",
+   "Step 5: start_run() opens a run in the active experiment, and the context manager ends it so the run is marked Completed. run_name sets the name that the studio displays.",
+   "Incorrect: azureml-core is SDK v1, which is deprecated and not needed for MLflow tracking. The azureml-mlflow plugin and SDK v2 cover everything in this scenario.",
+   "Incorrect: az ml job create submits the script to Azure Machine Learning compute, where tracking is configured automatically. The requirement is to track a run that trains locally on the laptop."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-mlflow-configure-tracking"
+ },
+ {
+  "id": "2.1.1-04",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Proseware, Inc. submits the following training script as a command job to an Azure Machine Learning compute cluster. The job YAML sets experiment_name to credit-risk.\n\n```python\nimport mlflow\nfrom sklearn.ensemble import GradientBoostingClassifier\n\nmlflow.autolog(log_models=False)\n\nwith mlflow.start_run():\n    model = GradientBoostingClassifier().fit(X_train, y_train)\n    mlflow.log_metric(\"val_auc\", val_auc)\n```\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The script must call mlflow.set_tracking_uri() before it can log to the workspace.",
+   "The call to mlflow.start_run() reuses the run of the job, so val_auc appears on the job.",
+   "The trained model is logged automatically as an MLflow model in the run."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Inside an Azure Machine Learning job, MLflow is already connected to the workspace and a run is already active, so start_run() reuses it and the experiment comes from the job's experiment_name. autolog() captures framework metrics, parameters, and models, and its arguments such as log_models=False switch parts of that off.",
+  "rationale": [
+   "No: jobs on Azure Machine Learning compute have the tracking URI configured automatically. set_tracking_uri() is needed only outside Azure Machine Learning, such as on a laptop or in Azure Synapse Analytics.",
+   "Yes: in a job, the run is started automatically, and mlflow.start_run() reuses the current active run. That is why scripts that already call start_run() can move to Azure Machine Learning without changes.",
+   "No: log_models=False tells autolog to log everything except models. Use it when you log the model yourself, for example with mlflow.sklearn.log_model() and a custom signature, while keeping automatic metrics and parameters."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-mlflow-cli-runs"
+ },
+ {
+  "id": "2.1.1-05",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Woodgrove Bank runs a distributed training job on 24 nodes of an Azure Machine Learning compute cluster. Each node logs thousands of metric values through an internal wrapper library that calls mlflow.log_metric(). The wrapper library code cannot be changed. The environment uses MLflow 2.9 and azureml-mlflow 1.56. Logging slows down each training step.\n\nYou need to reduce the time that the training loop waits for metric logging.\n\nWhich two actions should you perform? Each correct answer presents a complete solution.",
+  "choices": [
+   "Pass synchronous=False to each mlflow.log_metric() call in the wrapper library",
+   "Set the MLFLOW_ENABLE_ASYNC_LOGGING environment variable to True in the job",
+   "Call mlflow.config.enable_async_logging() at the start of the training script",
+   "Call wait() on the operation that each mlflow.log_metric() call returns",
+   "Raise the AZUREML_ARTIFACTS_DEFAULT_TIMEOUT environment variable in the job"
+  ],
+  "answer": [
+   1,
+   2
+  ],
+  "explanation": "Asynchronous metric logging returns control as soon as the backend accepts the value, which suits large jobs where many nodes log concurrently. It needs MLflow 2.8.0 or later and azureml-mlflow 1.55 or later. You enable it per call with synchronous=False, or globally with mlflow.config.enable_async_logging() or the MLFLOW_ENABLE_ASYNC_LOGGING environment variable; the global options also cover wrapper libraries.",
+  "rationale": [
+   "Incorrect: synchronous=False makes a single call asynchronous and is the right choice when you own the logging code. The wrapper library cannot be changed, so you cannot add the argument to its calls.",
+   "Correct: MLFLOW_ENABLE_ASYNC_LOGGING sets the same global behavior through an environment variable, which you can add to environment_variables in the job without touching the wrapper code.",
+   "Correct: the global flag makes every MLflow metric call asynchronous, including the calls inside the wrapper library, and it is set in the training script, which you can change. The versions meet the MLflow 2.8.0 and azureml-mlflow 1.55 minimums.",
+   "Incorrect: wait() blocks until an asynchronous value is persisted. Use it only when you need to read a value back at once; calling it after every metric makes logging synchronous again.",
+   "Incorrect: AZUREML_ARTIFACTS_DEFAULT_TIMEOUT extends the upload timeout for large artifacts and models logged with log_artifact or log_model. It does not change how long metric calls block the loop."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-log-view-metrics"
+ },
+ {
+  "id": "2.1.1-06",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A data scientist at Coho Winery creates a confusion matrix as a matplotlib Figure object named fig during an MLflow run. The plot must be stored as an image in the run, and the code must not write the plot to a local file first.\n\nWhich MLflow function should you use?",
+  "choices": [
+   "`mlflow.log_artifact(fig, \"confusion.png\")`",
+   "`mlflow.log_dict(fig, \"confusion.json\")`",
+   "`mlflow.log_image(fig, \"confusion.png\")`",
+   "`mlflow.log_figure(fig, \"confusion.png\")`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "MLflow stores images as artifacts of the run. log_figure() takes an in-memory matplotlib figure and log_image() takes an in-memory numpy array or PIL image, while log_artifact() uploads a file that already exists on disk. Pick the function by the kind of object you hold.",
+  "rationale": [
+   "Incorrect: log_artifact() uploads a file that already exists on disk, given by its local path. It does not accept a Figure object, and the plot must not be saved to a local file first.",
+   "Incorrect: log_dict() stores a Python dictionary as a JSON or YAML artifact, which suits configuration or structured results. A figure is not a dictionary, and the result would not be an image.",
+   "Incorrect: log_image() expects a numpy.ndarray or a PIL.Image.Image object. Use it when the image is pixel data, such as a sample input or a generated picture, not a matplotlib figure.",
+   "Correct: log_figure() takes a matplotlib figure and persists it as an image artifact with the given name in the run. The file does not have to exist beforehand."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-log-view-metrics"
+ },
+ {
+  "id": "2.1.1-07",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing submits training jobs by running az ml job create with YAML files. The jobs of a new project must be grouped under a single experiment named fraud-detection in the studio. The training scripts must not be changed.\n\nWhich property should you set in each job YAML file?",
+  "choices": [
+   "`display_name`",
+   "`name`",
+   "`experiment_name`",
+   "`tags`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In a command job YAML file, experiment_name groups the job under an experiment, display_name labels the run in the studio, name is the unique job identifier, and tags add searchable key-value metadata. When experiment_name is omitted, it defaults to the name of the working directory where the job was created.",
+  "rationale": [
+   "Incorrect: display_name sets the name of the individual run in the studio and can repeat across jobs. Use it to make runs easy to identify, not to group them under an experiment.",
+   "Incorrect: name is the unique identifier of the job in the workspace, and a GUID is generated when you omit it. Reusing one name for several jobs fails because it must be unique.",
+   "Correct: experiment_name organizes the job under the named experiment, so every job that sets fraud-detection is grouped together. The training script does not need to call mlflow.set_experiment().",
+   "Incorrect: tags add key-value metadata that you can filter on, for example tags.project in a search. They do not create or select the experiment that the job appears under."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-job-command"
+ },
+ {
+  "id": "2.1.1-08",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "case": "C-b",
+  "stem": "You need to configure MLflow tracking for dbx-shared so that it meets the tracking requirements.\n\nWhat should you do?",
+  "choices": [
+   "Call mlflow.set_tracking_uri() and set the AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET variables at the start of each notebook",
+   "Set MLFLOW_TRACKING_URI on dbx-shared and rely on the interactive browser sign-in that the azureml-mlflow plugin uses by default",
+   "Set MLFLOW_TRACKING_URI and the AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET variables on dbx-shared, with the secret read from kv-scope",
+   "Set MLFLOW_TRACKING_URI and the AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET variables on dbx-shared, with the secret value typed in"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In shared environments such as an Azure Databricks cluster, set MLFLOW_TRACKING_URI at the cluster level so that every session tracks to the workspace. For unattended runs, configure a service principal through the AZURE_* environment variables at the compute level, and keep the client secret in a secret store, for example as {{secrets/<scope-name>/<secret-name>}} in Azure Databricks.",
+  "rationale": [
+   "Incorrect: this works for one session, but it adds tracking and authentication code to every notebook, which the requirements forbid, and secrets in notebook code break the secret requirement.",
+   "Incorrect: the cluster-level URI avoids notebook code, but interactive browser sign-in blocks code execution while it waits for a user, so the scheduled night jobs could not authenticate.",
+   "Correct: cluster-level variables apply to every session without notebook code, the service principal authenticates the scheduled jobs without a user, and the secret reference to kv-scope keeps the secret value out of the cluster settings.",
+   "Incorrect: the cluster-level setup meets the no-code and unattended requirements, but a client secret typed into the cluster configuration is stored in plain text in the cluster settings."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-mlflow-configure-tracking"
+ },
+ {
+  "id": "2.1.2-01",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud configures an AutoML classification job named classification_job by using the Azure Machine Learning Python SDK v2. A compliance review forbids logistic regression models for this use case. Every other supported algorithm can be tried.\n\nWhich code should you add to the job configuration?",
+  "choices": [
+   "`classification_job.set_training(allowed_training_algorithms=[\"logistic_regression\"])`",
+   "`classification_job.set_training(enable_vote_ensemble=False)`",
+   "`classification_job.set_featurization(blocked_transformers=[\"logistic_regression\"])`",
+   "`classification_job.set_training(blocked_training_algorithms=[\"logistic_regression\"])`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The task type decides which algorithms AutoML may try. In the training settings, blocked_training_algorithms removes named algorithms from that list and allowed_training_algorithms restricts the search to only the named ones. Featurization settings control data preprocessing, not the model search space.",
+  "rationale": [
+   "Incorrect: allowed_training_algorithms limits the search to the listed algorithms, so AutoML would try only logistic regression, the one algorithm that is forbidden. Use it to narrow the search to a short list.",
+   "Incorrect: enable_vote_ensemble=False stops AutoML from building a voting ensemble at the end of the job. Use it when ensembles are unwanted; logistic regression models would still be trained.",
+   "Incorrect: blocked_transformers in the featurization settings stops specific preprocessing transformers, such as label encoding, from being applied. Logistic regression is an algorithm, not a transformer.",
+   "Correct: blocked_training_algorithms removes logistic regression from the candidate list and leaves every other classification algorithm in the search, which matches the compliance rule."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-auto-train"
+ },
+ {
+  "id": "2.1.2-02",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank uses AutoML to train a binary classification model that detects fraudulent card transactions. In the training data, 0.4 percent of the rows are labeled as fraud. The model must rank transactions well across thresholds because the fraud team adjusts the alert threshold every month.\n\nWhich primary metric should you configure?",
+  "choices": [
+   "`accuracy`",
+   "`AUC_weighted`",
+   "`norm_macro_recall`",
+   "`precision_score_weighted`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The primary metric is the score that AutoML optimizes and uses to rank models. Threshold-dependent metrics such as accuracy, recall, and precision optimize poorly on small or heavily imbalanced data, so Learn recommends AUC_weighted for scenarios such as fraud and anomaly detection. After the job, you can still pick a model by another metric.",
+  "rationale": [
+   "Incorrect: accuracy depends on a single threshold, and with 0.4 percent fraud a model that predicts no fraud already scores 99.6 percent. Use it for balanced problems such as sentiment analysis.",
+   "Correct: AUC_weighted measures ranking quality across all thresholds, so it is not tied to the alert threshold that changes every month, and Learn recommends it for heavily imbalanced cases such as fraud detection.",
+   "Incorrect: norm_macro_recall is a threshold-dependent metric that Learn lists for scenarios such as churn prediction. It does not optimize well for large class skew and depends on one decision threshold.",
+   "Incorrect: precision_score_weighted is also threshold-dependent, so it measures one operating point instead of ranking quality, and it optimizes poorly when the positive class is tiny."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-auto-train"
+ },
+ {
+  "id": "2.1.2-03",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "dragdrop",
+  "stem": "Fourth Coffee plans four AutoML jobs and must select a primary metric for each job.\n\nWhich primary metric should you use for each job? To answer, drag the appropriate metrics to the correct jobs. Each metric may be used once, more than once, or not at all.",
+  "choices": [
+   "accuracy",
+   "AUC_weighted",
+   "normalized_mean_absolute_error",
+   "normalized_root_mean_squared_error",
+   "r2_score",
+   "spearman_correlation"
+  ],
+  "targets": [
+   "Job1: regression of product prices; large errors must be penalized more than small ones, and the score must read as an average error magnitude",
+   "Job2: regression that scores stores for a ranked list; only the order of the predictions matters",
+   "Job3: binary classification of spam messages; three percent of the messages are spam",
+   "Job4: regression of delivery times; errors of every size must count equally"
+  ],
+  "answer": [
+   3,
+   5,
+   1,
+   2
+  ],
+  "rationale": [
+   "Job1 needs squared errors so that large errors weigh more, and normalized_root_mean_squared_error is root mean squared error normalized by range, which reads as an average error magnitude.",
+   "Job2 cares only about rank, and spearman_correlation measures the rank correlation between real values and predictions instead of their exact distance.",
+   "Job3 is heavily imbalanced, so threshold-dependent metrics such as accuracy optimize poorly. AUC_weighted measures ranking quality across thresholds and is recommended for spam detection.",
+   "Job4 must treat all error sizes alike, and normalized_mean_absolute_error minimizes the average absolute error, so a large error does not get the extra penalty that squared errors give."
+  ],
+  "notes": [
+   "The share of correct predictions at one threshold. Use it for balanced classification problems such as sentiment analysis; it misleads on heavily skewed classes.",
+   "Weighted area under the ROC curve, which is threshold independent. Use it for imbalanced classification, such as fraud, anomaly, or spam detection.",
+   "Mean absolute error normalized by range. Use it for regression or forecasting when errors of every size should count equally.",
+   "Root mean squared error normalized by range. Use it when large errors should be penalized more and the score should read as an average error magnitude, such as price prediction.",
+   "Mean squared error normalized by the variance of the data, read as the proportion of variation that the model captures. Use it for cases such as salary estimation.",
+   "Rank correlation between real values and predictions. Use it for regression when the ranking matters more than the exact values."
+  ],
+  "explanation": "Pick the primary metric by what the business cares about and by the data profile. For regression, squared-error metrics (normalized_root_mean_squared_error, r2_score) punish large errors more, absolute-error metrics treat all errors alike, and spearman_correlation cares only about rank. For classification on skewed data, prefer AUC_weighted over threshold-dependent metrics.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-auto-train"
+ },
+ {
+  "id": "2.1.2-04",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Adventure Works Cycles stores training data in a local file named bank.csv in a folder named train_data. A compute cluster named cpu-cluster already exists in the Azure Machine Learning workspace. The automl-job.yml file defines an AutoML classification job whose training_data references azureml:bank-train:1 and whose compute is azureml:cpu-cluster.\n\nYou need to register the data, run the job, and open the job in the studio.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Run `train_table = mltable.from_delimited_files(paths)` and then `train_table.save(\"./train_data\")` in Python",
+   "`az ml data create --name bank-train --version 1 --path ./train_data --type mltable`",
+   "`az ml job create --file automl-job.yml`",
+   "`az ml job show --name <job-name> --web`",
+   "`az ml data create --name bank-train --version 1 --path ./train_data/bank.csv --type uri_file`",
+   "`az ml compute create -n cpu-cluster --type amlcompute --min-instances 0 --max-instances 4`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "AutoML jobs in SDK and CLI v2 take tabular training data as an MLTable. You first create the MLTable file that describes how to read the CSV, register the folder as an mltable data asset, then submit the job that references the asset, and finally open the job to follow the trials.",
+  "rationale": [
+   "Step 1: from_delimited_files() describes how to read bank.csv, and save() writes an MLTable file into the train_data folder. The data asset in the next step needs this file in the folder.",
+   "Step 2: az ml data create with --type mltable uploads the folder with its MLTable file and registers it as bank-train version 1, the asset that the job YAML references.",
+   "Step 3: az ml job create submits the AutoML job defined in automl-job.yml. It can resolve azureml:bank-train:1 only after the asset is registered.",
+   "Step 4: az ml job show with --web opens the submitted job in the studio, where you follow the trials and review the models. It needs the name that the submission returned.",
+   "Incorrect: a uri_file data asset points to a single file without the MLTable loading instructions. AutoML v2 needs an MLTable input for tabular data, so the job could not use this asset.",
+   "Incorrect: cpu-cluster already exists in the workspace, so creating it again is not needed. Use az ml compute create when the job targets a cluster that does not exist yet."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-auto-train"
+ },
+ {
+  "id": "2.1.2-05",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders runs an AutoML regression job on a dedicated compute cluster that has four nodes. The job must use all four nodes at the same time, each trial must stop after 20 minutes, and the whole job must stop after two hours.\n\nWhich code should you use to configure the limits of the job?",
+  "choices": [
+   "`regression_job.set_limits(timeout_minutes=120, trial_timeout_minutes=20, max_concurrent_trials=4)`",
+   "`regression_job.set_limits(timeout_minutes=120, trial_timeout_minutes=20, max_trials=4)`",
+   "`regression_job.set_limits(timeout_minutes=20, trial_timeout_minutes=120, max_concurrent_trials=4)`",
+   "`regression_job.set_limits(trial_timeout_minutes=20, max_trials=120, max_concurrent_trials=4)`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "set_limits() holds the exit criteria of an AutoML job: timeout_minutes for the whole job, trial_timeout_minutes for each trial, max_trials for the number of trials, and max_concurrent_trials for parallel trials. Match max_concurrent_trials to the number of cluster nodes so that every node runs a trial.",
+  "rationale": [
+   "Correct: timeout_minutes=120 stops the job after two hours, trial_timeout_minutes=20 stops each trial after 20 minutes, and max_concurrent_trials=4 runs one trial on each of the four nodes in parallel.",
+   "Incorrect: max_trials=4 caps the total number of trials at four but leaves concurrency at its default of one, so the trials run one after another on a single node instead of on all four nodes.",
+   "Incorrect: the two timeouts are swapped. The whole job would stop after 20 minutes, while each trial could run for up to two hours, which is the opposite of the requirement.",
+   "Incorrect: max_trials=120 limits the number of trials, not the duration. Without timeout_minutes the job can run up to its default timeout of six days, so it does not stop after two hours."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-auto-train"
+ },
+ {
+  "id": "2.1.2-06",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. trains a classification model with AutoML on 600 GB of tabular data. The data does not fit on a single node, so the team plans to use AutoML distributed training on a compute cluster that has eight nodes.\n\nWhich configuration should you use?",
+  "choices": [
+   "Allow only LightGBM, keep training_mode non_distributed, and set max_concurrent_trials to 8",
+   "Allow only LightGBM, set training_mode to distributed, and set max_nodes to 2",
+   "Allow only TCNForecaster, set training_mode to distributed, and set max_nodes to 4",
+   "Allow only LightGBM, set training_mode to distributed, and set max_nodes to 4"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "AutoML distributed training partitions the data across nodes for a limited set of models: LightGBM for classification and regression (about 1 TB) and TCNForecaster for forecasting (about 200 GB). For classification and regression you set training_mode to distributed and max_nodes to 4 or more; trials then run one at a time, each on max_nodes nodes, and cross-validation, ensembles, and ONNX are not supported.",
+  "rationale": [
+   "Incorrect: in non-distributed mode each trial trains on one node, which cannot hold the data. max_concurrent_trials only runs more trials in parallel; it does not split one trial across nodes.",
+   "Incorrect: for distributed classification and regression, max_nodes must be greater than or equal to 4. Two nodes per trial is below that minimum, so the configuration is invalid.",
+   "Incorrect: TCNForecaster is the distributed algorithm for forecasting tasks, where max_nodes can be as low as 2. This job is a classification task, so TCNForecaster does not apply.",
+   "Correct: LightGBM supports distributed classification up to about 1 TB, training_mode distributed partitions the 600 GB across nodes, and max_nodes=4 meets the minimum of four nodes per trial for classification."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-auto-train"
+ },
+ {
+  "id": "2.1.2-07",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Trey Research submits an AutoML classification job whose training data contains 15,000 rows. The job configuration does not set validation_data or n_cross_validations.\n\nWhich validation technique should you expect AutoML to apply?",
+  "choices": [
+   "A train and validation split that holds out 10 percent of the rows",
+   "Cross-validation with three folds",
+   "Cross-validation with five folds",
+   "Cross-validation with ten folds"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "When you set neither validation_data nor n_cross_validations, AutoML picks the validation method from the row count. Above 20,000 rows it holds out 10 percent of the training data; at or below 20,000 rows it uses cross-validation with ten folds below 1,000 rows and three folds from 1,000 to 20,000 rows.",
+  "rationale": [
+   "Incorrect: the 10 percent holdout split is the default only when the training data has more than 20,000 rows. With 15,000 rows, AutoML uses cross-validation instead.",
+   "Correct: 15,000 rows falls between 1,000 and 20,000 rows, the range in which AutoML applies cross-validation with three folds by default.",
+   "Incorrect: five folds is not one of the defaults. You get five folds when you set n_cross_validations=5 yourself, as the Learn example for a classification job does.",
+   "Incorrect: ten folds is the default only for datasets with fewer than 1,000 rows, where more folds make better use of the little data. This dataset has 15,000 rows."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-configure-auto-train"
+ },
+ {
+  "id": "2.1.2-08",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "case": "C-b",
+  "stem": "You need to complete the configuration of the AutoML job for the demand forecasting project so that it meets the forecasting requirements.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nforecasting_job = automl.forecasting(\n    compute=\"cpu-cluster\",\n    experiment_name=\"weekly-demand\",\n    training_data=Input(type=AssetTypes.MLTABLE, path=\"azureml:daily-sales@latest\"),\n    target_column_name=\"units_sold\",\n    primary_metric=\"[[1]]\",\n)\nforecasting_job.set_forecast_settings(\n    time_column_name=\"sale_date\",\n    time_series_id_column_names=[[2]],\n    frequency=\"[[3]]\",\n    target_aggregate_function=\"[[4]]\",\n    # Other settings.\n)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "spearman_correlation",
+     "normalized_root_mean_squared_error",
+     "normalized_mean_absolute_error"
+    ],
+    "why": [
+     "Incorrect: spearman_correlation measures how well the predictions rank, not the size of the errors. Use it when only the order of the values matters.",
+     "Correct: normalized root mean squared error reads as an average error magnitude, and squaring makes large misses weigh more than small ones. Learn lists it for demand forecasting.",
+     "Incorrect: normalized mean absolute error treats errors of every size alike, so large misses do not get the extra weight that the forecasting requirements ask for."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "[\"store_id\", \"category\"]",
+     "[\"sale_date\"]",
+     "[\"units_sold\"]"
+    ],
+    "why": [
+     "Correct: each combination of store_id and category is a separate series, so these two columns are the time series ID columns that define the individual series.",
+     "Incorrect: sale_date is the time axis of each series and is already set as time_column_name. It does not identify which store and category a row belongs to.",
+     "Incorrect: units_sold is the target column that the model predicts. A target cannot also group rows into series."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "W",
+     "D",
+     "H"
+    ],
+    "why": [
+     "Correct: frequency takes a pandas offset alias, and W is the alias for weekly. The forecast frequency can be coarser than the daily data, so AutoML aggregates the daily rows and forecasts at weekly intervals, as required.",
+     "Incorrect: D keeps the daily frequency of the data, so AutoML would forecast daily values instead of the weekly totals that the requirements ask for.",
+     "Incorrect: the forecast frequency can be equal to or coarser than the frequency of the data, but not finer. Hourly is finer than the daily data, so AutoML cannot use it here."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "max",
+     "sum",
+     "mean"
+    ],
+    "why": [
+     "Incorrect: max keeps only the busiest day of each week, which does not give the total units for the week.",
+     "Correct: sum adds the daily units of each week into a weekly total, which is what the forecast must produce. Learn notes that sum is appropriate for most scenarios.",
+     "Incorrect: mean averages the daily units of each week, so the model would forecast an average day instead of the weekly total."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   0,
+   0,
+   1
+  ],
+  "explanation": "A forecasting job needs a time column and, for multiple series, time series ID columns. frequency sets the forecast cadence, which can be equal to or coarser than the data, and target_aggregate_function aggregates the target to that cadence. Pick the primary metric by how errors should be weighed.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-auto-train-forecast"
+ },
+ {
+  "id": "2.1.3-01",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A data scientist at Graphic Design Institute runs a notebook in Azure Machine Learning studio on a compute instance that has several Jupyter kernels. The notebook uses the default kernel. The lightgbm package must be installed into the kernel that the notebook uses, without affecting other kernels.\n\nWhat should you do?",
+  "choices": [
+   "Run `%pip install lightgbm` in a notebook cell",
+   "Run `!pip install lightgbm` in a notebook cell",
+   "Run `pip install lightgbm` in the compute instance terminal",
+   "Add lightgbm to a conda.yml file and run `az ml environment create`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A compute instance has several kernels, each with its own Python environment. The %pip and %conda magic functions install packages into the kernel that is currently running, while !pip and !conda run a shell command that can target a different environment. Registered environments are for jobs, not for the interactive kernel.",
+  "rationale": [
+   "Correct: the %pip magic installs the package into the currently running kernel, which is the default kernel that the notebook uses, and leaves the other kernels on the compute instance unchanged.",
+   "Incorrect: !pip runs pip as a shell command, which can refer to packages outside the currently running kernel. Learn advises against it in notebooks because the package might not land in the kernel you use.",
+   "Incorrect: a terminal installs into whichever environment is active in that shell. It works when you first activate the environment of the kernel, but on its own it does not target the kernel of the notebook.",
+   "Incorrect: a registered environment defines the software for jobs and deployments that run on Azure Machine Learning compute. It does not change the packages of a Jupyter kernel on the compute instance."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-access-terminal"
+ },
+ {
+  "id": "2.1.3-02",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A data scientist at Alpine Ski House explores a CSV file in a notebook on an Azure Machine Learning compute instance. The file is in a container that is registered as the datastore salesdata. The file must be read straight into a pandas DataFrame, without copying it to a disk first, and no account keys or tokens can appear in the notebook.\n\nWhat should you do?",
+  "choices": [
+   "Append a SAS token to the https URL of the blob and pass the URL to pd.read_csv()",
+   "Run azcopy to copy the file to /home/azureuser/cloudfiles/code and read the copied file with pandas",
+   "Install azureml-fsspec and pass the long-form azureml:// datastore URI of the file to pd.read_csv()",
+   "Create a BlobServiceClient with the account key and download the blob to the local disk"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Datastore URIs implement the fsspec file system interface through the azureml-fsspec package, so pandas reads them like files. The datastore handles credential or identity passthrough, which keeps keys out of scripts. Downloads with azcopy belong on the local SSD under /home/azureuser, not in the code folder.",
+  "rationale": [
+   "Incorrect: a SAS token in the URL is a credential in the notebook, which the requirement forbids. A SAS URL suits short-lived access from tools that cannot use Microsoft Entra ID or a datastore.",
+   "Incorrect: azcopy copies the file to disk, which the requirement forbids, and Learn warns against storing data under /home/azureuser/cloudfiles/code because it is meant for code and is slow for data.",
+   "Correct: azureml-fsspec lets pandas read an azureml:// datastore URI directly, and the datastore handles the credentials or identity passthrough, so no key or token appears in the notebook and no copy is made.",
+   "Incorrect: the account key appears in the code and the blob is downloaded to disk, which breaks both requirements. Use the storage SDK directly only when no datastore exists for the account."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-access-data-interactive"
+ },
+ {
+  "id": "2.1.3-03",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "A data scientist at Lucerne Publishing needs an isolated Python environment on an Azure Machine Learning compute instance for a notebook. The notebook must be able to run on this environment as a separate kernel named Python (newenv).\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "In the compute instance terminal, run `conda create --name newenv`",
+   "Run `conda activate newenv`",
+   "Run `conda install pip` and then `conda install ipykernel`",
+   "Run `python -m ipykernel install --user --name newenv --display-name \"Python (newenv)\"`",
+   "In the notebook, select Python (newenv) in the kernel dropdown",
+   "Run `jupyter kernelspec uninstall newenv`",
+   "Run `conda env remove -n newenv`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "A new kernel on a compute instance is a Conda environment that is registered with Jupyter. You create and activate the environment in the terminal, install ipykernel into it, register the kernel spec with a display name, and then pick the kernel in the notebook, which finds all installed kernels automatically.",
+  "rationale": [
+   "Step 1: conda create makes the isolated environment named newenv. Every later step installs into or registers this environment, so it must exist first.",
+   "Step 2: conda activate makes newenv the active environment of the terminal session, so the following install commands land in newenv instead of the base environment.",
+   "Step 3: pip and ipykernel must be installed in newenv, because ipykernel provides the kernel process that Jupyter starts for the environment in the next step.",
+   "Step 4: ipykernel install registers newenv as a Jupyter kernel spec for the user, with the display name Python (newenv) that appears in the kernel list.",
+   "Step 5: the notebook automatically finds all Jupyter kernels installed on the connected compute instance, so you select Python (newenv) in the kernel dropdown to run the notebook on it.",
+   "Incorrect: jupyter kernelspec uninstall removes a kernel spec so that the kernel is no longer selectable. Use it when you clean up a kernel you no longer need, not when you add one.",
+   "Incorrect: conda env remove deletes the Conda environment, which would remove the packages that the new kernel depends on. Use it after uninstalling the kernel spec when you retire the environment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-access-terminal"
+ },
+ {
+  "id": "2.1.3-04",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "User1 at Fabrikam, Inc. develops a notebook in the User files folder of an Azure Machine Learning workspace and runs it on a compute instance named CI1. User2 has the Contributor role on the workspace and has a compute instance named CI2.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "If User1 switches the notebook from CI1 to another compute instance, the variables that earlier cells created remain available.",
+   "User2 can open and edit the notebook from the folder of User1 in the User files section.",
+   "When User2 runs the notebook, its cells run on CI1."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Notebooks are files in the workspace storage account, separate from any compute instance, so every user with the right role can open them and every compute instance in the workspace sees them. Compute instances are personal: whoever runs a notebook uses their own instance, and switching compute or kernel starts a fresh state.",
+  "rationale": [
+   "No: switching compute resets the notebook state and all variables. Changing the kernel, resetting or stopping the compute, and opening the notebook in Jupyter or JupyterLab also reset it, so keep the same compute and kernel when you need earlier variables.",
+   "Yes: notebooks are stored in the workspace storage account, by default in a folder with the user name, and a Contributor can edit them. A Reader could only view the notebook.",
+   "No: compute instances are not shared, so User2 runs the notebook on CI2, their own compute instance. The User files are shared across all compute instances, which is why CI2 can open the same notebook."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-run-jupyter-notebooks"
+ },
+ {
+  "id": "2.1.3-05",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "A data scientist at Margie's Travel explores a 400 GB folder of Parquet files in a notebook on an Azure Machine Learning compute instance. Loading the folder into pandas fails because the compute instance runs out of memory. The data scientist must keep exploring the data interactively in the notebook.\n\nWhich two actions should you perform? Each correct answer presents a complete solution.",
+  "choices": [
+   "Load the data with mltable and call take_random_sample() before converting it to pandas",
+   "Copy the folder with azcopy to /home/azureuser/cloudfiles/code and read it from there",
+   "Submit the notebook as a command job that runs papermill on a larger compute cluster",
+   "Read every Parquet file with azureml-fsspec glob patterns and combine them with pd.concat()",
+   "Attach serverless Spark compute to the notebook and explore the data with PySpark"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "pandas can process only data that fits in the memory of the compute instance. For interactive work on large data, either scale out with serverless Spark compute attached to the notebook, or iterate on a sample or subset (take_random_sample, filter, keep_columns) before you scale up to a job.",
+  "rationale": [
+   "Correct: mltable can take a random sample of large data before materializing it, so the DataFrame fits in memory and the data scientist can iterate quickly before scaling up.",
+   "Incorrect: the code folder is meant for notebooks and code, and reading data from it is slow. Copying the files also does not change how much memory pandas needs to load them.",
+   "Incorrect: a papermill job runs the notebook unattended and saves the executed copy, which suits scheduled runs. It is not interactive exploration, which the data scientist must keep doing.",
+   "Incorrect: glob and pd.concat() are the right way to read a folder of Parquet files into pandas, but the result is still one DataFrame that must fit in memory, so the same error occurs.",
+   "Correct: serverless Spark compute attaches directly to the notebook session and distributes the data across executors, so the notebook keeps working interactively on data that is far larger than one machine."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-access-data-interactive"
+ },
+ {
+  "id": "2.1.3-06",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Bellows College has an exploration notebook named explore.ipynb that a data scientist built on a compute instance. The notebook must now run unattended on a compute cluster, without being rewritten as a script, and the executed notebook with all cell outputs must be stored as an output of the run.\n\nWhat should you use?",
+  "choices": [
+   "The Gather feature, to create a new notebook that keeps only the cells that produce the final result",
+   "A command job that installs ipykernel and papermill and runs `papermill explore.ipynb outputs/out.ipynb -k python`",
+   "Export As Python, and then a command job that runs the exported explore.py file on the compute cluster",
+   "A compute instance schedule that starts the instance at night so that the notebook runs in JupyterLab"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A command job can execute a notebook as is: papermill runs every cell with the chosen kernel and writes the executed notebook, with outputs, to a path such as the outputs folder, which Azure Machine Learning stores with the job. Converting the notebook to a script loses the cell outputs.",
+  "rationale": [
+   "Incorrect: Gather creates a clean notebook with only the cells that a selected cell depends on, which is useful before sharing. It does not run anything unattended or store outputs with a run.",
+   "Correct: papermill executes explore.ipynb unchanged with the python kernel and writes the executed copy with its cell outputs to outputs/out.ipynb, which the job keeps. The job runs unattended on the cluster.",
+   "Incorrect: a script job runs unattended, but exporting changes the notebook into a script, and the result has no executed notebook with cell outputs, which the requirement asks for.",
+   "Incorrect: a schedule starts and stops the compute instance at set times but does not execute notebooks, and a compute instance is not the compute cluster that the notebook must run on."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-job-command"
+ },
+ {
+  "id": "2.1.3-07",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A data scientist at Wingtip Toys runs mlflow.start_run() in a notebook cell on an Azure Machine Learning compute instance and logs metrics in later cells. Long after the last cell finishes, the job still shows the status Running in the studio.\n\nWhat should you do?",
+  "choices": [
+   "Call mlflow.set_tracking_uri() with the workspace tracking URI",
+   "Call mlflow.end_run() after the last logging call",
+   "Call mlflow.set_experiment() before mlflow.start_run()",
+   "Call mlflow.autolog() before the training code"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "In interactive sessions you control the run lifetime yourself: start_run() opens the run and end_run() closes it, so MLflow can mark it Completed and record its duration. A with mlflow.start_run() block ends the run automatically. Jobs differ, because Azure Machine Learning starts and ends their run.",
+  "rationale": [
+   "Incorrect: on a compute instance the tracking URI is configured automatically, and the metrics already reach the workspace. Set it yourself only when the notebook runs outside Azure Machine Learning.",
+   "Correct: a run started manually stays active until it is ended, so end_run() lets MLflow mark the run Completed. A with block around the cells achieves the same result automatically.",
+   "Incorrect: set_experiment() chooses which experiment the runs log to, instead of the Default experiment. It does not end a run, so the status stays Running.",
+   "Incorrect: autolog() captures framework metrics, parameters, and models automatically. It does not end a run that you started manually, so the status stays Running."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-mlflow-cli-runs"
+ },
+ {
+  "id": "2.1.4-01",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys configures a sweep job named sweep_job with the Azure Machine Learning Python SDK v2. The sweep must stop after two hours or after 40 trials, whichever comes first, and must run five trials at a time.\n\nWhich code should you use?",
+  "choices": [
+   "`sweep_job.set_limits(max_total_trials=5, max_concurrent_trials=40, timeout=7200)`",
+   "`sweep_job.set_limits(max_total_trials=40, max_concurrent_trials=5, timeout=120)`",
+   "`sweep_job.set_limits(max_total_trials=40, max_concurrent_trials=5, trial_timeout=7200)`",
+   "`sweep_job.set_limits(max_total_trials=40, max_concurrent_trials=5, timeout=7200)`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Sweep job limits control the budget: max_total_trials caps the number of trials, max_concurrent_trials caps parallel trials, timeout caps the whole sweep in seconds, and trial_timeout caps each trial in seconds. When both max_total_trials and timeout are set, the sweep ends at whichever threshold is reached first.",
+  "rationale": [
+   "Incorrect: the values are swapped. This sweep would run only five trials in total, and the concurrency of 40 would never be reached, so the sweep ends long before the intended 40 trials.",
+   "Incorrect: the sweep timeout is expressed in seconds, so 120 stops the whole sweep after two minutes. AutoML set_limits() uses minutes, which is a common source of this mistake.",
+   "Incorrect: trial_timeout limits each individual trial, not the whole sweep. Use it to cancel a single trial that hangs or runs too long, while the sweep itself keeps going.",
+   "Correct: timeout is in seconds, so 7200 stops the sweep after two hours, max_total_trials=40 stops it after 40 trials if that comes first, and max_concurrent_trials=5 runs five trials at a time."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-tune-hyperparameters"
+ },
+ {
+  "id": "2.1.4-02",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. runs sweep jobs that train deep learning models for many epochs. The team wants to save compute cost by ending poorly performing trials early, but must not risk canceling trials that would end up among the best. The training script logs the primary metric once per epoch.\n\nWhich early termination policy should you configure?",
+  "choices": [
+   "`BanditPolicy(slack_factor=0.05, evaluation_interval=1, delay_evaluation=0)`",
+   "`TruncationSelectionPolicy(truncation_percentage=50, evaluation_interval=1)`",
+   "`MedianStoppingPolicy(evaluation_interval=1, delay_evaluation=5)`",
+   "`sweep_job.early_termination = None`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Early termination policies cancel trials based on the primary metric each time it is logged (one interval). Learn recommends MedianStoppingPolicy with evaluation_interval=1 and delay_evaluation=5 as a conservative choice that saves about 25 to 35 percent with no loss on the primary metric; a small Bandit slack or a large truncation percentage saves more but is more aggressive.",
+  "rationale": [
+   "Incorrect: a Bandit policy with a small slack of five percent and no delay is an aggressive setting that cancels any trial that falls slightly behind the best one, even in the first epochs. Use it when savings matter more than the risk.",
+   "Incorrect: truncating 50 percent of the trials at every interval is aggressive and can cancel slow starters that would finish near the top. Use a large truncation percentage when the budget is tight.",
+   "Correct: median stopping compares each trial with the median of running averages, and the delay of five intervals lets every trial train for five epochs first. Learn describes this as conservative, with savings and no loss on the metric.",
+   "Incorrect: without a policy every trial runs to completion, which is the default. It never cancels a promising trial, but it gives no compute savings, which the team wants."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-tune-hyperparameters"
+ },
+ {
+  "id": "2.1.4-03",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank runs a sweep job that maximizes the metric auc. The sweep uses the following early termination policy:\n\n```python\nsweep_job.early_termination = BanditPolicy(\n    slack_factor=0.25, evaluation_interval=1, delay_evaluation=0)\n```\n\nAt interval 10, the best trial reports an auc of 0.80.\n\nWhich trials should you expect the policy to cancel at interval 10?",
+  "choices": [
+   "Trials whose best auc at interval 10 is less than 0.64",
+   "Trials whose best auc at interval 10 is less than 0.60",
+   "Trials whose best auc at interval 10 is less than 0.55",
+   "Trials whose auc at interval 10 is in the lowest 25 percent"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A Bandit policy cancels trials whose primary metric falls outside the allowed slack from the best trial. With slack_factor, the slack is a ratio: for a maximized metric the cutoff is best / (1 + slack_factor). With slack_amount, the slack is an absolute distance. Percentage-based cancellation belongs to the truncation selection policy.",
+  "rationale": [
+   "Correct: slack_factor is a ratio, so the cutoff for a maximized metric is 0.80 / (1 + 0.25) = 0.64. Trials whose best auc at interval 10 is below 0.64 are canceled.",
+   "Incorrect: 0.60 is 0.80 minus 25 percent of 0.80, which is not how the ratio works. The policy divides the best value by 1 plus the slack factor instead of subtracting a percentage.",
+   "Incorrect: 0.55 is 0.80 minus an absolute 0.25, which is the behavior of slack_amount. This policy sets slack_factor, so the allowed distance is relative to the best value.",
+   "Incorrect: canceling the lowest percentage of trials at each interval is the truncation selection policy with truncation_percentage. A Bandit policy compares each trial with the best trial."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-tune-hyperparameters"
+ },
+ {
+  "id": "2.1.4-04",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A data scientist at Contoso Suites submits a sweep job. The training script calls mlflow.log_metric(\"val_acc\", accuracy) after each epoch. The sweep sets primary_metric to validation_accuracy and goal to maximize. All trials complete, but the sweep cannot rank the trials or apply its early termination policy.\n\nWhat should you do?",
+  "choices": [
+   "Set primary_metric to val_acc so that it matches the logged metric name",
+   "Set goal to minimize so that the sweep evaluates the metric correctly",
+   "Change the sampling algorithm to bayesian so that results feed new trials",
+   "Add a BanditPolicy so that the sweep evaluates each logged interval"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The sweep job reads the primary metric from what each trial logs with MLflow, so the name in primary_metric must exactly match the name passed to mlflow.log_metric(). Each logged value is one interval for the early termination policy; if no metric with that name arrives, the sweep has nothing to compare.",
+  "rationale": [
+   "Correct: the primary metric name must exactly match the metric that the training script logs. Renaming primary_metric to val_acc lets the sweep read the values, rank trials, and apply early termination.",
+   "Incorrect: goal decides whether higher or lower values are better. Accuracy should be maximized, and changing the goal does not help when the sweep receives no metric with the configured name.",
+   "Incorrect: Bayesian sampling picks new values based on earlier results, but it reads the same primary metric. With the name mismatch, it would have no results to learn from either.",
+   "Incorrect: an early termination policy also evaluates the primary metric, and a policy is already configured but cannot act. Adding another policy does not fix the missing metric name."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-tune-hyperparameters"
+ },
+ {
+  "id": "2.1.4-05",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Southridge Video uses the Azure Machine Learning Python SDK v2. An MLClient object named ml_client is connected to the workspace. A training script logs the metric auc and writes the trained model to an output named model.\n\nYou need to tune the hyperparameters lr and boosting by using random sampling and then download only the model output of the best trial.\n\nWhich six actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`command_job = command(code=\"./src\", command=\"python train.py --lr ${{inputs.lr}} --boosting ${{inputs.boosting}}\", inputs={\"lr\": 0.1, \"boosting\": \"gbdt\"}, environment=env, compute=\"cpu-cluster\")`",
+   "`job_for_sweep = command_job(lr=Uniform(min_value=0.01, max_value=0.9), boosting=Choice(values=[\"gbdt\", \"dart\"]))`",
+   "`sweep_job = job_for_sweep.sweep(compute=\"cpu-cluster\", sampling_algorithm=\"random\", primary_metric=\"auc\", goal=\"maximize\")`",
+   "`sweep_job.set_limits(max_total_trials=20, max_concurrent_trials=4, timeout=7200)`",
+   "`returned_sweep_job = ml_client.create_or_update(sweep_job)`, and then wait for the sweep to complete",
+   "`ml_client.jobs.download(returned_sweep_job.name, output_name=\"model\")`",
+   "`ml_client.jobs.create_or_update(command_job)`",
+   "`az ml job download --name <sweep-job> --all`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "explanation": "A sweep starts from a command job with default inputs. Calling the job as a function replaces inputs with parameter expressions, sweep() adds the sampling algorithm and objective, set_limits() adds the budget, and submitting the sweep job starts the trials. Downloading from the sweep job by output name returns the outputs of the best trial.",
+  "rationale": [
+   "Step 1: the base command job defines the script, its default inputs lr and boosting, the environment, and the compute. Every later step builds on this job.",
+   "Step 2: calling the command job as a function overrides lr and boosting with parameter expressions, which define the search space of the sweep.",
+   "Step 3: sweep() turns the job with parameter expressions into a sweep job and sets random sampling, the primary metric auc, and the goal maximize.",
+   "Step 4: set_limits() caps the total trials, the concurrent trials, and the sweep duration in seconds. Limits must be set on the sweep job before it is submitted.",
+   "Step 5: create_or_update() submits the sweep job and returns it with its name. The best trial is known only after the trials complete, which the download step needs.",
+   "Step 6: downloading from the completed sweep job with output_name=\"model\" returns the model output of the best trial only, which meets the requirement without fetching the other outputs and logs.",
+   "Incorrect: submitting the base command job runs one training job with the fixed default values. Use it to test the script before you sweep, not to tune hyperparameters.",
+   "Incorrect: --all downloads every default and named output of the best trial plus the sweep logs. The requirement is to download only the model output, which needs --output-name model instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-tune-hyperparameters"
+ },
+ {
+  "id": "2.1.4-06",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Wide World Importers tunes a regression model with a sweep job that is submitted by using the Azure CLI. The sweep must meet the following requirements:\n\n- The sampled values must be reproducible and spread evenly over the search space.\n- The learning rate must be sampled on a log scale between exp(-6) and exp(-1).\n- The trial with the lowest rmse is the best trial.\n\nHow should you complete the YAML file? To answer, select the appropriate options in the answer area.\n\n```yaml\n$schema: https://azuremlschemas.azureedge.net/latest/sweepJob.schema.json\ntype: sweep\ntrial:\n  code: src\n  command: >-\n    python train.py\n    --data ${{inputs.train_data}}\n    --learning-rate ${{[[1]].learning_rate}}\n  environment: azureml:AzureML-sklearn-1.5@latest\ninputs:\n  train_data:\n    type: uri_folder\n    path: azureml:sales-train@latest\ncompute: azureml:cpu-cluster\nsampling_algorithm:\n  type: random\n  rule: [[2]]\n  seed: 42\nsearch_space:\n  learning_rate:\n    type: [[3]]\n    min_value: -6\n    max_value: -1\nobjective:\n  goal: [[4]]\n  primary_metric: rmse\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "inputs",
+     "parent.inputs",
+     "search_space"
+    ],
+    "why": [
+     "Incorrect: ${{inputs.<name>}} references a fixed job input, such as the training data. A fixed input would pass the same value to every trial instead of a sampled one.",
+     "Incorrect: ${{parent.inputs.<name>}} binds a step to the inputs of its parent pipeline job. A standalone sweep job has no parent pipeline, so the expression does not apply here.",
+     "Correct: hyperparameters are referenced in trial.command with the ${{search_space.<hyperparameter>}} expression, so each trial receives the value that the sweep samples for it."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "sobol",
+     "random"
+    ],
+    "why": [
+     "Correct: the sobol rule uses a quasi-random sequence that fills the search space more evenly, and together with the seed it makes the sampled values reproducible.",
+     "Incorrect: the default random rule uses simple uniform random sampling. Learn describes the sobol rule, not the random rule, as the option that improves space-filling and reproducibility, so random does not meet the even-spread requirement."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "loguniform",
+     "uniform",
+     "lognormal",
+     "quniform"
+    ],
+    "why": [
+     "Correct: loguniform returns exp(uniform(min_value, max_value)), so min_value -6 and max_value -1 produce learning rates between exp(-6) and exp(-1) on a log scale.",
+     "Incorrect: uniform samples directly between min_value and max_value, so every learning rate would be a negative number between -6 and -1, which is not a valid learning rate.",
+     "Incorrect: lognormal draws exp(normal(mu, sigma)) and takes mu and sigma instead of min_value and max_value. It suits a log-scale value centered on a known mean, not a bounded range.",
+     "Incorrect: quniform rounds uniform samples to multiples of q and requires q. It returns discrete values on a linear scale, which suits settings such as layer sizes, not a log-scale learning rate."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "minimize",
+     "maximize"
+    ],
+    "why": [
+     "Correct: rmse is an error metric, and the trial with the lowest rmse is the best trial, so the goal of the objective must be minimize.",
+     "Incorrect: maximize would rank the trial with the highest rmse, the worst model, as the best trial. Use maximize for metrics such as accuracy or auc."
+    ]
+   }
+  ],
+  "answer": [
+   2,
+   0,
+   0,
+   0
+  ],
+  "explanation": "A sweep job YAML file has a trial template whose command references sampled values with ${{search_space.<name>}}, a sampling_algorithm (random with the random or sobol rule, grid, or bayesian), a search_space of parameter expressions, and an objective with primary_metric and goal. loguniform takes min_value and max_value as exponents.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-job-sweep"
+ },
+ {
+  "id": "2.1.4-07",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Humongous Insurance submits a sweep job that sets sampling_algorithm to grid, because every combination of values must be tried. The search space is defined as follows:\n\n```python\njob_for_sweep = command_job(\n    batch_size=Choice(values=[16, 32]),\n    learning_rate=Uniform(min_value=0.01, max_value=0.1),\n)\n```\n\nThe submission fails.\n\nWhat should you do?",
+  "choices": [
+   "Set max_total_trials to the number of expected combinations",
+   "Define learning_rate as `QUniform(min_value=0.01, max_value=0.1, q=1)`",
+   "Define learning_rate as `LogUniform(min_value=-4.6, max_value=-2.3)`",
+   "Define learning_rate as `Choice(values=[0.01, 0.05, 0.1])`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Grid sampling does a simple grid search over all possible values, so it can be used only with choice hyperparameters. Random sampling supports discrete and continuous expressions, and Bayesian sampling supports choice, uniform, and quniform. Keep grid when every combination must be tried, and express each hyperparameter as a list of values.",
+  "rationale": [
+   "Incorrect: limits cap the budget but do not change which parameter expressions a sampling algorithm accepts. The grid still cannot enumerate a uniform distribution, so the submission still fails.",
+   "Incorrect: quniform is a distribution that returns rounded uniform samples, not a list of values, so grid sampling still rejects it. With q=1 it would also round every learning rate to zero.",
+   "Incorrect: loguniform is a continuous distribution on a log scale. Grid sampling cannot enumerate a continuous range, so the submission still fails. Use loguniform with random sampling.",
+   "Correct: grid sampling works only with choice hyperparameters. Listing three learning rates gives a finite grid of six combinations, and the sweep can try every one of them as required."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-tune-hyperparameters"
+ },
+ {
+  "id": "2.1.4-08",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "case": "C-b",
+  "stem": "You need to configure the sweep job for the price elasticity model so that it meets the tuning requirements.\n\nWhich configuration should you use?",
+  "choices": [
+   "`sampling_algorithm=\"bayesian\"`, `max_total_trials=20`, and `max_concurrent_trials=10`",
+   "`sampling_algorithm=\"bayesian\"`, `max_total_trials=60`, and `max_concurrent_trials=2`",
+   "`RandomSamplingAlgorithm(seed=7, rule=\"sobol\")`, `max_total_trials=60`, and `max_concurrent_trials=2`",
+   "`sampling_algorithm=\"grid\"`, `max_total_trials=60`, and `max_concurrent_trials=2`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Bayesian sampling chooses new values based on earlier results and supports choice, uniform, and quniform expressions. For best results, set the maximum number of trials to at least 20 times the number of tuned hyperparameters, and keep concurrency low so that more trials benefit from completed ones.",
+  "rationale": [
+   "Incorrect: Bayesian sampling fits, but 20 trials is below 20 times the three hyperparameters, and ten concurrent trials let fewer trials learn from completed ones, which trades convergence for speed.",
+   "Correct: Bayesian sampling uses earlier results and supports the uniform and choice expressions in the search space. 60 trials is 20 times the three hyperparameters, and two concurrent trials favor convergence.",
+   "Incorrect: Sobol sampling spreads the samples evenly and reproducibly, but it does not use the results of earlier trials to choose new values, which the requirements ask for.",
+   "Incorrect: grid sampling works only with choice hyperparameters, and learning_rate and subsample are uniform ranges. Grid also does not learn from earlier trials."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-tune-hyperparameters"
+ },
+ {
+  "id": "2.1.5-01",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Consolidated Messenger defines the following command job by using the Azure Machine Learning Python SDK v2:\n\n```python\njob = command(\n    code=\"./src\",\n    command=\"python train.py --data <value>\",\n    inputs={\"training_data\": Input(type=\"uri_folder\", path=\"azureml:parcels@latest\")},\n    environment=\"azureml://registries/azureml/environments/sklearn-1.5/labels/latest\",\n)\n```\n\nThe script must receive the path of the training_data input at run time.\n\nWhich expression should you use in place of <value>?",
+  "choices": [
+   "`${{search_space.training_data}}`",
+   "`${{outputs.training_data}}`",
+   "`${{inputs.training_data}}`",
+   "`${{parent.inputs.training_data}}`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A command job references its own inputs and outputs in the command string with ${{inputs.<name>}} and ${{outputs.<name>}}. Azure Machine Learning resolves a data input to the mounted or downloaded path on the compute. Sweep jobs use ${{search_space.<name>}} and pipeline steps use ${{parent...}} to bind to the parent pipeline.",
+  "rationale": [
+   "Incorrect: ${{search_space.<name>}} passes a sampled hyperparameter value to the trial command of a sweep job. This is a plain command job without a search space.",
+   "Incorrect: ${{outputs.<name>}} references a job output location that the script writes to. training_data is defined as an input, so no output with that name exists.",
+   "Correct: ${{inputs.training_data}} is resolved at run time to the path where the training_data input is mounted on the compute, so train.py receives a usable folder path.",
+   "Incorrect: ${{parent.inputs.<name>}} binds a pipeline step to an input of its parent pipeline job. A standalone command job has no parent pipeline, so the expression does not resolve."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-job-command"
+ },
+ {
+  "id": "2.1.5-02",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud wants to run a training script as a command job without creating or managing any compute cluster. The job must run on one dedicated Standard_NC24ads_A100_v4 GPU node.\n\nWhat should you do?",
+  "choices": [
+   "Omit compute and set resources to instance_type Standard_NC24ads_A100_v4 with instance_count 1",
+   "Create an AmlCompute cluster of size Standard_NC24ads_A100_v4 with min_instances 0 and use it as compute",
+   "Omit compute and set queue_settings so that job_tier is Spot",
+   "Set compute to local and select the Standard_NC24ads_A100_v4 size in the environment definition"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When a command, sweep, or AutoML job does not specify compute, it runs on serverless compute, which Azure Machine Learning creates, scales, and deletes for you. By default the service picks a CPU VM and a node count; you override them with resources.instance_type and resources.instance_count, and you choose dedicated or spot VMs with queue_settings.job_tier.",
+  "rationale": [
+   "Correct: omitting compute runs the job on serverless compute, so no cluster is created or managed, and resources selects the Standard_NC24ads_A100_v4 GPU size and one node. The default job tier is Standard, which uses dedicated VMs.",
+   "Incorrect: a compute cluster that scales to zero is cheap when idle, but you still create and manage it, which the requirement rules out. Use a cluster when you need settings such as a fixed virtual network or idle scale-down timing.",
+   "Incorrect: job_tier Spot runs the serverless job on low-priority VMs that can be preempted, and without instance_type the service chooses a CPU VM. The job needs a dedicated Standard_NC24ads_A100_v4 node.",
+   "Incorrect: compute local runs the job on the machine that submits it, not on Azure compute, and an environment defines software, such as packages and a base image, not the VM size."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-serverless-compute"
+ },
+ {
+  "id": "2.1.5-03",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Contoso Pharmaceuticals defines the inputs and outputs of command jobs that run on a GPU compute cluster. The local disk of each node holds 400 GB.\n\nWhich mode should you configure for each input or output? To answer, drag the appropriate modes to the correct inputs and outputs. Each mode may be used once, more than once, or not at all.",
+  "choices": [
+   "download",
+   "ro_mount",
+   "direct",
+   "rw_mount",
+   "upload",
+   "eval_mount"
+  ],
+  "targets": [
+   "Input1: a 60 GB uri_folder of images that each epoch reads completely, and the job can wait for the data before training starts",
+   "Input2: a 3 TB uri_folder from which each node reads only a random subset of files",
+   "Input3: a uri_folder that the script reads with its own storage client, which needs only the storage URL and handles credentials itself",
+   "Output1: a uri_folder for checkpoints that must reach storage while the job is still running"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "rationale": [
+   "Input1 fits on the 400 GB disk, is read completely and repeatedly, and the job can wait, so download copies it once to the local SSD and removes storage and network dependencies during training.",
+   "Input2 is larger than the node disk and each node needs only part of it, so ro_mount streams just the files that are read, without a download delay.",
+   "Input3 needs only the location, and the script handles access itself, so direct passes the storage URL as a string without mounting or downloading anything.",
+   "Output1 must be in storage during the run, so rw_mount writes through a mounted folder. In upload mode, files reach storage only at the end of the job."
+  ],
+  "notes": [
+   "Copies all input data to the local SSD before the script starts. Use it when the data fits on disk, is read fully or more than once, or needs random access within large files.",
+   "Mounts the input read-only through FUSE and streams data on demand. It is the default input mode; use it when data is larger than the disk or each node reads only part of it.",
+   "Passes the storage URI as a string. Use it when your own code, such as Spark or another storage client, reads the data and you manage the credentials yourself.",
+   "Mounts an output folder read-write so that files written by the script go to storage. It is the default output mode; use it when outputs must be in storage during the job.",
+   "Writes outputs to the compute and uploads them at the end of the job. Use it when outputs are needed only after the job finishes.",
+   "Evaluates an MLTable file, for example one that combines several storage locations or a subset, and mounts the result. It applies only to mltable inputs, not to uri_folder inputs."
+  ],
+  "explanation": "Input modes control how data reaches the compute: download copies everything first, ro_mount streams on demand, and direct passes only the URI. Output modes control how results reach storage: rw_mount writes through a mount, and upload sends files at the end of the job. Choose by data size, read pattern, and timing.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-read-write-data-v2"
+ },
+ {
+  "id": "2.1.5-04",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Trey Research uses the Azure CLI with the ml extension, with default values set for the workspace. The env.yml file defines a custom environment named train-env from a base image and a conda file. The job.yml file defines a command job that uses azureml:train-env@latest, has a named output called model, and does not set compute, so the job runs on serverless compute.\n\nYou need to run the job, follow its logs until it finishes, and then download the model output to the local computer. The model must not be registered yet.\n\nWhich four commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`az ml environment create --file env.yml`",
+   "`run_id=$(az ml job create -f job.yml --query name -o tsv)`",
+   "`az ml job stream -n $run_id`",
+   "`az ml job download -n $run_id --output-name model`",
+   "`az ml compute create -n cpu-cluster --type amlcompute --min-instances 0 --max-instances 4`",
+   "`az ml model create -n train-model -v 1 -p runs:/$run_id/model --type mlflow_model`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A job can reference only assets that exist, so you register the custom environment first. az ml job create submits the job and, with --query name, returns its name for later commands. az ml job stream follows the logs until the job ends, and az ml job download fetches a named output after the job completes.",
+  "rationale": [
+   "Step 1: az ml environment create registers train-env from the image and conda file. The job references azureml:train-env@latest, which resolves only after the environment exists.",
+   "Step 2: az ml job create submits job.yml, and --query name -o tsv stores the job name in run_id so that the following commands can refer to the job.",
+   "Step 3: az ml job stream prints the job logs until the job reaches a terminal state, which tells you when the model output is complete and ready to download.",
+   "Step 4: az ml job download with --output-name model downloads only the named model output of the finished job. --output-name takes a key of the job's outputs dictionary, so it works for a command job as well as a sweep job.",
+   "Incorrect: job.yml does not set compute, so the job runs on serverless compute, which needs no cluster. Create a cluster only when a job names one in its compute property.",
+   "Incorrect: az ml model create registers the model from the job output in the workspace. The requirement says that the model must not be registered yet, only downloaded."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-train-model"
+ },
+ {
+  "id": "2.1.5-05",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A command job at Fourth Coffee fails a few minutes after it starts running. The training script prints its progress and raises a Python exception when it fails.\n\nWhich location should you review first to find the printed output and the traceback of the script?",
+  "choices": [
+   "The Code tab of the job in the studio",
+   "The files in the system_logs folder of the job",
+   "The Metrics tab of the job in the studio",
+   "The std_log.txt file in the user_logs folder of the job"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Under Outputs and logs, a job has a user_logs folder with std_log.txt, which collects stdout and stderr of your scripts per process, and a system_logs folder with logs that Azure Machine Learning generates per stage of the job. Multi-node jobs have logs per node. Metrics and artifacts that you log with MLflow appear on other tabs.",
+  "rationale": [
+   "Incorrect: the Code tab shows the snapshot of the source files that the job ran with. It helps you confirm which code version ran, but it does not contain runtime output or errors.",
+   "Incorrect: system_logs contains logs that Azure Machine Learning generates, grouped by job stage, such as environment preparation. Check it when the job fails before your script runs.",
+   "Incorrect: the Metrics tab shows values that the script logs with MLflow, such as loss or accuracy. Printed text and exceptions are not metrics, so they do not appear there.",
+   "Correct: std_log.txt in user_logs holds the stdout and stderr of the control and training scripts, one per process, so print statements and the Python traceback appear there."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-log-view-metrics"
+ },
+ {
+  "id": "2.1.5-06",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders submits command jobs from a project folder that contains the training code, a data folder with 5 GB of sample files, and a .venv folder. The .gitignore file of the folder excludes data/ and .venv/. Last week a team member added a .amlignore file that contains only the line .venv/. Since then, each job submission uploads the data folder with the code.\n\nYou need to stop the data folder from being uploaded with each job.\n\nWhat should you do?",
+  "choices": [
+   "Move the data folder into the outputs folder of the project",
+   "Add the line data/ again to the .gitignore file",
+   "Add the line data/ to the .amlignore file",
+   "Delete the .gitignore file so that the .amlignore file applies alone"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "When you submit a job, Azure Machine Learning zips the project folder and uploads it as the code snapshot. An ignore file (.gitignore or .amlignore, same syntax) excludes files from the snapshot. If both files exist, only .amlignore is used and .gitignore is ignored.",
+  "rationale": [
+   "Incorrect: outputs is a folder that the job writes to on the compute. Moving files into a folder of the local project does not remove them from the snapshot, which still includes the whole folder.",
+   "Incorrect: .gitignore already lists data/, but it stopped applying when .amlignore was added, because Azure Machine Learning uses only .amlignore when both files exist. A second line changes nothing.",
+   "Correct: when both ignore files exist, the .amlignore file is used and the .gitignore file is not. Adding data/ to .amlignore excludes the data folder from the snapshot again.",
+   "Incorrect: the .gitignore file is already ignored because a .amlignore file exists, so deleting it changes nothing. The .amlignore file still lists only .venv/, and the data folder is still uploaded."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-train-machine-learning-model"
+ },
+ {
+  "id": "2.1.5-07",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wingtip Toys runs a training script as a command job defined in a YAML file. Some runs hang when a data source stops responding. The system must cancel the job automatically when it runs for more than two hours.\n\nWhich setting should you add to the command job YAML file?",
+  "choices": [
+   "`limits.timeout: 7200`",
+   "`limits.trial_timeout: 7200`",
+   "`limits.timeout_minutes: 120`",
+   "`resources.max_instance_count: 2`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Each job type has its own limits. A command job uses limits.timeout in seconds, after which the system cancels the job. Sweep jobs add trial_timeout for each trial, and AutoML jobs use timeout_minutes and trial_timeout_minutes.",
+  "rationale": [
+   "Correct: limits.timeout is the maximum time in seconds that a command job can run. With 7200 the system cancels the job after two hours, which stops hanging runs.",
+   "Incorrect: trial_timeout limits each trial of a sweep job. A command job runs a single process without trials, so this key does not belong in its limits.",
+   "Incorrect: timeout_minutes is the job timeout of an AutoML job, expressed in minutes. The command job schema uses limits.timeout in seconds instead.",
+   "Incorrect: resources.max_instance_count sets the maximum number of nodes for elastic distributed training. It controls scale, not how long the job can run."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-job-command"
+ },
+ {
+  "id": "2.1.5-08",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank runs a nightly training job on serverless compute. A GitHub workflow submits the job. The storage account that holds the training data grants access only to a user-assigned managed identity that is attached to the Azure Machine Learning workspace.\n\nYou need to configure how the job accesses the training data.\n\nWhat should you do?",
+  "choices": [
+   "Set identity type to user_identity in the job",
+   "Set identity type to managed in the job",
+   "Set identity type to aml_token in the job",
+   "Enable a system-assigned identity for the serverless compute"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The identity setting of a job decides which identity accesses data inputs and outputs. Serverless compute supports user credential passthrough (user_identity), which suits interactive work, and the user-assigned managed identity of the workspace (managed), which suits production and automation. Serverless compute does not support a system-assigned identity.",
+  "rationale": [
+   "Incorrect: user_identity passes through the Microsoft Entra token of whoever submits the job, here the workflow identity, which has no access to the storage account. It suits interactive development and testing.",
+   "Correct: with identity type managed, a serverless job accesses storage as the user-assigned managed identity of the workspace, which is the only identity that the storage account allows and suits an automated nightly job.",
+   "Incorrect: aml_token makes the job use the Azure Machine Learning token of the workspace for data access, not the user-assigned managed identity that the storage account grants access to.",
+   "Incorrect: serverless compute does not support a system-assigned identity, and you do not manage the serverless compute as a resource. Use a system-assigned identity with a compute cluster that you create and manage yourself."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-use-serverless-compute"
+ },
+ {
+  "id": "2.1.6-01",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lamna Healthcare Company trains an image model with PyTorch DistributedDataParallel on a compute cluster. Each node has four GPUs. The job must use two nodes and run one training process per GPU.\n\nWhich configuration should you use for the command job?",
+  "choices": [
+   "`instance_count=2` and `distribution={\"type\": \"PyTorch\", \"process_count_per_instance\": 8}`",
+   "`instance_count=2` and `distribution={\"type\": \"PyTorch\", \"process_count_per_instance\": 4}`",
+   "`instance_count=8` and `distribution={\"type\": \"PyTorch\", \"process_count_per_instance\": 1}`",
+   "`instance_count=1` and `distribution={\"type\": \"PyTorch\", \"process_count_per_instance\": 8}`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "For distributed PyTorch, instance_count is the number of nodes and process_count_per_instance is the number of processes on each node, which should typically equal the number of GPUs per node. The total number of processes, the world size, is the product of both. Without process_count_per_instance, Azure Machine Learning launches one process per node.",
+  "rationale": [
+   "Incorrect: process_count_per_instance is per node, not for the whole job. Eight processes on a node with four GPUs would oversubscribe the GPUs; eight is the total world size, not the per-node count.",
+   "Correct: two nodes with four processes each give one process per GPU and a world size of eight, which matches the two four-GPU nodes that the job must use.",
+   "Incorrect: eight nodes with one process each would use eight machines and leave three GPUs idle on every node. One process per node suits single-GPU VM sizes.",
+   "Incorrect: a single node has only four GPUs, so eight processes cannot each get their own GPU, and the job must use two nodes, not one."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-train-distributed-gpu"
+ },
+ {
+  "id": "2.1.6-02",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. trains a deep learning model whose parameters no longer fit in the memory of a single GPU, even with a batch size of one. The team uses a GPU compute cluster in Azure Machine Learning.\n\nWhich distributed training approach should you use?",
+  "choices": [
+   "Model parallelism, which segments the model into parts that run concurrently on different nodes",
+   "Data parallelism, which copies the full model to every node and splits the data into partitions",
+   "Data parallelism with more nodes, so that each node processes a smaller share of the data",
+   "Data parallelism with a larger process_count_per_instance on each node of the cluster"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Data parallelism copies the whole model to every worker and splits the data, so the entire model must fit on each node; it is the simpler approach and enough for most cases. Model parallelism splits the model itself across nodes that work on the same data, which handles models that are too large for one device at the cost of more complex implementation.",
+  "rationale": [
+   "Correct: model parallelism splits the model into parts that run on different nodes, so no single GPU has to hold all the parameters. It is the approach for models that are too large for one device.",
+   "Incorrect: data parallelism requires that the entire model fits on each node, because every worker holds a full copy. It is the right default when the model fits and you want to train on more data faster.",
+   "Incorrect: adding nodes shrinks the share of data per node, but each node still needs a full copy of the model, which does not fit. Use more nodes when the model fits and training is slow.",
+   "Incorrect: each extra process still holds a full copy of the model on its own GPU, so the memory that one GPU needs does not shrink. Set process_count_per_instance to the number of GPUs for data-parallel jobs."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/concept-distributed-training"
+ },
+ {
+  "id": "2.1.6-03",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Proseware, Inc. submits four distributed training jobs as command jobs in Azure Machine Learning.\n\nWhich distribution type should you configure for each job? To answer, drag the appropriate distribution types to the correct jobs. Each distribution type may be used once, more than once, or not at all.",
+  "choices": [
+   "mpi",
+   "pytorch",
+   "ray",
+   "tensorflow"
+  ],
+  "targets": [
+   "Job1: a script that calls torch.distributed.init_process_group() with the env:// method and trains with DistributedDataParallel",
+   "Job2: a TensorFlow 2.x script that uses tf.distribute and reads the cluster layout from the TF_CONFIG variable",
+   "Job3: a legacy TensorFlow 1.x script that uses a parameter server strategy with two workers and one parameter server",
+   "Job4: a Ray application for which Azure Machine Learning must start a new Ray cluster on the job nodes"
+  ],
+  "answer": [
+   1,
+   3,
+   3,
+   2
+  ],
+  "rationale": [
+   "Job1 uses native torch.distributed with env://, and the pytorch distribution sets MASTER_ADDR, MASTER_PORT, WORLD_SIZE, NODE_RANK, RANK, and LOCAL_RANK for it.",
+   "Job2 uses tf.distribute, and the tensorflow distribution sets TF_CONFIG correctly for each worker before the script runs.",
+   "Job3 is a parameter server strategy, so it uses the tensorflow distribution with worker_count 2 and parameter_server_count 1.",
+   "Job4 needs a Ray cluster, and the ray distribution starts a new Ray cluster when no address of an existing cluster is given."
+  ],
+  "notes": [
+   "Launches the processes by using the Message Passing Interface and requires process_count_per_instance. DeepSpeed jobs can use either the mpi or the pytorch distribution.",
+   "Launches process_count_per_instance processes on each node and sets the torch.distributed environment variables, so no launcher such as torch.distributed.launch is needed.",
+   "Starts a Ray cluster on the job nodes, or connects to an existing one through address. Use it for Ray applications.",
+   "Sets TF_CONFIG for each worker and supports worker_count and parameter_server_count, which legacy parameter server training needs."
+  ],
+  "explanation": "The distribution property of a command job tells Azure Machine Learning how to start the processes and which environment variables to set. Pick it by the framework API that the script uses: torch.distributed (pytorch), tf.distribute and TF_CONFIG (tensorflow), MPI-based launchers (mpi), or Ray (ray).",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-job-command"
+ },
+ {
+  "id": "2.1.6-04",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Tailspin Toys trains a model with PyTorch DistributedDataParallel on a compute cluster named gpu-cluster. Each node has eight GPUs. The job must use four nodes, start one process per GPU without a launcher utility, and use the fastest communication backend for GPUs.\n\nHow should you complete the job YAML file and the training script? To answer, select the appropriate options in the answer area.\n\n```yaml\n$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json\ncode: src\ncommand: python train.py --data ${{inputs.images}}\ninputs:\n  images:\n    type: uri_folder\n    path: azureml:defect-images@latest\nenvironment: azureml:AzureML-acpt-pytorch-2.8-cuda12.6@latest\ncompute: azureml:gpu-cluster\ndistribution:\n  type: [[1]]\n  [[2]]: 8\nresources:\n  [[3]]: 4\n```\n\n```python\ntorch.distributed.init_process_group(backend=\"[[4]]\", init_method=\"env://\")\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "tensorflow",
+     "pytorch",
+     "mpi"
+    ],
+    "why": [
+     "Incorrect: tensorflow sets TF_CONFIG for tf.distribute workers. The script uses torch.distributed, so the TensorFlow configuration does not apply.",
+     "Correct: the pytorch distribution launches the processes and sets the variables that the env:// method reads, such as MASTER_ADDR, MASTER_PORT, WORLD_SIZE, and RANK.",
+     "Incorrect: mpi launches processes through the Message Passing Interface and suits MPI-based workloads, such as DeepSpeed launched through MPI. For native torch.distributed code that uses env://, Learn uses the pytorch distribution."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "worker_count",
+     "parameter_server_count",
+     "process_count_per_instance"
+    ],
+    "why": [
+     "Incorrect: worker_count belongs to the tensorflow distribution and sets the total number of TensorFlow workers. It is not a property of the pytorch distribution.",
+     "Incorrect: parameter_server_count also belongs to the tensorflow distribution, for legacy parameter server training. DistributedDataParallel does not use parameter servers.",
+     "Correct: process_count_per_instance sets the number of processes on each node and should equal the GPUs per node, so 8 starts one process per GPU."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "max_instance_count",
+     "shm_size",
+     "instance_count"
+    ],
+    "why": [
+     "Incorrect: max_instance_count sets the maximum number of nodes for elastic distributed training. The job needs a fixed four nodes.",
+     "Incorrect: shm_size sets the size of the shared memory block of the Docker container, which defaults to 2g. It changes the container, not the number of nodes.",
+     "Correct: resources.instance_count is the number of nodes for the job, so 4 runs the training on four nodes of gpu-cluster."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "nccl",
+     "gloo",
+     "mpi"
+    ],
+    "why": [
+     "Correct: Learn recommends nccl as the communication backend for GPU-based training because it gives the best performance.",
+     "Incorrect: gloo is one of the common torch.distributed backends, but it is not the one that Learn recommends for GPU-based training, where nccl gives the best performance.",
+     "Incorrect: mpi is also a common backend, but for GPU-based training Learn recommends nccl for the best performance. The requirement asks for the fastest backend for GPUs."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   2,
+   2,
+   0
+  ],
+  "explanation": "A distributed PyTorch command job sets distribution.type to pytorch, process_count_per_instance to the GPUs per node, and resources.instance_count to the number of nodes. Azure Machine Learning starts the processes and sets the environment variables, so the script only calls init_process_group with the env:// method and the nccl backend for GPUs.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-train-distributed-gpu"
+ },
+ {
+  "id": "2.1.6-05",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Fabrikam, Inc. needs to train a PyTorch DistributedDataParallel model on two nodes that have NVIDIA A100 GPUs, with one process per GPU. Training must scale close to linearly, so the nodes need low-latency GPU-to-GPU communication across nodes. An MLClient object named ml_client is connected to the workspace, and no GPU cluster exists yet.\n\nYou need to create the compute, submit the job, and follow its output.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`gpu = AmlCompute(name=\"gpu-cluster\", size=\"Standard_ND96asr_v4\", min_instances=0, max_instances=2)`",
+   "`ml_client.compute.begin_create_or_update(gpu).result()`",
+   "`job = command(code=\"./src\", command=\"python train.py\", environment=env, compute=\"gpu-cluster\", instance_count=2, distribution={\"type\": \"PyTorch\", \"process_count_per_instance\": 8})`",
+   "`returned_job = ml_client.jobs.create_or_update(job)` and then `ml_client.jobs.stream(returned_job.name)`",
+   "`gpu = AmlCompute(name=\"gpu-cluster\", size=\"Standard_NC96ads_A100_v4\", min_instances=0, max_instances=2)`",
+   "`job = command(code=\"./src\", command=\"python -m torch.distributed.launch --nproc_per_node 8 train.py\", environment=env, compute=\"gpu-cluster\")`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "InfiniBand gives low-latency GPU-to-GPU communication across nodes and needs RDMA-capable sizes, usually those with r in the name, such as Standard_ND96asr_v4. You define and create the cluster first, then define a command job whose pytorch distribution starts one process per GPU, and finally submit and stream the job. Learn's example pair, Standard_NC24rs_v3 and Standard_NC24s_v3, follows the same naming rule, but the NCv3 series was retired on September 30, 2025.",
+  "rationale": [
+   "Step 1: Standard_ND96asr_v4 has eight A100 GPUs and InfiniBand, which gives the low-latency cross-node communication that near-linear scaling needs. The cluster definition must exist before you create it.",
+   "Step 2: begin_create_or_update() provisions gpu-cluster in the workspace, and result() waits until the operation finishes, so the job can target the cluster.",
+   "Step 3: the command job uses two nodes and the pytorch distribution with eight processes per node, one per GPU of Standard_ND96asr_v4, so Azure Machine Learning starts the processes without a launcher.",
+   "Step 4: create_or_update() submits the job to gpu-cluster, and stream() follows its logs until the job finishes.",
+   "Incorrect: Standard_NC96ads_A100_v4 also has A100 GPUs, four per node, but it has no r in its name and no InfiniBand, so cross-node communication runs over Ethernet and scaling suffers. It suits single-node GPU training.",
+   "Incorrect: a launcher utility such as torch.distributed.launch is not needed, and without a distribution and instance_count the job runs on one node only. Use the pytorch distribution instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-train-distributed-gpu"
+ },
+ {
+  "id": "2.1.6-06",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A distributed PyTorch job at Coho Vineyard runs on three nodes with four processes on each node. Each node must unpack a data archive to its local disk exactly once before training starts, so only one process per node must run the unpack step.\n\nWhich environment variable should the training script check to decide whether a process runs the unpack step?",
+  "choices": [
+   "`NODE_RANK`, and run the step when the value is 0",
+   "`RANK`, and run the step when the value is 0",
+   "`LOCAL_RANK`, and run the step when the value is 0",
+   "`WORLD_SIZE`, and run the step when the value is 12"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Azure Machine Learning sets MASTER_ADDR, MASTER_PORT, WORLD_SIZE, and NODE_RANK on each node, and RANK and LOCAL_RANK on each process. RANK is unique across the job, LOCAL_RANK is unique within a node, and NODE_RANK identifies the node, so per-node work usually runs where LOCAL_RANK is 0.",
+  "rationale": [
+   "Incorrect: NODE_RANK identifies the node, so all four processes on the first node share NODE_RANK 0 and would all unpack the archive, while the other nodes would skip it.",
+   "Incorrect: RANK is the global rank across the whole job, so only one process in the entire job has RANK 0. The other two nodes would never unpack the archive. Use RANK 0 for once-per-job work.",
+   "Correct: LOCAL_RANK is the rank of the process within its node, from 0 to the number of processes on the node minus one. Exactly one process per node has LOCAL_RANK 0, so each node unpacks the archive once.",
+   "Incorrect: WORLD_SIZE is the total number of processes, 12 here, and it has the same value in every process. Checking it does not single out one process per node."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-train-distributed-gpu"
+ },
+ {
+  "id": "2.1.6-07",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Wide World Importers trains a model with PyTorch DistributedDataParallel and the nccl backend on a cluster of Standard_NC96ads_A100_v4 nodes, which have four A100 GPUs each. A one-node job takes four hours. A four-node job takes almost three hours, and profiling shows that the GPUs wait for gradient synchronization between nodes.\n\nYou need to bring the four-node training time closer to linear scaling.\n\nWhat should you do?",
+  "choices": [
+   "Set process_count_per_instance to 8 on each node",
+   "Increase instance_count from four nodes to eight nodes",
+   "Change the communication backend from nccl to gloo",
+   "Move the job to a cluster of Standard_ND96asr_v4 nodes"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Near-linear scaling across nodes needs fast GPU-to-GPU communication. InfiniBand provides it on RDMA-capable sizes with SR-IOV, typically the sizes with r in their names, and Azure Machine Learning clusters of these sizes come with the required drivers preinstalled. Sizes without InfiniBand communicate over Ethernet, which slows gradient synchronization. Learn's example pair, Standard_NC24rs_v3 and Standard_NC24s_v3, follows the same rule, but the NCv3 series was retired on September 30, 2025.",
+  "rationale": [
+   "Incorrect: each node has four GPUs, so eight processes per node would oversubscribe them. The bottleneck is communication between nodes, which more processes would increase. Set process_count_per_instance to the number of GPUs per node.",
+   "Incorrect: more nodes add more gradient synchronization over the same network without InfiniBand, so the GPUs would wait even longer. Add nodes when the cross-node network is fast enough that scaling stays close to linear.",
+   "Incorrect: Learn recommends nccl for the best performance in GPU-based training. Moving to gloo gives up that backend and does not fix the slow network between the nodes, which is the real bottleneck.",
+   "Correct: Standard_ND96asr_v4 has r in its name and InfiniBand, so gradient synchronization between nodes gets low latency and high bandwidth. Standard_NC96ads_A100_v4 has no InfiniBand. Set process_count_per_instance to 8 for its eight GPUs."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-train-distributed-gpu"
+ },
+ {
+  "id": "2.1.6-08",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "yesno",
+  "case": "C-b",
+  "stem": "You configure the command job for the shelf defect detection project with instance_count set to 3 and a pytorch distribution with process_count_per_instance set to 8.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "Each training process sees a WORLD_SIZE value of 24.",
+   "The command must start train.py with torch.distributed.launch so that each GPU gets its own process.",
+   "On the second node, the LOCAL_RANK values of the processes range from 8 to 15.",
+   "Gradient synchronization between the nodes can use InfiniBand."
+  ],
+  "answer": [
+   0,
+   3
+  ],
+  "explanation": "For a pytorch distribution, Azure Machine Learning starts process_count_per_instance processes on each of the instance_count nodes and sets MASTER_ADDR, MASTER_PORT, WORLD_SIZE, NODE_RANK, RANK, and LOCAL_RANK. RANK is global, LOCAL_RANK restarts at 0 on every node, and RDMA-capable sizes such as Standard_ND96asr_v4 add InfiniBand between nodes.",
+  "rationale": [
+   "Yes: WORLD_SIZE is the total number of processes, three nodes times eight processes per node, which matches the 24 GPUs that the job uses.",
+   "No: Azure Machine Learning launches the processes itself when the job uses the pytorch distribution, so no launcher utility such as torch.distributed.launch is needed.",
+   "No: LOCAL_RANK is the rank within a node, so it ranges from 0 to 7 on every node. The values 8 to 15 on the second node are the global RANK values.",
+   "Yes: gpu-cluster uses Standard_ND96asr_v4, an RDMA-capable size with r in its name and InfiniBand support, so cross-node communication can use the low-latency InfiniBand network."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-train-distributed-gpu"
+ },
+ {
+  "id": "2.1.7-01",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing builds a pipeline with the Azure Machine Learning Python SDK v2. The pipeline has a data preparation step, a training step named train_node, and a scoring step. The data preparation and scoring steps must run on a CPU cluster named cpu-cluster, and train_node must run on a GPU cluster named gpu-cluster.\n\nWhat should you do?",
+  "choices": [
+   "Set default_compute in the @pipeline decorator to cpu-cluster and set train_node.compute to gpu-cluster",
+   "Set default_compute in the @pipeline decorator to gpu-cluster and leave the compute of each step unset",
+   "Set default_compute in the @pipeline decorator to gpu-cluster and set train_node.compute to cpu-cluster",
+   "Submit train_node as a separate command job on gpu-cluster and pass its output to the pipeline"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A pipeline-level default_compute applies to every step that does not set its own compute, and compute set on a step overrides the default for that step. This lets one pipeline run heavy training on GPU nodes and lighter steps on cheaper CPU nodes.",
+  "rationale": [
+   "Correct: the default compute sends the preparation and scoring steps to cpu-cluster, and the compute set on train_node overrides the default, so only training runs on gpu-cluster.",
+   "Incorrect: with only a default of gpu-cluster, every step runs on the GPU cluster, including preparation and scoring. Use a single default when all steps need the same kind of compute.",
+   "Incorrect: this is the reverse of the requirement. The two light steps would use GPU nodes, and the training step would run on the CPU cluster.",
+   "Incorrect: a separate job breaks the pipeline into pieces that you must connect by hand, so the steps no longer run as one pipeline with tracked dependencies. Step-level compute keeps them in one pipeline."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-component-pipeline-python"
+ },
+ {
+  "id": "2.1.7-02",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adventure Works Cycles runs a training pipeline several times a day while the team tunes the training step. The first step, fetch_rates, downloads exchange rates from a public URL; its inputs never change, but the data at the URL does. The other steps must keep reusing their earlier outputs when nothing in them changes.\n\nYou need to ensure that fetch_rates runs in every pipeline job.\n\nWhat should you do?",
+  "choices": [
+   "Set force_rerun to true in the settings of the pipeline job",
+   "Set is_deterministic to false in the fetch_rates component definition",
+   "Set continue_on_step_failure to false in the settings of the pipeline job",
+   "Set is_deterministic to true in the fetch_rates component definition"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A pipeline step is reused when its component is deterministic, the pipeline does not force a rerun, and its code, environment, inputs, parameters, and settings are unchanged. is_deterministic defaults to true; set it to false for a component that loads data from an external source that can change, such as a URL.",
+  "rationale": [
+   "Incorrect: force_rerun true reruns every step in the pipeline, so the other steps would stop reusing their outputs. Use it when the whole pipeline must run from scratch.",
+   "Correct: with is_deterministic false, the pipeline never reuses fetch_rates and always runs it, which picks up the new rates. Learn recommends this for components that load data from a URL that can change.",
+   "Incorrect: continue_on_step_failure decides whether the pipeline keeps running after a step fails. It has no effect on whether a step is reused.",
+   "Incorrect: true is already the default, so fetch_rates is reused when its inputs do not change, which is exactly the problem. Keep true for steps that give the same output for the same inputs."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-component-command"
+ },
+ {
+  "id": "2.1.7-03",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Blue Yonder Airlines has a pipeline job in which a training step and a long data quality report step run in parallel after a preparation step. When the training step fails, the report step keeps running for another hour, which wastes compute because the results are discarded.\n\nYou need to ensure that a failure in any step stops the pipeline and cancels the steps that are still running.\n\nWhich setting should you add to the pipeline job YAML file?",
+  "choices": [
+   "`limits.timeout: 3600` on the report step",
+   "`settings.force_rerun: false`",
+   "`settings.default_compute: azureml:serverless`",
+   "`settings.continue_on_step_failure: false`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The pipeline job YAML schema lists True as the default for continue_on_step_failure, so when a step fails, the steps that do not depend on it keep running. Setting it to false stops the whole pipeline at the first failure and cancels running steps. The schedule YAML schema lists False as its default, so set the value explicitly instead of relying on a default. Other settings control reuse (force_rerun), placement (default_compute), and the run time of a single step.",
+  "rationale": [
+   "Incorrect: a timeout cancels the report step only after an hour, whether or not training fails, and it could also cut off healthy runs. It does not react to the failure of another step.",
+   "Incorrect: force_rerun controls whether steps can reuse outputs of earlier jobs, and false is already the default. It does not change what happens when a step fails.",
+   "Incorrect: serverless as the default compute changes where steps run, not how the pipeline reacts to a failed step, so the report step would still keep running.",
+   "Correct: with continue_on_step_failure false, the entire pipeline stops when one step fails, and steps that are still running, such as the report step, are canceled."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-job-pipeline"
+ },
+ {
+  "id": "2.1.7-04",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Alpine Ski House uses the Azure Machine Learning Python SDK v2. The prep.yml and train.yml files define two command components, and no pipeline YAML file exists. An MLClient object named ml_client is connected to the workspace. Steps whose inputs and code did not change must be able to reuse the outputs of earlier runs.\n\nYou need to build a pipeline in which the train component consumes the output of the prep component, run it once, and follow its progress.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`prep = load_component(source=\"./prep.yml\")` and `train = load_component(source=\"./train.yml\")`",
+   "Decorate a function named sales_pipeline with `@pipeline(default_compute=\"cpu-cluster\")` that calls `prep_node = prep(raw_data=raw)` and `train(training_data=prep_node.outputs.clean_data)`",
+   "`pipeline_job = sales_pipeline(raw=Input(type=\"uri_folder\", path=\"azureml:raw-sales@latest\"))`",
+   "`pipeline_job = ml_client.jobs.create_or_update(pipeline_job, experiment_name=\"sales-train\")` and then `ml_client.jobs.stream(pipeline_job.name)`",
+   "`pipeline_job.settings.force_rerun = True`",
+   "`az ml job create --file pipeline.yml`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "With the SDK, you load components (from YAML, Python functions, or the workspace), compose them in a function decorated with @pipeline that wires outputs to inputs, call the function with the pipeline inputs to get a pipeline job, and submit it with ml_client.jobs.create_or_update().",
+  "rationale": [
+   "Step 1: load_component() turns each component YAML file into a function that you can call inside a pipeline. The pipeline definition needs these functions.",
+   "Step 2: the @pipeline function wires the clean_data output of prep_node to the training_data input of train, which creates the dependency, and default_compute sets the compute for both steps.",
+   "Step 3: calling sales_pipeline with the raw input creates the pipeline job object. The pipeline-level input is bound to the latest version of the raw-sales data asset.",
+   "Step 4: create_or_update() submits the pipeline job under the sales-train experiment, and stream() follows its progress until it completes.",
+   "Incorrect: force_rerun True reruns every step, so no step reuses outputs of earlier runs, which breaks the reuse requirement. Use it only when everything must run from scratch.",
+   "Incorrect: az ml job create submits a pipeline that is defined in a YAML file, and no pipeline YAML file exists here. The pipeline is defined in Python and submitted with ml_client."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-create-component-pipeline-python"
+ },
+ {
+  "id": "2.1.7-05",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "yesno",
+  "stem": "Contoso, Ltd. submits the following pipeline job by using the Azure CLI:\n\n```yaml\n$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json\ntype: pipeline\nsettings:\n  default_compute: azureml:cpu-cluster\ninputs:\n  raw_data:\n    type: uri_folder\n    path: azureml:raw-sales@latest\njobs:\n  prep:\n    type: command\n    component: azureml:prep_sales@latest\n    inputs:\n      input_data: ${{parent.inputs.raw_data}}\n  train:\n    type: command\n    component: azureml:train_sales@latest\n    compute: azureml:gpu-cluster\n    inputs:\n      training_data: ${{parent.jobs.prep.outputs.clean_data}}\n```\n\nThe prep_sales component does not set is_deterministic.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The train step starts only after the prep step produces clean_data.",
+   "The train step runs on cpu-cluster because default_compute is set for the pipeline.",
+   "If the same pipeline is submitted again with unchanged inputs, components, and settings, the prep step can reuse its earlier output."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "In a pipeline YAML file, ${{parent.inputs.<name>}} binds a step to a pipeline input and ${{parent.jobs.<step>.outputs.<name>}} binds it to the output of another step, which creates the execution order. Step-level compute overrides default_compute, and components are reused by default when nothing changed.",
+  "rationale": [
+   "Yes: the training_data input is bound to the clean_data output of prep, so the pipeline service runs train only after prep has produced that output.",
+   "No: compute set on a step overrides the pipeline default for that step, so train runs on gpu-cluster. Steps without their own compute, such as prep, use cpu-cluster.",
+   "Yes: is_deterministic defaults to true and force_rerun defaults to false, so a step whose code, environment, inputs, and settings are unchanged is reused instead of run again."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/reference-yaml-job-pipeline"
+ },
+ {
+  "id": "2.1.7-06",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam Residences has a pipeline job named pipeline_job and a team in Seattle. The pipeline must run every Monday at 02:00 Pacific time.\n\nWhich trigger should you use in the JobSchedule object?",
+  "choices": [
+   "`CronTrigger(expression=\"0 2 * * 1\")`",
+   "`CronTrigger(expression=\"2 0 * * 1\", time_zone=\"Pacific Standard Time\")`",
+   "`CronTrigger(expression=\"0 2 * * 1\", time_zone=\"Pacific Standard Time\")`",
+   "`CronTrigger(expression=\"0 2 1 * *\", time_zone=\"Pacific Standard Time\")`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A schedule cron expression has the fields MINUTES HOURS DAYS MONTHS DAYS-OF-WEEK, where days of the week run from 0 (Sunday) to 6. Azure Machine Learning does not support DAYS and MONTHS values and treats them as *. Without time_zone, the schedule uses UTC.",
+  "rationale": [
+   "Incorrect: the expression is right, but without time_zone the schedule uses UTC, so the pipeline would start at 02:00 UTC, which is the evening before in Seattle.",
+   "Incorrect: the first field is minutes and the second is hours, so 2 0 means 00:02, two minutes after midnight, instead of 02:00.",
+   "Correct: 0 2 means minute 0 of hour 2, and 1 in the days-of-week field means Monday. time_zone sets Pacific Standard Time so that 02:00 is Seattle time instead of UTC.",
+   "Incorrect: 1 in the DAYS field asks for the first day of the month, but DAYS values are not supported and are treated as *, so the pipeline would run every day at 02:00."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-schedule-pipeline-job"
+ },
+ {
+  "id": "2.1.7-07",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "At Margie's Travel, User1 created a schedule that runs a retraining pipeline every night, and assigned a managed identity to the schedule. User1 later moved to another team, and an administrator removed the AzureML Data Scientist role from User1 on the workspace. Since then, every job that the schedule triggers fails. The schedule is enabled and its start time is in the past.\n\nYou need to make the scheduled jobs succeed again with the least change to the schedule configuration.\n\nWhat should you do?",
+  "choices": [
+   "Restore the job submission permissions of User1 on the workspace",
+   "Grant the managed identity of the schedule the Contributor role on the workspace",
+   "Disable the schedule and enable it again with az ml schedule enable",
+   "Set a new start_time on the schedule with az ml schedule update"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A schedule submits jobs on behalf of its author. Even after a managed identity is assigned to the schedule, the author must keep the permissions to run jobs, or the triggered jobs fail. Schedules that do not trigger at all are usually disabled or have a start time in the future.",
+  "rationale": [
+   "Correct: Learn states that the schedule author must retain job run permissions for the schedule to work, even with a managed identity assigned. Restoring them fixes the failures without changing the schedule.",
+   "Incorrect: the managed identity is already assigned, and it does not replace the permissions of the author, so the jobs keep failing. More rights on the identity would only widen its access.",
+   "Incorrect: disabling and enabling a schedule helps when it is disabled and does not trigger. Here it is enabled and triggers jobs, which then fail because of the missing author permissions.",
+   "Incorrect: a start time in the future stops a schedule from triggering, which is not the symptom. The jobs are triggered and fail, so changing start_time does not help."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-schedule-pipeline-job"
+ },
+ {
+  "id": "2.1.7-08",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "multi",
+  "case": "C-b",
+  "stem": "You need to configure the nightly retraining pipeline and its schedule so that they meet the pipeline requirements.\n\nWhich three actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Create a JobSchedule with `CronTrigger(expression=\"30 1 * * *\", time_zone=\"Eastern Standard Time\")`",
+   "Use the `${{creation_context.trigger_time}}` expression in the output path of the pipeline job",
+   "Set is_deterministic to false in the definition of the ingest_supplier component",
+   "Use the `${{name}}` expression in the output path of the pipeline job in the schedule definition",
+   "Create a JobSchedule with `RecurrenceTrigger(frequency=\"day\", interval=1, schedule=RecurrencePattern(hours=1, minutes=30))`",
+   "Set force_rerun to true in the settings of the pipeline job"
+  ],
+  "answer": [
+   0,
+   2,
+   3
+  ],
+  "explanation": "A schedule pairs a pipeline job with a cron or recurrence trigger whose time zone defaults to UTC. Reuse is controlled per component with is_deterministic and for the whole pipeline with force_rerun. In schedules, ${{name}} resolves to the job name in output paths, and ${{creation_context.trigger_time}} resolves to the trigger time in string inputs.",
+  "rationale": [
+   "Correct: 30 1 * * * fires at minute 30 of hour 1 every day, and time_zone sets Eastern Standard Time, so the pipeline runs at 01:30 head office time instead of UTC.",
+   "Incorrect: ${{creation_context.trigger_time}} is supported only for string type inputs of the pipeline job, not for output paths. It also gives the trigger time instead of the job name.",
+   "Correct: with is_deterministic false, ingest_supplier is never reused and always calls the supplier API, while the other steps keep the default reuse behavior.",
+   "Correct: ${{name}} resolves to the name of the triggered job and is supported in the outputs path of the pipeline job, so each run writes its report to a folder named after the job.",
+   "Incorrect: the recurrence pattern fires daily at 01:30, but without time_zone the schedule uses UTC, so the pipeline would not run at 01:30 in Eastern Standard Time.",
+   "Incorrect: force_rerun true reruns every step in each pipeline job, so prep, train, and evaluate would never reuse their earlier outputs, which breaks the reuse requirement."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-schedule-pipeline-job"
+ },
+ {
+  "id": "2.1.8-01",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A data scientist at Tailspin Toys has run 40 training jobs in an experiment named churn. The tracking URI is set to the workspace. The data scientist must load the parameters and the final metric values of every run in the experiment into a pandas DataFrame to compare them.\n\nWhich code should you use?",
+  "choices": [
+   "`MlflowClient().get_metric_history(\"churn\", \"auc\")`",
+   "`mlflow.search_experiments(filter_string=\"name = 'churn'\")`",
+   "`mlflow.get_run(run_id=\"churn\")`",
+   "`mlflow.search_runs(experiment_names=[\"churn\"])`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The Azure Machine Learning SDK v2 has no API to query logged metrics, so you query runs with MLflow. mlflow.search_runs() returns a pandas DataFrame by default, with one row per run and columns such as params.<name> and metrics.<name>, which hold the last logged value of each metric.",
+  "rationale": [
+   "Incorrect: get_metric_history() returns every logged value of one metric for one run, given its run ID. Use it for a loss curve of a single run, not for a table of all runs.",
+   "Incorrect: search_experiments() returns experiments, not runs. Use it to find experiments by name, tag, or creation time before you search their runs.",
+   "Incorrect: get_run() returns a single Run object for one run ID, and churn is an experiment name, not a run ID. Use it to inspect the details of one known run.",
+   "Correct: search_runs() with experiment_names returns every run of churn as a DataFrame, with params.* and metrics.* columns that you can sort, filter, and compare."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-track-experiments-mlflow"
+ },
+ {
+  "id": "2.1.8-02",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A data scientist at Coho Winery uses MLflow connected to an Azure Machine Learning workspace. The data scientist needs a DataFrame of the runs in an experiment, ordered from the highest to the lowest logged accuracy.\n\nWhich code should you use?",
+  "choices": [
+   "`mlflow.search_runs(experiment_ids=[exp_id], order_by=[\"attributes.duration DESC\"])`",
+   "`mlflow.search_runs(experiment_ids=[exp_id], order_by=[\"metrics.accuracy DESC\"])`",
+   "`mlflow.search_runs(experiment_ids=[exp_id]).sort_values(\"metrics.accuracy\", ascending=False)`",
+   "`mlflow.search_runs(experiment_ids=[exp_id], filter_string=\"metrics.accuracy DESC\")`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "When MLflow is connected to Azure Machine Learning, order_by supports run attributes, such as start_time and duration, but not expressions with metrics.*, params.*, or tags.*. To order by a metric, return the DataFrame and sort it with the pandas sort_values() method.",
+  "rationale": [
+   "Incorrect: ordering by attributes.duration is supported, and Azure Machine Learning adds this attribute for convenience, but it orders the runs by how long they ran, not by accuracy.",
+   "Incorrect: this works in open-source MLflow, but Azure Machine Learning does not support order_by expressions that contain metrics.*, params.*, or tags.*. Use order_by only for attributes.",
+   "Correct: search_runs() returns a DataFrame with a metrics.accuracy column, and pandas sort_values() with ascending=False orders the runs from the highest to the lowest accuracy.",
+   "Incorrect: filter_string selects runs that match a condition, such as metrics.accuracy > 0.8, and DESC is not a valid comparison. Filtering does not order the results."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-track-experiments-mlflow"
+ },
+ {
+  "id": "2.1.8-03",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A team lead at Nod Publishers wants to review the training jobs that users canceled in the studio during the last week. The team lead queries the runs by using MLflow connected to the Azure Machine Learning workspace.\n\nWhich filter string should you use?",
+  "choices": [
+   "`attributes.status = 'Canceled'`",
+   "`attributes.status = 'Killed'`",
+   "`attributes.status = 'Failed'`",
+   "`attributes.status = 'Finished'`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "MLflow names run statuses differently from Azure Machine Learning. Not started, Queued, and Preparing jobs map to Scheduled, Running maps to Running, Completed maps to Finished, Failed maps to Failed, and Canceled maps to Killed. Values for attributes are always strings in quotes.",
+  "rationale": [
+   "Incorrect: Canceled is the status name in Azure Machine Learning, but MLflow uses its own names when you filter runs. A filter on Canceled does not match the canceled jobs.",
+   "Correct: MLflow reports a job that a user canceled, or that the system terminated, with the status Killed, so this filter returns the canceled jobs.",
+   "Incorrect: Failed matches jobs that completed with errors. Use it to find broken runs; jobs that a user or the system canceled have a different status.",
+   "Incorrect: Finished is the MLflow name for jobs that Azure Machine Learning shows as Completed, which ended without errors. It does not include canceled jobs."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-track-experiments-mlflow"
+ },
+ {
+  "id": "2.1.8-04",
+  "obj": "2.1.8",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Two teams at Relecloud log runs to experiments named pricing-a and pricing-b. Each training script calls mlflow.log_param(\"model_type\", ...) and mlflow.log_metric(\"auc\", ...). You need the five runs with the highest auc across both experiments, considering only runs in which model_type is xgboost and auc is greater than 0.8.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nruns = mlflow.search_runs(\n    [[1]]=[\"pricing-a\", \"pricing-b\"],\n    filter_string=\"[[2]] = 'xgboost' AND [[3]] > 0.8\",\n)\ntop5 = runs.[[4]](\"metrics.auc\", ascending=False).head(5)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "experiment_names",
+     "experiment_ids",
+     "search_all_experiments"
+    ],
+    "why": [
+     "Correct: experiment_names accepts a list of experiment names, so the search covers both pricing-a and pricing-b in one call.",
+     "Incorrect: experiment_ids also accepts a list, but it expects experiment IDs, and the code passes experiment names. Use it when you already have the IDs.",
+     "Incorrect: search_all_experiments is a boolean that searches every experiment in the workspace. It does not take a list, and it would include runs from unrelated experiments."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "attributes.model_type",
+     "params.model_type",
+     "tags.model_type"
+    ],
+    "why": [
+     "Incorrect: the attributes prefix covers run information such as status, user_id, start_time, and duration, not values that the script logs.",
+     "Correct: model_type is logged with log_param(), so it is filtered through the params prefix. For parameters, the supported operators are =, like, and !=.",
+     "Incorrect: the tags prefix filters values set as tags, such as tags.framework. model_type was logged as a parameter, so a tag filter finds no match."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "params.auc",
+     "attributes.auc",
+     "metrics.auc"
+    ],
+    "why": [
+     "Incorrect: auc is a metric, not a parameter, and parameter filters support only =, like, and !=, so a greater-than comparison would not apply.",
+     "Incorrect: attributes describe the run itself, such as its status or duration. Logged metrics are not attributes.",
+     "Correct: auc is logged with log_metric(), so it is filtered through the metrics prefix, which supports numeric comparisons such as greater than."
+    ]
+   },
+   {
+    "label": "Box 4",
+    "options": [
+     "sort_index",
+     "sort_values"
+    ],
+    "why": [
+     "Incorrect: sort_index() orders the DataFrame by its row index instead of a column, so the runs would not be ranked by auc.",
+     "Correct: search_runs() returns a pandas DataFrame, and sort_values() orders it by the metrics.auc column. Azure Machine Learning does not support metrics in order_by, so sorting happens in pandas."
+    ]
+   }
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   1
+  ],
+  "explanation": "mlflow.search_runs() can search several experiments by name or ID and filters with params, metrics, tags, and attributes prefixes joined by AND (OR is not supported). Because order_by does not support metrics in Azure Machine Learning, sort the returned DataFrame with pandas.",
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-track-experiments-mlflow"
+ },
+ {
+  "id": "2.1.8-05",
+  "obj": "2.1.8",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Wingtip Toys runs a sweep job named sweep1 in an experiment named pricing. The sweep maximizes the metric auc and has completed. After completion, the SweepJob object was retrieved with ml_client.jobs.get() and stored in a variable named returned_sweep_job, and MLflow is connected to the workspace.\n\nYou need to identify the run ID of the best trial programmatically.\n\nWhich two actions should you perform? Each correct answer presents a complete solution.",
+  "choices": [
+   "Read `mlflow.get_run(\"sweep1\").data.metrics[\"auc\"]`",
+   "Read `mlflow.get_run(\"sweep1\").data.tags[\"automl_best_child_run_id\"]`",
+   "Search runs in the pricing experiment with `order_by=[\"metrics.auc DESC\"]` and `max_results=1`",
+   "Read `returned_sweep_job.properties[\"best_child_run_id\"]`",
+   "Search runs in the pricing experiment with `filter_string=\"tags.mlflow.parentRunId='sweep1'\"`, sort the DataFrame by metrics.auc in descending order, and take the first run"
+  ],
+  "answer": [
+   3,
+   4
+  ],
+  "explanation": "A completed sweep job exposes the best trial in its best_child_run_id property, which Learn samples use to build the model path. Trials are child runs, so you can also query them through the mlflow.parentRunId tag and rank them by the primary metric yourself. AutoML jobs use a different tag, automl_best_child_run_id.",
+  "rationale": [
+   "Incorrect: this reads a metric from the parent sweep run, not the ID of the best trial. The run ID is what the requirement asks for.",
+   "Incorrect: automl_best_child_run_id is the tag that Learn reads from the parent run of an AutoML job. For a sweep job, Learn exposes the best trial through the best_child_run_id property instead.",
+   "Incorrect: Azure Machine Learning does not support metrics.* in order_by, so this query does not rank runs by auc. Use order_by for attributes such as start_time.",
+   "Correct: the best_child_run_id property of a completed sweep job holds the run ID of the trial with the best primary metric, which you can use, for example, to register its model output.",
+   "Correct: trials of a sweep are child runs, and the job name of the sweep is its MLflow run ID, so the mlflow.parentRunId tag finds all trials. Sorting the DataFrame by metrics.auc in pandas and taking the first row gives the best trial."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-train-scikit-learn"
+ },
+ {
+  "id": "2.1.8-06",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A training script at Lamna Healthcare Company logs the metric loss once per epoch with mlflow.log_metric(\"loss\", value, step=epoch). A data scientist must plot the complete loss curve of the run with the ID run1 to compare its convergence with other runs.\n\nWhich code should you use to retrieve the values?",
+  "choices": [
+   "`MlflowClient().get_metric_history(\"run1\", \"loss\")`",
+   "`mlflow.get_run(\"run1\").data.metrics[\"loss\"]`",
+   "`mlflow.search_runs(filter_string=\"attributes.run_id = 'run1'\")[\"metrics.loss\"]`",
+   "`mlflow.artifacts.download_artifacts(run_id=\"run1\", artifact_path=\"loss\")`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Run objects and search_runs() results hold only the last logged value of each metric. To get every value of a metric that was logged several times, such as a loss curve, call get_metric_history() on an MlflowClient with the run ID and the metric name.",
+  "rationale": [
+   "Correct: get_metric_history() returns every logged value of loss for run1, with its step and timestamp, which is what you need to plot the full curve.",
+   "Incorrect: the metrics dictionary of a run returns only the most recently logged value of each metric, so it gives the final loss, not the curve.",
+   "Incorrect: search_runs() also returns only the last logged value in the metrics.loss column. It suits comparing final values across many runs.",
+   "Incorrect: download_artifacts() downloads files logged as artifacts, such as images or models. Metrics are not artifacts, so there is no file named loss to download."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-log-view-metrics"
+ },
+ {
+  "id": "2.1.8-07",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Proseware, Inc. ran a sweep job that tunes four hyperparameters. In Azure Machine Learning studio, a data scientist must see in a single view how the values of all four hyperparameters relate to the primary metric across the trials, and must be able to highlight a range of values on one axis.\n\nWhich visualization should you use?",
+  "choices": [
+   "The metrics chart",
+   "The parallel coordinates chart",
+   "The two-dimensional scatter chart",
+   "The three-dimensional scatter chart"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The studio offers several views of a sweep: the metrics chart tracks the primary metric of each trial over time, the parallel coordinates chart relates every hyperparameter to the primary metric with interactive axes, and the 2D and 3D scatter charts relate two or three hyperparameters to the metric.",
+  "rationale": [
+   "Incorrect: the metrics chart draws one line per trial with the primary metric at each logged interval. It shows how trials progress over time, not how hyperparameter values relate to the result.",
+   "Correct: the parallel coordinates chart has an axis per hyperparameter plus the metric, so all four appear in one view, and you can select and drag along an axis to highlight a range of values.",
+   "Incorrect: the two-dimensional scatter chart shows the correlation between two hyperparameters and the primary metric, so it cannot show all four hyperparameters in one view.",
+   "Incorrect: the three-dimensional scatter chart adds a third hyperparameter dimension, but it still covers only three of the four hyperparameters at a time."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-tune-hyperparameters"
+ },
+ {
+  "id": "2.1.8-08",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A data scientist at City Power & Light wants to compare the parameters, metrics, and tags of three jobs and two registered models side by side in Azure Machine Learning studio. The jobs are separate command jobs, not trials of a sweep job.\n\nWhat should you use?",
+  "choices": [
+   "The parallel coordinates chart of a sweep job",
+   "The Responsible AI dashboard of one of the models",
+   "The compare feature for jobs and models (preview)",
+   "The Outputs + logs tab of each of the three jobs"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Azure Machine Learning studio has a compare feature (preview) for jobs and models: after you enable it in the preview panel, you select the jobs and models and compare their parameters, metrics, and tags. Programmatic comparison uses mlflow.search_runs() across experiments.",
+  "rationale": [
+   "Incorrect: the parallel coordinates chart compares the trials of a single sweep job. These jobs are separate command jobs, and the chart does not include registered models.",
+   "Incorrect: the Responsible AI dashboard assesses one model, for example with error analysis and fairness views. It does not compare the parameters and metrics of several jobs.",
+   "Correct: once you enable it in the preview panel, the compare feature shows the parameters, metrics, and tags of the jobs and models that you select side by side.",
+   "Incorrect: Outputs + logs shows the files and logs of one job, such as std_log.txt. Opening it for each job does not give a side-by-side comparison of parameters and metrics."
+  ],
+  "ref": "https://learn.microsoft.com/azure/machine-learning/how-to-track-experiments-mlflow"
+ }
+]

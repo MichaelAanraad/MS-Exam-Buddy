@@ -1,0 +1,813 @@
+[
+ {
+  "id": "5.2.1-01",
+  "obj": "5.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys has a customer support assistant that uses a model in Microsoft Foundry. For each of 2,000 real support prompts, reviewers compared two candidate answers and marked one as better for tone and completeness. Many prompts have no single correct answer. You plan to use Managed Training to train the model on the reviewers' judgments.\n\nWhich customization method should you use?",
+  "choices": [
+   "Supervised fine-tuning (SFT)",
+   "Direct preference optimization (DPO)",
+   "Reinforcement fine-tuning (RFT)",
+   "Distillation through teacher-generated SFT data"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Pick the Managed Training method by the training signal you have. Demonstrations (a prompt plus the desired response) mean SFT, a preferred and a rejected response to the same input mean DPO, and prompts plus a grader that reliably scores responses mean RFT. You can also stack methods, for example SFT first and then DPO on the SFT model.",
+  "rationale": [
+   "Incorrect: SFT learns from prompts paired with one desired response, so it would keep only the better answer and throw away the comparison with the worse one. Use SFT when you can demonstrate the exact behavior the model should learn.",
+   "Correct: DPO trains on a preferred and a rejected response to the same input, which is exactly what the reviewers produced. It fits when quality depends on preferences such as tone or completeness rather than on one correct answer.",
+   "Incorrect: RFT needs prompts plus a grader that scores generated responses. The reviewers produced pairwise judgments, not a scoring function. Use RFT when several solutions are possible and you can score their quality reliably.",
+   "Incorrect: distillation fine-tunes a smaller model with SFT on the responses of a larger teacher model. It transfers capability between models and does not learn from human preference judgments. Use it to specialize a smaller, cheaper model."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/overview#customization-methods"
+ },
+ {
+  "id": "5.2.1-02",
+  "obj": "5.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank wants a reasoning model in Microsoft Foundry to improve at multi-step loan calculations. A calculation can be solved in several valid ways, but each prompt has one verifiable final amount. The training data contains prompts and reference amounts only, with no worked solutions, and a Python function can check whether a final amount is correct. You plan to use Managed Training.\n\nWhich customization method should you use?",
+  "choices": [
+   "Supervised fine-tuning (SFT)",
+   "Direct preference optimization (DPO)",
+   "Reinforcement fine-tuning (RFT)",
+   "Distillation through teacher-generated SFT data"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "RFT is the method for tasks with many valid solution paths and an objective way to score the result. The model generates responses, a grader scores them, and training uses the scores as rewards. A Python grader defines a grade(sample, item) function that returns a numeric score from the response and the dataset record.",
+  "rationale": [
+   "Incorrect: SFT needs a desired response for each prompt to learn from, and the data has only reference amounts without worked solutions. Use SFT when you can show the model the complete behavior that you want.",
+   "Incorrect: DPO needs a preferred and a rejected response to the same prompt. There are no response pairs here, and correctness is objective rather than a matter of preference. Use DPO for subjective qualities such as tone or style.",
+   "Correct: RFT uses prompts and a grader that scores generated responses. Several solution paths are valid and a Python grader can reliably check the final amount, which is the situation that RFT is designed for.",
+   "Incorrect: distillation trains a smaller model with SFT on a teacher model's responses. It still learns from demonstrations, so it needs generated answers to imitate rather than a correctness check that rewards the model."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reinforcement-fine-tuning"
+ },
+ {
+  "id": "5.2.1-03",
+  "obj": "5.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. uses reinforcement fine-tuning (RFT) in Microsoft Foundry to train a model that reads contract text and returns structured JSON with a clause_type field and an extracted_text field. The reward must give equal weight to two checks: clause_type must exactly equal the reference label, and extracted_text must approximately match the reference passage. Grading must not consume tokens of a grading model.\n\nWhich grader type should you configure?",
+  "choices": [
+   "string_check",
+   "text_similarity",
+   "score_model",
+   "multi"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Choose an RFT grader by what defines a good answer: string_check for exact answers or labels, text_similarity for resemblance to a reference, score_model for judgment against a rubric, python for custom calculations, and multi for several criteria. A Multi-Grader references its child graders by their keys in the calculate_output expression.",
+  "rationale": [
+   "Incorrect: a string_check grader compares one input with one reference by using eq, ne, like, or ilike. It can check clause_type exactly, but on its own it cannot also score the approximate passage match. Use it for exact answers or labels.",
+   "Incorrect: a text_similarity grader scores how closely one text resembles a reference, for example with fuzzy_match. It covers extracted_text but not the exact clause_type check. Use it alone when only resemblance to a reference matters.",
+   "Incorrect: a score_model grader asks a grading model to judge responses against a rubric, and its tokens are billed separately, which the requirement forbids. Use it when correctness needs judgment that simple rules cannot express.",
+   "Correct: a Multi-Grader combines child graders, here a string_check on clause_type and a text_similarity on extracted_text, and calculate_output averages them, for example (a + b) / 2. Neither child grader calls a model."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reinforcement-fine-tuning"
+ },
+ {
+  "id": "5.2.1-04",
+  "obj": "5.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam, Inc. runs reinforcement fine-tuning (RFT) with a string_check grader. The prompts ask the model to explain its reasoning and then name a diagnosis code, so each generated response contains more text than the code. Each dataset record stores the expected code in a reference_answer field. The model sometimes writes the code in lowercase, and such responses must still earn the full reward.\n\nWhich grader configuration should you use?",
+  "choices": [
+   "operation: like, input: {{sample.output_text}}, reference: {{item.reference_answer}}",
+   "operation: ilike, input: {{item.reference_answer}}, reference: {{sample.output_text}}",
+   "operation: ilike, input: {{sample.output_text}}, reference: {{item.reference_answer}}",
+   "operation: eq, input: {{sample.output_text}}, reference: {{item.reference_answer}}"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The string_check grader supports eq and ne (case-sensitive equality and inequality), like (contains, case-sensitive), and ilike (contains, case-insensitive). For a containment check, Learn puts the generated response in input, usually {{sample.output_text}}, and the expected substring in reference, usually a field of the dataset record such as {{item.reference_answer}}.",
+  "rationale": [
+   "Incorrect: like returns 1 when the input contains the reference, but the comparison is case-sensitive, so a response with a lowercase code earns 0. Use like when the casing of the expected substring must match exactly.",
+   "Incorrect: ilike tests whether the input contains the reference. With the short code as input and the long response as reference, it checks whether the code contains the whole response, which fails. Put the generated response in input for a containment check.",
+   "Correct: ilike returns 1 when the input contains the reference and ignores case. The generated response is the input and the expected code is the reference, which is the documented layout for a containment check.",
+   "Incorrect: eq returns 1 only when the input equals the reference, case-sensitively. The response also contains reasoning text, so it never equals the code. Use eq when the model outputs only the label."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reinforcement-fine-tuning"
+ },
+ {
+  "id": "5.2.1-05",
+  "obj": "5.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A. Datum Corporation has a machine learning research team that wants to fine-tune an open-weight model in Microsoft Foundry. The team must implement its own loss function, collect tool-use rollouts that are scored with a custom reward, and control gradient accumulation and when checkpoints are saved. The team does not want to provision or manage training GPUs.\n\nWhich training approach should you recommend?",
+  "choices": [
+   "Managed Training with reinforcement fine-tuning and a Python grader",
+   "Programmed Training (preview)",
+   "Managed Training with supervised fine-tuning and custom hyperparameters",
+   "A command job on an Azure Machine Learning compute cluster"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft Foundry offers two training approaches on Foundry-managed infrastructure. Managed Training runs predefined SFT, DPO, and RFT jobs from your data and settings and suits most teams. Programmed Training (preview) exposes training primitives in Python for experienced practitioners who need custom losses, rewards, rollouts, and training loops; it requires access approval.",
+  "rationale": [
+   "Incorrect: in Managed Training you control the data, the supported hyperparameters, and RFT graders. A Python grader supplies rewards, but you cannot replace the loss or control gradient accumulation. Use it when a predefined RFT workflow with a custom reward is enough.",
+   "Correct: Programmed Training lets you write a Python loop in which you control losses, rewards, rollouts, gradient accumulation, updates, and checkpoints, while Foundry runs the training and sampling operations on managed infrastructure.",
+   "Incorrect: Managed SFT trains on prompts and desired responses with settings such as batch size, learning rate multiplier, and number of epochs. It exposes no custom loss or rollout control. Use it for predefined workflows such as learning from support conversations.",
+   "Incorrect: a command job on an Azure Machine Learning compute cluster can run any training code, but you create and size the GPU cluster yourself, which the team wants to avoid. Use it when you need full control over the compute environment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/overview"
+ },
+ {
+  "id": "5.2.1-06",
+  "obj": "5.2.1",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Litware, Inc. prepared training.jsonl and validation.jsonl files in the chat completions format. A Python script must use the Microsoft Foundry SDK, with the project endpoint in the FOUNDRY_PROJECT_ENDPOINT environment variable, to start a supervised fine-tuning (SFT) job, and then list the checkpoints that the job creates so that the team can compare them.\n\nWhich five actions should the script perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Create an `AIProjectClient` with the project endpoint and `DefaultAzureCredential()`, and then call `project.get_openai_client()`.",
+   "Upload each file with `client.files.create(file=f, purpose=\"fine-tune\")`.",
+   "Call `client.files.wait_for_processing(file_id)` for both uploaded files.",
+   "Call `client.fine_tuning.jobs.create()` with the base model, both file IDs, and a `method` of type `supervised`.",
+   "After training progresses, call `client.fine_tuning.jobs.checkpoints.list(job.id)`.",
+   "Upload each file with `client.files.create(file=f, purpose=\"user_data\")`.",
+   "Call `client.fine_tuning.jobs.cancel(job.id)`."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "explanation": "The Managed Training workflow in Python is: get an OpenAI client from the project client, upload the datasets with purpose fine-tune, wait until the files are processed, create the job with a method type, and then monitor its status, events, and checkpoints. The same upload and job calls also work with the OpenAI SDK pointed at the resource endpoint.",
+  "rationale": [
+   "Step 1: get_openai_client() returns an OpenAI-compatible client from the project client, and every later file and job call runs on that client. DefaultAzureCredential signs in with Microsoft Entra ID instead of an API key.",
+   "Step 2: the training and validation files are uploaded with purpose fine-tune, which marks them as fine-tuning datasets. Each upload returns a distinct file ID that the job needs.",
+   "Step 3: an uploaded file must finish processing before a job can use it. wait_for_processing blocks until each file is ready, so the job is not created with files that are still being processed.",
+   "Step 4: jobs.create submits the SFT job with the processed training and validation file IDs. The method type supervised selects SFT, and the response contains the job ID that the next step uses.",
+   "Step 5: checkpoints appear as training progresses, and a queued job might have none yet. checkpoints.list returns their identifiers and metrics, so you can compare candidates instead of assuming the latest one is best.",
+   "Incorrect: purpose user_data is for general files, such as a reference document that seeds a data generation job. Datasets for a fine-tuning job must be uploaded with purpose fine-tune.",
+   "Incorrect: cancel stops an unneeded job and does not delete deployments or uploaded files. The requirement is to train and compare checkpoints, so cancelling would end the job before it produces them."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/fine-tuning?pivots=programming-language-python"
+ },
+ {
+  "id": "5.2.1-07",
+  "obj": "5.2.1",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Fabrikam, Inc. trained a gpt-4.1-mini model with supervised fine-tuning (SFT). The fine-tuned model has the ID gpt-4.1-mini-2025-04-14.ft-0e208cf33a6a466994aff31a08aba678 and is deployed as support-ft-prod. Reviewers created a prefs.jsonl file in which each line has an input, a preferred_output, and a non_preferred_output. You need to align the SFT model further with the reviewers' preferences by using Managed Training.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nwith open(\"prefs.jsonl\", \"rb\") as f:\n    training_file = client.files.create(file=f, purpose=[[1]])\nclient.files.wait_for_processing(training_file.id)\n\njob = client.fine_tuning.jobs.create(\n    model=[[2]],\n    training_file=training_file.id,\n    method=[[3]],\n    extra_body={\"trainingType\": os.environ[\"FINE_TUNING_TRAINING_TYPE\"]},\n)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "\"batch\"",
+     "\"fine-tune\"",
+     "\"user_data\""
+    ],
+    "why": [
+     "Incorrect: purpose batch is for input files of the Batch API, which runs many inference requests asynchronously. A fine-tuning job does not use a batch input file as training data.",
+     "Correct: datasets for fine-tuning jobs, including DPO preference files, are uploaded with purpose fine-tune so that the job can use them as training or validation data.",
+     "Incorrect: purpose user_data is for general files, such as a reference document for a data generation job. Upload fine-tuning datasets with purpose fine-tune instead."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "\"support-ft-prod\"",
+     "\"gpt-4.1-mini\"",
+     "\"gpt-4.1-mini-2025-04-14.ft-0e208cf33a6a466994aff31a08aba678\""
+    ],
+    "why": [
+     "Incorrect: support-ft-prod is the deployment name, which inference calls use. Learn states that DPO after SFT uses the fine-tuned model's identifier, not its deployment name.",
+     "Incorrect: the base model would start DPO from the original weights and discard what SFT taught. Use a base model identifier when you run DPO without an earlier SFT stage.",
+     "Correct: for DPO after SFT, the model parameter takes the identifier of the fine-tuned model, so the DPO job starts from the SFT weights and keeps what the SFT stage taught."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "{\"type\": \"dpo\"}",
+     "{\"type\": \"supervised\"}",
+     "{\"type\": \"reinforcement\"}"
+    ],
+    "why": [
+     "Correct: the method type dpo selects direct preference optimization, which trains on the preferred_output and non_preferred_output of each input. The model's default hyperparameters apply when none are given.",
+     "Incorrect: the method type supervised expects messages that end with the desired assistant response, not preference pairs. Use it for the SFT stage that comes before DPO.",
+     "Incorrect: the method type reinforcement needs a grader in the method configuration and records that end in a user message. Use it when a grader can score the generated responses."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   2,
+   0
+  ],
+  "explanation": "You can stack fine-tuning methods: SFT first teaches the task, and DPO then adjusts responses toward the preferred behavior. Each DPO dataset line contains an input with a messages array, a preferred_output, and a non_preferred_output. To continue from the SFT model, pass its fine-tuned model identifier, not its deployment name, and confirm that the model supports DPO.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/fine-tuning-direct-preference-optimization?pivots=programming-language-python"
+ },
+ {
+  "id": "5.2.1-08",
+  "obj": "5.2.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Relecloud prepares a reinforcement fine-tuning (RFT) job in Microsoft Foundry. The grader is a text_similarity grader that uses fuzzy_match to compare {{sample.output_json.extracted_text}} with {{item.extracted_text}}. Company policy requires that, before any training compute is spent, a grader is checked for configuration errors and for responses that could earn a high reward without solving the task.\n\nWhich two actions should you perform before you submit the job? Each correct answer presents part of the solution.",
+  "choices": [
+   "Call `client.fine_tuning.alpha.graders.validate(grader=grader)` with the grader definition.",
+   "Call `client.fine_tuning.alpha.graders.run` with the grader, sample responses, and dataset records, including known correct, incorrect, and malformed responses.",
+   "Add a `preferred_output` and a `non_preferred_output` to each training record.",
+   "Change `evaluation_metric` from `fuzzy_match` to `cosine` so that paraphrased passages score higher.",
+   "End each training record with an assistant message that contains the reference passage."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "A grader is the reward function of an RFT job, so a flawed grader trains the wrong behavior. Validate the definition first, and then run it on responses with known scores: correct answers must outscore incorrect ones, and malformed or superficial answers must not earn high rewards. Align the grader's template references with the dataset fields and the response format.",
+  "rationale": [
+   "Correct: graders.validate checks the grader definition before the job is created, which catches configuration errors, such as a malformed grader object, without spending training compute.",
+   "Correct: graders.run scores sample responses against dataset records. Running it on correct, incorrect, and malformed responses shows whether correct answers score higher and whether superficial responses can earn a high reward.",
+   "Incorrect: preferred_output and non_preferred_output are the fields of a DPO dataset. RFT records contain a messages array plus the reference fields that the grader reads, such as extracted_text.",
+   "Incorrect: Learn lists cosine for evaluations, not for RFT. RFT text_similarity graders use metrics such as fuzzy_match, bleu, gleu, meteor, and the rouge variants. Use cosine in an evaluation instead.",
+   "Incorrect: in an RFT dataset each messages array ends in a user message, and the reference answer is stored in a separate field that the grader reads. A final assistant message is the SFT demonstration format."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reinforcement-fine-tuning?pivots=programming-language-python"
+ },
+ {
+  "id": "5.2.2-01",
+  "obj": "5.2.2",
+  "difficulty": "easy",
+  "type": "dragdrop",
+  "stem": "Fabrikam, Inc. uses synthetic data generation (preview) in Microsoft Foundry to create three fine-tuning datasets.\n\nWhich generator configuration should you use for each dataset? To answer, drag the appropriate configurations to the correct datasets. Each configuration may be used once, more than once, or not at all.",
+  "choices": [
+   "Simple Q&A with the Long answer question type",
+   "Simple Q&A with the Short answer question type",
+   "Tool use",
+   "Simulation seed (multi-turn)"
+  ],
+  "targets": [
+   "Dataset1: question-answer pairs from a PDF of tax regulations, in which the answers must show analytical reasoning",
+   "Dataset2: question-answer pairs from a Markdown product FAQ, in which the answers must be brief facts",
+   "Dataset3: multi-turn conversations that call the booking APIs described in an OpenAPI 3.1 JSON file"
+  ],
+  "answer": [
+   0,
+   1,
+   2
+  ],
+  "rationale": [
+   "Dataset1 turns a domain document into question-answer pairs, which is the Simple Q&A generator. Its Long answer question type elicits analytical reasoning in the model response.",
+   "Dataset2 also turns a document into question-answer pairs, but the Short answer question type focuses on factual brevity, which matches the brief answers of an FAQ.",
+   "Dataset3 needs multi-turn conversations with tool calls over an API surface. The Tool use generator takes a valid OpenAPI 3.0.x or 3.1.x specification in JSON as its reference file."
+  ],
+  "notes": [
+   "Generates fine-tuning question-answer pairs from a PDF, Markdown, or plain text reference file under 20 MB. The Long answer question type elicits analytical reasoning in each answer.",
+   "The same Simple Q&A generator, but the Short answer question type focuses on factual brevity. Use it when the fine-tuned model should give concise factual answers.",
+   "Simulates multi-turn conversations with tool calls over the APIs in an OpenAPI 3.0.x or 3.1.x JSON file under 20 MB. It has no configurable parameters.",
+   "A task type for evaluation datasets that produces scenario descriptions, which drive a simulator for multi-turn evaluation. It does not produce training conversations for fine-tuning."
+  ],
+  "explanation": "Synthetic data generation for fine-tuning offers two generators. Simple Q&A turns a domain document into question-answer pairs with a Long answer or Short answer question type, and Tool use turns an OpenAPI specification into multi-turn tool-calling conversations. The output is JSONL that a fine-tuning job can use directly.",
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/data-generation"
+ },
+ {
+  "id": "5.2.2-02",
+  "obj": "5.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys creates a fine-tuning dataset by using the synthetic data generation wizard in the Microsoft Foundry portal. The fine-tuning job that follows must report loss on held-out examples while it trains, and nobody on the team should have to edit the generated JSONL files by hand.\n\nWhich wizard setting should you configure?",
+  "choices": [
+   "Select the option to perform an 80/20 train-validation split automatically.",
+   "Set the number of samples to generate to the maximum of 1,000.",
+   "Set the question type of the Simple Q&A generator to Long answer.",
+   "Provide a custom name to append to the data generation job ID."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The synthetic data generation wizard asks for the task type, the generator parameters, one reference file, a sample count between 50 and 1,000, a generator model, and whether to split the result 80/20 into training and validation data. A validation set lets you compare training and validation metrics to detect overfitting.",
+  "rationale": [
+   "Correct: the wizard can perform an 80/20 train-validation split on the generated dataset automatically, which produces separate training and validation data for the fine-tuning job without manual work.",
+   "Incorrect: the sample count, from 50 to 1,000, sets how many examples are generated, not whether a validation set is produced. Start with a smaller count to check quality before you scale up.",
+   "Incorrect: the question type controls the answer style, where Long answer elicits analytical reasoning and Short answer focuses on brevity. It does not create a validation split.",
+   "Incorrect: the optional custom name is appended to the job ID to help you identify the job. It has no effect on the content or the split of the generated data."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/data-generation#generate-synthetic-data-for-fine-tuning"
+ },
+ {
+  "id": "5.2.2-03",
+  "obj": "5.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adventure Works Cycles has three PDF service manuals of 4 MB each. The team wants one fine-tuning dataset of question-answer pairs that covers all three manuals, produced by a single synthetic data generation job in Microsoft Foundry.\n\nWhat should you do?",
+  "choices": [
+   "Merge the manuals into one PDF and upload it as the reference file of one Simple Q&A job.",
+   "Upload the three PDF files as reference files of one Simple Q&A job.",
+   "Run one Simple Q&A job for each manual and merge the three output files.",
+   "Convert the manuals into one OpenAPI JSON file and upload it to a Tool use job."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Each generator needs exactly one reference file: a PDF, Markdown, or plain text document under 20 MB for Simple Q&A, or an OpenAPI 3.0.x or 3.1.x JSON file under 20 MB for Tool use. Keep the file clean, without boilerplate or personal data, because its quality drives the quality of the generated examples.",
+  "rationale": [
+   "Correct: in the preview the generators accept a single reference file, and Learn says to combine multiple documents into one file before uploading. The combined 12 MB PDF stays under the 20 MB limit for Simple Q&A.",
+   "Incorrect: only one reference file is supported per data generation job in this preview, so one job cannot take three files. Combine the documents first instead.",
+   "Incorrect: three jobs would produce the data, but the requirement is a single generation job. Separate jobs are an option when each manual needs its own dataset or its own settings.",
+   "Incorrect: the Tool use generator expects an OpenAPI specification that describes APIs to call as tools. Service manuals hold domain knowledge, which belongs in a Simple Q&A job."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/data-generation#generate-synthetic-data-for-fine-tuning"
+ },
+ {
+  "id": "5.2.2-04",
+  "obj": "5.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. generated tool-use training conversations from the OpenAPI specification of its order API by using synthetic data generation in Microsoft Foundry. In many generated conversations, the assistant calls the cancel_pending_order operation for orders that were already delivered, although company policy allows cancellation of pending orders only. In the specification, the operation has only a one-line summary.\n\nWhat should you do before you generate the dataset again?",
+  "choices": [
+   "Add the cancellation preconditions and policy to the description of the operation path in the specification.",
+   "Increase the number of samples to generate so that more conversations follow the policy.",
+   "Switch the task type to Simple Q&A with the Long answer question type.",
+   "Add the cancellation policy to the system message of the deployed model after fine-tuning."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Synthetic data is only as good as its reference file. For the Tool use generator, describe each path and parameter clearly and put business rules, such as preconditions and confirmation steps, in the path description. Start with a small sample, review it, fix the reference file, and then scale up.",
+  "rationale": [
+   "Correct: Learn recommends a clear description for each API path and parameter, with business policies in the path description, so that the generator understands when an operation may be called. The regenerated conversations then follow the policy.",
+   "Incorrect: more samples from the same specification repeat the same gap, because nothing in the reference file states the precondition. Scale up only after a small sample shows the right behavior.",
+   "Incorrect: Simple Q&A produces question-answer pairs from a document and produces no tool calls. Tool-calling behavior needs the Tool use generator with an OpenAPI specification.",
+   "Incorrect: a runtime system message does not fix the training data, and the model would still learn the wrong calls from the generated conversations. Fix the reference file so that the training data is right."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/data-generation#best-practices-for-fine-tuning-with-synthetic-data"
+ },
+ {
+  "id": "5.2.2-05",
+  "obj": "5.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Proseware, Inc. fine-tuned a model only on 1,000 synthetic question-answer pairs that were generated from its policy handbook. The model scores well on the generated validation split but poorly on a test set of real customer questions. The team also has 300 anonymized real customer conversations with approved answers.\n\nWhat should you do next?",
+  "choices": [
+   "Mix the real conversations with the synthetic pairs, retrain, and evaluate on the real test set.",
+   "Generate another 1,000 synthetic pairs from the same handbook and retrain on both sets.",
+   "Regenerate the pairs with the Short answer question type and retrain on them only.",
+   "Retrain on the synthetic pairs with more epochs until training loss stops falling."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Synthetic data fills gaps when real data is scarce, but a model trained only on synthetic data can generalize poorly to real traffic. Combine it with real examples where you have them, consider a smaller learning rate to curb overfitting, try earlier checkpoints if quality regresses, and always evaluate on real-world tasks.",
+  "rationale": [
+   "Correct: Learn recommends mixing a portion of real-world data with the synthetic data to give the model a more diverse and representative training set, and then auditing performance on real-world tasks. The 300 approved conversations provide exactly that.",
+   "Incorrect: more pairs from the same handbook add volume but not the variety of real customer phrasing that the model lacks. Generate more synthetic data when coverage of the source content, not realism, is the gap.",
+   "Incorrect: the question type changes the answer length, not how closely the data resembles real customer questions. Use Short answer when the answers should be brief facts.",
+   "Incorrect: more epochs on the same synthetic data increase the risk of overfitting to it, which is already the symptom. Learn suggests a smaller learning rate or earlier checkpoints instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/data-generation#best-practices-for-fine-tuning-with-synthetic-data"
+ },
+ {
+  "id": "5.2.2-06",
+  "obj": "5.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders classifies support tickets with gpt-4.1 in Microsoft Foundry. The results are good, but cost and latency are too high. The team wants gpt-4.1-mini to reach similar quality on this task and has 20,000 representative ticket texts without labels.\n\nWhat should you do?",
+  "choices": [
+   "Have gpt-4.1 label a representative set of tickets, review the outputs, and use them as SFT training data for gpt-4.1-mini.",
+   "Set store=True on the gpt-4.1 calls, and then select Distill on the Stored Completions pane to fine-tune gpt-4.1-mini.",
+   "Run a Tool use data generation job that uses gpt-4.1 as the generator model, and fine-tune gpt-4.1-mini on the output.",
+   "Fine-tune gpt-4.1 with SFT on the ticket texts, and then deploy it with the Global Standard deployment type."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Distillation uses a large model's outputs to fine-tune a smaller model so that it performs similarly on a specific task at lower cost and latency. In Managed Training this is SFT on teacher-generated examples: generate responses with the teacher, review them, and train the student. Stored completions, the earlier capture-and-distill feature, retired on October 15, 2026.",
+  "rationale": [
+   "Correct: Managed Training supports distillation through teacher-generated SFT data. The larger teacher model produces high-quality labels, and SFT on those reviewed examples helps the smaller model meet the task at lower cost and latency.",
+   "Incorrect: stored completions, including the Distill option, retired on October 15, 2026, so this workflow can no longer create new datasets. Learn points to the Responses API and Agent Traces as the replacements.",
+   "Incorrect: the Tool use generator creates tool-calling conversations from an OpenAPI specification. Ticket classification has no API surface, so it would not produce the labeled examples that the smaller model needs.",
+   "Incorrect: fine-tuning gpt-4.1 keeps the larger model, so cost and latency stay high, and unlabeled tickets give SFT no desired responses. Global Standard lowers the price but does not change the model size."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/overview"
+ },
+ {
+  "id": "5.2.2-07",
+  "obj": "5.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "User1 has the Foundry User role on the Microsoft Foundry resource that hosts Project1. User1 must create a synthetic fine-tuning dataset with the Simple Q&A generator and use gpt-4.1 as the generator model. gpt-4.1 is not deployed in the resource. Security policy states that User1 must not be able to create or change model deployments.\n\nWhat should you do?",
+  "choices": [
+   "Ask an administrator who has the Foundry Owner role to deploy gpt-4.1, and have User1 select that deployment.",
+   "Assign User1 the Foundry Owner role so that the wizard can deploy gpt-4.1 during the job.",
+   "Assign User1 the Contributor role on the Foundry resource.",
+   "Have User1 select gpt-4.1 in the wizard so that the job creates the deployment automatically."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Synthetic data generation needs at least the Foundry User role and a deployed generator model. Deploying a model is a control plane action that needs the Foundry Owner role or another role with deployment write permission. Under least privilege, an administrator deploys the generator model and the user keeps the Foundry User role.",
+  "rationale": [
+   "Correct: Learn says that when no generator model is available you ask your admin to deploy one, because deploying models needs the Foundry Owner role. User1 keeps the Foundry User role, which is the minimum role for data generation.",
+   "Incorrect: Foundry Owner can deploy models, so the wizard could create the deployment, but User1 would then be able to change deployments, which the policy forbids. Use it when users may self-serve deployments.",
+   "Incorrect: users with the Contributor role can deploy models in Foundry, which violates the policy. Contributor also includes only management permissions, not the development permissions that data generation needs.",
+   "Incorrect: when the selected model is not deployed, the wizard creates a new deployment, and Learn notes that deploying models needs the Foundry Owner role, so a Foundry User should ask an admin instead. Letting User1 create the deployment would also break the policy. This works for a user who may deploy models."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/data-generation#generate-synthetic-data-for-fine-tuning"
+ },
+ {
+  "id": "5.2.3-01",
+  "obj": "5.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Graphic Design Institute runs many short fine-tuning experiments in Microsoft Foundry to compare datasets. The experiments must cost as little as possible. Jobs can be preempted and resumed later, and the experiments have no data residency, latency, or service-level requirements.\n\nWhich training type should you select?",
+  "choices": [
+   "Standard",
+   "Global",
+   "Developer",
+   "Data zone"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Training types define where training runs and how it is priced: Standard keeps training in the resource's region, Data zone keeps it within a data zone, Global uses wider capacity at a lower price, and Developer uses preemptible idle capacity at the lowest price. Training types are separate from the deployment types that serve the trained model.",
+  "rationale": [
+   "Incorrect: Standard training runs in the region of the Foundry resource and guarantees data residency, at a higher rate than Global or Developer training. Use it when training data must stay in a specific region.",
+   "Incorrect: Global training is cheaper than Standard because it uses capacity beyond your region, but Developer offers larger savings by using idle capacity. Use Global for lower prices and faster queues without preemption.",
+   "Correct: Developer training uses idle capacity for significant cost savings. Jobs can be preempted and resumed later and have no latency, SLA, or data residency guarantees, which these experiments accept.",
+   "Incorrect: Data zone training keeps data within a supported data zone, and only the US data zone is currently supported. It addresses data residency, which these experiments do not need, rather than lowest cost."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/overview#training-types"
+ },
+ {
+  "id": "5.2.3-02",
+  "obj": "5.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "series": "S-ft",
+  "stem": "Relecloud runs a supervised fine-tuning (SFT) job on gpt-4.1-mini in Microsoft Foundry for three epochs, with a validation file. In the results.csv file of the job, train_loss decreases throughout training. full_valid_loss is lowest at the end of epoch 1 and rises at the end of epochs 2 and 3. The checkpoint list of the job includes a checkpoint from the end of each epoch.\n\nYou need to obtain a model that generalizes better to unseen requests than the final model of the job. You must not add, remove, or change training examples.\n\nSolution: You submit a new job with the same training and validation files and set n_epochs to 1.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When train_loss keeps falling but full_valid_loss rises, the model is learning the training data too closely, which is overfitting. Each extra epoch is another full pass that can increase overfitting, and a smaller learning rate multiplier can also help reduce it. Checkpoints from earlier epochs can capture the model before it overfits.",
+  "rationale": [
+   "Correct: falling training loss with rising validation loss after epoch 1 indicates overfitting. More epochs can increase overfitting, so a one-epoch run stops training where validation loss was lowest, without changing the data.",
+   "Incorrect: the solution does meet the goal. No would be right if validation loss had risen from the first epoch on, in which case fewer epochs alone would not help and a smaller learning rate multiplier would be the next step."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/fine-tuning?pivots=programming-language-python#review-training-metrics"
+ },
+ {
+  "id": "5.2.3-03",
+  "obj": "5.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "series": "S-ft",
+  "stem": "Relecloud runs a supervised fine-tuning (SFT) job on gpt-4.1-mini in Microsoft Foundry for three epochs, with a validation file. In the results.csv file of the job, train_loss decreases throughout training. full_valid_loss is lowest at the end of epoch 1 and rises at the end of epochs 2 and 3. The checkpoint list of the job includes a checkpoint from the end of each epoch.\n\nYou need to obtain a model that generalizes better to unseen requests than the final model of the job. You must not add, remove, or change training examples.\n\nSolution: You submit a new job with the same training and validation files and a larger learning_rate_multiplier than the first job used.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The learning rate multiplier scales the training learning rate. A smaller multiplier makes smaller updates and can help reduce overfitting, and fewer epochs reduce it as well. Start with the model's defaults and compare validation results before you change either setting.",
+  "rationale": [
+   "Incorrect: a larger learning rate multiplier makes each update bigger, which does not counter overfitting. Learn says that a smaller multiplier can help reduce overfitting, which is the opposite change.",
+   "Correct: the solution does not meet the goal. A larger multiplier does not close the gap between falling training loss and rising validation loss. Change the multiplier only after comparing validation results, and lower it, not raise it, to reduce overfitting."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/fine-tuning?pivots=programming-language-python#review-training-metrics"
+ },
+ {
+  "id": "5.2.3-04",
+  "obj": "5.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "series": "S-ft",
+  "stem": "Relecloud runs a supervised fine-tuning (SFT) job on gpt-4.1-mini in Microsoft Foundry for three epochs, with a validation file. In the results.csv file of the job, train_loss decreases throughout training. full_valid_loss is lowest at the end of epoch 1 and rises at the end of epochs 2 and 3. The checkpoint list of the job includes a checkpoint from the end of each epoch.\n\nYou need to obtain a model that generalizes better to unseen requests than the final model of the job. You must not add, remove, or change training examples.\n\nSolution: You deploy the checkpoint that the job created at the end of epoch 1.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Checkpoints are deployable versions of the model that a job saves as training progresses, so they can capture the model before it overfits. Which checkpoints exist depends on the model and workflow; for Azure OpenAI models, a checkpoint is created at the end of each epoch and the final model plus the two previous epochs remain deployable. Compare them on validation metrics and held-out tasks instead of assuming the final model is best.",
+  "rationale": [
+   "Correct: the epoch 1 checkpoint is a deployable snapshot from before validation loss started to rise, and deploying it needs no data change. Learn says to compare checkpoints on validation metrics and held-out tasks rather than assume that the latest version performs best.",
+   "Incorrect: the solution does meet the goal. No would be right if the epoch 1 checkpoint were missing from the list, because checkpoint creation and retention depend on the model; for Azure OpenAI models only the final model and the two previous epochs stay deployable."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/fine-tuning?pivots=programming-language-python#monitor-the-job-and-select-a-checkpoint"
+ },
+ {
+  "id": "5.2.3-05",
+  "obj": "5.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Wide World Importers trained a model with direct preference optimization (DPO) so that its responses follow the company's tone guidelines. Reviewers labeled the preferred and non-preferred responses in the training data by using a written rubric. The team must choose between two checkpoints of the job.\n\nHow should you compare the checkpoints?",
+  "choices": [
+   "Compare the full_valid_mean_token_accuracy values that the job reports for the two checkpoints.",
+   "Choose the checkpoint that reports the lowest training loss on the rubric-labeled training data.",
+   "Score responses from both checkpoints on held-out preference prompts by using the reviewers' rubric.",
+   "Compare the valid_reward_mean values that the job reports for the two checkpoints."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Each method has its own success signal. SFT reports loss and token accuracy, RFT reports grader rewards, and a DPO model is best judged by a task evaluation on held-out preference examples that uses the labeling rubric. For every method, compare checkpoints on held-out data before you deploy one.",
+  "rationale": [
+   "Incorrect: token accuracy measures how well the model predicts the target tokens, which is an SFT signal. Learn says that token-prediction accuracy is not a measure of whether DPO responses match your preferences.",
+   "Incorrect: Learn says not to choose a model based only on training loss, because it reflects the training data rather than preference behavior on held-out examples. Use loss trends to monitor the job, not to select the model.",
+   "Correct: Learn recommends comparing candidate checkpoints on held-out preference examples with the same rubric as the dataset labels, and recording how often each candidate meets the preferred behavior. This is a task evaluation.",
+   "Incorrect: valid_reward_mean is the average grader reward of a reinforcement fine-tuning job over the validation set. A DPO job has no grader, so the metric does not apply. Use it to compare RFT checkpoints."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/fine-tuning-direct-preference-optimization"
+ },
+ {
+  "id": "5.2.3-06",
+  "obj": "5.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. fine-tuned a model on tool-calling examples that include the full tool definitions, with descriptions and parameter properties. To save tokens, the production app now sends tool definitions without descriptions and without parameter properties. Since then, the model selects the wrong tool more often. Quality now matters more than token cost, and the model must not be retrained.\n\nWhat should you do?",
+  "choices": [
+   "Send tool definitions in production that are identical to the definitions in the training data.",
+   "Also remove the function objects from the tools array so that the model relies on its training.",
+   "Keep the descriptions out but restore the properties field of each parameters object.",
+   "Send the tool definitions in the deprecated functions parameter instead of the tools parameter."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fine-tuning on tool-calling examples can improve accuracy and reduce prompt tokens. After training on full definitions, you can experiment with omitting descriptions, parameters, or whole functions to save tokens, but the highest quality comes from sending definitions identical to those in the training data. Trade cost against quality deliberately and measure the effect.",
+  "rationale": [
+   "Correct: to improve the quality of tool calling, Learn says to keep the function definitions in the training dataset and in later inference calls identical. That restores the context that the model learned with, without retraining.",
+   "Incorrect: omitting the function entirely is the most aggressive of the documented cost strategies. It minimizes prompt tokens but gives the model the least context, which conflicts with the new priority on quality.",
+   "Incorrect: restoring only the parameter properties still leaves production different from the training definitions, because the descriptions remain omitted. Omitting descriptions is a cost strategy, not a quality one.",
+   "Incorrect: functions and function_call are deprecated in favor of tools. Moving the definitions to another parameter does not restore the missing descriptions and properties, so tool selection does not improve."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/fine-tuning-functions"
+ },
+ {
+  "id": "5.2.3-07",
+  "obj": "5.2.3",
+  "difficulty": "hard",
+  "type": "yesno",
+  "stem": "Litware, Inc. runs a reinforcement fine-tuning (RFT) job that uses a Multi-Grader with two child graders: a string_check grader on {{sample.output_json.clause_type}} and a text_similarity grader on {{sample.output_json.extracted_text}}. The metric events of the job show the following:\n\n- train_reward_mean rises steadily after step 50.\n- valid_reward_mean stays flat after step 50.\n- Under data.scores.graders, the string_check score rises and the text_similarity score falls.\n- Under data.errors.graders, many parse errors are reported.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "valid_reward_mean is the more reliable metric for comparing the checkpoints of this job.",
+   "The rising train_reward_mean shows that the model performs the task better.",
+   "The parse errors indicate that the output format of the model or the grader configuration needs attention."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "RFT reports grader rewards, not SFT loss or token accuracy. Compare checkpoints on validation mean reward and held-out responses, inspect per-grader scores because a combined reward can hide a failing criterion, and treat grader errors as a sign of a format or configuration problem. High rewards alone do not prove that the model solves the task.",
+  "rationale": [
+   "Yes: training batches differ, so train_reward_mean is noisy from step to step. Learn calls validation mean reward the more stable signal for comparing checkpoints, followed by an inspection of held-out responses.",
+   "No: rising training reward does not establish better task performance. Here validation reward is flat and one child grader is falling, which a combined score can hide, and Learn warns that a model can exploit a grader.",
+   "Yes: grader error rates, such as parse errors and missing reference fields, point to problems with the output format or the grader configuration, for example a response that does not match the JSON that the grader reads."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reinforcement-fine-tuning#review-training-metrics"
+ },
+ {
+  "id": "5.2.3-08",
+  "obj": "5.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys runs a reinforcement fine-tuning (RFT) job with Managed Training in Microsoft Foundry. The job pauses automatically because its combined training and grading costs reached the per-job spending limit. You need to decide whether further training is worthwhile without incurring additional training charges.\n\nWhat should you do first?",
+  "choices": [
+   "Deploy the checkpoint created at the pause, and evaluate it on held-out tasks with the job metrics and logs.",
+   "Resume the job and monitor valid_reward_mean until it stops improving, and then cancel the job.",
+   "Cancel the job and resubmit it with reasoning_effort set to low and fewer validation examples.",
+   "Cancel the job and resubmit it with a smaller grader model and a lower compute_multiplier."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RFT in Managed Training is billed by training time, and model-grader tokens are billed separately. A job pauses when it reaches the per-job spending limit and creates a deployable checkpoint; after you resume, no further cost-based limit applies. To control cost, start small, limit validation data and eval_samples, choose the smallest adequate grader, and tune compute_multiplier.",
+  "rationale": [
+   "Correct: when an RFT job reaches the spending limit, training pauses and a deployable checkpoint is created. Learn says to review the job, metrics, and logs before you decide to resume, and evaluating the checkpoint adds no training charges.",
+   "Incorrect: if you resume, billing continues without another cost-based limit, so monitoring after resuming already incurs more training charges. Resume once the checkpoint evaluation shows that more training is worth it.",
+   "Incorrect: a new job incurs new training charges. Low reasoning effort and a smaller validation set are strategies for starting an affordable run, not for judging the paused run without new charges.",
+   "Incorrect: resubmitting starts a new billable run. A smaller grader and a tuned compute_multiplier reduce the cost of future runs but do not show whether the paused run should continue."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/cost-management"
+ },
+ {
+  "id": "5.2.4-01",
+  "obj": "5.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Bellows College submitted a supervised fine-tuning job in Microsoft Foundry. Training completed, but the job reports: \"This model is unable to be deployed. Model evaluation identified that this fine tuned model scores above acceptable thresholds for [Violence].\" The team wants a deployable model as soon as possible.\n\nWhat should you do?",
+  "choices": [
+   "Review the training data for violent content, fix or remove those examples, and resubmit the job.",
+   "Create a custom content filter configuration with higher severity thresholds, and then deploy the model.",
+   "Deploy the model with the Developer deployment type, which is intended for evaluation.",
+   "Resubmit the job with the same training data and a lower number of epochs."
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fine-tuning includes a managed safety evaluation. Before training, the data is checked for harmful content and the job fails if the content exceeds the severity level; after training, the model is tested with simulated conversations and marked as deployable or not deployable. The thresholds are fixed, and you are not charged when a job fails either check.",
+  "rationale": [
+   "Correct: the model evaluation found harmful output above the acceptable rate, so the model is not available for deployment. The full service message asks you to review the training data set and resubmit, and the failed training run is not charged.",
+   "Incorrect: the evaluation thresholds for fine-tuned models are predefined, cannot be modified by customers, and are not tied to any custom content filtering configuration. A custom filter governs inference on deployed models.",
+   "Incorrect: the model evaluation marks the model itself as not deployable, and Learn says such a model isn't available for deployment, so another deployment type does not help. Use a Developer deployment to evaluate a deployable candidate without an hourly hosting fee.",
+   "Incorrect: the same training data would keep teaching the behavior that the evaluation flagged. Fewer epochs is a remedy for overfitting, not for harmful content in the training data."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/fine-tuning-safety-evaluation"
+ },
+ {
+  "id": "5.2.4-02",
+  "obj": "5.2.4",
+  "difficulty": "easy",
+  "type": "order",
+  "stem": "Wide World Importers completed a supervised fine-tuning job on gpt-4.1-mini in a Foundry resource in Sweden Central. The job produced a final model and two earlier checkpoints. Before any production traffic, the selected candidate must beat the base model in an evaluation on a held-out test set, and the deployment used for that evaluation must not incur an hourly hosting fee. Production inference must stay in the region of the resource and use per-token billing.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Compare the final model and the checkpoints on validation metrics and held-out tasks, and select a candidate.",
+   "Deploy the candidate with the Developer deployment type.",
+   "Run an evaluation that compares the candidate deployment with a base model deployment on the held-out test set.",
+   "Deploy the candidate with the Standard deployment type, and update the app to call the new deployment name.",
+   "Delete the Developer deployment to stop its hourly hosting charges.",
+   "Add the held-out test examples to the training file and resubmit the fine-tuning job.",
+   "Deploy the candidate with the Global Standard deployment type for production traffic."
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "A fine-tuned model moves from training to production in stages: select a candidate from the final model and its checkpoints, deploy it for evaluation, compare it with the baseline on held-out data, and then deploy it with a production deployment type. Choose the production deployment type by data residency, throughput, and billing requirements.",
+  "rationale": [
+   "Step 1: checkpoints might capture the model before it overfits, so compare all available versions on validation metrics and held-out tasks instead of assuming that the final model is best.",
+   "Step 2: Developer deployments are meant for evaluating candidates. They bill input and output tokens with no hourly hosting fee and have no SLA, which fits the evaluation step and its cost requirement.",
+   "Step 3: the evaluation calls deployed models, so it follows the Developer deployment. It compares the candidate with the baseline on held-out data before any production decision is made.",
+   "Step 4: Standard deployments run inference in the deployment's region with per-token billing plus an hourly hosting fee, which meets the residency requirement. The app calls the model by its deployment name.",
+   "Incorrect: Developer deployments have no hourly hosting fee and are removed automatically after 24 hours, so you do not need to delete one to stop hosting charges.",
+   "Incorrect: adding test examples to the training data causes evaluation leakage, because the final test would no longer be held out. Keep training, validation, and test data separate.",
+   "Incorrect: Global Standard uses global capacity, and custom model weights might be stored temporarily outside the resource's geography. It suits workloads without residency requirements, not this one."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/overview#deployment-options"
+ },
+ {
+  "id": "5.2.4-03",
+  "obj": "5.2.4",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "Contoso, Ltd. moves its fine-tuning runs from notebooks to a build agent so that every run uses a reviewed YAML job file. The agent has Azure Developer CLI (azd) version 1.22.1 and is already signed in with azd auth login. The repository contains the job file finetune/sft-job.yaml and its data files. The Foundry project endpoint is https://contoso-ai.services.ai.azure.com/api/projects/support.\n\nWhich four commands should the agent run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`azd ext install azure.ai.finetune`",
+   "`azd ai finetuning init -e https://contoso-ai.services.ai.azure.com/api/projects/support`",
+   "`azd ai finetuning jobs submit -f finetune/sft-job.yaml`",
+   "`azd ai finetuning jobs show -i <job-id>`",
+   "`az ml job create --file finetune/sft-job.yaml`",
+   "`azd ai finetuning jobs pause -i <job-id>`",
+   "`azd up`"
+  ],
+  "answer": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "explanation": "The fine-tuning extension of the Azure Developer CLI runs Managed Training jobs from YAML configuration files, which makes runs repeatable and reviewable. The workflow is to install the extension, initialize the project with the project endpoint, submit the job file, and inspect the job. Pause, resume, and cancel are available only when the model, method, and job state support them.",
+  "rationale": [
+   "Step 1: the azd ai finetuning commands come from the azure.ai.finetune extension, so the extension must be installed before any of those commands can run.",
+   "Step 2: init configures the project with the Foundry project endpoint, in the form https://<account>.services.ai.azure.com/api/projects/<project>, which the later job commands use.",
+   "Step 3: jobs submit sends the reviewed YAML job configuration, with its model, method, data paths, and training type, to the project and returns the job ID.",
+   "Step 4: jobs show uses the job ID that submit returned to inspect the job status, so it can run only after the job exists.",
+   "Incorrect: az ml job create submits an Azure Machine Learning job from a CLI v2 YAML file to a workspace. Foundry fine-tuning jobs are submitted from the Foundry portal, the azd fine-tuning extension, the SDK, or the REST API.",
+   "Incorrect: pause temporarily stops a running job, and it is not available for every model or method. The requirement is to submit and inspect the run, not to interrupt it.",
+   "Incorrect: azd up packages, provisions, and deploys an application from an azd template in one command. It does not submit fine-tuning jobs; the fine-tuning extension provides those commands."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/fine-tuning?pivots=azd"
+ },
+ {
+  "id": "5.2.4-04",
+  "obj": "5.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank fine-tuned gpt-4o in a Foundry resource in Sweden Central. The model will serve a latency-sensitive agent that needs predictable performance during peak hours, and inference must stay in Sweden Central. The bank already has regional provisioned throughput unit (PTU) quota in Sweden Central.\n\nWhich deployment type should you use for the fine-tuned model?",
+  "choices": [
+   "Global Standard",
+   "Standard",
+   "Provisioned Throughput",
+   "Developer"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Fine-tuned models can be served with several deployment types. Standard and Global Standard bill per token plus an hourly hosting fee, Developer is a 24-hour option for evaluation, and Provisioned Throughput provides regional capacity billed in PTUs for predictable throughput. Check the supported deployment types and regions for your model; gpt-4o supports Provisioned Throughput in North Central US and Sweden Central.",
+  "rationale": [
+   "Incorrect: Global Standard uses global capacity with per-token billing, and custom model weights might be stored temporarily outside the resource's geography. Use it for lower cost when data residency is not required.",
+   "Incorrect: Standard keeps inference in the region with per-token billing and an hourly hosting fee, but it does not reserve capacity for predictable throughput. Use it for variable traffic that needs data residency.",
+   "Correct: Provisioned Throughput provides regional capacity billed in PTUs for predictable throughput, and gpt-4o supports it in Sweden Central. Fine-tuned PTU deployments use the same regional PTU capacity as base models, so the existing quota applies.",
+   "Incorrect: Developer deployments are for evaluation only, run inference globally, have no availability SLA, and are removed after 24 hours. Use them to compare candidates before production."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/fine-tuning/overview#deployment-options"
+ },
+ {
+  "id": "5.2.4-05",
+  "obj": "5.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "User1 is a data scientist at VanArsdel, Ltd. User1 must create fine-tuning jobs in a Microsoft Foundry project and deploy the resulting models. You must assign User1 exactly one built-in role.\n\nWhich role should you assign?",
+  "choices": [
+   "Foundry User",
+   "Foundry Account Owner",
+   "Foundry Owner",
+   "Contributor"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Foundry separates control plane actions, such as creating deployments, from data plane actions, such as training and building in a project. Training alone needs Foundry User. Training plus deployment needs Foundry Owner, or Foundry User combined with Foundry Account Owner. Create a custom role when a built-in role grants more than needed.",
+  "rationale": [
+   "Incorrect: Foundry User grants the data plane permissions needed to train, but deploying a fine-tuned model is a control plane action that this role does not include. Assign it alone to users who train but do not deploy.",
+   "Incorrect: Foundry Account Owner can manage resources and models, but it does not include the data actions needed to build in a project. Learn pairs it with Foundry User when you use two roles instead of one.",
+   "Correct: fine-tuning needs data plane permissions, and deploying the fine-tuned model needs control plane permissions. Learn states that Foundry Owner is the only built-in role with both, so it meets the one-role requirement.",
+   "Incorrect: users with the Contributor role can deploy models in Foundry, but Azure Owner and Contributor include only management permissions, not the development permissions that creating fine-tuning jobs requires."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry#notes-and-limitations"
+ },
+ {
+  "id": "5.2.4-06",
+  "obj": "5.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud fine-tuned gpt-4.1 last month. The fine-tuned model has the ID gpt-4.1-2025-04-14.ft-5fd1918ee65d4cd38a5dcf6835066ed7 and is deployed as claims-ft. New labeled examples arrive every month. The team must refine the existing fine-tuned model with the new examples instead of training from the base model again, and each monthly model must be easy to tell apart.\n\nHow should you configure the new fine-tuning job?",
+  "choices": [
+   "model=\"gpt-4.1-2025-04-14.ft-5fd1918ee65d4cd38a5dcf6835066ed7\", suffix=\"claims-2026-12\"",
+   "model=\"claims-ft\", suffix=\"claims-2026-12\"",
+   "model=\"gpt-4.1-2025-04-14\", suffix=\"claims-2026-12\"",
+   "model=\"gpt-4.1-2025-04-14.ft-5fd1918ee65d4cd38a5dcf6835066ed7\", seed=202612"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Continuous fine-tuning refines a model over time by using an already fine-tuned model as the base model of a new job on new examples. Pass the fine-tuned model ID as the model, add a suffix to tell iterations apart, and evaluate each iteration before you replace the production deployment.",
+  "rationale": [
+   "Correct: continuous fine-tuning selects an already fine-tuned model as the base model by its fine-tuned model ID. The suffix adds a short identifier to the resulting model name, which makes each monthly iteration easy to recognize.",
+   "Incorrect: claims-ft is a deployment name, which inference calls use. A fine-tuning job needs a model identifier, so pass the fine-tuned model ID rather than the name of its deployment.",
+   "Incorrect: the base model ID starts training from the original weights, which is the full retraining that the team wants to avoid. Use it when you start a new line of fine-tuned models.",
+   "Incorrect: the fine-tuned model ID is right, but seed controls the reproducibility of a job and does not name the resulting model. Use suffix to distinguish iterations and seed to repeat a run."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry-classic/openai/how-to/fine-tuning?pivots=programming-language-python"
+ },
+ {
+  "id": "5.2.4-07",
+  "obj": "5.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. ran the fine-tuning job ftjob-7a1d93c0b3e64f2c9d58e0f4b6a2c917 on gpt-4.1-mini. An evaluation on held-out data shows that the checkpoint ftchkpt-e559c011ecc04fc68eaa339d8227d02d performs better than the final model gpt-4.1-mini-2025-04-14.ft-b044a9d3cf9c4228b5d393567f693b83. You deploy by sending a PUT request to the Azure Resource Manager deployments API of the same Foundry resource.\n\nWhich model object should you include in the request body?",
+  "choices": [
+   "{\"format\": \"OpenAI\", \"name\": \"ftchkpt-e559c011ecc04fc68eaa339d8227d02d\", \"version\": \"1\"}",
+   "{\"format\": \"OpenAI\", \"name\": \"ftjob-7a1d93c0b3e64f2c9d58e0f4b6a2c917\", \"version\": \"1\"}",
+   "{\"format\": \"OpenAI\", \"name\": \"gpt-4.1-mini\", \"version\": \"2025-04-14\", \"source\": \"ftchkpt-e559c011ecc04fc68eaa339d8227d02d\"}",
+   "{\"format\": \"OpenAI\", \"name\": \"gpt-4.1-mini-2025-04-14.ft-b044a9d3cf9c4228b5d393567f693b83\", \"version\": \"1\"}"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A deployment request for a fine-tuned model sets properties.model.name to either the fine-tuned model ID or a checkpoint ID in the format ftchkpt-<id>, with format OpenAI and version 1 in the documented examples. The job ID (ftjob-<id>) is for monitoring the job, not for deploying. Add properties.model.source only to deploy a model that was trained in another resource.",
+  "rationale": [
+   "Correct: to deploy a checkpoint instead of the final model, pass the checkpoint ID, in the format ftchkpt-<id>, as the model name. The rest of the body matches the documented fine-tuned model deployment, with format OpenAI and version 1.",
+   "Incorrect: ftjob-<id> identifies the fine-tuning job, which you use to retrieve its status, events, and checkpoints. The model name of a deployment must be the fine-tuned model ID or a checkpoint ID, not the job ID.",
+   "Incorrect: this names the base model, and source holds the resource ID of another resource for a cross-region or cross-subscription deployment, not a checkpoint ID. Use source when the model was trained in a different resource.",
+   "Incorrect: this is the right body for deploying the final model, which represents the last epoch. The evaluation showed that the checkpoint performs better, so deploy the checkpoint ID instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry-classic/openai/how-to/fine-tuning-deploy?tabs=python"
+ },
+ {
+  "id": "5.2.4-08",
+  "obj": "5.2.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Litware, Inc. fine-tuned gpt-4.1 in Resource1, a Foundry resource in Sweden Central in Subscription1. An application team needs the model served from a deployment in Resource2, a Foundry resource in North Central US in Subscription2. Both subscriptions are in the same Microsoft Entra tenant, and User1 has access to both subscriptions. Resource2 already runs its own fine-tuning jobs and allows public network access, and a user-assigned managed identity that has the Foundry User role on Resource2 is assigned to Resource1. The model must not be trained again.\n\nWhich two actions should you perform? Each correct answer presents a complete solution.",
+  "choices": [
+   "As User1, send a PUT request to the Azure Resource Manager deployments API of Resource2 with properties.model.source set to the resource ID of Resource1.",
+   "Copy the fine-tuned model from Resource1 to Resource2 by using the checkpoint copy API (preview), and then deploy the copy in Resource2.",
+   "As User1, send a PUT request to the Azure Resource Manager deployments API of Resource1 with properties.model.source set to the resource ID of Resource2.",
+   "Create a Global Standard deployment of the fine-tuned model in Resource1, and share its endpoint with the application team.",
+   "Enable automatic deployment in the fine-tuning job settings, and select Resource2 as the deployment target."
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "A fine-tuned model can be served outside the resource that trained it. Send a deployment request to the destination resource with model.source set to the source resource ID, or copy the model to the destination with the checkpoint copy API (preview), which needs the same tenant, an existing fine-tuning job in the destination, and a managed identity with access to it. Both are API operations, not portal steps.",
+  "rationale": [
+   "Correct: fine-tuned models can be deployed to another region and subscription than where they were trained. A PUT to the deployment in Resource2 with model.source set to Resource1 does this, provided the token's account can access both subscriptions.",
+   "Correct: the copy API (preview) copies a fine-tuned checkpointed model to another region and subscription in the same tenant. Resource2 has a fine-tuning job and public access, and the managed identity has Foundry User on Resource2, so the copy can be deployed there.",
+   "Incorrect: the PUT creates the deployment in the resource whose deployments API you call, here Resource1, and source must name the resource where the model was trained. This layout fits only when Resource2 trained the model and Resource1 serves it.",
+   "Incorrect: a Global Standard deployment in Resource1 belongs to Resource1, not to Resource2, even though global capacity processes its requests. Use it when the resource that trained the model can serve the traffic.",
+   "Incorrect: automatic deployment is an option of a new fine-tuning job that deploys the resulting model when training succeeds, so it would mean training again. Use it to save a step when you start a new job anyway."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry-classic/openai/how-to/fine-tuning-deploy"
+ }
+]

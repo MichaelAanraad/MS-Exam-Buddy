@@ -1,0 +1,833 @@
+[
+ {
+  "id": "4.2.1-01",
+  "obj": "4.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. runs an agent named Agent1 in a Microsoft Foundry project. The project is connected to an Application Insights resource. A product owner needs one view in the Foundry portal that shows token usage, latency, run success rate, evaluation scores, and red teaming results for Agent1 over the last seven days.\n\nWhat should the product owner open?",
+  "choices": [
+   "The Traces tab of Agent1 under Build > Agents",
+   "The Monitor tab of Agent1 under Build > Agents",
+   "The Recurring Configs subtab on the Evaluations tab",
+   "The Monitor tab of the model deployment that Agent1 uses"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Each agent in the Foundry portal has a Monitor tab, the Agent Monitoring Dashboard, that combines operational metrics such as token usage, latency, and run success rate with evaluation and red teaming results. The dashboard reads its data from the Application Insights resource that is connected to the project, so retention and billing follow that resource. Use traces to debug single runs and the Evaluations tab to configure recurring evaluations.",
+  "rationale": [
+   "Incorrect: the Traces tab lists individual traces from the last 90 days so that you can step through the spans of one run. Use it to debug a specific request, not to see aggregated metrics and evaluation scores over a period.",
+   "Correct: the Monitor tab opens the Agent Monitoring Dashboard, which reads telemetry from the connected Application Insights resource and shows summary cards and charts for token usage, latency, run success rate, evaluation metrics, and red teaming results for the selected time range.",
+   "Incorrect: the Recurring Configs subtab lists and creates scheduled and continuous evaluation configurations. Use it to set up or review which evaluations run, not to view the combined operational and evaluation charts of the agent.",
+   "Incorrect: the Monitor tab of a model under Build > Models shows the total cost and an estimated cost chart for that model deployment. Use it for model-level cost monitoring, not for agent run success rates, evaluation scores, or red teaming results."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard"
+ },
+ {
+  "id": "4.2.1-02",
+  "obj": "4.2.1",
+  "difficulty": "medium",
+  "type": "dragdrop",
+  "stem": "Relecloud has an agent named Agent1 in a Microsoft Foundry project that is connected to Application Insights. You must configure monitoring for Agent1 to meet four requirements.\n\nWhich capability should you use for each requirement? To answer, drag the appropriate capabilities to the correct requirements. Each capability may be used once, more than once, or not at all.",
+  "choices": [
+   "Alerts",
+   "Continuous evaluation",
+   "Red team scans",
+   "Scheduled evaluation",
+   "Server-side tracing"
+  ],
+  "targets": [
+   "Requirement1: Score a sample of live Agent1 responses for violence as each response completes.",
+   "Requirement2: Every day at 09:00, run Agent1 against a golden dataset and compare the scores with a benchmark.",
+   "Requirement3: Every week, probe Agent1 with adversarial inputs to detect data leakage and prohibited actions.",
+   "Requirement4: Notify the operations team when the latency or token usage of Agent1 behaves anomalously."
+  ],
+  "answer": [
+   1,
+   3,
+   2,
+   0
+  ],
+  "rationale": [
+   "Continuous evaluation samples live traffic as it occurs and runs the selected evaluators, such as builtin.violence, when agent responses complete, which matches scoring live responses as each one finishes.",
+   "Scheduled evaluation runs on a fixed schedule and can use a dataset data source such as a golden dataset, so a daily 09:00 run that validates the agent against a benchmark is a scheduled evaluation.",
+   "Red team scans run adversarial tests on a schedule to detect risks such as data leakage or prohibited actions, which is exactly the weekly adversarial probing that is required.",
+   "Alerts in the Monitor settings detect performance anomalies and can be configured for latency and token usage, so they notify the team when those metrics behave abnormally."
+  ],
+  "notes": [
+   "Alerts (preview) in the Monitor settings detect performance anomalies, evaluation failures, and security risks. Configure them for latency, token usage, evaluation scores, or red team findings when someone must be notified.",
+   "Continuous evaluation samples live traffic as it occurs and evaluates agent responses, capped by a maximum number of runs per hour. Use it for near real-time quality and safety monitoring of production traffic.",
+   "Red team scans run adversarial tests, optionally on a schedule, to detect risks such as data leakage or prohibited actions. Use them to check the security posture of an agent over time.",
+   "Scheduled evaluation runs on a fixed recurrence, for example daily at a set hour, against live traffic traces or a dataset such as a golden dataset. Use it to validate an agent against a benchmark at regular intervals.",
+   "Server-side tracing starts automatically after you connect Application Insights and records traces for prompt agents, hosted agents, and workflows without code changes. It captures telemetry but does not score, test, or notify, so it fits none of these requirements."
+  ],
+  "explanation": "The Monitor settings of an agent group the continuous monitoring features of Foundry: continuous evaluation samples live traffic as it occurs, scheduled evaluation runs on a fixed recurrence (often against a golden dataset), red team scans run adversarial tests, and alerts notify you about anomalies. All of them depend on the telemetry in the connected Application Insights resource, which tracing fills.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard"
+ },
+ {
+  "id": "4.2.1-03",
+  "obj": "4.2.1",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Woodgrove Bank has a Microsoft Foundry project with two agents named Agent1 and Agent2. You created an evaluation object named eval_object that uses the builtin.violence evaluator. You must evaluate each response of Agent1, and only Agent1, as soon as the response completes, with at most 200 evaluation runs per hour.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nrule = project_client.evaluation_rules.create_or_update(\n    id=\"agent1-safety-rule\",\n    evaluation_rule=EvaluationRule(\n        display_name=\"Agent1 safety\",\n        action=[[1]],\n        event_type=[[2]],\n        filter=[[3]],\n        enabled=True,\n    ),\n)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "EvaluationScheduleTask(eval_id=eval_object.id, eval_run=eval_run_object)",
+     "ContinuousEvaluationRuleAction(eval_id=eval_object.id, max_hourly_runs=200)",
+     "RecurrenceTrigger(interval=1, schedule=DailyRecurrenceSchedule(hours=[2]))"
+    ],
+    "why": [
+     "Incorrect: EvaluationScheduleTask is the task of a Schedule that runs an evaluation on a fixed recurrence. Use it for scheduled evaluation with project_client.beta.schedules, not as the action of a continuous evaluation rule.",
+     "Correct: ContinuousEvaluationRuleAction links the rule to the evaluation object, and max_hourly_runs caps the evaluation runs per hour, here at 200 instead of the default of 100.",
+     "Incorrect: RecurrenceTrigger defines when a Schedule fires, for example daily at a set hour. It belongs to scheduled evaluation and does not evaluate responses as they complete."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "EvaluationRuleEventType.RESPONSE_COMPLETED",
+     "EvaluationRuleEventType.MANUAL"
+    ],
+    "why": [
+     "Correct: RESPONSE_COMPLETED makes the rule run on agent response completions, so each response of Agent1 is evaluated as soon as it is finished.",
+     "Incorrect: MANUAL is the other known event type of an evaluation rule. It is not the response-completed event that the Learn sample uses to evaluate each response as it completes, so live responses would not be evaluated as required."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "{\"type\": \"agent_filter\", \"agent_name\": \"Agent1\"}",
+     "EvaluationRuleFilter(agent_name=\"Agent1\")"
+    ],
+    "why": [
+     "Incorrect: a dictionary with type agent_filter is the trace_source of an azure_ai_trace_data_source_preview data source, which a scheduled evaluation run uses to select the traces of an agent. The filter of an evaluation rule is an EvaluationRuleFilter.",
+     "Correct: EvaluationRuleFilter with agent_name restricts the rule to the responses of Agent1, so the responses of Agent2 are not evaluated."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   0,
+   1
+  ],
+  "explanation": "Continuous evaluation in Foundry is configured as an evaluation rule: the action (ContinuousEvaluationRuleAction) names the evaluation and the hourly run cap, the event type RESPONSE_COMPLETED triggers it on each completed agent response, and the filter limits it to one agent. Scheduled evaluation uses a different object model (Schedule, RecurrenceTrigger, and EvaluationScheduleTask). Runs above max_hourly_runs are skipped; the default is 100.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard"
+ },
+ {
+  "id": "4.2.1-04",
+  "obj": "4.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys runs a LangGraph agent named Agent1 on Azure Kubernetes Service, and Agent1 must keep running there. Agent1 is registered as a custom agent in Foundry Control Plane and emits OpenTelemetry spans that follow the semantic conventions for generative AI to an Application Insights resource named AppInsights2. The Microsoft Foundry project is connected to a different Application Insights resource named AppInsights1. The project managed identity has the Foundry User role. The Monitor tab of Agent1 shows no metrics, and continuous evaluation cannot be set up for Agent1.\n\nWhat should you do?",
+  "choices": [
+   "Assign the Log Analytics Reader role on AppInsights2 to the project managed identity.",
+   "Assign the Foundry User role on the project to the managed identity of Agent1.",
+   "Configure the exporter of Agent1 to use the connection string of AppInsights1.",
+   "Redeploy Agent1 as a hosted agent in Foundry Agent Service."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Foundry can monitor agents that run elsewhere: you register the agent in Foundry Control Plane, instrument it with the OpenTelemetry semantic conventions for generative AI, and send its telemetry to the same Application Insights instance as the Foundry project. The Monitor tab and continuous evaluation read from that connected instance, so telemetry that lands in another resource does not show up in them.",
+  "rationale": [
+   "Incorrect: the Learn setup for custom agents requires the agent to send telemetry to the same Application Insights instance as the project; a role on another resource does not make AppInsights2 the source of the Monitor tab. Assign Log Analytics Reader when users get authorization errors while querying traces in the connected resource.",
+   "Incorrect: the Foundry User role for continuous evaluation belongs to the project managed identity, which already has it. A role for the identity of Agent1 does not change where its telemetry goes. Assign Foundry User to the project managed identity when an enabled rule produces no results.",
+   "Correct: Foundry monitors a custom agent through the Application Insights instance that is connected to the project, so the agent must send its telemetry there. Pointing the exporter at AppInsights1 lets the Monitor tab show metrics and enables continuous evaluation, while Agent1 stays on Azure Kubernetes Service.",
+   "Incorrect: a hosted agent would get server-side traces automatically, but Agent1 must keep running on Azure Kubernetes Service. Hosting in Foundry Agent Service is the right choice when you can move the agent and want tracing without code changes."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard"
+ },
+ {
+  "id": "4.2.1-05",
+  "obj": "4.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "series": "S-obs",
+  "stem": "Fabrikam, Inc. has an agent named Agent1 in a Microsoft Foundry project. The project is connected to an Application Insights resource, and the Monitor tab of Agent1 shows token usage and latency for current traffic. A developer used the Python SDK to create a continuous evaluation rule for Agent1. The rule is enabled and Agent1 receives steady traffic, but no evaluation runs are created and no evaluation scores appear. No role assignments were made for the project managed identity after the project was created.\n\nYou need continuous evaluation results to appear for Agent1.\n\nSolution: You assign the Foundry User role to the project managed identity.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Continuous evaluation rules need the project managed identity to have the Foundry User role (previously named Azure AI User). Learn's troubleshooting separates three symptoms: authorization errors in views (the user needs Log Analytics Reader), no results from an enabled rule with flowing traffic (check the Foundry User role of the project managed identity), and skipped runs (raise max_hourly_runs, whose default is 100).",
+  "rationale": [
+   "Correct: to enable continuous evaluation rules, Learn says to assign the Foundry User role (formerly Azure AI User) to the project managed identity, and its troubleshooting table names this role when an enabled rule with flowing traffic produces no results. Assigning it lets the rule create evaluation runs.",
+   "Incorrect: the solution meets the goal. No would be right if the identity already had the role; then you would confirm that the rule is enabled, that traffic flows, and whether runs are skipped because the hourly limit is reached."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard"
+ },
+ {
+  "id": "4.2.1-06",
+  "obj": "4.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "series": "S-obs",
+  "stem": "Fabrikam, Inc. has an agent named Agent1 in a Microsoft Foundry project. The project is connected to an Application Insights resource, and the Monitor tab of Agent1 shows token usage and latency for current traffic. A developer used the Python SDK to create a continuous evaluation rule for Agent1. The rule is enabled and Agent1 receives steady traffic, but no evaluation runs are created and no evaluation scores appear. No role assignments were made for the project managed identity after the project was created.\n\nYou need continuous evaluation results to appear for Agent1.\n\nSolution: You assign the Log Analytics Reader role on the Application Insights resource to the developer.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Continuous evaluation rules need the project managed identity to have the Foundry User role (previously named Azure AI User). Learn's troubleshooting separates three symptoms: authorization errors in views (the user needs Log Analytics Reader), no results from an enabled rule with flowing traffic (check the Foundry User role of the project managed identity), and skipped runs (raise max_hourly_runs, whose default is 100).",
+  "rationale": [
+   "Incorrect: Log Analytics Reader lets a user query log-based telemetry and fixes authorization errors in trace and dashboard views. The developer can already see Agent1 metrics, and the rule depends on the project managed identity, which still lacks the Foundry User role.",
+   "Correct: the solution does not meet the goal. Assign Log Analytics Reader when a user sees authorization errors while viewing traces or log-based charts, not when an enabled rule creates no evaluation runs."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard"
+ },
+ {
+  "id": "4.2.1-07",
+  "obj": "4.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "series": "S-obs",
+  "stem": "Fabrikam, Inc. has an agent named Agent1 in a Microsoft Foundry project. The project is connected to an Application Insights resource, and the Monitor tab of Agent1 shows token usage and latency for current traffic. A developer used the Python SDK to create a continuous evaluation rule for Agent1. The rule is enabled and Agent1 receives steady traffic, but no evaluation runs are created and no evaluation scores appear. No role assignments were made for the project managed identity after the project was created.\n\nYou need continuous evaluation results to appear for Agent1.\n\nSolution: You increase max_hourly_runs of the rule from 100 to 500.\n\nDoes this meet the goal?",
+  "choices": [
+   "Yes",
+   "No"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Continuous evaluation rules need the project managed identity to have the Foundry User role (previously named Azure AI User). Learn's troubleshooting separates three symptoms: authorization errors in views (the user needs Log Analytics Reader), no results from an enabled rule with flowing traffic (check the Foundry User role of the project managed identity), and skipped runs (raise max_hourly_runs, whose default is 100).",
+  "rationale": [
+   "Incorrect: max_hourly_runs caps how many evaluation runs the rule starts per hour, and raising it helps only when runs are skipped because the limit is reached. Here no runs are created at all, which points to the missing Foundry User role on the project managed identity.",
+   "Correct: the solution does not meet the goal. Increase max_hourly_runs, whose default is 100, when evaluation runs are skipped during busy hours because the hourly limit is reached."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard"
+ },
+ {
+  "id": "4.2.2-01",
+  "obj": "4.2.2",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Litware, Inc. has a Microsoft Foundry resource with a provisioned-managed model deployment named chat-ptu and several other deployments. In a Bash session, $scope holds the resource ID of the Foundry resource, $ag holds the resource ID of an existing action group for the on-call team, and $law holds the resource ID of a Log Analytics workspace. You must create a metric alert rule that notifies the on-call team when the average TimeToResponse metric of chat-ptu, and only chat-ptu, exceeds 2,000 milliseconds.\n\nWhich three commands should you run in sequence? To answer, move the appropriate commands from the list of commands to the answer area and arrange them in the correct order.",
+  "choices": [
+   "`az monitor action-group create --name ag-oncall --resource-group rg-ai --action webhook https://alerts.litware.com usecommonalertschema`",
+   "`cond=$(az monitor metrics alert condition create --aggregation Average --metric TimeToResponse --op GreaterThan --type static --threshold 2000 --dimension $dim --output tsv)`",
+   "`az monitor diagnostic-settings create --name diag-ai --resource $scope --workspace $law --metrics '[{\"category\":\"AllMetrics\",\"enabled\":true}]'`",
+   "`dim=$(az monitor metrics alert dimension create --name ModelDeploymentName --value chat-ptu --op Include --output tsv)`",
+   "`cond=$(az monitor metrics alert condition create --aggregation Average --metric TimeToResponse --op GreaterThan --type dynamic --output tsv)`",
+   "`az monitor metrics alert create --name ttr-chat-ptu --resource-group rg-ai --scopes $scope --condition $cond --action $ag`"
+  ],
+  "answer": [
+   3,
+   1,
+   5
+  ],
+  "explanation": "A metric alert that you build with the Azure CLI is assembled from parts, as the Learn CLI sample shows: an optional dimension filter (az monitor metrics alert dimension create), a condition that takes it through --dimension (az monitor metrics alert condition create), and the rule that ties the scope, the condition, and an action group together (az monitor metrics alert create). TimeToResponse is the Models-category latency metric (time to the first response) for PTU and PTU-managed deployments, and ModelDeploymentName is one of its dimensions, as listed in Monitor model deployments in Foundry Models; the Azure OpenAI category exposes the same measure as AzureOpenAITimeToResponse. Platform metrics are collected automatically, so metric alerts need no diagnostic setting.",
+  "rationale": [
+   "Incorrect: az monitor action-group create defines who is notified and how, for example through a webhook. The action group already exists and its ID is in $ag, so this command is not needed. Run it first when no suitable action group exists.",
+   "Step 2: the static condition uses Average aggregation, the GreaterThan operator, and a threshold of 2000 for TimeToResponse, and it takes the dimension from step 1 so that only chat-ptu is evaluated.",
+   "Incorrect: a diagnostic setting exports metrics and resource logs to a Log Analytics workspace for KQL analysis. Metric alerts evaluate platform metrics, which Azure Monitor collects automatically, so the export is not needed. Use it for log queries or long-term analysis.",
+   "Step 1: a dimension with the name ModelDeploymentName, the Include operator, and the value chat-ptu limits the rule to that one deployment. The condition takes this dimension as input, so you create it first.",
+   "Incorrect: a dynamic threshold learns the normal pattern of the metric and alerts on deviations, and this condition has no dimension, so it would cover all deployments. Use dynamic thresholds when no fixed limit is known; here the limit is a fixed 2,000 ms for chat-ptu only.",
+   "Step 3: az monitor metrics alert create combines the scope (the Foundry resource), the condition from step 2, and the existing action group, so the on-call team is notified when the condition is met."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-monitor/alerts/azure-cli-metrics-alert-sample"
+ },
+ {
+  "id": "4.2.2-02",
+  "obj": "4.2.2",
+  "difficulty": "medium",
+  "type": "yesno",
+  "stem": "Adventure Works Cycles runs a nonstreaming batch app that calls a Global Standard (pay-per-token) model deployment in Microsoft Foundry. Over one week, the Time to Last Byte metric of the deployment doubled. In the same period, the generated completion tokens per request also doubled, while the prompt size and the request volume stayed flat.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+  "choices": [
+   "The increase in Time to Last Byte is consistent with expected, token-driven latency.",
+   "Enabling streaming would reduce the total time that the app waits for the complete response.",
+   "If Time to Last Byte had doubled while generated tokens stayed flat, the next step would be to check the Azure OpenAI Requests metric for 429 responses."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Azure OpenAI latency follows TTLT = TTFT + (TBT x Tokens Generated), so output length is the main driver of total response time. Always pair a latency metric with a token count metric before you call a change a regression. If TTLT rises without more tokens, look at capacity signals: 429 responses and concurrency on pay-as-you-go (standard, pay-per-token) deployments such as Global Standard, or utilization on PTU-managed deployments.",
+  "rationale": [
+   "Yes: TTLT = TTFT + (TBT x tokens generated), so when output tokens double while prompt size and load stay flat, TTLT is expected to rise roughly in step. Learn says to check token counts before you conclude that latency has regressed.",
+   "No: streaming returns tokens as soon as they are generated, which shortens the time to the first token, but it does not change the time to get all the tokens. A batch app that waits for the whole response gains nothing; streaming helps chat interfaces.",
+   "Yes: when TTLT rises without a token-count increase, Learn points to capacity pressure. Global Standard is a standard, pay-per-token deployment type, which the latency guidance calls pay-as-you-go, so you check Azure OpenAI Requests for 429 throttling and concurrent request volume; on a PTU-managed deployment you would chart Provisioned-managed Utilization V2 instead."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/latency"
+ },
+ {
+  "id": "4.2.2-03",
+  "obj": "4.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders has a customer chat app that streams responses from a provisioned model deployment in Microsoft Foundry. Users complain that the app feels slow before any text appears. You need an Azure Monitor metric that shows how long it takes for the first response chunk to arrive.\n\nWhich metric should you chart?",
+  "choices": [
+   "Time to Last Byte",
+   "Time Between Tokens",
+   "Time to Response",
+   "Normalized Time to First Byte"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "For streaming apps, perceived latency is the time to the first token, which Time to Response measures. Time Between Tokens explains how fast text flows after that, and Time to Last Byte gives the total response time that matters for nonstreaming calls. Normalized metrics are for comparisons across prompt sizes, not for absolute diagnosis.",
+  "rationale": [
+   "Incorrect: Time to Last Byte measures the total time until the last token arrives. Use it for nonstreaming requests or overall response time; it mixes the first-token delay with generation time, so it does not isolate the wait before text appears.",
+   "Incorrect: Time Between Tokens is the average gap between consecutive generated tokens. Use it to diagnose generation throughput once streaming has started, for example when text appears but trickles in slowly.",
+   "Correct: Time to Response measures the time from prompt submission to the first response chunk, which maps to time to first token. Learn recommends it for streaming requests and for diagnosing the absolute first-token latency that users experience.",
+   "Incorrect: Normalized Time to First Byte divides first-byte latency by the prompt token count. Use it to compare first-token efficiency across prompts of different sizes, not to diagnose the absolute delay that users notice."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/latency"
+ },
+ {
+  "id": "4.2.2-04",
+  "obj": "4.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wide World Importers sizes the throughput of an Azure OpenAI deployment in Microsoft Foundry. You need an Azure Monitor metric that shows the total number of tokens, prompt and generated together, that the deployment processes per minute.\n\nWhich metric should you use?",
+  "choices": [
+   "Processed Prompt Tokens",
+   "Generated Completion Tokens",
+   "Azure OpenAI Requests",
+   "Processed Inference Tokens"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn recommends two throughput measures for a deployment: calls per minute (Azure OpenAI Requests split by ModelDeploymentName) and total tokens per minute (Processed Inference Tokens). Processed Prompt Tokens and Generated Completion Tokens split that total into input and output, which helps when you estimate input and output TPM separately.",
+  "rationale": [
+   "Incorrect: Processed Prompt Tokens counts only input tokens. Use it to estimate input TPM or to explain a higher time to first token, and combine it with generated tokens when you need the total.",
+   "Incorrect: Generated Completion Tokens counts only output tokens. Use it as the token count that you pair with latency metrics, because output tokens drive the time to last byte; on its own it misses the prompt tokens.",
+   "Incorrect: Azure OpenAI Requests counts API calls, which you split by ModelDeploymentName to measure calls per minute or to find 429 responses. It does not count tokens.",
+   "Correct: Processed Inference Tokens counts all tokens that the deployment processes, prompt plus generated, so it measures total tokens per minute. Learn names it, together with Azure OpenAI Requests, as a measure of deployment throughput."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/latency"
+ },
+ {
+  "id": "4.2.2-05",
+  "obj": "4.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Alpine Ski House runs a nonstreaming summarization app on a provisioned-managed model deployment in Microsoft Foundry. The Time to Last Byte metric rose by 60 percent this week, while the generated completion tokens per request and the prompt sizes stayed the same. You need to confirm whether capacity pressure on the deployment causes the increase.\n\nWhich metric should you chart next?",
+  "choices": [
+   "Provisioned-managed Utilization V2",
+   "Prompt Token Cache Match Rate",
+   "Normalized Time to First Byte",
+   "Model Availability Rate"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's latency triage starts by pairing Time to Last Byte with Generated Completion Tokens. If latency rises without more tokens, look for capacity pressure: Provisioned-managed Utilization V2 on PTU-managed deployments, and Azure OpenAI Requests (429 responses and concurrent volume) on pay-as-you-go deployments.",
+  "rationale": [
+   "Correct: for PTU-managed deployments, Learn says to chart Provisioned-managed Utilization V2 when TTLT rises without a token-count increase. High utilization shows that the provisioned capacity is saturated, and at 100 percent or more calls are throttled with 429 errors.",
+   "Incorrect: Prompt Token Cache Match Rate shows the share of prompt tokens that hit the cache. A drop can raise first-token latency, but it measures cache reuse, not whether the provisioned capacity is saturated.",
+   "Incorrect: Normalized Time to First Byte divides first-byte latency by the prompt tokens to compare efficiency across prompt sizes. It is another latency view, not a capacity signal, and Learn advises against it for absolute latency diagnosis.",
+   "Incorrect: Model Availability Rate is the share of calls without server errors (HTTP 500 and higher). Use it to track availability incidents; slow but successful responses caused by high utilization do not lower it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/latency"
+ },
+ {
+  "id": "4.2.2-06",
+  "obj": "4.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fourth Coffee uses one Standard model deployment in Microsoft Foundry for two workloads: a chat assistant that sends short requests, and a nightly job that generates long product descriptions. While the job runs, chat response times rise sharply, although the deployment returns no 429 errors. You need to reduce chat latency during the job without changing the model.\n\nWhat should you do?",
+  "choices": [
+   "Enable streaming for the requests of the nightly job.",
+   "Increase the tokens-per-minute quota of the deployment.",
+   "Create a separate deployment of the model for the nightly job.",
+   "Combine the chat requests into batched calls to the deployment."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Per-call latency depends on the model, the prompt size, the generated tokens, and the load on the deployment. When workloads with very different shapes share a deployment, short calls queue behind long ones and cache hit rates drop, so Learn recommends a separate deployment per workload. Quota on Standard deployments governs admission, not speed.",
+  "rationale": [
+   "Incorrect: streaming lowers the time to the first token for the job, but it does not shorten its generations or stop chat calls from waiting behind them. Use streaming in interactive chat to improve perceived latency.",
+   "Incorrect: on a Standard deployment, quota only sets the admission logic for calls and does not directly enforce throughput or speed. There are no 429 errors, so admission is not the bottleneck. Raise quota when requests are rejected with 429.",
+   "Correct: mixing workloads on one deployment hurts latency, because short calls are batched with long completions and must wait, and the workloads compete for cache space. Learn recommends a separate deployment per workload, which isolates the chat traffic from the long generations.",
+   "Incorrect: batching several requests into one call reduces the number of requests and, depending on the scenario, might improve overall response time, which Learn recommends testing. It does not stop short chat calls from waiting behind the long completions of the job on the shared deployment."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/latency"
+ },
+ {
+  "id": "4.2.2-07",
+  "obj": "4.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. has a Microsoft Foundry resource with deployments of an Azure OpenAI model, DeepSeek-R1, and a Phi model. A dashboard in Azure Monitor metrics explorer charts the Azure OpenAI Requests metric split by ModelDeploymentName. It shows no traffic for the DeepSeek-R1 and Phi deployments, although they receive requests. The dashboard must show near real-time request counts for every deployment without adding log ingestion costs.\n\nWhat should you do?",
+  "choices": [
+   "Split the Azure OpenAI Requests metric by ModelName instead of ModelDeploymentName.",
+   "Set Resource types to Foundry Tools in the scope selector of the metrics explorer chart.",
+   "Send the RequestResponse logs to Log Analytics and count requests with a KQL query.",
+   "Chart the Model Requests metric from the Models category, split by ModelDeploymentName."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Azure Monitor collects Foundry Models metrics automatically. The newer Models category (for example Model Requests, Input Tokens, Output Tokens, and Time To Response) covers every model in the resource, while the Azure OpenAI category covers only Azure OpenAI models, so Learn recommends switching to the Models category. Resource logs need a diagnostic setting and add Log Analytics costs.",
+  "rationale": [
+   "Incorrect: ModelName is another dimension of the same metric in the Azure OpenAI category, which contains only Azure OpenAI models, so a different split cannot show DeepSeek-R1 or Phi traffic. Use ModelName to compare Azure OpenAI models across deployments.",
+   "Incorrect: setting Resource types to Foundry Tools fixes the case where metrics do not appear at all because of the scope filter. Here the resource is in scope and its Azure OpenAI traffic is visible, so the scope is not the problem.",
+   "Incorrect: RequestResponse logs record every request, but they require a diagnostic setting and Log Analytics ingestion, which adds the cost that the requirement rules out. Use resource logs when you need per-request details for KQL analysis.",
+   "Correct: metrics in the Azure OpenAI category cover only Azure OpenAI models, while the Models category covers all models in the resource, including DeepSeek and Phi. Model Requests is collected automatically and has the ModelDeploymentName dimension, so the chart covers every deployment at no log cost."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/how-to/monitor-models"
+ },
+ {
+  "id": "4.2.2-08",
+  "obj": "4.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Trey Research has a Microsoft Foundry resource. An analyst must view the latency and request metrics of the model deployments in Azure Monitor metrics explorer. The analyst must not be able to change diagnostic settings or other monitoring configuration.\n\nWhich role should you assign to the analyst on the resource?",
+  "choices": [
+   "Monitoring Contributor",
+   "Monitoring Reader",
+   "Monitoring Metrics Publisher",
+   "Cost Management Reader"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Foundry Models metrics are collected automatically and stored in Azure Monitor. To view them, a user needs at least Monitoring Reader on the resource; to configure diagnostic settings that export logs and metrics, the user needs Monitoring Contributor. Choose the narrowest role that matches the task.",
+  "rationale": [
+   "Incorrect: Monitoring Contributor is the role that Learn lists for configuring diagnostic settings on the resource, and it can also edit alert rules and other monitoring settings, which the analyst must not do. Assign it to the person who sets up log export and alerts.",
+   "Correct: Learn lists Monitoring Reader on the resource as the role needed to view model deployment metrics. It reads all monitoring data but cannot edit monitoring settings, so it meets the least privilege requirement.",
+   "Incorrect: Monitoring Metrics Publisher allows an identity to write metrics and telemetry to Azure Monitor, for example for an agent that uploads custom metrics. It does not grant read access to view metrics in metrics explorer.",
+   "Incorrect: Cost Management Reader gives view-only access to cost data and budgets in Cost Management. It does not cover platform metrics such as latency and requests, so use it for spend reporting, not for performance metrics."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/how-to/monitor-models"
+ },
+ {
+  "id": "4.2.3-01",
+  "obj": "4.2.3",
+  "difficulty": "medium",
+  "type": "order",
+  "stem": "VanArsdel, Ltd. has one Microsoft Foundry resource that hosts two projects: Project1 for the sales team and Project2 for the support team. Both projects call Azure OpenAI deployments on the resource. Finance must see, in the Azure portal, the billed cost that Project1 incurred last month.\n\nWhich four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Select Add filter, and then choose Tag and the project tag.",
+   "Add a project tag with the value Project1 to each model deployment.",
+   "In the Azure portal, open the Foundry resource.",
+   "Select Project1 and set the time range to last month.",
+   "In the Foundry portal, open the Monitor tab of each model deployment.",
+   "Select Cost analysis under Resource Management."
+  ],
+  "answer": [
+   2,
+   5,
+   0,
+   3
+  ],
+  "explanation": "Project-level cost attribution (preview) lets several projects share one Foundry resource and still split the bill: usage of supported models, such as Models sold by Azure including Azure OpenAI, is tagged automatically with a project tag that you filter on in Cost analysis. Models served through Azure Marketplace are not supported yet, and Foundry estimates are for monitoring, not for reconciliation.",
+  "rationale": [
+   "Step 3: Foundry automatically tags project usage of supported models, such as Models sold by Azure, with a tag named project. Adding a Tag filter on project is what splits the shared spend of the resource by project.",
+   "Incorrect: for supported models, Foundry tags project usage automatically, so you do not need to add tags manually. Manual resource-level tags are what you rely on where project attribution is not supported, for example for Claude consumption on a Foundry resource.",
+   "Step 1: the per-project view starts on the Foundry resource in the Azure portal, because the project tag is applied to the usage of that shared resource.",
+   "Step 4: selecting Project1 and last month as the time range shows only the cost attributed to that project, which is what Finance needs for chargeback.",
+   "Incorrect: the Monitor tab of a model shows the total and estimated cost of that model for all callers. Estimates do not reflect discounts and are meant for near-real-time monitoring; billed amounts per project come from Cost Management.",
+   "Step 2: Cost analysis under Resource Management opens Cost Management scoped to the Foundry resource, where billed costs can be filtered and grouped. You need this view before you can add the tag filter."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "4.2.3-02",
+  "obj": "4.2.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Margie's Travel runs a travel assistant on a Standard deployment of a GPT-4o model in Microsoft Foundry. Every request contains about 3,000 tokens of identical instructions and tool definitions, followed by the user's question. Currently, the system message starts with the current timestamp and the user ID, and the app rewrites the earlier conversation turns before each request. The cached_tokens value in the responses is always 0. You need to reduce the cost of input tokens without changing the model or the deployment type.\n\nWhich two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Move the timestamp and user ID after the static instructions and tool definitions.",
+   "Increase the tokens-per-minute quota of the deployment to admit more requests.",
+   "Keep the conversation history append-only instead of rewriting earlier turns.",
+   "Enable streaming on the chat completions requests that the assistant sends.",
+   "Set max_tokens to a lower value on the requests that the assistant sends."
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Prompt caching is enabled by default for supported models and applies when a prompt is at least 1,024 tokens long and its first 1,024 tokens match a cached prefix. Cache hits appear as cached_tokens under prompt_tokens_details and are billed at a discount on Standard deployments. Put static instructions, tool definitions, and examples first, put dynamic values last, and keep the conversation context append-only.",
+  "rationale": [
+   "Correct: prompt caching needs the first 1,024 tokens of the prompt to be identical. A timestamp and user ID at the start make every prefix unique, so moving them after the static content allows cache hits, and cache reads are billed at a discount on Standard deployments.",
+   "Incorrect: the TPM quota sets the admission limit for requests on a Standard deployment; it does not change the price or the number of input tokens. Raise it when requests are rejected with 429 errors.",
+   "Correct: Learn advises placing stable content first and keeping conversation context append-only. Rewriting earlier turns changes the prompt on every request, which causes cache misses; appending keeps earlier content identical so more input tokens are served from the cache.",
+   "Incorrect: streaming returns tokens as they are generated, which improves perceived latency, but it does not change how many input tokens are processed or how they are billed.",
+   "Incorrect: max_tokens caps the length of the generated output, which can lower output token use and latency. It has no effect on the 3,000 input tokens, which are the cost that must be reduced."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/prompt-caching"
+ },
+ {
+  "id": "4.2.3-03",
+  "obj": "4.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery has a FinOps analyst who must review the costs of the company's Microsoft Foundry resources in Cost analysis. The analyst must not be able to create budgets, exports, or other cost configuration.\n\nWhich role should you assign to the analyst?",
+  "choices": [
+   "Cost Management Contributor",
+   "Foundry User",
+   "Monitoring Reader",
+   "Cost Management Reader"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Access to cost data is controlled by Cost Management roles: Cost Management Reader views cost data and configuration, and Cost Management Contributor also creates and manages budgets, exports, shared views, and alerts. For Foundry, the cost guidance pairs Cost Management Reader with Foundry User when a person also needs to inspect Foundry resources. Token metrics and Foundry estimates are not the billed source of truth.",
+  "rationale": [
+   "Incorrect: Cost Management Contributor can view costs and can also create and manage budgets, exports, shared views, and budget threshold alerts. Learn recommends it as the least privilege role for people who own that cost configuration, not for a view-only analyst.",
+   "Incorrect: Learn maps viewing Foundry resources and their usage context to Foundry User (formerly Azure AI User) and viewing Cost Management data to Cost Management Reader. Assign Foundry User in addition when the analyst must also inspect Foundry resources.",
+   "Incorrect: Monitoring Reader reads metrics, logs, and other monitoring data, such as token counts in metrics explorer. Billed costs in Cost analysis are governed by Cost Management roles, so use Monitoring Reader for operational metrics.",
+   "Correct: Cost Management Reader gives view-only access to cost data, such as Cost analysis and forecasts, and to existing cost configuration such as budgets and exports. It cannot create or manage budgets, exports, shared views, or alerts, which matches the least privilege requirement."
+  ],
+  "ref": "https://learn.microsoft.com/azure/cost-management-billing/costs/understand-work-scopes"
+ },
+ {
+  "id": "4.2.3-04",
+  "obj": "4.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing reviews the bill for its Microsoft Foundry resource. A deployment of a fine-tuned Azure OpenAI model is no longer used by any application; only a smoke-test script calls it once a week. The deployment still generates charges every hour. The fine-tuned model will be needed again next quarter.\n\nWhat should you do to stop these charges until then?",
+  "choices": [
+   "Lower the tokens-per-minute quota of the deployment to the minimum.",
+   "Delete the deployment and redeploy the fine-tuned model next quarter.",
+   "Delete the training and validation files of the fine-tuning job.",
+   "Create a Cost Management budget with an alert for the resource."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Fine-tuned Azure OpenAI models are billed for training, for hosting (an hourly cost per deployed model that applies even when the model is unused), and for inference tokens. To avoid idle hosting charges, remove deployments that you do not need; deleting a deployment does not delete the fine-tuned model, so you can deploy it again later. A budget only alerts, because Azure OpenAI has no hard spending limit.",
+  "rationale": [
+   "Incorrect: the TPM quota limits how many tokens the deployment admits per minute. Hosting is billed per hour for the deployment itself, regardless of calls, so a lower quota does not remove the hosting charge.",
+   "Correct: each deployed fine-tuned model incurs an hourly hosting cost whether or not it is called. Deleting the deployment does not delete the underlying fine-tuned model, which can be redeployed at any time, so you stop paying for hosting until you need it.",
+   "Incorrect: training and validation files are inputs of the fine-tuning job. Removing them does not undeploy the model, so the hourly hosting charge continues. Delete them when you no longer need them for retraining.",
+   "Incorrect: a budget alert notifies you when costs approach a threshold, but Azure OpenAI has no hard spending limit and the alert does not stop the deployment. Use budgets to detect cost overruns early."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "4.2.3-05",
+  "obj": "4.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Southridge Video has several agents in a Microsoft Foundry project that send telemetry to the connected Application Insights resource. Token consumption doubled last week. You need to find the individual agent runs that used the most tokens and see which model and tool steps in those runs drove the usage.\n\nWhat should you do?",
+  "choices": [
+   "In Cost analysis for the Foundry resource, group the costs by Meter and switch the chart to Line.",
+   "In metrics explorer, chart the Total Tokens metric and split it by ModelDeploymentName.",
+   "In the Agents (Preview) view of Application Insights, sort the agent run traces by Most tokens used.",
+   "In the Foundry portal, open Operate > Overview and review the Estimated cost tile of the project."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Token consumption can be tracked at three levels: billed cost in Cost Management, aggregated token metrics in Azure Monitor, and individual runs in traces. To find the cause of a spike, use trace-level data: the Agents (Preview) view in Application Insights, which you can also reach from Foundry with View in Azure Monitor, sorts traces by tokens used and opens the steps of each run.",
+  "rationale": [
+   "Incorrect: grouping by Meter shows which billing meters, such as model input and output, generated the charges over time. It works on billed cost aggregates, not on individual agent runs, so it cannot show which run or step used the tokens.",
+   "Incorrect: Total Tokens split by ModelDeploymentName shows the token volume per deployment over time. It confirms the increase and the affected deployment, but metrics are aggregates and cannot point to individual runs or tool calls.",
+   "Correct: the Agents (Preview) view lets you open the traces with agent runs and sort them by Most tokens used to find expensive operations. A selected trace opens the end-to-end transaction details, which show the model and tool steps, such as a large prompt context or an expensive model, that drove the tokens.",
+   "Incorrect: the Estimated cost tile shows the estimated costs of the agents in the selected projects for a date range. It helps track spend trends at fleet level, but it does not drill into the runs and steps that consumed the tokens."
+  ],
+  "ref": "https://learn.microsoft.com/azure/azure-monitor/app/agents-view"
+ },
+ {
+  "id": "4.2.3-06",
+  "obj": "4.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A. Datum Corporation has a negotiated discount on Azure. Its finance team must reconcile last month's Microsoft Foundry charges per model deployment for an internal chargeback report. The Estimated cost chart on the Monitor tab of a model deployment shows a higher amount than finance expects.\n\nWhich source should finance use for the reconciliation?",
+  "choices": [
+   "The Estimated cost tile on the Operate > Overview page of the Foundry portal",
+   "The Input Tokens and Output Tokens metrics multiplied by list prices",
+   "The token usage chart on the Monitor tab of each agent in the project",
+   "Cost analysis in Microsoft Cost Management, scoped to the Foundry resource"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Foundry shows estimated costs (agent Monitor tab, model Monitor tab, Operate > Overview) for near-real-time monitoring. These estimates cover standard deployments only and do not include discounts or contracted pricing. For chargeback and reconciliation, use Cost Management and the invoice, and keep the same scope (subscription, resource group, or resource) as the numbers that you compare.",
+  "rationale": [
+   "Incorrect: the Estimated cost tile shows estimates for the agents in the selected projects. Foundry estimates do not reflect discounts or contracted pricing, so they cannot match the bill. Use estimates for near-real-time monitoring of spend trends.",
+   "Incorrect: multiplying token metrics by list prices ignores the negotiated discount and the exact billing meters, so it produces another estimate. Use token metrics to track consumption and capacity, not to reconcile billed amounts.",
+   "Incorrect: the agent Monitor tab shows token usage and token costs for one agent, which helps you optimize that agent. Like other Foundry estimates, it is meant for monitoring, not as the billed source of truth for chargeback.",
+   "Correct: Learn says to use Microsoft Cost Management and invoiced charges for financial reconciliation. Cost analysis shows actual post-consumption charges, including contracted pricing, and can split the Foundry resource cost across model deployments."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "4.2.3-07",
+  "obj": "4.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Humongous Insurance must be notified when the monthly spend of the resource group that contains its Microsoft Foundry resources reaches 80 percent of a set amount in currency. At 100 percent, an existing runbook must start automatically.\n\nWhat should you configure?",
+  "choices": [
+   "A metric alert rule on the Total Tokens metric of the Foundry resource",
+   "A Cost Management budget with alerts that trigger an action group",
+   "An alert in the Monitor settings of each agent for token usage",
+   "A scheduled export of cost data from Cost Management to a storage account"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Budgets in Cost Management track spending against a set amount for a scope such as a subscription or resource group and raise alerts at thresholds. Azure OpenAI does not offer a hard limit that blocks spending, so automated responses, such as a runbook, are attached through action groups on the budget alert, which needs some custom development. Exports are for analysis, and metric or agent alerts track usage, not currency.",
+  "rationale": [
+   "Incorrect: a metric alert on Total Tokens fires on token volume, not on spend in currency, and it covers one resource rather than the whole resource group. Use it to detect unusual token consumption on a deployment.",
+   "Correct: a budget tracks spend in currency for a scope such as a resource group, and its alert thresholds notify people at 80 and 100 percent. Budget alerts can start automation through an action group, which is how the runbook runs, because Azure OpenAI has no built-in hard spending limit.",
+   "Incorrect: alerts in the Monitor settings detect anomalies in the latency, token usage, evaluation scores, or red team findings of an agent. They work per agent on telemetry, not on the billed spend of a resource group.",
+   "Incorrect: a scheduled export writes cost data to a storage account daily, weekly, or monthly so that finance can analyze it in Excel or Power BI. It does not evaluate thresholds or send notifications."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "4.2.3-08",
+  "obj": "4.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Blue Yonder Airlines has a Microsoft Foundry resource in a resource group named rg-ai. The resource hosts deployments of Azure OpenAI models and of a partner model that is billed through Azure Marketplace. When an analyst scopes Cost analysis to the Foundry resource and groups by Meter, the Azure OpenAI meters appear, but the partner model charges are missing. The analyst must see the charges of all models in one view.\n\nWhat should the analyst do?",
+  "choices": [
+   "Add a filter on Service name for Azure OpenAI and keep the resource scope.",
+   "Add a filter on the project tag that includes the projects on the resource.",
+   "Scope Cost analysis to the rg-ai resource group and group the costs by Meter.",
+   "Open the Monitor tab of the partner model deployment in the Foundry portal."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Where model charges appear depends on who sells the model: Models sold by Azure, including Azure OpenAI, show as meters under the Foundry resource, while models from partners and the community show under the resource group. Scope Cost analysis to the resource group, or to the subscription with filters, to see all model costs together.",
+  "rationale": [
+   "Incorrect: Azure OpenAI usage falls under the broader Cognitive Services service in Cost Management, so you filter on Service tier: Azure OpenAI instead. Either way, a filter for Azure OpenAI would exclude the partner model charges.",
+   "Incorrect: the automatic project tag supports Models sold by Azure, such as Azure OpenAI, but not models served through Azure Marketplace. A filter on it cannot surface the partner model charges; use it to split shared Azure OpenAI spend by project.",
+   "Correct: Learn says to scope Cost analysis to the resource group where the Foundry resource is deployed, because the meters of models from partners and the community appear under the resource group instead of the Foundry resource. Grouping by Meter then shows the Azure OpenAI and partner model charges side by side.",
+   "Incorrect: the Monitor tab of a model shows near-real-time usage and cost information for that one model. It is not a combined view of the billed charges of all models, which the analyst requires."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "4.2.4-01",
+  "obj": "4.2.4",
+  "difficulty": "hard",
+  "type": "order",
+  "stem": "Consolidated Messenger has a Python app that gets responses from an agent in a Microsoft Foundry project by using the azure-ai-projects package. The project is connected to an Application Insights resource. You need the app to send client-side traces of its agent calls to that resource. The app must read the connection string from the project instead of storing it, and message contents must not be recorded.\n\nWhich five actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.",
+  "choices": [
+   "Create the AIProjectClient and call `project.telemetry.get_application_insights_connection_string()`.",
+   "Set `os.environ[\"OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT\"] = \"true\"` before instrumenting.",
+   "Run `pip install azure-ai-projects opentelemetry-sdk azure-core-tracing-opentelemetry azure-monitor-opentelemetry`.",
+   "Call `configure_azure_monitor(connection_string=connection_string)`.",
+   "Run `pip install opentelemetry-exporter-otlp` and configure an OTLP exporter for the console.",
+   "At the top of the script, before the Foundry SDK imports and the AIProjectClient, set `os.environ[\"AZURE_EXPERIMENTAL_ENABLE_GENAI_TRACING\"] = \"true\"`.",
+   "Run the agent, wait a few minutes, and confirm the new trace on the Traces page of the project."
+  ],
+  "answer": [
+   2,
+   5,
+   0,
+   3,
+   6
+  ],
+  "explanation": "Client-side tracing extends the automatic server-side traces of Foundry into your own code. In Python you install the Foundry SDK, OpenTelemetry, and the Azure Monitor exporter, opt in with AZURE_EXPERIMENTAL_ENABLE_GENAI_TRACING at the top of the script (always before instrumentation), get the connection string from the project, and call configure_azure_monitor before the agent runs. Content recording is off by default and should stay off in production unless compliance allows it.",
+  "rationale": [
+   "Step 3: the project client is needed to call telemetry.get_application_insights_connection_string(), which returns the connection string of the connected Application Insights resource, so the app does not have to store it.",
+   "Incorrect: OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT turns on content recording, which captures user messages, tool call arguments, and model outputs. The requirement forbids recording message contents; enable it only in development when compliance allows it.",
+   "Step 1: the packages must be installed before the script can import them. azure-core-tracing-opentelemetry connects the Azure SDK to OpenTelemetry, and azure-monitor-opentelemetry provides configure_azure_monitor for the export to Application Insights.",
+   "Step 4: configure_azure_monitor wires the OpenTelemetry exporter to Application Insights with the connection string from step 3. It must run before the agent calls so that their spans are exported.",
+   "Incorrect: the OTLP exporter is meant for console-only or OTLP backends such as Aspire Dashboard. The traces must go to Application Insights, which azure-monitor-opentelemetry already handles, so this step is not needed.",
+   "Step 2: GenAI tracing is an experimental opt-in that must be on before any GenAI instrumentation runs. Learn's Python rule is to set AZURE_EXPERIMENTAL_ENABLE_GENAI_TRACING before AIProjectInstrumentor().instrument(), and its Azure Monitor sample, which does not call instrument() itself, sets it at the top of the script before the imports and the client. Setting it first satisfies both; if it is not true, tracing is not enabled and a warning is logged.",
+   "Step 5: after a run, traces typically appear in the Foundry portal and in Azure Monitor within 2-5 minutes, so a new trace on the Traces page confirms that the setup works."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/trace-agent-client-side"
+ },
+ {
+  "id": "4.2.4-02",
+  "obj": "4.2.4",
+  "difficulty": "hard",
+  "type": "dropdown",
+  "stem": "Lamna Healthcare Company instruments a Python agent app in its development environment. The app must emit GenAI spans, developers must see message contents in the spans while they debug, and the OpenTelemetry baggage of the app contains patient session identifiers that must not be sent to Azure OpenAI.\n\nHow should you complete the code? To answer, select the appropriate options in the answer area.\n\n```python\nimport os\nTRACING_FLAG = [[1]]\nos.environ[TRACING_FLAG] = \"true\"\n\nfrom azure.ai.projects.telemetry import AIProjectInstrumentor\n\nAIProjectInstrumentor().instrument(\n    enable_content_recording=[[2]],\n    enable_baggage_propagation=[[3]],\n)\n```",
+  "targets": [
+   {
+    "label": "Box 1",
+    "options": [
+     "\"OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT\"",
+     "\"AZURE_EXPERIMENTAL_ENABLE_GENAI_TRACING\"",
+     "\"AZURE_TRACING_GEN_AI_INSTRUMENT_RESPONSES_API\""
+    ],
+    "why": [
+     "Incorrect: OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT controls content recording, the same setting as enable_content_recording. It does not opt in to GenAI tracing, so without the tracing flag no spans are produced.",
+     "Correct: GenAI tracing is an experimental opt-in, and AZURE_EXPERIMENTAL_ENABLE_GENAI_TRACING must be true before instrument() is called. Without it, instrumentation is not enabled, a warning is logged, and no GenAI spans are emitted.",
+     "Incorrect: AZURE_TRACING_GEN_AI_INSTRUMENT_RESPONSES_API controls automatic instrumentation of the Responses and Conversations APIs and is already true by default. Set it to false only when you want just your own custom spans."
+    ]
+   },
+   {
+    "label": "Box 2",
+    "options": [
+     "True",
+     "False"
+    ],
+    "why": [
+     "Correct: enable_content_recording=True captures message contents and tool call arguments in the built-in spans, which the developers need while they debug. Learn advises enabling it only in development, as in this scenario.",
+     "Incorrect: False is the default and keeps message contents out of the spans, which is the right choice in production. The developers in this scenario must see the contents, so recording must be on."
+    ]
+   },
+   {
+    "label": "Box 3",
+    "options": [
+     "True",
+     "False"
+    ],
+    "why": [
+     "Incorrect: True adds the baggage header to the propagated requests. Baggage can carry user identifiers and is sent to Azure OpenAI, so enabling it would expose the patient session identifiers.",
+     "Correct: False, the default, propagates only the traceparent and tracestate headers. The baggage with patient session identifiers stays in the app, while trace context propagation for correlation stays enabled."
+    ]
+   }
+  ],
+  "answer": [
+   1,
+   0,
+   1
+  ],
+  "explanation": "In Python, AIProjectInstrumentor().instrument() accepts enable_content_recording, enable_trace_context_propagation, and enable_baggage_propagation, each with an environment variable equivalent; a parameter wins over its variable. Tracing itself is enabled only when AZURE_EXPERIMENTAL_ENABLE_GENAI_TRACING is true. The defaults are False for content recording, True for trace context propagation, and False for baggage propagation.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/trace-agent-client-side"
+ },
+ {
+  "id": "4.2.4-03",
+  "obj": "4.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "City Power & Light has several prompt agents in a Microsoft Foundry project. The operations team needs traces of every agent run, including latency, tool calls, and exceptions, for production troubleshooting. No code may be added or changed.\n\nWhat should you do first?",
+  "choices": [
+   "Add client-side tracing with the azure-monitor-opentelemetry package.",
+   "Create a diagnostic setting that sends the Trace log category to Log Analytics.",
+   "Connect an Application Insights resource to the Foundry project.",
+   "Install the Foundry Toolkit for Visual Studio Code and start its local collector."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Start with server-side tracing: once an Application Insights resource is connected, Foundry records traces for prompt agents, hosted agents, and workflows without code changes and keeps them searchable in the Traces view for 90 days. Add client-side tracing later when you need spans for your own application logic, and use local tracing in the Foundry Toolkit during development.",
+  "rationale": [
+   "Incorrect: client-side tracing instruments your own application code and needs code changes, which the requirement rules out. Learn treats it as a second step after server-side tracing, for custom logic around an agent call.",
+   "Incorrect: the Trace category of a Foundry resource holds resource logs for debugging model inference calls, stored in Log Analytics. The Traces view of the project reads agent run traces from the connected Application Insights resource.",
+   "Correct: Foundry enables server-side tracing automatically after you connect an Application Insights resource to the project. It works for agents hosted in Foundry, such as prompt agents, needs no code changes, and traces are available within minutes.",
+   "Incorrect: the local collector of the Foundry Toolkit receives spans from apps that you run during development, without Application Insights. It is meant for development and debugging, not for production agents."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/trace-agent-setup"
+ },
+ {
+  "id": "4.2.4-04",
+  "obj": "4.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Nod Publishers runs a Python agent app in production with content recording disabled. A developer added this function:\n\n```python\nfrom azure.ai.projects.telemetry import trace_function\n\n@trace_function\ndef find_subscriber(email: str) -> str:\n    ...\n```\n\nThe security team finds subscriber email addresses in the spans. The app must still emit a span for each call to find_subscriber, but the span must not contain the email address.\n\nWhat should you do?",
+  "choices": [
+   "Set the OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT environment variable to false.",
+   "Call AIProjectInstrumentor().instrument() with enable_content_recording set to False.",
+   "Set the AZURE_TRACING_GEN_AI_INSTRUMENT_RESPONSES_API environment variable to false.",
+   "Replace the decorator with a manual span created by tracer.start_as_current_span()."
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The @trace_function decorator from azure.ai.projects.telemetry creates a span per call and always records supported parameter types and the return value, independent of content recording. Content recording settings apply only to the built-in GenAI spans. For functions that handle personal data, create spans manually with the OpenTelemetry SDK, set only the attributes you need, and redact sensitive data before it reaches telemetry.",
+  "rationale": [
+   "Incorrect: Learn states that OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT does not affect custom function tracing; it controls message contents in built-in traces. Content recording is already off, and the decorator still records the email parameter.",
+   "Incorrect: enable_content_recording is the parameter equivalent of OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT and defaults to False. It governs the built-in GenAI spans, not functions decorated with @trace_function, so the email address is still recorded.",
+   "Incorrect: this variable disables automatic instrumentation of Responses and Conversations API calls, leaving only custom spans. The email address comes from the custom decorator, so it is still recorded while the built-in spans disappear.",
+   "Correct: @trace_function always records parameters as code.function.parameter attributes, regardless of the content recording setting. A manual OpenTelemetry span records only the attributes that you set with span.set_attribute(), so each call keeps a span without the email address."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/trace-agent-client-side"
+ },
+ {
+  "id": "4.2.4-05",
+  "obj": "4.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank traces its Foundry agents in an Application Insights resource. The protectGenAISensitiveData preview feature flag is registered on the subscription. Prompts, model responses, and tool call arguments in new traces can contain customer data. Only members of a group named Investigators may read that content. Other engineers, who have the Log Analytics Reader role, must keep seeing span durations, status, and other non-sensitive trace data.\n\nWhat should you do?",
+  "choices": [
+   "Disable content recording in the app and assign Investigators the Log Analytics Contributor role.",
+   "Remove the Log Analytics Reader role from the engineers and assign them the Monitoring Reader role.",
+   "Set the AppGenAIContent table to Protected and grant Investigators Privileged Monitoring Data Reader.",
+   "Assign Investigators the Log Analytics Reader role on the Log Analytics workspace of the resource."
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Traces can capture personal data in attributes such as gen_ai.input.messages, gen_ai.output.messages, and gen_ai.tool.call.arguments. Application Insights routes their values only to the dedicated AppGenAIContent table for data ingested from 30 September 2026, or earlier when the protectGenAISensitiveData flag is registered; the optOutProtectGenAISensitiveData flag keeps the old routing until 30 September 2027. Setting AppGenAIContent to Protected denies standard read roles by default, and Privileged Monitoring Data Reader on the Application Insights resource grants read access in both Application Insights and Foundry.",
+  "rationale": [
+   "Incorrect: disabling content recording removes the content for everyone, including Investigators, so they could no longer read it. Log Analytics Contributor is the role that you need to configure tables, not a role that reads protected data.",
+   "Incorrect: Monitoring Reader also reads Application Insights data, so swapping one standard read role for another does not hide the content. Only a protected table restricts the sensitive attributes while the rest of the trace stays visible.",
+   "Correct: with the protectGenAISensitiveData flag registered, Application Insights routes the sensitive GenAI attribute values of new traces only to the AppGenAIContent table. Setting that table to Protected applies deny-by-default access, so only identities with Privileged Monitoring Data Reader on the Application Insights resource can read the content, while standard readers still see the rest of the trace.",
+   "Incorrect: Log Analytics Reader is the standard read role that the engineers already have. Once the table is protected, this role is denied access to the sensitive content; without protection, everyone with the role sees it."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/traces-sensitive-content"
+ },
+ {
+  "id": "4.2.4-06",
+  "obj": "4.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailwind Traders has applications that call model deployments on a Microsoft Foundry resource directly, without agents. The operations team needs to query each inference request, including its status code and latency, with KQL in a Log Analytics workspace. Log Analytics ingestion costs must be kept to a minimum.\n\nWhat should you configure on the Foundry resource?",
+  "choices": [
+   "A diagnostic setting that sends the RequestResponse, Trace, and Audit categories to the workspace",
+   "A diagnostic setting that sends the RequestResponse log category to the workspace",
+   "A diagnostic setting that sends the AllMetrics category to the workspace",
+   "A connection to an Application Insights resource on the Foundry project"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Foundry Models resource logs come in three categories: RequestResponse (every inference request and response, with status codes and latency), Trace (detailed debugging logs), and Audit (administrative operations). You route them to Log Analytics with a diagnostic setting per resource, which requires the Monitoring Contributor role, and data can take up to 15 minutes to arrive. Ingestion is billed, so select only the categories you need.",
+  "rationale": [
+   "Incorrect: Trace adds detailed debugging logs for inference calls, and Audit adds administrative operations such as deployments and access changes. Neither is needed here, and Learn warns that collecting data in Log Analytics has a cost, so collect only the categories you require.",
+   "Correct: resource logs are generated automatically but must be routed to Log Analytics with a diagnostic setting before you can query them. The RequestResponse category logs every inference request and response with status codes and latency, and collecting only that category keeps ingestion costs down.",
+   "Incorrect: AllMetrics exports platform metrics, which you can query in the AzureMetrics table. Metrics are aggregated per time grain, so they do not contain individual requests with their status codes.",
+   "Incorrect: connecting Application Insights to a project enables tracing for agents and workflows. It does not route the resource logs of the Foundry resource to a Log Analytics workspace; that requires a diagnostic setting."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/how-to/monitor-models"
+ },
+ {
+  "id": "4.2.4-07",
+  "obj": "4.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wingtip Toys develops a hosted agent with Microsoft Agent Framework in Visual Studio Code. A developer must send a request to the agent that runs on the local machine, watch the live response and tool events, and pause execution at a breakpoint inside a tool function. No OpenTelemetry collector is set up.\n\nWhich tool should the developer use?",
+  "choices": [
+   "Local tracing in the Foundry Toolkit",
+   "Hosted-agent tracing in the Foundry Toolkit",
+   "The Traces page of the Foundry project",
+   "Agent Inspector in the Foundry Toolkit"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The Foundry Toolkit offers three data sources: Agent Inspector for live local requests, tool events, and breakpoints; local tracing for spans stored by a local OTLP collector (gRPC on localhost:4317 or HTTP on localhost:4318); and hosted-agent tracing for deployed agents, backed by Application Insights. Live Inspector events and stored traces are separate data sources.",
+  "rationale": [
+   "Incorrect: local tracing records the model, tool, and agent spans that the app exports to the local OTLP collector of the Toolkit, for later comparison. It needs the collector and shows stored spans, not live breakpoints.",
+   "Incorrect: hosted-agent tracing shows traces of requests handled by an agent that is deployed to Foundry, stored in the project's Application Insights resource. The agent here runs on the local machine.",
+   "Incorrect: the Traces page shows ingested traces from the connected Application Insights resource for agents in the project. It cannot pause local code at a breakpoint or show the local process live.",
+   "Correct: Agent Inspector sends local requests, streams live response and tool events, and works with the debugger so that execution can pause at a breakpoint. Its live diagnostics do not require the OTLP collector."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/develop/vs-code-tracing"
+ },
+ {
+  "id": "4.2.4-08",
+  "obj": "4.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. has a Python agent app with this startup code:\n\n```python\nopenai_client = project.get_openai_client()\nAIProjectInstrumentor().instrument()\n```\n\nGenAI tracing is enabled, and client-side spans arrive in Application Insights, but they are not correlated with the server-side spans of the Azure OpenAI calls. Trace context propagation uses its default setting.\n\nWhat should you do?",
+  "choices": [
+   "Set AZURE_TRACING_GEN_AI_TRACE_CONTEXT_PROPAGATION_INCLUDE_BAGGAGE to true.",
+   "Call get_openai_client() after AIProjectInstrumentor().instrument() has run.",
+   "Call instrument() with the enable_content_recording parameter set to True.",
+   "Set AZURE_TRACING_GEN_AI_INSTRUMENT_RESPONSES_API to false before instrumenting."
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "In Python, trace context propagation links client-side spans with server-side spans by adding W3C Trace Context headers (traceparent and tracestate) to requests from OpenAI clients obtained via get_openai_client(). It is enabled by default together with tracing, but it applies only to clients acquired after instrumentation, so instrument first and then create the client.",
+  "rationale": [
+   "Incorrect: this variable adds the baggage header to the propagated headers. Correlation needs only traceparent and tracestate, and baggage can carry sensitive data to Azure OpenAI. Enable it only when downstream services need baggage values.",
+   "Correct: trace context propagation, on by default when tracing is enabled, injects traceparent and tracestate headers only into OpenAI clients obtained via get_openai_client() after instrumentation. The client created before instrument() is not affected, so creating it afterwards correlates the spans.",
+   "Incorrect: content recording adds message contents and tool call arguments to spans. It does not inject trace context headers, so the spans stay uncorrelated, and it raises privacy risk in production.",
+   "Incorrect: setting this variable to false disables automatic instrumentation of Responses and Conversations API calls, so only custom spans remain. That removes spans instead of correlating them."
+  ],
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/trace-agent-client-side"
+ }
+]

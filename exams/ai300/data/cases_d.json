@@ -1,0 +1,24 @@
+[
+ {
+  "id": "C-d",
+  "title": "Humongous Insurance",
+  "sections": [
+   [
+    "Overview",
+    "Humongous Insurance is an insurance company that has offices in Chicago and Dublin. The claims department receives about 4,000 claims each day. The company plans to build generative AI agents in Microsoft Foundry that help claims handlers triage incoming claims.\n\nA platform team owns the Azure subscriptions, the network, and the deployment pipelines. An AI engineering team builds the agents. A fraud analytics team plans to fine-tune a model on historical claims data."
+   ],
+   [
+    "Existing environment",
+    "**Identity**\n\n- The company has a Microsoft Entra tenant and an Azure subscription named Sub1.\n- A security group named AI-Devs contains the members of the AI engineering team.\n- A security group named Fraud-Analysts contains the members of the fraud analytics team.\n- A security group named Claims-Reviewers contains external contractors who are invited as guest users.\n\n**Network**\n\n- A virtual network named VNet1 (10.40.0.0/16) is in the West Europe region. VNet1 connects to the Chicago and Dublin offices by using ExpressRoute.\n- VNet1 contains a subnet named snet-agents (10.40.1.0/24) that has no delegation, a subnet named snet-endpoints (10.40.2.0/24) for private endpoints, and an Azure Firewall named FW1. User-defined routes send all outbound traffic from VNet1 through FW1, where the security team maintains the allowed destinations.\n- VNet1 uses a custom DNS server named Server1. Server1 is a virtual machine in VNet1 that also resolves the names of on-premises servers.\n\n**Azure resources**\n\n- A resource group named rg-claims-prod in West Europe contains a storage account named stclaims, an Azure AI Search service named srch-claims, and an Azure Cosmos DB for NoSQL account named cosmos-claims. Public network access is disabled on all three resources. No private endpoints exist for them yet.\n- A key vault named kv-claims uses the Azure role-based access control permission model and has soft delete and purge protection enabled. kv-claims contains an RSA key named foundry-cmk.\n- A user-assigned managed identity named id-foundry-cmk has the Key Vault Crypto User role on kv-claims.\n- Archived claims documents are stored on file servers in the Dublin office."
+   ],
+   [
+    "Planned changes",
+    "Humongous Insurance plans to implement the following changes:\n\n- Deploy a Microsoft Foundry resource named foundry-claims to rg-claims-prod by using a Bicep file named main.bicep that the platform team stores in GitHub. In main.bicep, snetAgents and snetEndpoints are existing references to the subnets of VNet1.\n- Create two projects on foundry-claims named proj-triage and proj-intake. Agents in both projects will use the standard agent setup with stclaims, srch-claims, and cosmos-claims.\n- AI-Devs will build an agent named ClaimsHelper in proj-triage.\n- Fraud-Analysts will fine-tune a model by uploading training files that contain historical claims.\n- Move the archived claims documents from the Dublin file servers to Azure Files."
+   ],
+   [
+    "Requirements",
+    "**Security requirements**\n\n- foundry-claims must not accept traffic from the public internet. Users must connect from the offices through ExpressRoute.\n- All outbound traffic from the agents must pass through FW1.\n- No client can authenticate to foundry-claims by using an API key.\n- foundry-claims must use foundry-cmk for encryption from the moment the resource is created. Key rotations in kv-claims must take effect without changes to main.bicep.\n\n**Access requirements**\n\n- AI-Devs must be able to build and test agents in proj-triage. AI-Devs must not have access to proj-intake.\n- Claims-Reviewers must be able to send requests to ClaimsHelper only.\n- Role assignments must follow the principle of least privilege.\n\n**Fraud analytics requirements**\n\n- The training files that Fraud-Analysts upload for fine-tuning must be isolated from the triage and intake workloads.\n\n**Business requirements**\n\n- Claims handlers must receive a triage suggestion within two minutes after they submit a claim.\n- Azure costs must be reported for each department every month."
+   ]
+  ]
+ }
+]
