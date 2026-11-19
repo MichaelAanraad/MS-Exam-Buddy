@@ -1,0 +1,398 @@
+[
+ {
+  "id": "2.2.3-01",
+  "obj": "2.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adventure Works Cycles builds an agent named Agent1 in Foundry Agent Service. Agent1 answers questions about cycling events that are announced on public websites.\n\nAgent1 currently answers with stale information because the announcements are published after the model training cutoff. The answers must come from current public web content, and the application must be able to show the source website URLs and the search query URL to the user.\n\nYou need to configure Agent1.\n\nWhich tool should you add to Agent1?",
+  "choices": [
+   "The File Search tool over an uploaded vector store",
+   "The Azure AI Search tool",
+   "The Grounding with Bing Search tool",
+   "The Code Interpreter tool"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn describes web grounding tools as the way to connect an agent to real-time public web data and overcome the model knowledge cutoff, with source attribution through URL citations. The use and display requirements also cover the website URLs and the Bing search query URL that the stem requires. File Search retrieves from files that you upload into a vector store owned by the project. It cannot reach public web pages, so the announcements would never be retrieved. The Azure AI Search tool grounds an agent in an index that you populate and refresh yourself. Nothing in the scenario builds or maintains such an index, and it still would not read live public web content. Code Interpreter runs Python in a sandbox to analyze data and produce files or charts. It is a computation tool and performs no retrieval.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/web-overview"
+ },
+ {
+  "id": "2.2.4-01",
+  "obj": "2.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso Pharmaceuticals builds a multi-agent system for site-reliability incidents. Specialist agents cover log diagnostics, deployment history, and database health.\n\nWhen an incident arrives, the solution path is not known in advance. A coordinating agent must build a task list, invoke specialists, revise and reorder the task list as findings arrive, guard against endless remediation loops, and leave an audit trail of the evolving plan for the post-incident review.\n\nYou need to select an orchestration pattern.\n\nWhich pattern should you select?",
+  "choices": [
+   "Magentic orchestration",
+   "Sequential orchestration",
+   "Concurrent orchestration",
+   "Handoff orchestration"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn describes magentic orchestration as a plan-build-execute model in which a manager agent builds and adapts a task ledger, assigns and reorders tasks dynamically, watches for stalls to guard against infinite loops, and maintains an audit trail of the evolving plan. It is the pattern named for open-ended problems that have no predetermined solution path. Sequential orchestration runs agents in a deterministic, predefined order and passes each output to the next agent. The order cannot be known in advance here, so the pipeline shape does not fit. Concurrent orchestration runs agents in parallel on the same input and aggregates the results. It gives no mechanism for revising a plan between rounds. In handoff orchestration the active agent decides when to transfer control, and one agent owns the task at a time. There is no shared task ledger and no manager to reorder work or detect stalls.",
+  "ref": "https://learn.microsoft.com/azure/architecture/ai-ml/guide/ai-agent-design-patterns#magentic-orchestration"
+ },
+ {
+  "id": "2.2.6-01",
+  "obj": "2.2.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Alpine Ski House runs a deployed agent in a Foundry project. An Application Insights resource is already connected, and traces arrive normally.\n\nQuality regressions currently surface only when a customer complains. The operations team must have quality and safety metrics computed automatically on a sampled portion of real production traffic, surfaced on the agent monitoring dashboard, and linked back to the originating traces for root-cause analysis.\n\nYou need to configure the monitoring solution.\n\nWhich feature should you enable?",
+  "choices": [
+   "Scheduled evaluation against a stored test dataset",
+   "Scheduled AI red teaming runs against the deployed agent",
+   "Continuous evaluation for the agent",
+   "A data generation job that converts recent traces into an evaluation dataset"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn defines continuous evaluation as near real-time evaluation of agent interactions at a set sampling rate, with quality, safety, and performance metrics surfaced in the observability dashboard. It also states that the evaluations are connected to traces to enable detailed debugging and root cause analysis. Scheduled evaluation runs a fixed test dataset on a timer to detect system drift, which Learn lists as a post-production practice. It never scores the live conversations that customers actually had. Scheduled red teaming probes the agent with synthetic adversarial data on a recurring basis. It measures attack resistance rather than the quality of genuine production traffic. A trace-to-dataset job uses intelligent sampling to curate a representative dataset that you can evaluate or fine-tune against. It produces an artifact for a separate run rather than an ongoing metric stream on the dashboard.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard#set-up-continuous-evaluation"
+ },
+ {
+  "id": "2.2.2-01",
+  "obj": "2.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Electric Cars operates a service-booking agent named Agent1 in Foundry Agent Service. Customers reach Agent1 from a mobile app and from a web app, and each visit starts a new conversation.\n\nCustomers report that Agent1 forgets preferences they stated weeks earlier, such as a preferred service center and an accessibility need. Those preferences must persist across sessions and devices, and one customer's retained information must never surface for another customer.\n\nYou need to configure Agent1.\n\nWhich action should you perform?",
+  "choices": [
+   "Reuse a single conversation object for every customer and replay the full message history on each turn",
+   "Create a memory store, attach it to Agent1, and segment retained information by using the `scope` parameter",
+   "Upload each customer's preference notes to a vector store and add the File Search tool to Agent1",
+   "Create a Foundry IQ knowledge base of service policies and connect it to Agent1"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn describes memory in Foundry Agent Service as a managed long-term memory solution that enables agent continuity across sessions, devices, and workflows, with user profile memory holding durable preferences such as accessibility needs. Access is controlled with the `scope` parameter, which segments memory across users for secure and isolated experiences. A shared conversation would mix every customer's history into one thread, which breaks the isolation requirement outright. Replaying an unbounded history also grows the context window without consolidating what matters. File Search retrieves from documents that a user provides during an interaction, and Learn's own guidance points there for user-supplied documents. It requires you to author and upload a file per customer, and it does not learn preferences from conversation. A Foundry IQ knowledge base grounds an agent on curated organizational content, which Learn contrasts directly with memory. Service policies are the same for everyone and hold no per-customer state.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-memory#memory-types"
+ },
+ {
+  "id": "2.2.5-01",
+  "obj": "2.2.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lamna Healthcare Company builds a handoff workflow in Microsoft Agent Framework for patient billing adjustments. One agent can call a function that issues a credit, which is irreversible.\n\nThe credit function must not run until a billing supervisor approves the specific pending call. Supervisors often respond a day or two later, and the worker process is restarted nightly, so the workflow must be able to pause, persist, and resume across process restarts.\n\nYou need to configure the workflow.\n\nWhich configuration should you use?",
+  "choices": [
+   "Enable autonomous mode on the starting agent and set a turn limit",
+   "Add an instruction to the agent that tells it to ask a supervisor before issuing a credit",
+   "Decorate the credit function with `@tool(approval_mode=\"always_require\")` and pass `checkpoint_storage` to the `HandoffBuilder`",
+   "Register the credit function as an Azure Functions tool that reads approvals from a storage queue"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn's handoff guidance pairs `@tool(approval_mode=\"always_require\")` for sensitive operations with a `function_approval_request` that the workflow emits and waits on. It also states that passing `checkpoint_storage` to `HandoffBuilder` produces durable workflows that can pause and resume across process restarts, which covers the multi-day approval delay. Autonomous mode lets designated agents keep working when the user is unavailable, and turn limits stop a workflow from running indefinitely. Both are throughput controls, and neither creates an approval gate on a specific tool call. An instruction is prompt text that the model can disregard, so an irreversible action would depend on model compliance. Framework documentation is explicit that approval must be enforced by the runtime rather than the prompt. The Azure Functions tool invokes a function you host through storage queues, and a human could in principle drain the queue. The workflow does not pause for that decision, so the agent proceeds as though the call succeeded.",
+  "ref": "https://learn.microsoft.com/agent-framework/workflows/orchestrations/handoff#key-concepts"
+ },
+ {
+  "id": "2.2.1-01",
+  "obj": "2.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Humongous Insurance builds an agent that must look up policy status by calling two Python functions that the team already wrote and imported as `user_functions`.\n\nThe service must derive each tool schema from the Python function signatures rather than from a hand-written JSON definition, and the SDK must execute the calls and return the results without the application polling for required actions.\n\nYou need to define the agent.\n\nWhich code segment should you use?",
+  "choices": [
+   "functions = FunctionTool(user_functions)\ntoolset = ToolSet()\ntoolset.add(functions)\nagents_client.enable_auto_function_calls(toolset)\n\nagent = agents_client.create_agent(\n    model=os.environ[\"MODEL_DEPLOYMENT_NAME\"],\n    name=\"policy-agent\",\n    instructions=\"You are a policy status agent\",\n    toolset=toolset,\n)",
+   "agent = agents_client.create_agent(\n    model=os.environ[\"MODEL_DEPLOYMENT_NAME\"],\n    name=\"policy-agent\",\n    instructions=\"You are a policy status agent\",\n    tools=[{\"type\": \"code_interpreter\"}],\n)",
+   "openapi_tool = OpenApiTool(name=\"policy\", spec=spec, auth=auth)\nagent = agents_client.create_agent(\n    model=os.environ[\"MODEL_DEPLOYMENT_NAME\"],\n    name=\"policy-agent\",\n    instructions=\"You are a policy status agent\",\n    tools=openapi_tool.definitions,\n)",
+   "agent = agents_client.create_agent(\n    model=os.environ[\"MODEL_DEPLOYMENT_NAME\"],\n    name=\"policy-agent\",\n    instructions=\"You are a policy status agent\",\n)\nresult = user_functions[0](policy_id)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's Python samples wrap the imported functions in a `FunctionTool`, add it to a `ToolSet`, and pass the toolset to `create_agent`, so the tool schemas come from the function signatures. Calling `enable_auto_function_calls` on the client makes the SDK execute the tool calls automatically instead of requiring the application to handle required actions. The Code Interpreter tool runs Python that the model writes inside a sandbox. It cannot reach the company's own functions, so policy status would never be retrieved. `OpenApiTool` builds tool definitions from an OpenAPI specification, and the service then calls the described HTTP endpoints. The team has Python functions rather than a specification and a hosted API, so this shape does not apply. Calling the function directly in application code bypasses the agent entirely. The model has no tool definition, so it cannot decide when a lookup is needed or use the result.",
+  "ref": "https://learn.microsoft.com/python/api/overview/azure/ai-agents-readme?view=azure-python#examples"
+ },
+ {
+  "id": "2.2.1-02",
+  "obj": "2.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adventure Works Cycles builds an agent named Agent1 in Foundry Agent Service. Agent1 has one tool that queries an internal product catalog.\n\nA compliance review finds that Agent1 sometimes answers catalog questions from model knowledge instead of calling the tool. The team must guarantee that the model produces a tool call on every request, and the team needs the most deterministic control the service offers.\n\nYou need to change the request.\n\nWhich change should you make?",
+  "choices": [
+   "Set `tool_choice` to `auto` on every request",
+   "Add an instruction to Agent1 that tells the model to use the tool for every question",
+   "Set `tool_choice` to `required` on every request",
+   "Set `temperature` to 0 on every request"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn names `tool_choice` the most deterministic control over tool calling, and the value `required` forces the model to call one or more tools. It is also the documented fix when an agent does not call a tool. This is the default value, and it leaves the decision to the model. It is the behavior that produced the compliance finding. Instructions are a real steering mechanism, and Learn documents them as flexible guidance. Learn also classifies them as nondeterministic, which fails the guarantee the team requires. Lower temperature narrows sampling and makes wording more focused. It has no bearing on whether the model emits a tool call.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/tool-best-practice"
+ },
+ {
+  "id": "2.2.1-03",
+  "obj": "2.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A developer at Alpine Ski House writes a Python application that creates an agent named Agent1 in a Microsoft Foundry project named Project1. The project endpoint is stored in an environment variable named `PROJECT_ENDPOINT`.\n\nThe application runs on a workstation that is signed in through the Azure CLI. The solution must use keyless authentication, and the application must create a new agent version by using the current Microsoft Foundry SDK.\n\nYou need to create Agent1.\n\nWhich code segment should you use?",
+  "choices": [
+   "from azure.ai.projects import AIProjectClient\nfrom azure.ai.projects.models import PromptAgentDefinition\nfrom azure.core.credentials import AzureKeyCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=AzureKeyCredential(os.environ[\"PROJECT_KEY\"]),\n)\nagent = project.agents.create_version(\n    agent_name=\"Agent1\",\n    definition=PromptAgentDefinition(\n        model=\"gpt-5-mini\",\n        instructions=\"You assist with equipment rentals.\",\n    ),\n)",
+   "from azure.ai.projects import AIProjectClient\nfrom azure.ai.projects.models import PromptAgentDefinition\nfrom azure.identity import DefaultAzureCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\nagent = project.agents.create_version(\n    agent_name=\"Agent1\",\n    definition=PromptAgentDefinition(\n        model=\"gpt-5-mini\",\n        instructions=\"You assist with equipment rentals.\",\n    ),\n)",
+   "from azure.ai.projects import AIProjectClient\nfrom azure.identity import DefaultAzureCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\nagent = project.agents.create_agent(\n    model=\"gpt-5-mini\",\n    name=\"Agent1\",\n    instructions=\"You assist with equipment rentals.\",\n)",
+   "from azure.ai.projects import AIProjectClient\nfrom azure.identity import DefaultAzureCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\nopenai = project.get_openai_client()\nresponse = openai.responses.create(\n    input=\"You assist with equipment rentals.\",\n    extra_body={\"agent_reference\": {\"name\": \"Agent1\", \"type\": \"agent_reference\"}},\n)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "This is the documented pattern for the current SDK: an `AIProjectClient` built from the project endpoint and `DefaultAzureCredential`, then `create_version` with a `PromptAgentDefinition`. `DefaultAzureCredential` picks up the Azure CLI sign-in locally and a managed identity when deployed. `AzureKeyCredential` is a real credential type, and the rest of the call is correct. It reads an API key, which breaks the keyless requirement. `create_agent` is the classic Agents SDK shape, which is superseded by versioned agents in the current Foundry Agent Service. Learn's migration guidance replaces it with `create_version` and a structured agent definition. `responses.create` invokes an agent that already exists and returns a response. It creates no agent, so the `agent_reference` would not resolve.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/prompt-agent"
+ },
+ {
+  "id": "2.2.1-04",
+  "obj": "2.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee deploys an agent named Agent1 that answers questions about store openings. The application currently sends each user turn as an independent response request.\n\nUsers report that follow-up questions such as \"and what are the hours?\" fail because Agent1 has no record of the previous turn. Context must persist for the duration of one support session.\n\nYou need to track the conversation.\n\nWhich approach should you use?",
+  "choices": [
+   "Create a conversation and pass its identifier on every response request in the session",
+   "Create a memory store and attach the memory search tool to Agent1",
+   "Upload the session transcript to a vector store and add the File Search tool to Agent1",
+   "Increase the value of `max_tokens` on every response request"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A conversation is the Foundry Agent Service primitive for multi-turn chat, and passing its identifier on each response request gives the agent the prior turns. Learn shows exactly this pattern for follow-up questions. Memory is designed for long-term knowledge that persists across sessions, devices, and workflows. Learn assigns the current session's context to short-term session state instead, so memory is more machinery than this scenario needs. File Search retrieves from documents you upload and index. It is a retrieval mechanism, not a conversation-state mechanism. This parameter caps response length. It does not carry any prior turn into the next request.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/runtime-components"
+ },
+ {
+  "id": "2.2.2-02",
+  "obj": "2.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Margie's Travel operates an agent named Agent1 that books trips. Agent1 must recall a traveler's stated seat preference, meal preference, and loyalty program weeks later, in a different session, and on a different device.\n\nThe information is learned from conversations rather than published by the company, and it must be scoped to the individual traveler. The company also requires a retention control that expires stored entries after a set period.\n\nYou need to select a capability.\n\nWhich capability should you use?",
+  "choices": [
+   "Create a conversation and reuse its identifier for the traveler",
+   "Create a Foundry IQ knowledge base and connect Agent1 to it",
+   "Upload the traveler's prior itineraries to a vector store and add the File Search tool to Agent1",
+   "Create a memory store and attach the memory search tool to Agent1"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn defines memory in Foundry Agent Service as managed long-term memory that gives agent continuity across sessions, devices, and workflows, and user profile memory is exactly the preference category described. Store-level default retention sets a default time to live for entries. Memory is preview. A conversation holds the turns of one session and is the right tool for immediate context. It is not designed to carry distilled knowledge forward across sessions and devices. Learn routes curated organizational content to a Foundry IQ knowledge base. Traveler preferences are user-specific and learned, which is a different category of information. Learn routes user-provided documents searched during an interaction to the File Search tool. Nothing in this scenario is a document, and a vector store carries no per-user retention policy.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-memory"
+ },
+ {
+  "id": "2.2.2-03",
+  "obj": "2.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud builds a Python support application that calls an agent named Agent1 in a Microsoft Foundry project. The project endpoint is stored in an environment variable named `PROJECT_ENDPOINT`, and the client is created with `DefaultAzureCredential`.\n\nThe application asks a question and then asks a follow-up question that depends on the first answer. The agent must receive the earlier turn as context, and the application must receive generated text for both turns.\n\nYou need to complete the interaction.\n\nWhich code segment should you use?",
+  "choices": [
+   "openai = project.get_openai_client()\n\nfirst = openai.responses.create(\n    input=\"What is the status of order 4471?\",\n    extra_body={\"agent_reference\": {\"name\": \"Agent1\", \"type\": \"agent_reference\"}},\n)\nsecond = openai.responses.create(\n    input=\"When will it ship?\",\n    extra_body={\"agent_reference\": {\"name\": \"Agent1\", \"type\": \"agent_reference\"}},\n)",
+   "openai = project.get_openai_client()\nconversation = openai.conversations.create()\n\nfirst = openai.responses.create(\n    conversation=conversation.id,\n    input=\"What is the status of order 4471?\",\n    extra_body={\"agent_reference\": {\"name\": \"Agent1\", \"type\": \"agent_reference\"}},\n)\nsecond = openai.responses.create(\n    conversation=conversation.id,\n    input=\"When will it ship?\",\n    extra_body={\"agent_reference\": {\"name\": \"Agent1\", \"type\": \"agent_reference\"}},\n)",
+   "openai = project.get_openai_client()\nconversation = openai.conversations.create()\n\nopenai.conversations.items.create(\n    conversation_id=conversation.id,\n    items=[{\"type\": \"message\", \"role\": \"user\", \"content\": \"What is the status of order 4471?\"}],\n)\nopenai.conversations.items.create(\n    conversation_id=conversation.id,\n    items=[{\"type\": \"message\", \"role\": \"user\", \"content\": \"When will it ship?\"}],\n)",
+   "thread = project.agents.threads.create()\n\nproject.agents.messages.create(\n    thread_id=thread.id,\n    role=\"user\",\n    content=\"What is the status of order 4471?\",\n)\nrun = project.agents.runs.create_and_process(\n    thread_id=thread.id,\n    agent_id=\"Agent1\",\n)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Creating a conversation and passing `conversation.id` on each response request is the documented multi-turn pattern, and the agent sees the prior turn. Both calls still return generated text. Both calls are valid and both return text. Neither call shares state, so the second request has no record of the order number and the follow-up fails. `conversations.items.create` is a real method that appends messages to a conversation. It only stores input items and never requests a response, so the application receives no generated text. Threads and runs are the classic Agents primitives, which Learn's migration guidance replaces with conversations and responses. This shape also handles only the first question.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/runtime-components"
+ },
+ {
+  "id": "2.2.3-02",
+  "obj": "2.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Lucerne Publishing builds an agent named Agent1 that must answer editorial questions from three content sets: manuscripts in Azure Blob Storage, contracts in SharePoint, and public web data.\n\nThe platform must plan which sources to query for each question, run the searches in parallel, enforce the caller's Microsoft Entra permissions at query time, and return citations. A second agent must reuse the same retrieval configuration without duplicating it.\n\nYou need to configure retrieval.\n\nWhich approach should you use?",
+  "choices": [
+   "Upload the content of each source to a vector store and add the File Search tool to Agent1",
+   "Add the Azure AI Search tool to Agent1 once for each index that holds the content, and let the model choose an index",
+   "Create a Foundry IQ knowledge base with a knowledge source for each content set, and connect Agent1 to it",
+   "Add the SharePoint tool and the Web search tool to Agent1"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn defines a Foundry IQ knowledge base as a multi-source, permission-aware retrieval resource whose agentic retrieval engine plans queries, selects sources, runs parallel searches, and returns grounded answers with citations. One knowledge base can be connected to more than one agent. SharePoint knowledge sources and query-time document-level permission enforcement are still preview. File Search indexes files you upload and supports document formats. It offers no query planning across sources, no permission enforcement at query time, and it would duplicate the content out of its systems of record. The Azure AI Search tool grounds an agent in an existing index and is a good fit for a single index. It leaves the agent choosing between indexes on its own and does not cover public web data. Both tools are real and both reach one of the three content sets. Neither reaches the manuscripts in Azure Blob Storage, and adding tools separately gives no cross-source query planning.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-foundry-iq"
+ },
+ {
+  "id": "2.2.3-03",
+  "obj": "2.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. builds a Python application that creates an agent named Agent1 in a Microsoft Foundry project. A client named `project` is already created with `DefaultAzureCredential`, and the queue service endpoint of a storage account is stored in a variable named `STORAGE_QUEUE_ENDPOINT`.\n\nAgent1 must call a long-running pricing routine that is hosted in a function app in Azure Functions. The routine is started by a message on a queue in Azure Queue storage and returns its result on a second queue, and the company will not publish an OpenAPI specification for the routine or host it as a Model Context Protocol (MCP) server.\n\nYou need to define the tool for Agent1.\n\nWhich code segment should you use?",
+  "choices": [
+   "tool = OpenApiTool(\n    openapi=OpenApiFunctionDefinition(\n        name=\"GetPrice\",\n        spec=openapi_spec,\n        description=\"Calculate a price.\",\n        auth=OpenApiAnonymousAuthDetails(),\n    )\n)",
+   "tool = AzureFunctionTool(\n    azure_function=AzureFunctionDefinition(\n        input_binding=AzureFunctionBinding(\n            storage_queue=AzureFunctionStorageQueue(\n                queue_name=\"price-input-queue\",\n                queue_service_endpoint=STORAGE_QUEUE_ENDPOINT,\n            )\n        ),\n        output_binding=AzureFunctionBinding(\n            storage_queue=AzureFunctionStorageQueue(\n                queue_name=\"price-output-queue\",\n                queue_service_endpoint=STORAGE_QUEUE_ENDPOINT,\n            )\n        ),\n        function=AzureFunctionDefinitionFunction(\n            name=\"GetPrice\",\n            description=\"Calculate a price.\",\n            parameters={\n                \"type\": \"object\",\n                \"properties\": {\n                    \"sku\": {\n                        \"type\": \"string\",\n                        \"description\": \"The product SKU.\",\n                    }\n                },\n            },\n        ),\n    )\n)",
+   "tool = MCPTool(\n    server_label=\"pricing\",\n    server_url=\"https://pricing.example.com/mcp\",\n    require_approval=\"never\",\n)",
+   "tool = FunctionTool(\n    name=\"GetPrice\",\n    description=\"Calculate a price.\",\n    parameters={\n        \"type\": \"object\",\n        \"properties\": {\n            \"sku\": {\"type\": \"string\", \"description\": \"The product SKU.\"}\n        },\n        \"required\": [\"sku\"],\n    },\n    strict=True,\n)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn states that Foundry agents connect directly to the input queue that Azure Functions monitors by using the tool definition that `AzureFunctionTool` provides, and that the agent reads the result from the output queue to continue the conversation. Learn names queue storage based tools as the option for asynchronous workflows that do not require real-time responses, which matches the long-running routine. `OpenApiTool` registers an HTTP API that an OpenAPI specification describes, and Learn presents that route as a valid way to reach an HTTP-triggered function. The company will not publish a specification, and the routine is started by a queue message rather than by an HTTP request. `MCPTool` is the documented way to reach a function app that is hosted as a custom Model Context Protocol server, and Learn lists that approach as one of the two integration options for Azure Functions. The company will not host an MCP server, so the tool would have no endpoint to call. `FunctionTool` declares a function that the model requests and that your own application then executes before returning the output to the agent. The pricing routine runs in a function app in Azure rather than in the application, so the application would have no implementation to run.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/azure-functions?pivots=python#code-samples"
+ },
+ {
+  "id": "2.2.3-04",
+  "obj": "2.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. connects an agent named Agent1 to a partner inventory API that is described by an OpenAPI 3.0 specification. The specification is loaded into a variable named `openapi_spec` and includes the `securitySchemes` and `security` sections for a header named `x-api-key`.\n\nThe partner issues a static API key. Security policy states that the key must live in a project connection named Connection1 and must not appear in application code or in prompts.\n\nYou need to define the tool.\n\nWhich code segment should you use?",
+  "choices": [
+   "connection = project.connections.get(\"Connection1\")\n\ntool = MCPTool(\n    server_label=\"partner_inventory\",\n    server_url=\"https://api.partner.example.com/mcp\",\n    require_approval=\"never\",\n    project_connection_id=connection.id,\n)",
+   "tool = OpenApiTool(\n    openapi=OpenApiFunctionDefinition(\n        name=\"get_inventory\",\n        spec=openapi_spec,\n        description=\"Retrieve partner inventory.\",\n        auth=OpenApiAnonymousAuthDetails(),\n    )\n)",
+   "tool = {\n    \"type\": \"openapi\",\n    \"openapi\": {\n        \"name\": \"get_inventory\",\n        \"spec\": openapi_spec,\n        \"auth\": {\n            \"type\": \"managed_identity\",\n            \"security_scheme\": {\"audience\": \"https://api.partner.example.com\"},\n        },\n    },\n}",
+   "connection = project.connections.get(\"Connection1\")\n\ntool = OpenApiTool(\n    openapi=OpenApiFunctionDefinition(\n        name=\"get_inventory\",\n        spec=openapi_spec,\n        description=\"Retrieve partner inventory.\",\n        auth=OpenApiKeyAuthDetails(project_connection_id=connection.id),\n    )\n)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "`OpenApiKeyAuthDetails` with a `project_connection_id` is the documented way to supply an API key from a project connection, which keeps the key out of code and out of prompts. Learn also requires the specification to carry `securitySchemes` and `security`, which this specification does. `MCPTool` connects an agent to tools hosted on a Model Context Protocol server endpoint. The partner exposes an OpenAPI-described HTTP API, not an MCP server, so the protocol does not match. Anonymous authentication is a supported OpenAPI tool option and is correct when an API requires no credentials. This API requires a key, so calls would be rejected. Managed identity is a supported OpenAPI tool authentication type, and the audience shape is correct. The partner issues a static API key rather than accepting Microsoft Entra tokens, so no identity exists to present.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/openapi"
+ },
+ {
+  "id": "2.2.4-02",
+  "obj": "2.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. builds a competitive research assistant from four specialist agents. Analysts submit open-ended requests, and the order of steps is not knowable in advance.\n\nA lead agent must produce a plan, choose which specialist acts at each step based on the evolving context, track whether the work is making progress, detect when the team is looping, and replan when progress stalls. The lead agent must then synthesize a single final answer.\n\nYou need to select an orchestration pattern.\n\nWhich pattern should you select?",
+  "choices": [
+   "Sequential orchestration",
+   "Magentic orchestration",
+   "Concurrent orchestration",
+   "Handoff orchestration"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn describes magentic orchestration as a manager agent that dynamically coordinates specialized agents, and its documented mechanics are plan creation, agent selection, progress-ledger tracking, stall detection with automatic replanning, and final synthesis. Every requirement in the stem maps to one of those properties. Agents run in a fixed, predefined order and pass results forward. The stem states the order is not knowable in advance. Agents run in parallel on independent aspects of a task and the results are aggregated. There is no planner and no dynamic selection. Control transfers from one agent to another and the receiving agent takes ownership. No lead agent retains the plan or synthesizes a final answer.",
+  "ref": "https://learn.microsoft.com/agent-framework/workflows/orchestrations/magentic"
+ },
+ {
+  "id": "2.2.4-03",
+  "obj": "2.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "City Power & Light processes outage incident reports. Three specialist agents review the same report: one assesses the electrical fault, one assesses field-crew safety, and one assesses regulatory reporting duties.\n\nNo agent needs the output of another agent, and the three assessments are combined into one summary at the end. Total response time must be as low as possible.\n\nYou need to select an orchestration pattern.\n\nWhich pattern should you select?",
+  "choices": [
+   "Sequential orchestration",
+   "Handoff orchestration",
+   "Magentic orchestration",
+   "Concurrent orchestration"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn defines concurrent orchestration as broadcasting a task to agents that work in parallel on independent aspects, then aggregating the results. Parallel execution is also what reduces the total latency. Each agent waits for the previous agent to finish, so the elapsed time is the sum of three runs. That is the opposite of the latency goal. Control transfers between agents based on context, which suits escalation and expert routing. Only one agent works at a time. A manager agent plans and selects specialists dynamically for complex, open-ended work. The steps here are fixed and independent, so the planning overhead buys nothing.",
+  "ref": "https://learn.microsoft.com/agent-framework/workflows/orchestrations/"
+ },
+ {
+  "id": "2.2.4-04",
+  "obj": "2.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Nod Publishers operates three agents in a Microsoft Foundry project named Project1. A manuscript intake process must run the three agents in a repeatable sequence, branch on whether a manuscript is fiction or nonfiction, pass variables between steps, and pause for an editor to approve the result.\n\nThe editorial operations team maintains the process and does not write code, so the solution must offer a fully visual, low-code designer. The solution must also remain supported for new development.\n\nYou need to recommend an approach.\n\nWhich approach should you recommend?",
+  "choices": [
+   "Build the process in Azure Logic Apps and call the three agents as workflow actions",
+   "Add every tool from the three agents to a single agent and expand its instructions",
+   "Write a custom orchestrator that calls each agent endpoint in turn",
+   "Build a workflow in Microsoft Foundry that orchestrates the three agents"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's workflow migration guidance sends teams whose main requirement is a fully visual, low-code designer to Azure Logic Apps. Logic Apps combines deterministic steps such as conditions, variables, and approval actions with Foundry agents called as steps in the same run. Consolidating tools removes the specialization that motivated the three agents, and Learn warns that every tool definition consumes tokens and that too many tools degrades tool selection. It also provides no branching and no approval gate. A custom orchestrator can express branching and approvals, and it is a legitimate pro-code option. It fails the constraint that the owning team does not write code. A Foundry workflow does deliver all four capabilities: repeatable agent orchestration, branching, variable handling, and human-in-the-loop approvals without code. Microsoft Foundry is retiring workflows on December 1, 2026 and directs new development to Microsoft Agent Framework, so it is not a supported choice for a new process.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/workflow"
+ },
+ {
+  "id": "2.2.5-02",
+  "obj": "2.2.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Southridge Video runs an autonomous support agent named Agent1 that is written in Python by using Microsoft Agent Framework. Agent1 drains a request queue with no person present.\n\nA new policy states that Agent1 must not run at all for a request that arrives from a suspended customer account, and that the application must return a fixed refusal message instead. The account status comes from an internal service, the check must happen before any model call, and the outcome must not depend on the judgment of the model.\n\nYou need to enforce the policy.\n\nWhich approach should you use?",
+  "choices": [
+   "Add an instruction to Agent1 that tells the model to refuse every request that arrives from a suspended customer account",
+   "Assign a guardrail to the model deployment that Agent1 uses, and raise every harm category control to its strictest severity setting",
+   "Add agent run middleware that sets `context.result` and raises `MiddlewareTermination` before it calls `call_next`",
+   "Decorate the account status lookup with `@tool(approval_mode=\"always_require\")`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn presents middleware as the way to implement guardrails that control when an agent stops processing, and it states that Python middleware terminates by setting `context.result` and raising `MiddlewareTermination`. Terminating before `call_next` runs stops the agent ahead of any model call and returns the fixed message that the policy requires. An instruction is a real steering mechanism, and the model would comply much of the time. Learn classifies instructions as nondeterministic guidance, so the outcome would rest on the judgment of the model, and the model would still be called. A guardrail applies Azure AI Content Safety controls such as violence, hate, sexual, and self-harm to input and output. Account status is a business condition rather than a harm category, so no severity setting detects it. The `approval_mode` parameter on the `@tool` decorator is real, and it pauses a run until a person approves the tool call. No person is present in an autonomous run, and the policy calls for an automatic refusal rather than a human approval.",
+  "ref": "https://learn.microsoft.com/agent-framework/agents/middleware/termination"
+ },
+ {
+  "id": "2.2.5-03",
+  "obj": "2.2.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Munson's Pickles and Preserves Farm curates tools in a toolbox and exposes them to a hosted agent named Agent1 through a single Model Context Protocol (MCP) endpoint. Two tools that modify inventory records carry `require_approval` set to `always`.\n\nDuring testing, the team observes that the toolbox endpoint accepts `tools/call` for those two tools and executes them without prompting anyone. The team assumed the endpoint blocked the call until a person approved it.\n\nYou need to make the approval effective.\n\nWhich action should you perform?",
+  "choices": [
+   "Set `require_approval` to `never` on the two toolbox tools",
+   "Implement enforcement in the agent runtime so that it pauses the pending call and then invokes or rejects it",
+   "Add an instruction to the system prompt of Agent1 that tells the model to request explicit approval before it calls either inventory tool",
+   "Set `tool_choice` to `none` for the two toolbox tools"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn states that the toolbox MCP endpoint does not block `tools/call` when `require_approval` is `always`, and that the agent runtime must enforce the setting before every invocation. The documented runtime behavior is to show the proposed tool name and arguments, wait for explicit approval, and invoke only after approval. This value tells the runtime to invoke the tool without an approval prompt. It removes the control the team is trying to enforce. Instructions are nondeterministic guidance, and Learn states that a system-prompt instruction alone does not enforce approval. The model can still emit a tool call that runs. `tool_choice` set to `none` prevents the model from calling tools at all. That disables the capability rather than gating it.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/use-toolbox-hosted-agent"
+ },
+ {
+  "id": "2.2.6-02",
+  "obj": "2.2.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Blue Yonder Airlines runs an agent named Agent1 that exposes three tools. A review of production traces shows that Agent1 reliably picks the correct tool and that the tools return HTTP 200 responses.\n\nThe defects come from the arguments. Agent1 sends dates in the wrong format, omits a required passenger field, and occasionally passes a value that does not appear anywhere in the user request. The team needs an evaluator that targets parameter correctness specifically.\n\nYou need to select an evaluator.\n\nWhich evaluator should you select?",
+  "choices": [
+   "Tool Selection",
+   "Tool Call Success",
+   "Tool Output Utilization",
+   "Tool Input Accuracy"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn defines Tool Input Accuracy as validating that all tool call parameters are correct against strict criteria including grounding, type, format, completeness, and appropriateness. Wrong format, a missing required field, and an ungrounded value each map to one of those criteria. This evaluator measures whether the agent selected the most appropriate and efficient tools for a task. The traces already confirm tool selection is correct. This evaluator checks whether tool calls executed without technical failures. The tools return HTTP 200, so it would report success while the defects continue. This evaluator measures whether the agent correctly interprets and uses the results that a tool returns. It scores what happens after a call succeeds rather than the arguments the agent sends into the call.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/built-in-evaluators"
+ },
+ {
+  "id": "2.2.6-03",
+  "obj": "2.2.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Bellows College deploys an agent named Agent1 to production and connects an Application Insights resource to the Foundry project. An evaluation object that contains the testing criteria is already created and stored in a variable named `eval_object`.\n\nAgent1 must be scored automatically as production responses complete, the scoring must be limited to Agent1, and the number of evaluation runs per hour must be capped so that the workload stays within limits.\n\nYou need to configure the scoring.\n\nWhich code segment should you use?",
+  "choices": [
+   "eval_run = openai.evals.runs.create(\n    eval_id=eval_object.id,\n    name=\"agent1-response-evaluation\",\n    data_source={\n        \"type\": \"azure_ai_responses\",\n        \"item_generation_params\": {\n            \"type\": \"response_retrieval\",\n            \"data_mapping\": {\"response_id\": \"{{item.resp_id}}\"},\n            \"source\": {\"type\": \"file_content\", \"content\": [{\"item\": {\"resp_id\": \"resp_abc123\"}}]},\n        },\n    },\n)",
+   "from azure.ai.projects.telemetry import AIProjectInstrumentor\n\nAIProjectInstrumentor().instrument(\n    enable_content_recording=True,\n)",
+   "rule = project.evaluation_rules.create_or_update(\n    id=\"rule1\",\n    evaluation_rule=EvaluationRule(\n        display_name=\"Agent1 continuous evaluation\",\n        action=ContinuousEvaluationRuleAction(\n            eval_id=eval_object.id, max_hourly_runs=100\n        ),\n        event_type=EvaluationRuleEventType.RESPONSE_COMPLETED,\n        filter=EvaluationRuleFilter(agent_name=\"Agent1\"),\n        enabled=True,\n    ),\n)",
+   "generation_job = project.beta.evaluators.create_generation_job(\n    job=EvaluatorGenerationJob(\n        inputs=EvaluatorGenerationInputs(\n            model=model_deployment,\n            evaluator_name=\"agent1-quality\",\n            sources=[AgentEvaluatorGenerationJobSource(agent_name=\"Agent1\")],\n        ),\n    ),\n)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "An evaluation rule with a `ContinuousEvaluationRuleAction` is the documented way to score sampled production traffic: `RESPONSE_COMPLETED` triggers on completed responses, the filter scopes the rule to Agent1, and `max_hourly_runs` caps the hourly volume. Learn also notes that the default hourly limit is 100 runs. This is a valid cloud evaluation run over a fixed list of response identifiers. It executes once against data you enumerate rather than scoring production traffic as it arrives. This call configures client-side tracing and turns on message content recording in spans. It produces telemetry, not evaluation scores. This job generates a rubric evaluator tailored to an agent by proposing weighted scoring dimensions. It creates an evaluator definition and never runs scoring against production traffic.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard"
+ },
+ {
+  "id": "2.2.6-04",
+  "obj": "2.2.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery completes two evaluation runs against an agent named Agent1. The runs produce roughly 400 failing samples.\n\nEngineers must find the recurring failure patterns rather than read each sample. The output must group samples with similar problems, name each group, describe the likely cause, and suggest next steps.\n\nYou need to select an approach.\n\nWhich approach should you select?",
+  "choices": [
+   "Generate a cluster analysis over the completed evaluation runs",
+   "Enable content recording in the trace spans",
+   "Schedule an AI red teaming scan against Agent1",
+   "Raise the continuous evaluation sample rate to 100 percent"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Cluster analysis groups evaluation samples by semantic similarity and returns cluster names, entry counts, an automatically generated diagnostic description, and recommendations. Learn positions it as the way to find the top patterns and errors across evaluation runs. Content recording captures prompt and response text inside trace spans, which helps when reproducing one failure. It provides no grouping across hundreds of samples. Red teaming runs adversarial tests to surface safety and security risks. It produces new findings rather than analyzing the failures already collected. A higher sample rate scores more production traffic going forward. It adds volume rather than structure to the failures already in hand.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/cluster-analysis"
+ }
+]

@@ -13,6 +13,9 @@ import objectives as _settings
 from objectives import GROUPS, TOTAL, objectives
 
 OBJ = objectives()
+# Opt-in per exam (set in that exam's objectives.py): imported question banks that have one
+# explanation per question and no per-choice rationale. Only the rationale checks are relaxed.
+IMPORTED_SINGLE_EXPLANATION = bool(getattr(_settings, "IMPORTED_SINGLE_EXPLANATION", False))
 REF_PREFIXES = tuple(getattr(_settings, "REF_PREFIXES", ("https://learn.microsoft.com/",)))
 DIFF = ("easy", "medium", "hard")
 TYPES = ("single", "multi", "yesno", "order", "dragdrop", "dropdown")
@@ -77,6 +80,8 @@ def check_type(q):
         return e
     if any(not isinstance(a, int) or not 0 <= a < n for a in ans) or len(set(ans)) != len(ans):
         return ["answer index out of range"]
+    if IMPORTED_SINGLE_EXPLANATION and not rat and t in ("single", "multi"):
+        return e  # imported bank: no per-choice rationale, the question explanation is used
     if len(rat) != n:
         return [f"rationale count {len(rat)} != choices {n}"]
     if q.get("series"):

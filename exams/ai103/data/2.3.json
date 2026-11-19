@@ -1,0 +1,236 @@
+[
+ {
+  "id": "2.3.1-01",
+  "obj": "2.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Trey Research renders model answers inside a fixed-height card in a support portal. The deployment uses a GPT-5 model through the Responses API.\n\nAnswers are correct but consistently too wordy for the card. Answers must become more concise while remaining complete sentences that are never cut off in the middle, and the team must not edit the prompt text, which is under change control.\n\nYou need to change the request.\n\nWhich code segment should you use?",
+  "choices": [
+   "response = openai.responses.create(\n    model=\"gpt-5\",\n    input=prompt,\n    text={\"verbosity\": \"low\"},\n)",
+   "response = openai.responses.create(\n    model=\"gpt-5\",\n    input=prompt,\n    reasoning={\"effort\": \"low\"},\n)",
+   "response = openai.responses.create(\n    model=\"gpt-5\",\n    input=prompt,\n    max_output_tokens=120,\n)",
+   "response = openai.responses.create(\n    model=\"gpt-5\",\n    input=prompt,\n    temperature=0,\n)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn lists `verbosity` as a GPT-5 parameter that provides more granular control over how concise the model's output will be, with `low`, `medium`, and `high` options. The model shortens the answer itself, so sentences stay whole and the prompt text is untouched. `reasoning` with an `effort` value constrains how much hidden reasoning the model performs before answering. Lower effort speeds up the response and can reduce quality, but it governs thinking rather than the length of the visible answer. `max_output_tokens` is the correct token cap parameter for the Responses API and it does bound the length. It truncates generation at the limit, which produces the cut-off sentences the stem forbids. `temperature` controls sampling randomness on chat models, but Learn lists `temperature` among the parameters that are not supported with reasoning models such as GPT-5. The request would be rejected rather than returning a shorter answer.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning#api-&-feature-support"
+ },
+ {
+  "id": "2.3.4-01",
+  "obj": "2.3.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "The Phone Company builds a workflow in Microsoft Agent Framework that triages inbound messages. A classification executor labels each message as billing, technical, or unknown, and each label must be handled by a different downstream executor.\n\nThe classifier occasionally returns a label that is not in the list. A message must never stall in the workflow, and the routing rules must live in the workflow graph rather than inside the agents.\n\nYou need to build the routing.\n\nWhich construct should you use?",
+  "choices": [
+   "A fan-out edge with a target assigner that returns several downstream targets",
+   "Handoff orchestration with the classifier as the starting agent",
+   "One conditional edge for each label",
+   "A switch-case edge group with a case per label and a default target"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn presents the switch-case edge group as the multi-branch alternative, with ordered cases evaluated until the first match and a default target. It states that guaranteed routing through the default case ensures messages never get stuck, which is the second requirement. A fan-out edge with a target assigner activates several downstream executors in parallel for one message, which Learn calls multi-selection routing. Each message here needs exactly one handler, so parallel activation is the wrong shape. Handoff orchestration transfers control when an agent decides to hand off, and the routing rules live in the agents. The stem requires the rules to live in the workflow graph. Conditional edges do provide binary routing on message content, and Learn's own comparison uses them as the starting point. It notes there is no clean way to handle an additional case, so an unexpected label matches no edge and the message stalls.",
+  "ref": "https://learn.microsoft.com/agent-framework/workflows/edges#switch-case-edges"
+ },
+ {
+  "id": "2.3.2-01",
+  "obj": "2.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. generates regulatory disclosure notices with an agent. A second agent applies a published checklist to each draft.\n\nWhen the checklist agent finds a gap, its feedback must return to the drafting agent, which revises and resubmits, and the exchange must continue until the checklist agent approves the draft or a maximum number of iterations is reached. Every turn must remain visible in one thread for the audit file.\n\nYou need to select an orchestration pattern.\n\nWhich pattern should you select?",
+  "choices": [
+   "Concurrent orchestration with an aggregator",
+   "Sequential orchestration with the checklist agent placed second",
+   "Group chat orchestration configured as a maker-checker loop",
+   "Magentic orchestration with a manager agent"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn defines the maker-checker loop as a group chat orchestration in which the checker evaluates the maker's output against defined criteria and pushes the conversation back with specific feedback until it approves or the orchestration reaches a maximum iteration limit. It also notes that all agents emit into a single accumulating thread, which provides the transparency and auditability the audit file requires. Concurrent orchestration runs agents in parallel on the same input and aggregates the outputs. Nothing routes a critique back to the author, so revision never happens. Sequential orchestration passes each agent's result to the next in a fixed order, which does place review after drafting. It is a single pass with no path back to the drafting agent, so a failed check ends the run rather than triggering a revision. Magentic orchestration suits open-ended problems in which a manager builds and revises a task ledger. The process here is a fixed two-role review cycle, so dynamic planning adds cost without adding value.",
+  "ref": "https://learn.microsoft.com/azure/architecture/ai-ml/guide/ai-agent-design-patterns#group-chat-orchestration"
+ },
+ {
+  "id": "2.3.3-01",
+  "obj": "2.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys hosts several model deployments in one Foundry resource. Finance charges each business unit for the tokens its deployment consumes.\n\nThe platform team must chart total inference tokens per month for each deployment separately. The chart must come from platform telemetry that the resource emits on its own, with no code change in the applications and no evaluation run.\n\nYou need to produce the chart.\n\nWhich action should you perform?",
+  "choices": [
+   "In Azure Monitor metrics, chart the Processed Inference Tokens metric and apply splitting by `ModelDeploymentName`",
+   "In Azure Monitor metrics, chart the Time to Response metric and apply splitting by `ModelDeploymentName`",
+   "In Azure Monitor metrics, chart the Provisioned-managed Utilization V2 metric for the resource",
+   "Set the `AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED` environment variable to true and read token counts from the spans"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn recommends measuring total tokens per minute with the Processed Inference tokens metric in Azure Monitor and splitting by `ModelDeploymentName`, and describes the metric as covering prompt and generated tokens. Platform metrics are collected automatically for the resource, so no application change is required. Time to Response measures how long the first streamed response takes to appear and is a latency metric for provisioned deployments. It reports responsiveness rather than token consumption, so it cannot support chargeback. Provisioned-managed Utilization V2 reports the percentage of reserved provisioned throughput units in use. A utilization percentage does not convert to a token count, and it applies only to provisioned deployments. That environment variable controls whether prompt and response content is recorded inside OpenTelemetry spans, and it is off by default for privacy reasons. Reading it requires instrumented applications and a connected Application Insights resource, which the stem rules out.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/latency#how-to-measure-your-throughput"
+ },
+ {
+  "id": "2.3.1-02",
+  "obj": "2.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Graphic Design Institute generates marketing taglines from a chat model deployment named Deployment1. A developer sets `temperature` to 0.2 and `top_p` to 0.2 on the same request.\n\nReviewers report that the taglines are repetitive and interchangeable. The team must increase variety while following the Microsoft guidance on sampling parameters.\n\nYou need to change the request.\n\nWhich change should you make?",
+  "choices": [
+   "Raise `top_p` to 0.9 and raise `temperature` to 0.9",
+   "Raise `temperature` and leave `top_p` at its default value of 1",
+   "Set `frequency_penalty` to 2.0 and change nothing else",
+   "Set `seed` to a fixed integer on every request"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn defines `top_p` as an alternative to temperature and gives both a default of 1, and it recommends altering one of them rather than both. Raising temperature while returning `top_p` to its default follows that guidance and increases variety. Raising both values would increase randomness, so the instinct points the right way. Learn states that you should generally alter temperature or `top_p` but not both, so tuning the pair together is the practice that created the confusion. This parameter penalizes tokens by their existing frequency, which discourages verbatim repetition inside a single response. It does not widen the sampling distribution across separate generations. `seed` makes the service sample deterministically on a best-effort basis for identical requests. It reduces variation, which is the opposite of the goal.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/reference"
+ },
+ {
+  "id": "2.3.1-03",
+  "obj": "2.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "School of Fine Art operates an agent named Agent1 that answers admissions questions. Reviewers raise three problems. The tone shifts between formal and casual, Agent1 speculates when it lacks an answer, and it returns paragraphs where the intake form expects a short bulleted list.\n\nThe team cannot change the model deployment and must steer the role, the tone, the output format, and the behavior when information is missing.\n\nYou need to change the generation behavior.\n\nWhich change should you make?",
+  "choices": [
+   "Set `temperature` to 0 on every request",
+   "Set `response_format` to `json_object` on every request",
+   "Create an Azure AI Content Safety blocklist that contains speculative phrases, and apply it to the output filter of the deployment",
+   "Design a system message that defines the role, the tone, the output format, and the fallback behavior"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn describes the system message as the instrument for defining the assistant's role and boundaries, setting tone and communication style, specifying output formats, and adding scenario constraints. It also names explicit fallback behavior as one of the practices that makes a system message effective. A lower temperature makes wording more focused and consistent, which addresses part of the tone complaint. It cannot define a role, impose a bulleted format, or specify what to do when the answer is unknown. JSON mode guarantees syntactically valid JSON output. The intake form expects a bulleted list for a person to read, and JSON says nothing about tone or fallback behavior. Blocklists match specific terms you enumerate in advance and are a content moderation control. Speculation is phrased in ordinary language and is endlessly variable, so term matching does not generalize.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/advanced-prompt-engineering"
+ },
+ {
+  "id": "2.3.1-04",
+  "obj": "2.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys classifies support tickets into four fixed categories by using a chat model deployment named Deployment1. The system message lists the four categories.\n\nThe model returns explanatory prose instead of one category label, and the wording of the label varies between runs. The team has a small set of labeled tickets available, must ship this week, and cannot train a model.\n\nYou need to condition the output format.\n\nWhich change should you make?",
+  "choices": [
+   "Raise `temperature` to 0.8 on every request",
+   "Set `presence_penalty` to 1.0 on every request",
+   "Add example user and assistant messages after the system message",
+   "Fine-tune a new model on the labeled ticket history, and deploy it in place of Deployment1"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn describes few-shot learning as adding example user and assistant interactions to the messages array after the system message to prime the model to respond in a certain way. It is the documented way to demonstrate the expected answer format without changing the model. A higher temperature increases randomness in the output. It would make the label wording vary more, not less. This parameter pushes the model toward new topics by penalizing tokens that already appeared. It changes topic diversity rather than output shape. Fine-tuning does teach a model a fixed output format and is a legitimate option with labeled data. It requires a training run and a new deployment, which the one-week constraint rules out.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "2.3.2-02",
+  "obj": "2.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "First Up Consultants generates client proposals with an agent named Agent1. Quality varies, so the firm adds a second agent named Agent2 that critiques a draft against a house checklist.\n\nAgent1 must revise the draft after each critique, and the exchange must repeat for up to three rounds inside one automated run. Both agents must see the full exchange on every turn, and a coordinator must decide who speaks next and stop the loop at the round limit.\n\nYou need to select an orchestration pattern.\n\nWhich pattern should you select?",
+  "choices": [
+   "Concurrent orchestration, with Agent1 drafting and Agent2 critiquing the same proposal in parallel and the results aggregated",
+   "Group chat orchestration, with a manager that alternates the agents up to a maximum iteration count",
+   "Handoff orchestration, with Agent1 transferring control of the proposal to Agent2",
+   "Sequential orchestration, with Agent1 passing its draft to Agent2 one time"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn names iterative refinement and writer-reviewer workflows as the primary use cases for group chat, coordinated by a manager that selects the next speaker, with a maximum iteration count bounding the rounds. All agents see the full conversation history, which the stem requires. Concurrent orchestration broadcasts a task to agents that work independently and then aggregates results. A critic cannot review a draft that is being written at the same time. Handoff transfers ownership to the receiving agent, and control does not come back. Agent1 could never apply the revisions. Sequential passes each result forward in a defined order, which supports one review pass. It provides no loop back to Agent1 and no round limit.",
+  "ref": "https://learn.microsoft.com/agent-framework/workflows/orchestrations/group-chat"
+ },
+ {
+  "id": "2.3.2-03",
+  "obj": "2.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lamna Healthcare Company runs a retrieval-augmented generation (RAG) application over clinical policy documents by using a model deployment named Deployment1. Single-fact questions are answered correctly.\n\nQuestions that require combining facts from two documents are answered incorrectly. Traces confirm that retrieval returns both correct documents on every failing question, so recall is not the problem. The team cannot change the model deployment and cannot add a second model. Deployment1 uses a non-reasoning chat model.\n\nYou need to improve the multistep answers.\n\nWhich change should you make?",
+  "choices": [
+   "Add chain-of-thought instructions that make the model work through the retrieved documents step by step",
+   "Raise `temperature` to 0.9 on every request",
+   "Raise the number of documents that the retrieval step returns",
+   "Set `response_format` to `json_object` on every request"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn describes chain-of-thought prompting as instructing the model response to proceed step by step and present all the steps involved, which reduces the possibility of inaccurate outcomes and makes the response easier to assess. Learn scopes the technique to non-reasoning models, which is what Deployment1 uses, and it changes reasoning behavior without changing the model or adding one. A higher temperature increases randomness in wording. Reasoning that combines two documents does not improve because sampling widens. Returning more documents raises recall, and the traces already show both correct documents are retrieved. Learn also warns that passing more chunks adds token cost and noise, so this adds context the model is failing to reason over rather than fixing the reasoning. JSON mode constrains the output to valid JSON. It governs the shape of the answer, not the reasoning that produced it.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "2.3.3-02",
+  "obj": "2.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A. Datum Corporation connects an Application Insights resource to a Microsoft Foundry project named Project1. Server-side traces for a prompt agent named Agent1 appear in the Foundry portal, including model calls and tool invocations.\n\nThe company's Python application wraps every call to Agent1 with its own entitlement check and its own response post-processing. Neither of those steps appears anywhere in the traces, and engineers cannot tell how much of the end-to-end latency they consume.\n\nYou need to capture the application steps in the same traces.\n\nWhich action should you perform?",
+  "choices": [
+   "Enable diagnostic settings on the Foundry resource, and route the resource logs and metrics to a Log Analytics workspace for querying",
+   "Enable continuous evaluation on Agent1 and add the Task Adherence evaluator",
+   "Instrument the application with OpenTelemetry and `AIProjectInstrumentor`, and export the spans to Application Insights",
+   "Extend the trace retention period beyond 90 days in the Foundry portal"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn states that Foundry captures server-side traces automatically, and that client-side tracing extends that visibility into your own application code by instrumenting it with OpenTelemetry to capture spans for model calls, tool invocations, and custom logic. Exporting to the connected Application Insights resource places those spans in the portal Traces view alongside the server-side spans. Diagnostic settings route platform resource logs and metrics to a destination such as a Log Analytics workspace. They capture nothing that happens inside application code. Continuous evaluation scores sampled agent responses for quality and safety. It measures output rather than emitting spans for application steps. Retention controls how long existing traces remain queryable. It cannot create spans that were never emitted.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/trace-agent-client-side"
+ },
+ {
+  "id": "2.3.3-03",
+  "obj": "2.3.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The Phone Company instruments a Python agent application with OpenTelemetry. Spans already reach the connected Application Insights resource, and engineers can see model calls, tool invocations, timings, and token counts.\n\nDuring an incident review the team finds that the spans carry no prompt text, no response text, and no tool call arguments, which the team needs to reproduce a failure. The compliance group has approved capturing that content.\n\nYou need to capture the content in the spans.\n\nWhich code segment should you use?",
+  "choices": [
+   "import os\n\nos.environ[\"AZURE_EXPERIMENTAL_ENABLE_GENAI_TRACING\"] = \"true\"\n\nfrom azure.ai.projects.telemetry import AIProjectInstrumentor\n\nAIProjectInstrumentor().instrument()",
+   "from azure.monitor.opentelemetry import configure_azure_monitor\n\nconnection_string = project.telemetry.get_application_insights_connection_string()\nconfigure_azure_monitor(connection_string=connection_string)",
+   "from azure.ai.projects.telemetry import AIProjectInstrumentor\n\nAIProjectInstrumentor().instrument(\n    enable_baggage_propagation=True,\n)",
+   "from azure.ai.projects.telemetry import AIProjectInstrumentor\n\nAIProjectInstrumentor().instrument(\n    enable_content_recording=True,\n)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "`enable_content_recording` is the documented parameter that captures message contents and tool call parameters, and it maps to the `OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT` environment variable. It defaults to false precisely because the content can contain personal data. This is the required opt-in that turns on GenAI tracing instrumentation before instrumenting. Spans already arrive, so it is configured, and by itself it leaves message content off. This configures the Azure Monitor exporter that sends spans to Application Insights. The spans already arrive, so the exporter is working and this changes nothing. Baggage propagation adds the `baggage` header to trace context, and Learn warns that it can expose personal data and session data. It carries correlation metadata, not message contents.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/trace-agent-client-side"
+ },
+ {
+  "id": "2.3.4-02",
+  "obj": "2.3.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Coho Vineyard serves a customer chat application from a model router deployment named Deployment1. Costs are within budget and quality is acceptable.\n\nA governance review adds a requirement. Prompts must reach only the models on the company's approved list, and the automatic failover behavior of model router must remain available if one model has a transient problem.\n\nYou need to configure Deployment1.\n\nWhich configuration should you apply?",
+  "choices": [
+   "Set the routing mode of Deployment1 to Quality so that the highest quality rated model answers every prompt",
+   "Configure a model subset on Deployment1 with at least two approved models",
+   "Set the routing mode of Deployment1 to Cost",
+   "Set `reasoning_effort` to `low` on every request to Deployment1"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A model subset specifies which underlying models participate in routing decisions, which is how you keep prompts on approved models. Learn adds that the subset also acts as the fallback set, so choosing at least two models preserves automatic failover. Quality mode makes the router pick the highest quality rated model for each prompt, ignoring cost. It changes the ranking criteria and constrains nothing about which models are eligible. Cost mode widens the acceptable quality band and picks the most cost-effective model. Like Quality mode, it adjusts preference rather than eligibility. `reasoning_effort` is supported in model router starting with version `2025-11-18`, and the router passes the value to the reasoning model it selects. It tunes how a chosen model thinks and constrains nothing about which models are eligible for routing.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/model-router"
+ },
+ {
+  "id": "2.3.4-03",
+  "obj": "2.3.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders operates an agent named Agent1 that quotes shipping costs. The surcharge rules are written out in the instructions of Agent1, and the model performs the arithmetic in its response.\n\nAn auditor finds that identical customer inputs produce different surcharge figures between runs. The surcharge calculation must be reproducible and auditable, and the conversational experience must remain.\n\nYou need to make the surcharge calculation deterministic.\n\nWhich change should you make?",
+  "choices": [
+   "Move the surcharge calculation into a function tool that Agent1 calls and reports",
+   "Set `temperature` to 0 on every request to Agent1",
+   "Set the `seed` parameter to a fixed integer on every request to Agent1",
+   "Set `tool_choice` to `none`, and expand the surcharge rules in the instructions of Agent1 with worked examples"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn positions local functions attached as tools as the pattern for deterministic business logic, with the model orchestrating the call and reasoning over the returned value. The calculation then runs in code that can be unit tested and audited, and the agent keeps the conversation. A temperature of 0 makes sampling more focused and more deterministic, so the figures would vary less. The arithmetic still happens inside a token predictor, so correctness is still not guaranteed. Learn documents `seed` as a best-effort mechanism and states that determinism is not guaranteed, with `system_fingerprint` exposed to detect backend changes. Reproducing a sampling path is not the same as computing a correct surcharge. Setting `tool_choice` to `none` prevents tool calls entirely, which removes the only route to deterministic computation. Longer instructions and worked examples double down on the approach that failed.",
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/develop/langchain-agents"
+ }
+]

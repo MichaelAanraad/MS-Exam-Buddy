@@ -1,0 +1,236 @@
+[
+ {
+  "id": "1.4.1-01",
+  "obj": "1.4.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee runs an internal incident-review assistant on a model deployment named Deployment1. Analysts paste incident narratives that describe workplace injuries.\n\nThe default content filter blocks many of these prompts because the narratives contain low-severity and medium-severity violent language. The company still requires that the most severe violent content be blocked on input, wants the other harm categories left at their default thresholds, and cannot wait for an approval process.\n\nYou need to change the filtering behavior.\n\nWhich action should you perform?",
+  "choices": [
+   "Set the violence input threshold to High in a content filter configuration associated with Deployment1",
+   "Select Annotate only for the violence category on the input filter",
+   "Add a blocklist that contains the injury terms that appear in the narratives",
+   "Turn on Streaming mode on the output filter of Deployment1"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's configurability table shows a High setting in which content detected at low and medium severity is not filtered and only high severity is filtered, and it is available to all customers with no approval. Content filter configurations are created in the resource and associated with a deployment, and each category is set separately, so the other categories keep their defaults. Annotate only disables blocking and returns annotations through the API response, which is a real option in the content filter wizard. Learn marks it as available only to customers approved for modified content filters, and it would stop blocking severe content entirely. Blocklists match terms that you enumerate in advance and add matches to the filtering decision. They add restrictions rather than relax a severity threshold, so the prompts would still be blocked. Streaming mode filters output content in near real time to reduce latency, and it is set on the output filter page. It changes when filtering happens, not which severity levels are blocked on input.",
+  "ref": "https://learn.microsoft.com/azure/ai-foundry/openai/concepts/content-filter-configurability"
+ },
+ {
+  "id": "1.4.4-01",
+  "obj": "1.4.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Proseware, Inc. connects a hosted agent to a toolbox in a Foundry project. One tool in the toolbox cancels customer subscriptions and is irreversible.\n\nA governance rule states that the agent must present the proposed tool name and arguments to a person and wait for an explicit decision before every single invocation of that tool. The agent runtime is a custom application that the team controls, and it can pause a pending tool call, collect the decision, and resume or reject that exact call.\n\nYou need to configure the governance control.\n\nWhich action should you perform?",
+  "choices": [
+   "Add an instruction to the agent system prompt that forbids calling the subscription cancellation tool without confirmation",
+   "Set `require_approval` to `always` on the tool in the toolbox version, and enforce it in the runtime",
+   "Remove the tool from the toolbox and expose it as an Azure Functions tool instead",
+   "Assign the Foundry Agent Consumer role to the reviewer at the scope of the agent"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn documents `require_approval` with an `always` value, set when you create a toolbox version, and defines the required runtime behavior as showing the proposed tool name and arguments, waiting for explicit approval, and repeating the process for every call. It also warns that the MCP endpoint does not block the call, so the setting is safe to use only when the runtime can pause and resume the exact call, which this runtime can. A system-prompt instruction is advisory text that the model can ignore, and Learn states plainly that a system-prompt instruction alone does not enforce approval. Governance that depends on model compliance is not a control. The Azure Functions tool lets an agent invoke a function you host through storage queues, which is a real integration. Changing the transport does not introduce an approval gate, so the irreversible action stays ungated. Foundry Agent Consumer is the least-privilege role for a principal that calls an agent endpoint. Role assignments decide who may invoke an agent, not whether an individual tool call pauses for review.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/use-toolbox-hosted-agent#enforce-tool-approval"
+ },
+ {
+  "id": "1.4.1-02",
+  "obj": "1.4.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud operates a prompt agent named Agent1 in Foundry Agent Service. Agent1 uses the Browser Automation tool to fetch third-party web pages.\n\nA security review found a fetched page that contained hidden instructions, and Agent1 acted on them. The control you add must scan the payload a tool sends back before that payload is saved to the agent memory or influences the next step, and it must stop the agent when an attack is found.\n\nYou need to add a control to the guardrail assigned to Agent1.\n\nWhich intervention point should you configure for the Indirect attack risk?",
+  "choices": [
+   "User input, the query that a user sends to the agent",
+   "Tool call, the action that the agent proposes and the arguments that it sends",
+   "Tool response, the content that a tool sends back to the agent",
+   "Output, the final content that is returned to the user"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn defines the tool response intervention point as the content a tool sends back, internal to the agent orchestration and before that content is added to agent memory or returned to the user. It names the Indirect attack risk with an annotate and block action as the control that stops the agent at this point. This intervention point scans the query a user sends to the model or the agent. The hidden instructions arrive from a fetched web page rather than from the user, so a control here never sees them. This intervention point scans the action the agent proposes to take and the arguments it sends to a tool. That is outbound content, and the injection lives in the inbound reply. This intervention point scans the final completion returned to the user. By that time the injected instruction has already steered the agent and can have triggered further tool calls.",
+  "ref": "https://learn.microsoft.com/azure/foundry/guardrails/intervention-points"
+ },
+ {
+  "id": "1.4.1-03",
+  "obj": "1.4.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Electric Cars runs an Azure OpenAI model deployment named Deployment1.\n\nThe legal department supplies a fixed list of 40 competitor product names. Those names must never appear in a prompt sent to Deployment1 or in a completion returned by Deployment1. The default harm categories do not detect the names because the names carry no harm severity.\n\nYou need to enforce the list.\n\nWhich approach should you use?",
+  "choices": [
+   "Lower the severity threshold for the Hate category to Low on the input and output filters",
+   "Enable Protected material detection for text on the output filter",
+   "Enable Prompt Shields for user prompts on the input filter",
+   "Create a custom blocklist that contains the terms, and enable it on the input and output filters"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Blocklists let you add custom terms to the AI classifiers, support exact match or regular expressions, and are switched on per content filter for both the input filter and the output filter. Blocklist support is limited to Azure OpenAI models, which is what Deployment1 is. The severity slider tunes how aggressively the hate classifier flags content. Competitor product names are ordinary nouns, so no threshold setting for a harm category detects them. This filter detects known protected text such as song lyrics, articles, and recipes that a model might reproduce. It matches a Microsoft-maintained corpus rather than a list you supply. Prompt Shields for user prompts detects attempts to bypass system instructions or safety training, including role-play and encoding attacks. It is an injection defense and has no relationship to a fixed vocabulary.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/use-blocklists"
+ },
+ {
+  "id": "1.4.1-04",
+  "obj": "1.4.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "The School of Fine Art plans a 30-day study to measure how often the Protected material for text risk appears in the output of a model deployment named Deployment1.\n\nDuring the study, the platform must return a signal for every affected response so the team can count occurrences through the API response. No response may be withheld from a user while the study runs.\n\nYou need to configure the output filter.\n\nWhich configuration should you apply?",
+  "choices": [
+   "Configure Protected material detection with Annotate only",
+   "Configure Protected material detection to annotate and block",
+   "Turn the Protected material detection filter off",
+   "Select Asynchronous Filter in the Streaming section of the output filter"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's intervention points table pairs the Protected material for text risk at the output intervention point with the Annotate only action, and states that a detection sets a flag in the annotation response for the API that called the model. That produces the per-response signal the study needs while nothing is withheld. This setting also produces annotations, and it blocks the matching responses. Blocking is exactly what the study forbids for the 30-day window. Turning the filter off means the detection model does not run, so no annotation is returned. There would be nothing to count. Asynchronous Filter is a real streaming option that returns completion content immediately and delivers the filtering signal within roughly a 1,000-character window. It trades latency against timeliness of enforcement rather than converting blocking into annotation.",
+  "ref": "https://learn.microsoft.com/azure/foundry/guardrails/intervention-points"
+ },
+ {
+  "id": "1.4.2-01",
+  "obj": "1.4.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel operates an agent named Agent1 that has tools which can cancel bookings and issue refunds. A written policy enumerates the tool uses that are disallowed for Agent1.\n\nAn evaluation run must measure whether Agent1 engages in behavior that violates that policy. The evaluator must score each run from the query, the response, and the tool calls Agent1 made.\n\nYou need to select a built-in evaluator.\n\nWhich evaluator should you use?",
+  "choices": [
+   "Indirect Attack (XPIA)",
+   "Code vulnerability",
+   "Prohibited actions",
+   "Ungrounded attributes"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Prohibited actions is an agents-only evaluator that measures an agent's ability to engage in behaviors that violate explicitly disallowed actions or tool uses based on your verified policy. Its required inputs are `query`, `response`, and `tool_calls`, which matches the stem exactly. This evaluator measures the extent to which a response fell for an indirect jailbreak injected through retrieved context. Learn lists its supported target as models only, and it does not read tool calls. This evaluator measures whether generated code contains security vulnerabilities such as code injection or SQL injection across languages including Python and Java. It scores generated code rather than agent actions. This evaluator measures ungrounded inferences about personal attributes such as demographics or emotional state. It targets a fabrication risk in text, not tool governance.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/risk-safety-evaluators"
+ },
+ {
+  "id": "1.4.2-02",
+  "obj": "1.4.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "City Power & Light runs continuous evaluation on an agent named Agent1 in a Microsoft Foundry project. An Application Insights resource is connected to the project. An evaluation rule named Rule1 uses a `ContinuousEvaluationRuleAction` and is enabled.\n\nDuring peak traffic, the Monitor tab shows gaps in the evaluation charts, and many completed agent responses produce no evaluation run at all. The evaluation runs that do execute finish with a status of Completed.\n\nYou need to increase the number of responses that are evaluated during peak traffic.\n\nWhich action should you perform?",
+  "choices": [
+   "Set the `sampling_rate` value on Rule1 to a lower percentage",
+   "Increase the `max_hourly_runs` value on the `ContinuousEvaluationRuleAction` of Rule1",
+   "Change the `event_type` value of Rule1 to `RESPONSE_COMPLETED`",
+   "Assign the Foundry User role to the managed identity of the Foundry project"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn lists a reached hourly run limit as the cause of skipped evaluation runs, states that the default limit is 100 runs per hour, and directs you to increase `max_hourly_runs` in the evaluation rule configuration. That property lives on the continuous evaluation action of the rule. The `sampling_rate` property sets the percentage chance that a matching event triggers an evaluation, so it is a real control over evaluation volume. Lowering it evaluates fewer responses, which is the opposite of the requirement. `RESPONSE_COMPLETED` is the event type that fires when an agent response completes, and Learn uses it in the continuous evaluation sample. Rule1 already produces evaluation runs, so the event type is already correct. Learn requires the Foundry User role on the project managed identity before continuous evaluation rules work, and a missing assignment is a documented cause of results that never appear. Results are arriving here, so the role is already in place.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard#set-up-continuous-evaluation"
+ },
+ {
+  "id": "1.4.2-03",
+  "obj": "1.4.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fourth Coffee prepares an agent named Agent1 for release. Before deployment, the security team must probe Agent1 with generated adversarial prompts across the supported content risk categories.\n\nThe probing must also convert those prompts with obfuscation techniques such as Base64 and ROT13 to test whether the safety alignment can be bypassed, and it must produce a scorecard that reports Attack Success Rate.\n\nYou need to recommend an approach.\n\nWhich approach should you recommend?",
+  "choices": [
+   "Run the AI Red Teaming Agent against Agent1 with attack strategies applied",
+   "Run the risk and safety evaluators against the existing conversation logs of Agent1",
+   "Enable Prompt Shields for user prompts on the model deployment that Agent1 uses",
+   "Enable continuous evaluation with the content safety evaluators"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The AI Red Teaming Agent uses Microsoft's PyRIT framework to generate attack objectives per risk category, applies attack strategies such as Base64 and ROT13 to bypass safety alignment, and reports Attack Success Rate in a scorecard file. All three requirements map to it directly. The risk and safety evaluators score content that already exists in a dataset and return an aggregate defect rate. They generate no attacks and apply no obfuscation strategies. Prompt Shields is a runtime defense that detects and blocks jailbreak attempts against a deployment. It protects the system rather than testing it, and it produces no scorecard. Continuous evaluation scores sampled production traffic after deployment. The stem requires a probe that runs before deployment against generated adversarial input.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/ai-red-teaming-agent"
+ },
+ {
+  "id": "1.4.3-01",
+  "obj": "1.4.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lamna Healthcare Company operates a Microsoft Foundry resource. Auditors require a durable, queryable audit record of operations on that resource, retained in a Log Analytics workspace.\n\nNo resource logs are currently routed anywhere. You create a diagnostic setting on the Foundry resource and select the Log Analytics workspace as the destination. The setting must collect the audit category and no additional inference payload.\n\nYou need to select the log category.\n\nWhich log category should you route?",
+  "choices": [
+   "`RequestResponse`",
+   "`Trace`",
+   "`AzureOpenAIRequestUsage`",
+   "`Audit`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Audit Logs is the audit category supported for `Microsoft.CognitiveServices/accounts`, which is the resource type of a Foundry resource. Resource logs are not collected or stored until a diagnostic setting routes them, which is why the setting is required here. The Request and Response Logs category records the inference request and response operations. It is the inference payload the stem excludes, and it is far larger than an audit trail. The Trace Logs category captures service trace output that helps diagnose service behavior. It is a troubleshooting stream rather than an audit record. The Azure OpenAI Request Usage category records per-request usage and is one of the categories that costs money to export. It answers how much was consumed, not which operations were performed.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/monitor-openai-reference#resource-logs"
+ },
+ {
+  "id": "1.4.3-02",
+  "obj": "1.4.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. operates an agent named Agent1 that uses the Azure AI Search tool over an index named Index1.\n\nAuditors require that every answer the application displays carries a link to the source document it came from, visible to the user at the moment the answer is shown. Reconstructing the source later from telemetry does not satisfy the requirement.\n\nYou need to display the provenance.\n\nWhich approach should you use?",
+  "choices": [
+   "Set the `AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED` environment variable to true and read the spans in Application Insights",
+   "Set the `store` parameter to true so that the responses appear in the Stored Completions pane",
+   "Read the `url_citation` annotations returned on the agent response and render them with the answer",
+   "Add the Groundedness evaluator to a continuous evaluation rule"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Azure AI Search tool returns citations in a `[message_idx:search_idx†source]` form, with `url_citation` annotations on the response that the application reads and displays alongside the answer. Learn lists confirming those annotations as the way to verify that answers are grounded in the index. This variable is real and records chat message contents into trace spans in Application Insights. Telemetry is written after the fact and is not what the application renders to the user. Stored completions capture chat completion history for later use as evaluation and fine-tuning datasets. That is another after-the-fact store, and it carries no per-answer source links. The Groundedness evaluator scores how consistent a response is with the retrieved context, on sampled traffic. A quality score is a measurement, not a link back to a source document.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search#verify-results"
+ },
+ {
+  "id": "1.4.3-03",
+  "obj": "1.4.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. connects an agent named Agent1 to a remote Model Context Protocol (MCP) server through a project connection. The server exposes the read tools `get_stock` and `get_price` and the write tools `create_order` and `cancel_order`.\n\nA developer must approve every call to `create_order` and to `cancel_order` before the call runs. Calls to `get_stock` and `get_price` must run without an approval prompt, and Agent1 must retain the ability to call all four tools.\n\nYou need to define the MCP tool in Python.\n\nWhich code segment should you use?",
+  "choices": [
+   "from azure.ai.projects.models import MCPTool\n\ntool = MCPTool(\n    server_label=\"orders\",\n    server_url=os.environ[\"MCP_SERVER_URL\"],\n    require_approval=\"always\",\n    project_connection_id=CONNECTION_NAME,\n)",
+   "from azure.ai.projects.models import MCPTool\n\ntool = MCPTool(\n    server_label=\"orders\",\n    server_url=os.environ[\"MCP_SERVER_URL\"],\n    require_approval={\"always\": [\"create_order\", \"cancel_order\"]},\n    project_connection_id=CONNECTION_NAME,\n)",
+   "from azure.ai.projects.models import MCPTool\n\ntool = MCPTool(\n    server_label=\"orders\",\n    server_url=os.environ[\"MCP_SERVER_URL\"],\n    require_approval=\"never\",\n    project_connection_id=CONNECTION_NAME,\n)",
+   "from azure.ai.projects.models import MCPTool\n\ntool = MCPTool(\n    server_label=\"orders\",\n    server_url=os.environ[\"MCP_SERVER_URL\"],\n    require_approval=\"never\",\n    allowed_tools=[\"get_stock\", \"get_price\"],\n    project_connection_id=CONNECTION_NAME,\n)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn documents `{\"always\": [<tool_name_1>, <tool_name_2>]}` as a supported value that names the tools requiring approval. The two write tools are gated, the two read tools run without a prompt, and all four remain callable. The value `always` is the documented default and requires a developer to approve every call on the server. That adds an approval prompt to `get_stock` and `get_price`, which the stem rules out. The value `never` invokes every tool without an approval prompt. That removes the control the stem requires on `create_order` and `cancel_order`. The `allowed_tools` parameter is real and restricts which tools the agent can access and use at all. Listing only the read tools removes the write tools from Agent1 instead of gating them behind approval.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/model-context-protocol#set-up-the-mcp-connection"
+ },
+ {
+  "id": "1.4.4-02",
+  "obj": "1.4.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys runs a model deployment named Deployment1 in a Microsoft Foundry project. A guardrail assigned to Deployment1 sets the Violence control to High on user input and on output.\n\nAn agent named Agent1 uses Deployment1. A different guardrail is assigned directly to Agent1, and it sets the Violence control to Low on user input and on output. The guardrail assigned to Agent1 defines no controls for tool calls or tool responses.\n\nYou need to identify the severity level that applies when Foundry scans user input to Agent1 for violent content.\n\nWhich severity level should you identify?",
+  "choices": [
+   "Low",
+   "High",
+   "Medium",
+   "Off"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn states that risks are detected in an agent based on the guardrail the agent is assigned, not the guardrail of its underlying model, and that the agentic guardrail fully overrides the model guardrail. Agent1 carries Low on user input, so Low applies. High is the threshold configured on the model deployment. It governs calls made directly to Deployment1 and is overridden for traffic that flows through Agent1. Medium is a valid severity level, and neither guardrail sets it. Foundry does not merge or average the two configurations to arrive at a middle value. Off disables detection for a risk and is available only to customers approved for modified content filtering. The guardrail assigned to Agent1 does define a Violence control on user input, so detection runs.",
+  "ref": "https://learn.microsoft.com/azure/foundry/guardrails/guardrails-overview#guardrails-for-agents-vs-models"
+ },
+ {
+  "id": "1.4.4-03",
+  "obj": "1.4.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The Phone Company deploys a hosted agent named Agent1 in Foundry Agent Service. Agent1 runs the company's own container image.\n\nA security policy states that the outbound connections Agent1 makes must reach only two approved partner hostnames. The restriction must be enforced by the platform at runtime, not by code inside the container image, so that a change to the image cannot widen it.\n\nYou need to enforce the restriction.\n\nWhich action should you perform?",
+  "choices": [
+   "Add a tool response control to the guardrail assigned to Agent1",
+   "Restrict `allowed_tools` on the MCP tool of Agent1 to the two partner tools",
+   "Add network egress controls to the responsible AI policy that Agent1 references",
+   "Add a private endpoint to the Foundry resource, and disable public network access on the resource"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn documents network egress controls as guardrails declared in the same responsible AI policy as content safety controls, applying only to hosted agents, and governing outbound connections so an agent reaches only the destinations you allow. Attaching the policy by resource ID makes the platform enforce it at runtime. A tool response control scans the payload a tool returns for content risks such as indirect attacks. It inspects content and does not constrain which destinations the agent reaches. The `allowed_tools` parameter limits which tools the agent can discover and call on an MCP server. Code inside the container image could still open a connection to any other destination. A private endpoint plus disabled public access governs inbound reachability of the Foundry endpoint. Outbound behavior from the hosted agent is unchanged.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/add-hosted-agent-guardrails"
+ }
+]

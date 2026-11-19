@@ -1,0 +1,272 @@
+[
+ {
+  "id": "1.3.4-01",
+  "obj": "1.3.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. operates several Microsoft Foundry resources across one Azure subscription. Different product teams create new Foundry resources without central review.\n\nA security standard states that key-based authentication must be turned off on every Foundry resource in the subscription, including resources that teams create in the future. The standard must be enforced by the platform rather than by a manual review step.\n\nYou need to enforce the standard.\n\nWhich action should you perform?",
+  "choices": [
+   "Regenerate `Key1` and `Key2` on each existing Foundry resource",
+   "Assign the Azure policy that requires Foundry Tools resources to have key access disabled at the subscription scope",
+   "Set the `disableLocalAuth` property to `true` in the Bicep template that your team uses",
+   "Assign the Foundry User role to each product team at the subscription scope"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn documents the Azure policy named Foundry Tools resources should have key access disabled (disable local authentication), and states that you can set it at the subscription or resource group level to enforce the setting for a group of services. Policy assignment is the only listed option that governs resources other teams create later. Regenerating keys invalidates the current key values but leaves key-based authentication enabled on the resource. A new key is issued immediately, so the authentication path the standard forbids still exists. Setting `disableLocalAuth` to `true` in Bicep is the documented template-level control, and it does disable key access for resources deployed from that template. It cannot govern existing resources or resources that other teams deploy from their own templates. Foundry User is a data-plane role that grants development permissions inside a project. Role assignments control who can act, not whether the resource still accepts an API key.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/disable-local-auth"
+ },
+ {
+  "id": "1.3.3-01",
+  "obj": "1.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Vineyard & Winery runs an Azure AI Search service that backs a retrieval-augmented generation (RAG) application. An indexer refreshes the index every night.\n\nDuring the nightly window, some user queries return no results at all and the client reports that the service says too many requests were sent. The operations team must confirm what percentage of queries the service drops and must be notified automatically when that percentage crosses a threshold the team sets.\n\nYou need to configure monitoring.\n\nWhich action should you perform?",
+  "choices": [
+   "Create a metric alert rule on the Search Latency metric",
+   "Create a metric alert rule on the Throttled Search Queries Percentage metric",
+   "Create a metric alert rule on the Skill Execution Invocation Count metric",
+   "Enable diagnostic logging to a Log Analytics workspace"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn defines Throttled Search Queries Percentage as the percentage of queries that are dropped instead of processed, notes that throttling can increase during indexing, and directs you to this metric to confirm throttled queries. It is also listed among the recommended Azure AI Search alert rules, so a metric alert delivers the notification. Search Latency reports how long queries take to complete, in milliseconds. Dropped queries never complete, so a latency threshold does not describe the failure the users see. Skill Execution Invocation Count reports how many skill executions ran, with dimensions such as skill name and whether the execution failed. It describes enrichment work, not query rejection. Diagnostic logging to a Log Analytics workspace extends retention beyond thirty days and lets you query operations and query strings. It is an investigation tool that produces no notification on its own.",
+  "ref": "https://learn.microsoft.com/azure/search/monitor-azure-cognitive-search-data-reference#metrics"
+ },
+ {
+  "id": "1.3.1-01",
+  "obj": "1.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "School of Fine Art serves an admissions assistant from a Global Provisioned deployment named Deployment1 in a Foundry resource. Deployment1 carries production traffic 24 hours a day and is already sized to the measured peak of the workload.\n\nDeployment1 is paid for at the hourly rate for the provisioned throughput units that it deploys, and the finance team must lower that monthly charge. The throughput available to callers must not drop, and the deployment type must remain Global Provisioned.\n\nYou need to lower the monthly charge.\n\nWhich action should you perform?",
+  "choices": [
+   "Request a provisioned throughput unit quota increase for the subscription and the region",
+   "Reduce the provisioned throughput unit count on Deployment1 each evening and raise it again before the morning peak",
+   "Purchase a one-year Azure reservation that covers the provisioned throughput units of Deployment1",
+   "Delete Deployment1 every evening and recreate it every morning"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn states that an Azure reservation commits you to a fixed number of provisioned throughput units for a one-month or one-year term in exchange for a discounted effective rate per unit per hour, and that reservations are significantly more cost-effective than long-term hourly billing for sustained workloads. The discount applies automatically to matching deployments in scope, so Deployment1 keeps its size, its deployment type, and its throughput. A quota increase raises the number of provisioned throughput units that the subscription is permitted to deploy in the region. Learn describes quota as the ceiling on what you may deploy, so it governs what you are allowed to create rather than the rate you pay for units that are already deployed. Learn confirms that billing adjusts immediately to a new provisioned throughput unit count, so a smaller overnight deployment does cost less per hour. Learn advises against this scale-down and scale-up strategy for production, because unused quota does not guarantee that capacity is available when you scale back up, and the reduced hours lower the throughput available to callers. Learn states that provisioned deployments cannot be paused and that billing stops only when the deployment is deleted, so the overnight charge would indeed stop. The assistant would be offline every night, and Learn warns that provisioned capacity is finite and changes dynamically, so the morning redeployment might fail.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/provisioned-throughput-billing#azure-reservations-for-provisioned-throughput"
+ },
+ {
+  "id": "1.3.1-02",
+  "obj": "1.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Bellows College runs a student help assistant against a Global Provisioned model deployment named Deployment1 that reserves 200 provisioned throughput units. Deployment1 is the largest line item in the monthly Azure invoice.\n\nCallers report no HTTP 429 responses at any hour, so the platform team suspects that Deployment1 is over-provisioned. Before the team lowers the provisioned throughput unit count, it must measure what fraction of the reserved capacity the workload actually consumes, in one-minute increments, for each deployment in the Foundry resource.\n\nYou need to obtain that measurement.\n\nWhich action should you perform?",
+  "choices": [
+   "Run the capacity calculator on the Quota page of the Foundry portal",
+   "View the Provisioned-managed Utilization V2 metric in Azure Monitor, split by deployment",
+   "View the Total Tokens metric in Azure Monitor, split by deployment and by model version",
+   "View the Azure OpenAI Requests metric in Azure Monitor, split by deployment"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn defines provisioned deployment utilization as the provisioned throughput units consumed divided by the provisioned throughput units deployed, and names the Provisioned-managed Utilization V2 metric in Azure Monitor as the measure of that utilization on one-minute increments. Learn also directs you to apply splitting when the resource holds more than one deployment. The capacity calculator on the Quota page estimates how many provisioned throughput units a given workload shape needs, and Learn recommends it for a sizing estimate before you create a deployment. It models a projected workload rather than measuring what Deployment1 consumed. Total Tokens counts prompt tokens plus generated tokens on the deployment, so it does describe workload volume. It returns an absolute count rather than the fraction of reserved capacity that the workload consumed. The Azure OpenAI Requests metric counts the calls made to the deployment and is the correct signal for request volume and errors. Request count says nothing about how many of the reserved provisioned throughput units each call consumed.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/provisioned-get-started#measure-deployment-utilization"
+ },
+ {
+  "id": "1.3.1-03",
+  "obj": "1.3.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Wingtip Toys runs two model deployments named Deployment1 and Deployment2 in one Azure region. Together they consume the entire tokens-per-minute quota assigned to that model in that region.\n\nA product team must launch an interactive pilot on a third deployment named Deployment3 today, against the same model and region. Deployment1 and Deployment2 are both provisioned well above their measured peak usage.\n\nYou need to create Deployment3 today.\n\nWhich action should you perform?",
+  "choices": [
+   "Create a second Foundry resource in the same region and deploy the model in the new resource",
+   "Submit the quota increase request form for the model and region",
+   "Reduce the tokens-per-minute allocation on Deployment1 and Deployment2",
+   "Create Deployment3 by using the Global Batch deployment type"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Quota is allocated per subscription, per region, per model, and per deployment type in tokens-per-minute, and lowering an over-provisioned deployment frees quota immediately for a new deployment of the same model. Both existing deployments sit above their measured peak, so the reduction is safe. Learn does allow up to 30 resources per region, so the resource creation succeeds. Quota is assigned per subscription, per region, per model, and per deployment type, so the new resource draws from the same exhausted pool. This is the supported path to a permanently larger allocation, and requests are filled in the order received with priority given to customers already consuming their allocation. It cannot be relied on to deliver capacity today. Batch quota is tracked separately in enqueued tokens, so the deployment would be created. Batch processes asynchronously with roughly 24-hour turnaround, which does not serve an interactive pilot.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/quota#introduction-to-quota"
+ },
+ {
+  "id": "1.3.1-04",
+  "obj": "1.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders runs a high-volume chat application on a Global Standard model deployment named Deployment1. Every request carries the same 3,000-token block of system instructions and tool definitions, followed by the variable user turns.\n\nThe monthly cost report shows that input tokens dominate spend. The solution must reduce input token cost without changing the model, without changing the deployment type, and without degrading response quality.\n\nYou need to reduce the cost.\n\nWhich change should you make?",
+  "choices": [
+   "Place the identical system instructions and tool definitions first in the messages array",
+   "Place the variable user turns at the start of the messages array, before the system instructions",
+   "Reduce the `max_tokens` value on every request",
+   "Change Deployment1 to the Global Batch deployment type"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Prompt caching requires at least 1,024 tokens and an identical leading prefix, and cache hits are billed at a discount on input token pricing for Standard deployments. Keeping the stable block first maximizes cache reads without touching the model or the output. Routing is based on a hash of the initial prefix, so a variable opening makes the first 1,024 tokens differ on every request. That guarantees a cache miss and a `cached_tokens` value of 0. This parameter caps the length of the generated completion. The report shows input tokens dominate spend, so trimming output leaves the problem untouched and shortens useful answers. Batch is genuinely cheaper per token, which makes it tempting. It changes the deployment type, which the stem forbids, and its roughly 24-hour turnaround is unusable for an interactive chat application.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/prompt-caching#getting-started"
+ },
+ {
+  "id": "1.3.2-01",
+  "obj": "1.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Humongous Insurance produces a monthly compliance report for a Foundry resource that hosts three model deployments.\n\nThe report must state how many calls the applied content filter rejected, split by model deployment name. Calls that the filter only annotated must be excluded from the count, and the number must come from an Azure Monitor platform metric.\n\nYou need to identify the metric.\n\nWhich metric should you use?",
+  "choices": [
+   "Total Volume Sent For Safety Check",
+   "Harmful Volume Detected",
+   "Potentially Abusive User Count",
+   "Blocked Volume"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Blocked Volume, `RAIRejectedRequests` in the REST API, counts calls made to the Azure OpenAI API and rejected by the applied content filter. It splits by ModelDeploymentName, which the report requires. This metric counts every call made to the Azure OpenAI API and evaluated by the applied content filter over a period. It is a denominator for a rejection rate, not the rejected count itself. This metric counts calls detected as harmful in both block mode and annotate mode. Annotate-only calls are exactly what the report must exclude, so the number would be inflated. This metric counts the number of potentially abusive users detected over a period of time. It reports distinct users rather than rejected requests.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/monitor-openai-reference#metrics"
+ },
+ {
+  "id": "1.3.2-02",
+  "obj": "1.3.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Blue Yonder Airlines operates an agent named Agent1 in production. An Application Insights resource is already connected to the Foundry project.\n\nA quality team maintains a curated test dataset of 300 labeled questions with expected answers. The team must run that same dataset against Agent1 every week and compare the scores across runs to detect gradual quality regression against a fixed benchmark.\n\nYou need to configure the monitoring.\n\nWhich monitoring feature should you enable?",
+  "choices": [
+   "Scheduled evaluations",
+   "Continuous evaluation",
+   "Red team scans",
+   "Alerts on latency and token usage"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Scheduled evaluations run evaluations on a schedule to validate performance against benchmarks, and Learn names scheduled evaluation with test datasets as the way to detect system drift. Holding the dataset constant is what makes week-over-week comparison meaningful. Continuous evaluation runs evaluators on sampled agent responses drawn from live production traffic at a configured sample rate. The sampled traffic changes every week, so it cannot hold a benchmark constant. Red team scans run adversarial tests on a schedule to detect risks such as data leakage or prohibited actions. That is a security probe against generated attacks, not a quality benchmark against labeled answers. Alerts detect performance anomalies in operational signals such as latency and token consumption. Those signals say nothing about whether the answers are still correct.",
+  "ref": "https://learn.microsoft.com/azure/foundry/observability/how-to/how-to-monitor-agents-dashboard#configure-settings"
+ },
+ {
+  "id": "1.3.2-03",
+  "obj": "1.3.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam Residences runs a streaming chat feature against a Global Provisioned model deployment named Deployment1.\n\nUsers report that the application waits a long time before the first words appear, although the total length of each response is unchanged and completions still finish. You must track responsiveness by using the Azure Monitor metric that Learn recommends for streaming requests on provisioned deployments.\n\nYou need to identify the metric.\n\nWhich metric should you use?",
+  "choices": [
+   "Tokens Per Second",
+   "Time to Last Byte",
+   "Time to Response",
+   "Latency"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn names Time to Response the recommended latency, or responsiveness, measure for streaming requests on PTU and PTU-managed deployments, calculated as the time until the first response appears after the prompt is sent. It rises as prompt size grows or cache hit size falls, which is precisely the symptom described. This metric divides total tokens generated by the time taken to generate them, which describes throughput once generation is under way. A slow start is averaged away rather than exposed. This metric measures the time until the last byte of response data is received, for both streaming and non-streaming requests. It covers the whole response, so a delayed first token hides inside an unchanged total. Latency is a Foundry Tools metric that Learn explicitly marks as one you should not use for the Azure OpenAI service. Selecting it would produce a number that does not describe this workload.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/monitor-openai-reference#metrics"
+ },
+ {
+  "id": "1.3.3-02",
+  "obj": "1.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Lucerne Publishing runs an Azure AI Search indexer named Indexer1 against an Azure Blob Storage container named Container1. Container1 holds product documents that other teams upload.\n\nIndexer1 stops as soon as it reaches a blob it cannot process. The run must instead continue to completion, must fail only if more than 10 documents fail in a run, and each failed document must still appear as an error in the indexer execution status.\n\nYou need to configure the failure budget.\n\nWhich change should you make to the indexer definition?",
+  "choices": [
+   "Set `failOnUnsupportedContentType` to false",
+   "Set `maxFailedItems` and `maxFailedItemsPerBatch` to 10",
+   "Set `maxFailedItems` to -1",
+   "Set `indexStorageMetadataOnlyForOversizedDocuments` to true"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "These two parameters set the number of acceptable failures at any point of processing, both overall and per batch. Each failed document and its document key still shows up as an error in the indexer execution status, so nothing is silently dropped. This parameter tells the indexer to keep going when it cannot determine a blob's content type. It covers one failure mode only and sets no ceiling on the total number of failures. A value of -1 allows processing no matter how many errors occur, so Indexer1 would never fail. Learn recommends -1 for development and 0 for production workloads, and neither expresses a budget of 10. This parameter applies to blobs larger than the service size limit and indexes their storage metadata instead of their content. It changes what is stored for oversized blobs, not the failure budget.",
+  "ref": "https://learn.microsoft.com/azure/search/search-how-to-index-azure-blob-storage#troubleshooting"
+ },
+ {
+  "id": "1.3.3-03",
+  "obj": "1.3.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Southridge Video operates an Azure AI Search service named Search1 on the S1 tier. Search1 has one replica and two partitions.\n\nAn indexer refreshes the index every hour while user queries run continuously. The business requires that Search1 be covered by the read-write service-level agreement, and the operations team also wants higher query throughput.\n\nYou need to recommend a change to Search1.\n\nWhich action should you recommend?",
+  "choices": [
+   "Add a third partition to Search1",
+   "Upgrade Search1 to the S2 tier",
+   "Enable diagnostic logging on Search1 and send the logs to a Log Analytics workspace",
+   "Increase the replica count on Search1 to three"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn ties the service-level agreement to redundancy: two or more replicas satisfy query workloads, and three or more satisfy query and indexing workloads. Each replica is a copy of the index, so queries also load balance across the three copies. Partitions increase storage and spread indexing work across more compute resources. Learn states that the number of partitions is not a service-level agreement consideration, so the coverage gap remains. A higher tier provides larger and faster partitions and raises storage limits. The service-level agreement still depends on replica count, so a single-replica S2 service remains outside it. Diagnostic logging captures query and indexing operations for later analysis in Kusto. It is valuable for diagnosis, and it changes neither availability nor throughput.",
+  "ref": "https://learn.microsoft.com/azure/search/search-capacity-planning#plan-capacity-for-the-dedicated-model"
+ },
+ {
+  "id": "1.3.3-04",
+  "obj": "1.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wide World Importers builds an agent that queries a Foundry IQ knowledge base named Knowledge1. Knowledge1 uses an indexed knowledge source over a container in Azure Blob Storage.\n\nThe operations team edits the source policy documents every day. The agent keeps citing text that was replaced days earlier. The fix must keep Knowledge1 and the agent configuration in place.\n\nYou need to keep the indexed content current.\n\nWhich action should you perform?",
+  "choices": [
+   "Configure a recurring indexer schedule on the indexed knowledge source",
+   "Raise the retrieval reasoning effort on Knowledge1 to medium",
+   "Delete Knowledge1 and recreate it after each document update",
+   "Add retrieval instructions to Knowledge1 that name recent documents"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Indexed knowledge sources use Azure AI Search indexers for data ingestion, and Learn states that you schedule recurring indexer runs for incremental data refresh. The knowledge base and the agent stay exactly as they are. Retrieval reasoning effort controls how much LLM-driven query planning and iterative search agentic retrieval performs. Better planning over a stale index still returns stale text. A rebuild would pick up the current documents once. It discards the existing configuration, cannot keep pace with daily edits, and violates the requirement to keep Knowledge1 in place. Retrieval instructions steer which knowledge source agentic retrieval selects for a given question. They cannot surface content that was never ingested into the index.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/foundry-iq-faq#how-often-is-indexed-data-refreshed"
+ },
+ {
+  "id": "1.3.4-02",
+  "obj": "1.3.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Consolidated Messenger operates a Microsoft Foundry resource with public network access set to Disabled. A private endpoint for the resource exists on the corporate virtual network and shows a status of Approved.\n\nApplications running on virtual machines inside that virtual network still fail to connect. Running `nslookup` against the Foundry resource hostname from one of those virtual machines returns a public IP address.\n\nYou need to make the applications reach the resource.\n\nWhich action should you perform?",
+  "choices": [
+   "Set the private endpoint target sub-resource to `amlworkspace`",
+   "Change the Foundry resource networking to Selected Networks, and add the virtual network subnet to the resource firewall allowlist",
+   "Create the `privatelink` private DNS zones for `Microsoft.CognitiveServices/accounts`, and link them to the virtual network",
+   "Recreate the private endpoint in a region different from the virtual network"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn lists `privatelink.cognitiveservices.azure.com`, `privatelink.openai.azure.com`, and `privatelink.services.ai.azure.com` as the private DNS zones for `Microsoft.CognitiveServices/accounts`. Linking them to the virtual network makes the hostname resolve to the private IP inside the network, which is the missing piece when the endpoint is already Approved. This is a real private link sub-resource, used for Azure Machine Learning workspaces. A Foundry resource is of type `Microsoft.CognitiveServices/accounts` and uses the `account` sub-resource, so this value would not produce a valid connection. Selected Networks is a genuine networking option that admits a chosen virtual network through the service firewall. It changes what the service accepts, not how the hostname resolves, so the client still receives a public IP address. The private endpoint has to be in the same region and subscription as the virtual network. Moving it to another region would break the connection rather than repair name resolution.",
+  "ref": "https://learn.microsoft.com/azure/private-link/private-endpoint-dns#commercial"
+ },
+ {
+  "id": "1.3.4-03",
+  "obj": "1.3.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Coho Vineyard operates a Foundry Tools resource named Resource1 that was created several years ago. Resource1 is reached at the regional endpoint `https://westus.api.cognitive.microsoft.com`.\n\nAn application that runs on an Azure virtual machine calls Resource1. The application authenticates by using a user-assigned managed identity named Identity1 together with `DefaultAzureCredential`, and Identity1 already holds the required data-plane role on Resource1.\n\nCalls that present an API key succeed. Calls that present a Microsoft Entra ID token are rejected.\n\nYou need to make the token-based calls succeed.\n\nWhich action should you perform?",
+  "choices": [
+   "Acquire the token by using the `https://management.azure.com/.default` scope",
+   "Assign the Foundry Account Owner role to Identity1 at the resource scope",
+   "Replace the user-assigned managed identity with a system-assigned managed identity",
+   "Generate a custom domain name for Resource1, and call the resulting endpoint"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn states that a custom subdomain is required for token-based authentication and that regional endpoints do not support Microsoft Entra authentication. Selecting Generate Custom Domain Name on an existing resource creates the unique subdomain, and the resulting endpoint then accepts the token. This is a real Azure Resource Manager scope, and it is the scope you use for control-plane calls. Learn shows the Foundry data-plane token acquired for the `https://ai.azure.com/.default` scope, and no scope value makes a regional endpoint accept a token. Foundry Account Owner is a genuine high-privilege role that covers resource management and key rotation. A missing role assignment produces a 403 error rather than a rejected token, and Identity1 already holds the role the application needs. Both identity kinds are supported for keyless authentication, and a role can be assigned to either one on a Foundry Tools resource. Swapping one for the other changes which principal presents the token, not whether the endpoint accepts a token at all.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/authentication-authorization-foundry#set-up-microsoft-entra-id"
+ },
+ {
+  "id": "1.3.4-04",
+  "obj": "1.3.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "The Graphic Design Institute must encrypt the data at rest that a Microsoft Foundry resource stores, including project artifacts, uploaded files, and evaluation data, by using a key the institute controls.\n\nAn RSA key exists in an Azure Key Vault that uses the Azure role-based access control permission model. The Foundry resource already has a system-assigned managed identity.\n\nYou need to let the Foundry resource use the key.\n\nWhich role assignment should you create?",
+  "choices": [
+   "Assign the Key Vault Secrets User role to the Foundry resource managed identity on the key vault",
+   "Assign the Key Vault Crypto User role to the Foundry resource managed identity on the key vault",
+   "Assign the Storage Blob Data Contributor role to the Foundry project managed identity on the storage account",
+   "Assign the Foundry Account Owner role to the Foundry resource managed identity on the Foundry resource"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn's customer-managed key steps assign the Key Vault Crypto User role to the system-assigned or user-assigned managed identity of the Foundry resource. That grants exactly the key operations the service performs against the vault. This is a real Key Vault role that grants read access to secret contents. Customer-managed key encryption wraps and unwraps a key object rather than reading a secret, so the operations are not covered. This role is real and is required when agents run under standard agent setup with your own storage account. It grants access to blob data, not the ability to use an encryption key. This is a Foundry control-plane role for creating projects and accounts and managing models. It confers nothing on the key vault.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/encryption-keys-portal#steps-to-configure-a-cmk"
+ }
+]

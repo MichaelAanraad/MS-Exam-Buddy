@@ -1,0 +1,254 @@
+[
+ {
+  "id": "1.1.1-01",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank builds an internal tool that reviews complex credit memos. Each review requires multistep analysis across regulatory rules, exposure tables, and precedent decisions, and reviewers accept a response time measured in tens of seconds.\n\nThe current deployment uses a general chat model and produces shallow answers that skip intermediate steps. Accuracy on the multistep analysis matters more than latency or cost.\n\nYou need to recommend a model type from the Microsoft Foundry model catalog.\n\nWhich model type should you recommend?",
+  "choices": [
+   "A GPT-5 chat model such as `gpt-5.1-chat`",
+   "A reasoning model such as `o4-mini` or `gpt-5`",
+   "An embedding model such as `text-embedding-3-large`",
+   "A small language model such as Phi-4-mini-instruct"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn documents reasoning models as producing hidden reasoning tokens before the final answer, with a `reasoning_effort` control where a higher setting makes the model spend longer processing the request. Spending more time to gain accuracy is precisely the trade the bank is willing to make. `gpt-5.1-chat` is a real catalog model tuned for conversational turns and, per Learn's feature table, carries a much smaller context window than the reasoning series. It is the class of model that already produces the shallow answers described. Embedding models convert text into vectors for similarity search. They generate no prose and cannot perform an analysis. Small language models trade breadth of knowledge for speed and low resource use, and Learn recommends them for narrow, well-defined tasks. Deep multistep analysis is the opposite of a narrow task.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning#api-&-feature-support"
+ },
+ {
+  "id": "1.1.3-01",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Consolidated Messenger stores shipment manuals as PDF files in an Azure Blob Storage container. New manuals arrive daily and existing manuals are revised.\n\nThe search index must contain chunked text with embeddings, and the platform must generate those embeddings during indexing rather than in application code. The pipeline must also pick up new and changed blobs on a schedule without a custom watcher.\n\nYou need to recommend an indexing method.\n\nWhich method should you recommend?",
+  "choices": [
+   "Push documents with the Index Documents API and generate embeddings in the application",
+   "Use an indexer with a skillset that performs integrated vectorization",
+   "Upload the manuals to a vector store by using the File Search tool",
+   "Write the enriched manuals to a knowledge store in Azure Table Storage"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn states that if AI enrichment or integrated vectorization is a solution requirement, you must use the pull model with indexers. Indexers also provide scheduling and change detection over supported data sources such as Azure Blob Storage, which covers the daily arrivals and revisions. The push model uploads JSON documents that you prepare yourself and is a fully supported way to load an index. Learn states that skillsets attach to indexers and do not run independently, so integrated vectorization is unavailable on this path and you own the chunking, embedding, and change detection. File Search creates a vector store for an agent from files that you upload to the service. It is an agent grounding feature rather than a search-index ingestion pipeline, and it offers no scheduled refresh from a blob container. A knowledge store persists enriched content for downstream analysis and knowledge mining. Learn positions it as a side output of a skillset for non-search scenarios, so it does not populate a queryable search index.",
+  "ref": "https://learn.microsoft.com/azure/search/search-what-is-data-import"
+ },
+ {
+  "id": "1.1.1-02",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Humongous Insurance builds a claims triage assistant. For each claim, an adjuster submits one photograph of the damaged property together with a free-text incident description.\n\nThe assistant must answer questions that require the photograph and the description to be weighed together, such as whether the visible damage is consistent with the reported cause of loss. The team wants one model deployment and one inference call per claim, and it does not need a printed form read field by field.\n\nYou need to recommend a model category from the Microsoft Foundry model catalog.\n\nWhich model category should you recommend?",
+  "choices": [
+   "An Azure AI Vision image analysis call, followed by a chat model",
+   "A text embedding model, such as `text-embedding-3-large`",
+   "A vision-enabled chat model deployment, such as a model in the GPT-5 series or the GPT-4o series",
+   "An Azure AI Document Intelligence prebuilt read model"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn defines vision-enabled chat models as large multimodal models that analyze images and return textual answers about them, and it names the GPT-5 series, the GPT-4.1 series, GPT-4.5, and the GPT-4o series among the current ones. The photograph and the description travel in the same chat completion request, so one deployment and one call cover the requirement. Image analysis returns tags, detected objects, and a caption for the photograph, and a chat model can then reason over that text. The model never sees the photograph itself, so the joint judgment is lost, and the design adds the second service and second call that the team rules out. Embedding models convert text into vectors so that a search engine can match on semantic similarity. They accept no image input and return no completion, so this category cannot answer a question about a claim. The prebuilt read model extracts printed and handwritten text, along with its layout, from a document. It is the right choice when a form must be read field by field, which the stem explicitly excludes.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/gpt-with-vision"
+ },
+ {
+  "id": "1.1.1-03",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adventure Works Cycles operates a customer support assistant. The assistant must answer in a strict house voice, and it must return every answer in the same fixed report format.\n\nTo achieve this today, the team appends 40 worked examples to the system message on every request, which has pushed token cost and latency past budget. Product availability and pricing change daily, and those facts already reach the model through an existing retrieval step that the team intends to keep.\n\nYou need to reduce the prompt size without losing the house voice or the fixed format.\n\nWhich approach should you recommend?",
+  "choices": [
+   "Fine-tune a model on the daily product catalog, and remove the retrieval step",
+   "Retrieve the 40 worked examples from a knowledge source on every request",
+   "Fine-tune a smaller model on curated prompt-and-response pairs, and keep retrieval",
+   "Deploy a larger base model, and keep the existing system message unchanged"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn names reducing prompt engineering overhead, modifying style and tone, and generating outputs in a specific format as three primary reasons to fine-tune, and it recommends combining fine-tuning with retrieval so the model uses fresh external knowledge. Fine-tuning a smaller model also lowers latency and cost relative to a larger base model. Fine-tuning does embed behavior into the model weights, so the style half of the requirement would be met. Learn is explicit that dynamic or changing content belongs in retrieval rather than training data, so daily pricing would be stale the moment training finished. Retrieval is the correct home for volatile facts, and this does move text out of the static system message. The examples would still be injected into the context window on every request, so the token cost the stem is trying to remove would remain. A larger base model raises the price per token and does nothing about the 40 examples. It treats a prompt-size problem as a model-capability problem.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/fine-tuning-considerations#when-to-fine-tune"
+ },
+ {
+  "id": "1.1.1-04",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wingtip Toys processes approximately 90,000 supplier invoices each month. The invoices arrive as standardized forms from a fixed set of suppliers, and the layouts rarely change.\n\nThe finance team requires deterministic, low-variability field extraction at the lowest latency and the lowest cost per document. The team does not need reasoning over the invoice text, and it does not need generated metadata.\n\nYou need to select a Foundry Tool.\n\nWhich tool should you select?",
+  "choices": [
+   "An Azure Document Intelligence prebuilt invoice model",
+   "An Azure Content Understanding custom analyzer that has fields described in natural language",
+   "An Azure AI Language custom named entity recognition (NER) model",
+   "A multimodal chat model that receives a prompt listing the required fields"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's decision guide routes standard structured forms that have an existing prebuilt model, including invoices, to Azure Document Intelligence. Learn states that Document Intelligence is more cost-effective and deterministic than Content Understanding for high volumes of structured documents. Content Understanding analyzers need no labeling to start and return per-field confidence and grounding, so the instinct is reasonable. Learn steers high volumes of simple, structured documents away from them specifically to minimize language model variability and cost. Custom NER classifies entities inside free text and requires you to label a training set first. It carries no concept of document layout, tables, or invoice-specific fields. A chat model can read an invoice, but Learn's comparison table shows that you would own the prompt tuning, the orchestration, the scaling, and the preprocessing. Confidence scoring and grounding would require a custom implementation.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/choosing-right-ai-tool#choosing-the-right-tool-within-azure-content-understanding"
+ },
+ {
+  "id": "1.1.2-01",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing plans to ground four agents in three content sets: a container in Azure Blob Storage, an existing Azure AI Search index named Index1, and public web content.\n\nA single user question frequently needs material from more than one content set, and the questions are broad enough that one query string retrieves poorly. The team must not connect each agent to each content set individually, and one request must fan out across all three content sets.\n\nYou need to recommend a grounding design.\n\nWhich design should you recommend?",
+  "choices": [
+   "Add the Azure AI Search tool to each agent once for each content set",
+   "Upload all three content sets to one vector store by using the File Search tool",
+   "Build one Azure AI Search index that merges all three content sets, and use hybrid search",
+   "Create a Foundry IQ knowledge base that references blob, search index, and web knowledge sources"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn describes a knowledge base as one top-level resource that references one or more knowledge sources, which removes the need to connect each agent to each source. Agentic retrieval then decomposes the question into subqueries, runs them in parallel across the sources, semantically reranks the results, and merges them into a single response. The Azure AI Search tool grounds an agent in an existing index, so it covers Index1 correctly. It leaves the blob container and the web uncovered, and it produces exactly the per-agent, per-source wiring the stem forbids. File Search builds a vector store from uploaded files and supports text and document formats only. Public web content cannot be uploaded to it, and the duplication would still bind each agent to one store. Merging the blob content into one index is achievable, and hybrid search would improve lexical and semantic recall. Web content is queried live rather than indexed, and a hybrid query issues one query instead of decomposing a broad question into subqueries.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-foundry-iq#components"
+ },
+ {
+  "id": "1.1.2-02",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Trey Research builds an agent whose orchestration logic is written in Python by using LangGraph. The logic includes custom branching that the team must own in source control.\n\nThe agent must expose a managed endpoint, receive a dedicated Microsoft Entra identity, scale automatically, and persist state between the turns of a session. The operations team must not manage container hosts, clusters, or serving runtimes.\n\nYou need to recommend an agent type in Foundry Agent Service.\n\nWhich agent type should you recommend?",
+  "choices": [
+   "A prompt agent authored in the Microsoft Foundry portal",
+   "A hosted agent packaged as a container image",
+   "A prompt agent defined through the REST API",
+   "A managed compute deployment of the orchestration code"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Hosted agents run your own framework code on Foundry-managed infrastructure with a managed endpoint, a dedicated Microsoft Entra agent identity, automatic scaling, and per-session state in a VM-isolated sandbox. Learn names bringing your own code as the first reason to choose hosted agents over prompt agents. Prompt agents are defined entirely through instructions, model selection, and tools, and Foundry runs them with no application code to maintain. The stem requires custom LangGraph branching logic, which a declarative definition cannot express. Defining a prompt agent through REST changes the authoring surface and enables version control of the definition. It is still a declarative agent, so there is still no place for custom orchestration code. Managed compute is a preview deployment type that hosts model weights on dedicated GPU capacity and serves inference requests. It does not run application code, so it cannot execute an orchestration graph.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/overview#agent-types"
+ },
+ {
+  "id": "1.1.2-03",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam Residences plans one ingestion service for four content types: leasing contracts as PDF files, property photographs, recorded leasing calls, and property walkthrough videos.\n\nFor every content type, the service must return the same customer-defined set of fields, described in plain language. The company holds no labeled training data and will not create any. The company also requires a confidence score for each extracted field so that low-confidence records route to a human reviewer.\n\nYou need to select a single service.\n\nWhich service should you select?",
+  "choices": [
+   "Azure Content Understanding",
+   "Azure Document Intelligence custom neural models",
+   "Azure AI Vision Image Analysis",
+   "Azure AI Video Indexer"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's comparison table lists documents, images, audio, and video as Content Understanding inputs, states that no labeling is required to start, and lists per-field confidence scores and grounding for extractive fields. Every constraint in the stem maps to a row in that table. Custom neural models deliver deterministic, high-accuracy extraction from structured documents and are the cheaper option for standardized forms. Learn states that they require a minimum of five labeled samples and accept documents only, so the labeling constraint and three of the four content types rule them out. Image Analysis returns captions, tags, objects, and text from still images. It covers one content type and supports no customer-defined field schema. Video Indexer produces deep prebuilt insights from video and audio, such as speaker enumeration and celebrity identification. It does not process PDF contracts, and it returns its own insight set rather than a schema you define.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/document-intelligence/concept/choose-model-feature?view=doc-intel-4.0.0#compare-document-intelligence-and-content-understanding"
+ },
+ {
+  "id": "1.1.3-02",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Southridge Video plans to index a container in Azure Blob Storage that holds marketing PDF files. An indexer will populate an index named Index1 on a schedule, and each PDF file will be indexed as a single search document.\n\nWhen a campaign ends, the marketing team removes the PDF file from the container. Index1 must stop returning the corresponding search document after the next indexer run, and the application must not issue delete requests against Index1.\n\nYou need to select a method before the first indexer run.\n\nWhich method should you select?",
+  "choices": [
+   "Reset the indexer and run it again after each file removal",
+   "Enable soft delete for blobs in the storage account, and set a native blob soft delete deletion detection policy on the data source",
+   "Enable blob versioning in the storage account",
+   "Map the document key of Index1 to the `metadata_storage_path` blob property"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn documents native blob soft delete as a deletion detection approach in which Azure AI Search reads the soft deleted state of a blob and removes the corresponding search document from the index. Learn requires soft delete to be enabled for blobs in Azure Blob Storage and the deletion detection policy to be set on the data source definition, and it states that the strategy must be applied from the very first indexer run. A reset clears the tracking state of the indexer so that the next run reprocesses every blob in the container, which is the documented way to apply a changed configuration. Learn states that an indexer does not track object deletion in the data source, so reprocessing the remaining blobs still leaves the orphaned search documents in Index1. Blob versioning preserves earlier states of a blob and is a genuine data protection feature of Azure Blob Storage. Learn states that blob versioning must not be enabled in the storage account, because native soft delete is not supported by design when versioning is turned on. Learn does require the document keys of the index to map to a blob property or blob metadata such as `metadata_storage_path` before native soft delete works. The mapping is only a prerequisite, and on its own it leaves the data source with no deletion detection policy to act on.",
+  "ref": "https://learn.microsoft.com/azure/search/search-how-to-index-azure-blob-changed-deleted#native-blob-soft-delete"
+ },
+ {
+  "id": "1.1.3-03",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. maintains an Azure AI Search index named Index1 that exposes live equipment availability. The authoritative data sits behind a proprietary internal REST API that no Azure AI Search indexer data source supports.\n\nIndex1 must reflect an availability change within a few seconds of the change occurring. The application already computes its own embeddings.\n\nYou need to select an ingestion method.\n\nWhich method should you select?",
+  "choices": [
+   "Push the documents to Index1 by using the Documents - Index API",
+   "Create an indexer that runs on a five-minute schedule",
+   "Create a blob knowledge source over a nightly data export",
+   "Enable integrated vectorization on Index1"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn states that the push model places no restriction on data source type and no restriction on execution frequency, and it names low-latency synchronization as the case where push is the only option. Prevectorized documents load directly into the vector fields of the index. Indexers pull from supported data sources only, and a proprietary internal API is not one of them. A five-minute schedule would also miss the few-seconds freshness requirement. A blob knowledge source generates a data source, skillset, index, and indexer from a blob container, which is a strong pattern for agentic retrieval. A nightly export is a full day stale by definition. Integrated vectorization generates embeddings during indexer-driven indexing so that you do not have to. The application already produces embeddings, and this setting moves no data into the index.",
+  "ref": "https://learn.microsoft.com/azure/search/search-what-is-data-import#pushing-data-to-an-index"
+ },
+ {
+  "id": "1.1.3-04",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. stores product documentation as PDF files in a container in Azure Blob Storage. The company plans to ground an agent by using agentic retrieval in Azure AI Search.\n\nThe company operates no search index today. Azure AI Search must generate the data source, the skillset, the index, and the indexer automatically from the container, and it must keep the indexed content synchronized as the files change.\n\nYou need to select a knowledge source kind.\n\nWhich kind should you select?",
+  "choices": [
+   "A search index knowledge source",
+   "A file knowledge source",
+   "A web knowledge source",
+   "A blob knowledge source"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn documents the blob knowledge source as generating an indexer pipeline from a blob container, automatically creating a data source, a skillset that chunks and optionally vectorizes the content, an index that meets the agentic retrieval criteria, and an indexer to drive the pipeline. Indexing and data synchronization are triggered automatically. A search index knowledge source wraps an index that already exists on the search service, which is the right choice when a data team owns the index. The stem states that no index exists, so there is nothing to wrap. A file knowledge source uploads files directly to Azure AI Search, which suits content that has no durable home. It bypasses the Blob Storage container that the company already treats as the system of record. A web knowledge source retrieves real-time grounding data from Microsoft Bing and is classified as remote rather than indexed. It has no connection to a private storage container.",
+  "ref": "https://learn.microsoft.com/azure/search/agentic-knowledge-source-overview#supported-knowledge-sources"
+ },
+ {
+  "id": "1.1.4-01",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel operates a booking agent named Agent1. Returning travelers report that they restate their seat preference, meal preference, and loyalty program on every visit.\n\nAgent1 must retain this traveler-specific knowledge across sessions and devices, and the knowledge must be segmented per traveler. The company does not want to build extraction, consolidation, or retention logic itself.\n\nYou need to configure Agent1.\n\nWhich action should you perform?",
+  "choices": [
+   "Create a Foundry IQ knowledge base over the travel policy documents of the company",
+   "Attach the memory search tool to Agent1, and scope the memory store per traveler",
+   "Attach the File Search tool to Agent1, and upload a preferences file for each traveler",
+   "Send more of the prior conversation turns in each request to Agent1"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Memory in Foundry Agent Service is a managed long-term memory solution that extracts key information from conversations, consolidates it, and retrieves it across sessions and devices. Learn recommends attaching the memory search tool for most scenarios, and the `scope` parameter segments memory by end user. Memory is preview. A Foundry IQ knowledge base grounds an agent on curated organizational content, which is the correct tool for travel policies. Learn's own guidance separates that case from user-specific context that is learned and persists over time, which is memory. File Search is documented for searching user-provided documents during an interaction, and it does support uploaded files. Maintaining one file per traveler is exactly the custom lifecycle work the stem rules out. A longer conversation history is short-term memory, which the orchestration framework manages inside the current session. It does not survive a new session started on a different device.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-memory#working-with-memory"
+ },
+ {
+  "id": "1.1.4-02",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Humongous Insurance builds agents in a Microsoft Foundry project named Project1. A regulator requires every end-user conversation message and every agent run record to reside in an Azure resource that the company owns, so that the company applies its own backup, retention, and audit policies.\n\nUploaded claim documents and the vector stores built from them fall under the same requirement. The company already operates the necessary Azure resources.\n\nYou need to recommend a configuration for Project1.\n\nWhich configuration should you recommend?",
+  "choices": [
+   "Basic agent setup, with diagnostic settings that send the audit logs to a Log Analytics workspace",
+   "Basic agent setup, with a memory store that has a default time-to-live (TTL) value",
+   "Standard agent setup, with the Azure Cosmos DB for NoSQL, Azure Storage, and Azure AI Search resources of the company",
+   "Standard agent setup, with platform-managed data resources"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn states that standard setup requires bring-your-own resources so that all agent data stays in your Azure tenant: Azure Storage for uploaded files, Azure AI Search for the vector stores the agent creates, and Azure Cosmos DB for NoSQL for messages, conversation history, and run state. That covers all three parts of the requirement. Basic setup manages agent state in the built-in storage of the platform, so the conversation data never lands in a resource the company owns. Audit logs are a separate telemetry stream and are not the system of record for messages, files, or vector stores. A memory store is a managed long-term memory feature, and a store-level default TTL genuinely controls retention of memory items. It does not relocate thread messages, uploaded files, or vector stores into the tenant of the company. Platform-managed data resources are a documented option that removes capacity planning for resources such as Azure Cosmos DB. They are multitenant and Microsoft-managed, which is the opposite of the ownership the regulator demands.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/standard-agent-setup#resource-overview"
+ },
+ {
+  "id": "1.1.4-03",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Alpine Ski House runs six agents in a Microsoft Foundry project named Project1. Every agent uses the same four hosted tools, and each agent currently carries its own copy of the tool configuration.\n\nA platform team must own the tool configuration centrally, version it, and roll a change out to all six agents from one place.\n\nYou need to recommend an approach.\n\nWhich approach should you recommend?",
+  "choices": [
+   "Create a toolbox in Project1, and attach the toolbox to each agent",
+   "Attach each tool directly to each agent, and keep the configurations synchronized manually",
+   "Create a project connection for each tool, and reference the connections from each agent",
+   "Publish each tool as a hosted agent, and call it through the Agent-to-Agent (A2A) tool"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn defines a toolbox as a named, versioned bundle of hosted tool configurations that is managed in a Foundry project, and it names the toolbox as the recommended way to make a tool available to an agent. Central ownership, versioning, and one-place rollout are its stated purpose. This is the current state described in the stem, and it is a supported configuration for a single agent. Manual synchronization across six agents is precisely the drift the platform team wants to remove. Connections store the endpoint and credential details that a tool needs to reach an external resource, and several tools do require one. A connection is not a versioned bundle of tool configurations, so it does not group tools for reuse. The Agent-to-Agent tool lets one agent call another agent through an A2A-compatible endpoint, which is genuine cross-agent integration. Wrapping ordinary tools as agents adds a network hop, a second identity, and extra compute cost for no configuration benefit.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/toolbox-overview#supported-tools"
+ }
+]

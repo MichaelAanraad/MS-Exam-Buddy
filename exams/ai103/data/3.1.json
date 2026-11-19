@@ -1,0 +1,164 @@
+[
+ {
+  "id": "3.1.3-01",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Liberty's Delightful Bakery & Cafe edits marketing photographs with a `gpt-image-1` deployment in Microsoft Foundry. Each photograph shows staff members holding a product.\n\nA prompt-driven edit must restyle the scene, and the faces of the staff members must be reproduced as closely as the model allows. The team does not create a mask, because the edit applies to the whole frame.\n\nYou need to complete the request.\n\nWhich code segment should you use?",
+  "choices": [
+   "result = client.images.edit(\n    model=\"gpt-image-1\",\n    image=image_file,\n    prompt=\"Restyle the scene as a warm morning cafe\",\n    background=\"transparent\",\n)",
+   "result = client.images.generate(\n    model=\"gpt-image-1\",\n    prompt=\"Restyle the scene as a warm morning cafe\",\n    quality=\"high\",\n)",
+   "result = client.images.edit(\n    model=\"gpt-image-1\",\n    image=image_file,\n    prompt=\"Restyle the scene as a warm morning cafe\",\n    n=4,\n)",
+   "result = client.images.edit(\n    model=\"gpt-image-1\",\n    image=image_file,\n    prompt=\"Restyle the scene as a warm morning cafe\",\n    input_fidelity=\"high\",\n)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn documents `input_fidelity` as the parameter that controls how much effort the model puts into matching the style and features, especially facial features, of input images, and states that faces are preserved more accurately in high mode than in standard mode. The stem rules out a mask, which leaves input fidelity as the control for this edit. `background` is a real GPT-image-1 parameter that produces a transparent background on a generate request when the output format is PNG. It controls the backdrop of the result and says nothing about preserving faces. The generations endpoint synthesizes a new image from the prompt alone and accepts no input image. The staff members would be invented rather than preserved. `n` sets how many images are returned per request. More variants do not make any single variant reproduce the faces more faithfully.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/dall-e#call-the-image-edit-api"
+ },
+ {
+  "id": "3.1.2-01",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Blue Yonder Airlines deploys a Sora 2 model in Microsoft Foundry to produce short social clips.\n\nEach clip must open on an existing studio photograph of a specific aircraft interior, and motion must then be generated from a text prompt. The photograph is a PNG file that the design team already produced, and no earlier generated video exists.\n\nYou need to create the video generation job.\n\nWhich action should you perform?",
+  "choices": [
+   "Upload the photograph to the image edits API and pass the result to the create video request",
+   "Set `remix_video_id` to the identifier of the photograph and supply the text prompt",
+   "Supply the photograph as the input reference file and match its dimensions to the output size",
+   "Send the text prompt alone and describe the aircraft interior in detail"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn documents an input reference file as a single reference image used as a visual anchor for the first frame, accepts PNG among the supported types, and requires the image to match the requested size exactly. That is exactly the image-to-video mode the stem describes. The image edits API modifies an image and returns another image. It adds a round trip and still leaves the video job with no reference input configured. `remix_video_id` accepts the identifier of a previously completed video and reuses its structure, motion, and framing. The stem states that no earlier generated video exists, so there is no identifier to pass. A text-only prompt is a supported Sora 2 mode for creating entirely new scenes. It re-synthesizes the interior instead of opening on the studio photograph the brand approved.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/video-generation#sora-2-api-reference"
+ },
+ {
+  "id": "3.1.1-01",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing generates cover art from text prompts by using an image generation model deployed in Microsoft Foundry.\n\nThe art department requires output at a long edge of 3,840 pixels for print, and requires aspect ratios beyond the square, portrait, and landscape presets. Both edges of every requested resolution are multiples of 16 pixels.\n\nYou need to select a model.\n\nWhich model should you select?",
+  "choices": [
+   "GPT-Image-2",
+   "GPT-Image-1.5",
+   "GPT-Image-1",
+   "GPT-Image-1-Mini"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "GPT-Image-2 is the only model in the family that supports arbitrary resolutions where both edges are multiples of 16 pixels, a long edge up to 3,840 pixels, and aspect ratios up to 3:1. Learn positions it for high-resolution and 4K generation, and it is the generally available member of the family. GPT-Image-1.5 is a real limited-access preview model that improves realism, instruction following, and speed over GPT-Image-1. It is restricted to 1024x1024, 1024x1536, and 1536x1024, so it cannot reach the print resolution the art department requires. GPT-Image-1 is optimized for realism, instruction following, and multimodal context. It shares the same three fixed sizes as GPT-Image-1.5, which is what disqualifies it here. GPT-Image-1-Mini is the cost-efficient, faster option for prototyping and bulk generation. It is also limited to the three fixed sizes, and it has no dedicated face preservation.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/dall-e#models-and-capabilities"
+ },
+ {
+  "id": "3.1.1-02",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Wingtip Toys generates product images from text prompts by using a GPT-image-1 deployment in Microsoft Foundry.\n\nThe catalog team composites each generated toy onto a colored marketing layout. Every generated image must therefore arrive with a transparent background rather than a rendered scene.\n\nYou need to configure the image generation request.\n\nWhich configuration should you apply?",
+  "choices": [
+   "Set `background` to `auto`, and set `output_format` to `jpeg`",
+   "Set `quality` to `high`, and set `n` to 1",
+   "Supply a `mask` PNG with fully transparent pixels on an image edits request",
+   "Set `background` to `transparent`, and set `output_format` to `png`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn documents transparency for GPT-image-1 as setting `background` to `transparent` and `output_format` to PNG on the generate request. PNG carries the alpha channel that a transparent background requires. The value `auto` is real and lets the model decide the background treatment, so it guarantees nothing. JPEG carries no alpha channel, so the output could not express transparency even if the model produced it. The `quality` parameter controls rendering effort at low, medium, or high, and `n` controls how many images the request returns. Neither parameter influences whether a background is present. The `mask` parameter belongs to the image edits request and marks a region of an existing input image to change. The catalog team generates each image from a text prompt, so there is no input image to mask.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/dall-e#call-the-image-edit-api"
+ },
+ {
+  "id": "3.1.2-02",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Southridge Video generates 8-second promotional clips by using a Sora 2 deployment in Microsoft Foundry.\n\nEvery clip must open on an existing brand key art frame that the design team supplies as a PNG file. The generated video must be 1280x720, and the supplied PNG is already 1280x720.\n\nYou need to anchor the first frame of the generated video to the supplied file.\n\nWhich parameter should you set?",
+  "choices": [
+   "`remix_video_id`, set to the ID of a completed video",
+   "`input_reference`, set to the supplied PNG file",
+   "`seconds`, set to 8",
+   "`size`, set to 1280x720"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The `input_reference` parameter accepts a single reference image that acts as the visual anchor for the first frame, and Learn states that the source image resolution and the final video resolution must match exactly. The supplied PNG is already 1280x720, so the request satisfies that rule. The `remix_video_id` parameter points at a previously completed video and reuses its structure, motion, and framing. There is no prior generated video in this scenario, and the anchor supplied is a still image. The `seconds` parameter sets clip duration, with values of 4, 8, or 12 and a default of 4. It controls length rather than the opening frame. The `size` parameter sets the output resolution, such as 1280x720 for landscape. It must agree with the reference image, but on its own it supplies no image to the model.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/video-generation#sora-2-api-reference"
+ },
+ {
+  "id": "3.1.3-02",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The Graphic Design Institute uses the image edits API with a GPT-image deployment in Microsoft Foundry to replace one signage panel inside architectural photographs.\n\nA developer supplies a 1024x1536 JPEG input image and a 512x768 JPEG mask in which the signage panel is painted solid black. The service rejects the request.\n\nYou need to correct the mask.\n\nWhich action should you perform?",
+  "choices": [
+   "Resize the input image to 512x768, and keep the mask as a JPEG",
+   "Keep the mask as a JPEG, resize it to 1024x1536, and paint the signage panel solid white",
+   "Convert the mask to a 1024x1536 PNG, and make the signage panel fully transparent",
+   "Remove the mask, and describe the signage panel in the prompt"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn states that the mask must be a PNG file, must have the same dimensions as the input image, and must use fully transparent pixels, meaning an alpha of zero, over the area to edit. All three defects in the request are corrected. Aligning the dimensions is half of the fix, and downscaling the source photograph discards detail the edit needs. The mask stays a JPEG, which carries no alpha channel, so the service still has no way to read the editable region. Solid white is not how a mask encodes the editable region. The mask marks the area to edit with fully transparent pixels, which a JPEG cannot carry at all. Prompt-only editing gives the model no region boundary, so unrelated parts of the photograph can change. The requirement is a targeted replacement of one panel.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/dall-e#call-the-image-edit-api"
+ },
+ {
+  "id": "3.1.3-03",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam Residences restyles interior photographs by using the image edits API with a GPT-image-1 deployment. Each photograph is restyled as a whole, so no single region is isolated for editing.\n\nReviewers report that the faces of people in the restyled photographs no longer resemble the people in the source photographs. The solution must make the model spend more effort matching the style and the facial features of the input image.\n\nYou need to change the request.\n\nWhich change should you make?",
+  "choices": [
+   "Supply a `mask` PNG that covers each face",
+   "Set `input_fidelity` to `high`",
+   "Set `quality` to `high`",
+   "Change the deployment to `gpt-image-1-mini`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The `input_fidelity` parameter controls how much effort the model puts into matching the style and features, especially facial features, of input images, and Learn states that high input fidelity preserves faces more accurately than standard mode. Note that input fidelity is not supported by the `gpt-image-1-mini` model. A mask marks the region the model is allowed to change, which is the opposite of protecting the faces. The scenario also restyles the whole photograph rather than one isolated region. The `quality` parameter controls rendering effort at low, medium, or high, which changes output polish. It carries no instruction to stay faithful to the input image. The `gpt-image-1-mini` model is the cost-efficient choice for bulk or iterative generation, and Learn states that it has no dedicated face preservation. It also does not support input fidelity, so the change moves away from the requirement.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/dall-e#call-the-image-edit-api"
+ },
+ {
+  "id": "3.1.4-01",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Blue Yonder Airlines generates a promotional clip by using a Sora 2 deployment in Microsoft Foundry. The generation job completes successfully.\n\nThe creative director approves the framing, the scene transitions, and the visual layout, and asks only for a warmer color palette. The clip must not be regenerated from scratch.\n\nYou need to produce the revised clip.\n\nWhich action should you perform?",
+  "choices": [
+   "Call the remix operation with the completed video ID and an updated prompt",
+   "Create a video job that uses the original prompt with color wording appended",
+   "Create a video job that passes the completed clip as the `input_reference` value",
+   "Download the clip, and call the image edits API on each extracted frame"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Remix references the ID of a previously completed video and an updated prompt, and the system maintains the original video's framework, scene transitions, and visual layout while implementing the requested change. Learn advises limiting a remix to one clearly articulated adjustment for the best fidelity to the source. A new job regenerates the clip from scratch, which is exactly what the director ruled out. Framing and transitions would drift even though the prompt is similar. The `input_reference` parameter accepts a single reference image, not a video, and Learn restricts it to `image/jpeg`, `image/png`, and `image/webp`. It anchors the first frame of a new generation rather than applying a targeted edit to a completed clip. The image edits API operates on still images with an optional mask. Frame-by-frame editing provides no temporal consistency and is not a documented video editing path.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/video-generation#sora-2-api-reference"
+ },
+ {
+  "id": "3.1.5-01",
+  "obj": "3.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders generates vertical social clips by using a Sora 2 deployment in Microsoft Foundry.\n\nThe marketing team must receive two alternative renderings of the same prompt from a single video creation job, and each rendering must run for 12 seconds.\n\nYou need to configure the job.\n\nWhich configuration should you use?",
+  "choices": [
+   "Set the size to 1080x1920, and request two variants",
+   "Set the size to 1080x1920, and request four variants",
+   "Set the size to 720x1280, and request four variants",
+   "Set the size to 720x1280, and request two variants"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The value 720x1280 is a supported vertical resolution, two variants is exactly the documented maximum at 720p, and 12 seconds is a valid duration. Every constraint in the scenario is satisfied by this combination. The value 1080x1920 is a supported Sora 2 output resolution for portrait video. Learn states that requesting multiple variants in a single job is disabled for 1080p resolutions, so the job returns one rendering rather than two. This compounds the previous problem by asking for four renderings at a resolution where variants are disabled entirely. The 12-second duration is valid, because 12 is one of the values that the `seconds` parameter accepts. The value 720x1280 is a supported vertical resolution, and this is the closest wrong answer. Learn caps 720p at a maximum of two variants per job, so four exceeds the documented limit.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/concepts/video-generation#sora-2-api-reference"
+ }
+]

@@ -1,0 +1,92 @@
+[
+ {
+  "id": "3.3.1-01",
+  "obj": "3.3.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A. Datum Corporation exposes an image generation feature that is backed by a `gpt-image-2` deployment named Deployment1 in Microsoft Foundry.\n\nA safety requirement states that a request whose prompt describes disallowed content must be rejected before any image is produced, and that a generated image classified as harmful must never reach the caller. The team must apply its own severity thresholds rather than the defaults, and must not add a separate call in application code.\n\nYou need to configure the solution.\n\nWhich action should you perform?",
+  "choices": [
+   "Create a content filter configuration with input and output filters and associate it with Deployment1",
+   "Call the Azure AI Content Safety image analysis API on each generated image",
+   "Apply Prompt Shields for documents to each generation request",
+   "Create an Azure AI Content Safety blocklist of disallowed visual concepts"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn states that Azure provides input and output moderation across all image generation models and that content filter configurations are created in the resource and associated with deployments, with severity thresholds that customers configure separately for prompts and completions. Because the filter runs in the service, no extra call is added to the application. Learn notes that GPT-image-1 does not support content filter configuration, so this control requires a GPT-image-2 deployment. The Content Safety image analysis API is a real classifier that returns a severity per harm category. It is an extra call in application code, and it runs only after generation, so the disallowed prompt is still processed. Prompt Shields detect jailbreak attempts and instructions hidden inside grounding documents. It is an injection defense and classifies no visual content. Blocklists in Azure AI Content Safety are term lists managed through the text blocklist APIs. There is no visual-concept blocklist, so the control does not exist for generated images.",
+  "ref": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/content-filters"
+ },
+ {
+  "id": "3.3.1-02",
+  "obj": "3.3.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys moderates community submissions. Each submission consists of an image and a caption that a member writes to accompany it.\n\nThe moderation policy of Tailspin Toys assigns a distinct outcome to each of the eight severity values from 0 through 7, and the image and its caption must be evaluated together so that context is preserved.\n\nYou need to select an Azure AI Content Safety API.\n\nWhich API should you select?",
+  "choices": [
+   "The image analysis API, called once for each submitted image",
+   "The text analysis API, called once for each submitted caption",
+   "The multimodal API, called with the image and its caption",
+   "The Prompt Shields API, called with the caption as the user prompt"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The multimodal API analyzes an image together with its associated text so that context is preserved, and Learn states that the multimodal model supports the full 0 through 7 severity scale. Setting `enableOcr` to `true` additionally analyzes text detected inside the image itself. Learn states that the current image model supports only the trimmed version of the scale and returns severities of 0, 2, 4, and 6, so it cannot express eight distinct values. It also evaluates the image alone, which discards the caption context. The text model supports the full 0 through 7 severity scale, so half of the requirement is met. It never sees the image, so the two pieces of content are not evaluated together. Prompt Shields detects user prompt attacks and document attacks aimed at a language model. It classifies injection attempts rather than harm severity.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-safety/concepts/harm-categories#severity-levels"
+ },
+ {
+  "id": "3.3.2-01",
+  "obj": "3.3.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank operates an agent that accepts screenshots uploaded by customers and passes them to a vision-enabled chat model. During a security review, a tester uploads a screenshot in which rendered text instructs the model to ignore its system message and disclose account details. The agent follows the embedded instruction.\n\nWoodgrove Bank must detect this class of attack in the text that is rendered inside an uploaded image, before the model generates a response.\n\nYou need to design the control.\n\nWhich approach should you implement?",
+  "choices": [
+   "Call the Azure AI Content Safety image analysis API on each screenshot, and reject any screenshot whose Violence severity is above 0",
+   "Call the Azure AI Content Safety groundedness detection API on the response of the model",
+   "Add the rendered wording to an Azure AI Content Safety blocklist",
+   "Extract the text rendered in each screenshot, and then submit that text in the `documents` array of a Prompt Shields request"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Prompt Shields provides a unified API that analyzes a user prompt and any documents you pass, and its document attack detection targets malicious instructions embedded in content that the model processes. Optical character recognition converts the pixels of the screenshot into the text that the `documents` array expects. The image analysis API classifies an image against the Hate, Sexual, Violence, and Self-harm harm categories and returns a severity for each one. An embedded injection instruction is ordinary polite language and scores zero across all four categories. Groundedness detection checks whether a model response is supported by the supplied source material. It runs on the output after generation, which is later than the point the stem requires. Blocklists match terms and regular expression patterns that you enumerate in advance, and Learn documents them as text blocklist management. Indirect injection is phrased in endlessly variable natural language, so enumeration does not generalize.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-jailbreak"
+ },
+ {
+  "id": "3.3.3-01",
+  "obj": "3.3.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Alpine Ski House hosts a community gallery. Overnight, members begin to upload images that carry a newly emerging symbol that violates the community guidelines of Alpine Ski House. The symbol falls outside the four standard harm categories.\n\nAlpine Ski House must start to flag uploads that carry the symbol within hours, and it can supply example images that contain the symbol.\n\nYou need to select an Azure AI Content Safety capability.\n\nWhich capability should you select?",
+  "choices": [
+   "The custom categories (rapid) API, with an image incident created from the example images",
+   "The custom categories (standard) API, with a model trained on the example images",
+   "A blocklist that contains the name of the symbol",
+   "Protected material detection"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The custom categories (rapid) API exists to identify and contain emerging content incidents, it works on both text and image content, and it needs no training step: you create an incident, add samples, and deploy it. Learn describes its image matching as a lightweight object-tracking model combined with embedding search. The custom categories (standard) API trains a customizable machine learning model, which Learn notes can take up to several hours. Learn also states that this implementation works on text content and not on image content, and that it retires on September 1, 2026. Blocklists allow exact term matching and regular expression patterns over text. Learn explicitly notes that blocklists offer no image matching, which is the entire requirement here. Protected material detection flags known copyrighted text or public repository code that a language model reproduces in its output. It is unrelated to imagery that users upload.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-safety/concepts/custom-categories"
+ },
+ {
+  "id": "3.3.3-02",
+  "obj": "3.3.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Trey Research receives media files from external contributors. Before a file is published, the editorial system must check whether the file carries a signal that indicates the file was generated by a Microsoft AI system, such as a cryptographically signed C2PA manifest or an invisible watermark.\n\nThe check must run on image files, audio files, and video files.\n\nYou need to select an approach.\n\nWhich approach should you select?",
+  "choices": [
+   "Rely on Content Credentials, which Azure OpenAI applies automatically to generated images",
+   "Call the Azure AI Content Safety image analysis API, and inspect the returned harm category severities",
+   "Call the Content Provenance Detection API in Azure AI Content Safety",
+   "Call the Azure AI Vision Image Analysis `read` visual feature, and search the extracted text for a credit line"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Content Provenance Detection API checks whether media content contains C2PA Content Credentials or invisible watermarking signals that indicate generation by Microsoft AI systems, and Learn lists image, audio, and video formats among its supported media types. Learn also cautions that the absence of a signal does not prove that content was not AI generated. Content Credentials are applied automatically to images that the Azure OpenAI image generation models produce, which covers outbound content that Trey Research creates. It is a signing mechanism applied at generation time rather than a check performed on files that arrive from outside. The image analysis API returns a severity for the Hate, Sexual, Violence, and Self-harm categories. Provenance is not one of those categories, and audio and video are not supported inputs. The `read` feature performs optical character recognition and returns visible text along with its coordinates. Provenance signals are cryptographic metadata and imperceptible watermarks rather than printed text.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-safety/concepts/provenance-detection"
+ }
+]

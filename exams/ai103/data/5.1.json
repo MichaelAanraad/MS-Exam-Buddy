@@ -1,0 +1,290 @@
+[
+ {
+  "id": "5.1.2-01",
+  "obj": "5.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "First Up Consultants maintains an Azure AI Search index named Index1. The vector field in Index1 uses a vector profile that specifies the Hierarchical Navigable Small World (HNSW) algorithm.\n\nA relevance engineer must measure the recall of the production configuration. To do that, the engineer needs a ground-truth result set that contains the exact nearest neighbors for each evaluation query. The engineer must not change the index schema, and query latency during the measurement run is unimportant.\n\nYou need to produce the ground-truth result set.\n\nWhich change should you make to the evaluation queries?",
+  "choices": [
+   "Increase the value of `k` on each vector query",
+   "Raise the `efConstruction` value on the HNSW algorithm configuration",
+   "Enable scalar quantization on the vector field",
+   "Set `exhaustive` to `true` on each vector query"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn states that fields that specify HNSW also support exhaustive K-Nearest Neighbors at query time through the `exhaustive` parameter, and names building a ground truth set to evaluate the recall of an approximate algorithm as a use case. No schema change is needed, and the brute-force scan cost is acceptable because latency does not matter here. A larger `k` returns more approximate neighbors from the same graph traversal. Depth is not exactness, so the result set is still approximate and cannot serve as ground truth. `efConstruction` governs how many candidate connections are considered while the HNSW graph is built, which improves recall. It is an index-time setting that would require rebuilding the index, and it still yields an approximate search. Scalar quantization reduces the memory and disk footprint of vector indexes by narrowing the stored data type. Compression trades accuracy for size, which moves away from an exact result set.",
+  "ref": "https://learn.microsoft.com/azure/search/vector-search-ranking#algorithms-used-in-vector-search"
+ },
+ {
+  "id": "5.1.3-01",
+  "obj": "5.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing indexes long PDF style manuals in Azure AI Search for a retrieval-augmented generation (RAG) application.\n\nChunks currently break in the middle of a topic because the pipeline splits on a fixed character count. Chunks must instead follow the heading structure of each manual, and the detected headings must be stored in their own index fields so that a chunk can be shown with its section title.\n\nYou need to update the skillset.\n\nWhich skill should you add?",
+  "choices": [
+   "The OCR skill",
+   "The Text Merge skill",
+   "The Azure OpenAI Embedding skill",
+   "The Document Layout skill"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn states that the Document Layout skill calls the layout model from Azure AI Document Intelligence, articulates content structure in Markdown with fields for headings and content, and that `markdownHeaderDepth` controls how many heading keys appear in the sections output. The documented pattern pairs it with the Text Split skill so that each chunk stays inside one Markdown section. The OCR skill recognizes printed and handwritten text in images and returns plain text with location information. It recovers characters from pixels and knows nothing about headings. The Text Merge skill combines separate text fragments, such as image captions, into one content field. Merging content is the opposite of the section-aware splitting this pipeline needs. The Azure OpenAI Embedding skill vectorizes chunks so they can be searched semantically. It consumes chunks that already exist rather than deciding where a chunk begins.",
+  "ref": "https://learn.microsoft.com/azure/search/search-how-to-semantic-chunking"
+ },
+ {
+  "id": "5.1.4-01",
+  "obj": "5.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Graphic Design Institute indexes course handbooks that are stored as PDF files in Azure Blob Storage. Many pages embed scanned images that contain the only copy of certain policy text.\n\nA blob indexer and a skillset that contains the OCR skill are already in place, but the OCR skill produces no output and the policy text is missing from the index. The indexer configuration currently sets `dataToExtract` to `contentAndMetadata` and leaves every other parameter at its default.\n\nYou need to make the embedded images available to the OCR skill.\n\nWhich change should you make to the indexer configuration?",
+  "choices": [
+   "Set `parsingMode` to `text`",
+   "Set `imageAction` to `generateNormalizedImages`",
+   "Set `allowSkillsetToReadFileData` to `true` and reference `/document/file_data`",
+   "Increase `normalizedImageMaxWidth` from its default of 2000 to 10000"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn states that `imageAction` defaults to `none`, which ignores embedded images and image files, and that you must set it to `generateNormalizedImages` to create the `normalized_images` node that skills such as OCR expect. It also confirms that this action requires `dataToExtract` to be `contentAndMetadata`, which this indexer already sets. `parsingMode` controls how a blob is turned into search documents, and Learn requires the default mode for image processing. Switching it to `text` treats the blob as plain text and moves the pipeline further from image extraction. `allowSkillsetToReadFileData` exposes the original file bytes at `/document/file_data` for a custom skill or the Document Extraction skill. It hands over the raw file rather than the normalized image array that OCR iterates over. `normalizedImageMaxWidth` adjusts the size of normalized images once they exist, with a default of 2,000 pixels. Raising a ceiling has no effect while no normalized images are generated at all.",
+  "ref": "https://learn.microsoft.com/azure/search/cognitive-search-concept-image-scenarios#configure-indexers-for-image-processing"
+ },
+ {
+  "id": "5.1.1-01",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wide World Importers stores product documentation as PDF files in an Azure Blob Storage container named Container1. The documentation is updated throughout the week.\n\nYou create an Azure AI Search index named Index1. The content of Container1 must appear in Index1, the pipeline must detect new and updated blobs on its own, and the refresh must recur without operator action. The application team must not write code that pushes documents to Index1.\n\nYou need to configure ingestion.\n\nWhich approach should you use?",
+  "choices": [
+   "Call the Documents - Index push API from an Azure Function that triggers on blob creation",
+   "Attach a knowledge store projection to a skillset and write enriched documents to Azure Table Storage",
+   "Enable an enrichment cache on the indexer and set `enableReprocessing` to true",
+   "Create a data source that points to Container1 and run a scheduled indexer against Index1"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A blob indexer cracks each blob, serializes it into a JSON document, and loads Index1, and Learn states that change detection for blob data is automatic. Running the indexer on a schedule delivers the recurring refresh with no push code. The push model is real and gives you full control over when documents enter the index. It also makes your own code responsible for change detection and refresh, which is exactly the work the requirement removes from the application team. A knowledge store persists skillset output to Azure Storage for non-search scenarios such as knowledge mining. It is a side output of an enrichment pipeline and never populates a search index. Enrichment caching reuses skill output between indexer runs so that a skillset edit does not force a full rebuild. It is a cost optimization for an indexer that already exists, not an ingestion mechanism.",
+  "ref": "https://learn.microsoft.com/azure/search/search-how-to-index-azure-blob-storage#supported-tasks"
+ },
+ {
+  "id": "5.1.1-02",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Nod Publishers stores manuscripts in an Azure Blob Storage container named Container1. Container1 holds PDF files, DOCX files, and approximately 40,000 PNG cover thumbnails.\n\nAn indexer loads Container1 into an Azure AI Search index named Index1. Index1 must contain the manuscripts. The thumbnails must be skipped for the entire container by one indexer setting, and the thumbnail files must remain in Container1.\n\nYou need to configure the indexer.\n\nWhich action should you perform?",
+  "choices": [
+   "Set `indexedFileNameExtensions` to `.pdf, .docx` in the indexer configuration",
+   "Add the `AzureSearch_Skip` metadata property to each PNG blob",
+   "Set `dataToExtract` to `storageMetadata` in the indexer configuration",
+   "Configure a native soft delete deletion detection policy on the data source"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The indexer configuration accepts a comma-separated list of file extensions to include, and any extension outside that list is skipped for the whole container. One setting covers every thumbnail and leaves the blobs in place. This metadata property is real and does instruct the indexer to skip a blob completely, with no metadata and no content extraction. It applies to one blob at a time, so it would mean editing metadata on 40,000 thumbnails. This value indexes standard blob properties and user-specified metadata rather than content. It changes what is extracted from every blob, including the manuscripts, instead of excluding the thumbnails. Deletion detection tells the indexer to remove index entries when source blobs are deleted. It governs removals, not which file types enter the index in the first place.",
+  "ref": "https://learn.microsoft.com/azure/search/search-blob-storage-integration#use-a-blob-indexer-for-content-extraction"
+ },
+ {
+  "id": "5.1.1-03",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. indexes a research archive from an Azure Blob Storage container named Container1 into an Azure AI Search index named Index1. Partner organizations upload files to Container1, so the set of file types is not known in advance.\n\nThe indexer stops on the first blob whose content type Azure AI Search cannot determine. Indexing must continue past blobs that the indexer cannot process, the run must tolerate up to 50 failures, and an operator must be able to review every skipped blob afterward.\n\nYou need to configure the indexer.\n\nWhich configuration should you apply?",
+  "choices": [
+   "Set `maxFailedItems` to 50, and set `failOnUnsupportedContentType` and `failOnUnprocessableDocument` to false",
+   "Set `excludedFileNameExtensions` to a comma-separated list of the extensions that failed in the most recent indexer run",
+   "Set `indexStorageMetadataOnlyForOversizedDocuments` to true and set `dataToExtract` to `allMetadata`",
+   "Set `batchSize` to 1 so that a failing blob affects only its own batch"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "`maxFailedItems` sets the number of errors an indexer run tolerates, and setting `failOnUnsupportedContentType` and `failOnUnprocessableDocument` to false tells the indexer to continue rather than fail the job. Learn states that each failed document appears with its document key in the indexer execution status, which gives the operator the review list. Excluding file name extensions is a documented way to keep known problem content types out of the pipeline. Partners upload arbitrary file types, so an extension list can only exclude failures that already occurred and cannot anticipate the next unknown content type. This parameter lets the indexer store blob metadata when a blob exceeds the document size limit for the service tier. Oversized blobs are one specific failure mode, so the setting does nothing for a content type that the indexer cannot determine. Batch size controls how many documents the indexer reads from the data source and indexes as a single batch. It tunes throughput and does not change whether an error stops the run.",
+  "ref": "https://learn.microsoft.com/azure/search/search-how-to-index-azure-blob-storage#troubleshooting"
+ },
+ {
+  "id": "5.1.2-02",
+  "obj": "5.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Alpine Ski House operates an Azure AI Search index named Index1. Index1 contains a searchable text field, a vector field, and a semantic configuration named `semantic-config`.\n\nA Python application must issue one request that runs the keyword query and the vector query in parallel, merges the two ranked lists, and then applies machine reading comprehension to reorder the merged results.\n\nYou need to complete the query.\n\nWhich code segment should you use?",
+  "choices": [
+   "results = search_client.search(\n    search_text=\"powder skiing near the village\",\n    select=[\"Id\", \"Title\", \"Content\"],\n    top=5,\n)",
+   "results = search_client.search(\n    vector_queries=[vector_query],\n    select=[\"Id\", \"Title\", \"Content\"],\n    top=5,\n)",
+   "results = search_client.search(\n    search_text=\"powder skiing near the village\",\n    vector_queries=[vector_query],\n    select=[\"Id\", \"Title\", \"Content\"],\n    top=5,\n)",
+   "results = search_client.search(\n    search_text=\"powder skiing near the village\",\n    vector_queries=[vector_query],\n    query_type=\"semantic\",\n    semantic_configuration_name=\"semantic-config\",\n    top=5,\n)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Passing `search_text` and `vector_queries` together produces the parallel hybrid execution, and `query_type` set to `semantic` with a named configuration adds L2 semantic reranking over the fused results. Semantic ranking is the machine reading comprehension step the requirement names. This is a keyword-only query ranked by the BM25 algorithm. No vector query executes, so nothing runs in parallel and nothing is fused. This is a vector-only query ranked by the nearest neighbors algorithm. It drops the lexical half of the request that the requirement describes. This is a valid hybrid query: both queries run in parallel and Reciprocal Rank Fusion merges them into a unified ranked list. It stops at the fused L1 score and never invokes the reranking models.",
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-how-to-query#set-up-a-hybrid-query"
+ },
+ {
+  "id": "5.1.2-03",
+  "obj": "5.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fourth Coffee runs semantic queries against an Azure AI Search index named Index1. Index1 has a semantic configuration, and the application sends a keyword search string only.\n\nSubject-matter experts report that for one test query, the document they rate as the best answer does not appear anywhere in the response, even at a low rank. Raising the value of `top` does not surface it.\n\nYou need to make the document eligible for reranking.\n\nWhich action should you perform?",
+  "choices": [
+   "Add the description field of the document to `prioritizedKeywordsFields` in the semantic configuration",
+   "Add a vector query to the request so that the request runs as a hybrid query",
+   "Set `rankingOrder` to `boostedRerankerScore` and add a scoring profile to Index1",
+   "Enable semantic answers on the query request"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Semantic ranker reranks only the top 50 results returned by the first-stage ranker, and Learn states that it cannot rerun the query over the entire corpus. Adding a vector query makes the request hybrid, so similarity matching can recall the document that BM25 missed and place it in the set that L2 rescores. Prioritized fields tell the summarization model which fields to read and in what order when it scores a candidate. They shape reranking inputs for documents that were already retrieved and cannot pull in a document the first-stage query missed. This combination applies a scoring profile after semantic reranking so that boosting survives the rerank. It reorders results that were retrieved and adds nothing to recall. Semantic answers return a verbatim passage that reads like a direct answer to a question. It is a response feature layered over the same result set.",
+  "ref": "https://learn.microsoft.com/azure/search/semantic-search-overview#semantic-capabilities-and-limitations"
+ },
+ {
+  "id": "5.1.2-04",
+  "obj": "5.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Trey Research maintains an Azure AI Search index named Index1. During indexing, the Azure OpenAI Embedding skill populates a vector field in Index1.\n\nThe client application must send a plain-text query string to Index1 and have the search service convert that string into a vector at query time. The application must not call an embedding model itself.\n\nYou need to configure Index1.\n\nWhich action should you perform?",
+  "choices": [
+   "Add a second Azure OpenAI Embedding skill to the skillset",
+   "Define an Azure OpenAI vectorizer in Index1 and assign it to the vector profile of the vector field",
+   "Add a semantic configuration to Index1 and set `queryType` to `semantic` on the query",
+   "Add a scoring profile to Index1 that weights the vector field"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A vectorizer is defined in the index, assigned through a vector profile, and calls an embedding model at query time to convert the query string into a vector. Learn pairs each indexing-time embedding skill with an equivalent query-time vectorizer. Embedding skills run inside the indexer pipeline and vectorize content during indexing. Skillset execution never happens on a query request, so a second skill changes nothing at query time. A semantic configuration enables L2 reranking over text results. It performs no vectorization. Scoring profiles apply boosting criteria to non-vector fields during query execution. They cannot encode a string into an embedding.",
+  "ref": "https://learn.microsoft.com/azure/search/vector-search-how-to-configure-vectorizer"
+ },
+ {
+  "id": "5.1.3-02",
+  "obj": "5.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The Graphic Design Institute runs an Azure AI Search indexer named Indexer1. Indexer1 has an attached skillset that calls the Key Phrase Extraction skill and the Entity Recognition skill.\n\nIndexer1 completes without errors. A debug session confirms that both skills produce values in the enriched document. The `keyphrases` field and the `organizations` field in the index remain empty.\n\nYou need to persist the skill output in the index.\n\nWhich action should you perform?",
+  "choices": [
+   "Add entries to the `fieldMappings` array in Indexer1",
+   "Add a Shaper skill to the skillset",
+   "Add entries to the `outputFieldMappings` array in Indexer1",
+   "Add a table projection to a knowledge store"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Output field mappings map a node in the enriched document to a field in the index, and Learn states that an output field mapping is required for any transformed content that should be in the index. Skill output stays in memory until an output field mapping persists it. Field mappings run before skillset execution and connect a physical source field to an index field. Skill output exists only in memory as a node in the enrichment tree, so a field mapping cannot reach it. The Shaper skill assembles a complex JSON object from enrichment nodes, which is what table projections consume. It restructures data inside the pipeline and writes nothing to the index. A table projection writes shaped enrichments into Azure Table Storage for non-search scenarios such as knowledge mining. It is a separate output of the same pipeline and leaves the index untouched.",
+  "ref": "https://learn.microsoft.com/azure/search/cognitive-search-output-field-mapping#when-to-use-an-output-field-mapping"
+ },
+ {
+  "id": "5.1.3-03",
+  "obj": "5.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders enriches supplier catalog files in an Azure AI Search skillset. One enrichment step applies a proprietary machine learning classifier that assigns an internal commodity code to each product description. No built-in skill performs this classification.\n\nThe classifier is deployed as an Azure Function that is registered in Microsoft Entra ID. The search service has a system-assigned managed identity, the connection must be keyless, and a single request takes about 80 seconds to return.\n\nYou need to add the classification step.\n\nWhich configuration should you use?",
+  "choices": [
+   "A Custom Web API skill that sets `authResourceId` and a `timeout` of `PT120S`",
+   "A Custom Entity Lookup skill that references a list of the commodity codes",
+   "An Entity Recognition skill that returns the `Product` category",
+   "A GenAI Prompt skill that sends each product description to a chat completion model in the attached Microsoft Foundry resource"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The Custom Web API skill is the documented interface for enrichment logic you host yourself, and `authResourceId`, set to the application ID URI of the function, makes the search service call the function with its managed identity instead of a key. The default timeout is 30 seconds and the maximum is 230 seconds, so raising it covers the 80-second call. Custom Entity Lookup finds text from a custom, user-defined list of words and phrases. It performs literal matching against a list and cannot run a machine learning classifier. Entity Recognition uses a pretrained model over a fixed set of categories that includes `Product`. The categories are general purpose, and Learn states that you cannot train these models on your own data. The GenAI Prompt skill calls a chat completion model with a prompt you write and is a genuine way to populate a searchable field. It reaches a hosted language model, not the classifier that Northwind Traders deployed.",
+  "ref": "https://learn.microsoft.com/azure/search/cognitive-search-custom-skill-interface#benefits-of-custom-skills"
+ },
+ {
+  "id": "5.1.3-04",
+  "obj": "5.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud runs an Azure AI Search skillset over a container of scanned engineering drawings. The skillset calls the OCR skill and the Image Analysis skill, and those two steps account for most of the processing cost.\n\nDevelopers are tuning a downstream Text Translation skill. Each edit to the skillset forces the indexer to reprocess every document from the beginning, including the image steps.\n\nYou need to reduce the cost of each iteration.\n\nWhich action should you perform?",
+  "choices": [
+   "Increase the `batchSize` parameter on the indexer",
+   "Add an object projection to a knowledge store that stores the OCR output",
+   "Append `disableCacheReprocessingChangeDetection=true` to the skillset update request",
+   "Set `cache.storageConnectionString` on the indexer to an Azure Storage connection string"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Setting the `cache` property creates an enrichment cache, after which the indexer determines which parts of the document tree must be refreshed and reuses the rest. Learn names OCR and image analysis as the enrichments that benefit most, because they are costly and time-consuming to process. Enrichment caching requires a preview REST API version. Indexer batch size controls how many documents are read from the data source and enriched concurrently. It affects throughput, not whether expensive enrichments are recomputed. A knowledge store persists enriched content to Azure Storage for analysis and consumption in non-search scenarios. The indexer does not read enrichments back from a knowledge store on a later run. This parameter is real and tells the service to commit a skillset edit without evaluating its effect on the cache. It presupposes a cache that already exists, and it suppresses reprocessing rather than enabling reuse.",
+  "ref": "https://learn.microsoft.com/azure/search/enrichment-cache-how-to-configure"
+ },
+ {
+  "id": "5.1.4-02",
+  "obj": "5.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adventure Works Cycles ingests scanned service bulletins from an Azure Blob Storage container into an Azure AI Search index. The bulletins are JPEG files and PDF files that contain embedded images.\n\nYou add the OCR skill to the skillset with an input source of `/document/normalized_images/*`. The indexer fails, and the error reports that the path `/document/normalized_images` does not exist.\n\nYou need to correct the indexer definition.\n\nWhich configuration should you apply?",
+  "choices": [
+   "\"parameters\": {\n  \"configuration\": {\n    \"allowSkillsetToReadFileData\": true\n  }\n}",
+   "\"parameters\": {\n  \"configuration\": {\n    \"parsingMode\": \"text\",\n    \"dataToExtract\": \"contentAndMetadata\"\n  }\n}",
+   "\"parameters\": {\n  \"configuration\": {\n    \"dataToExtract\": \"contentAndMetadata\",\n    \"imageAction\": \"generateNormalizedImages\"\n  }\n}",
+   "\"parameters\": {\n  \"configuration\": {\n    \"dataToExtract\": \"contentAndMetadata\",\n    \"normalizedImageMaxWidth\": 4200\n  }\n}"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Setting `imageAction` to `generateNormalizedImages` makes document cracking emit the `normalized_images` node, and Learn states that this action requires `dataToExtract` to be `contentAndMetadata`. Skills that iterate over images, such as OCR and Image Analysis, expect normalized images. This setting creates a `/document/file_data` node that holds the original file bytes, which a custom skill or the Document Extraction skill can consume. It produces file data, not the normalized image array that the OCR skill iterates over. The `text` parsing mode treats each blob as plain text and is intended for text files. Image processing requires the default parsing mode, so this setting moves further away from a working pipeline. This property caps the pixel dimensions of normalized images and takes effect only after an `imageAction` is set. With no `imageAction`, no normalized images are generated at all.",
+  "ref": "https://learn.microsoft.com/azure/search/cognitive-search-concept-image-scenarios#configure-indexers-for-image-processing"
+ },
+ {
+  "id": "5.1.4-03",
+  "obj": "5.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Bellows College ingests course handbooks as PDF files into an Azure AI Search index for a retrieval-augmented generation (RAG) agent. Handbook tables cross page boundaries, and the handbooks contain flow charts.\n\nEach chunk must follow paragraph and heading boundaries rather than a fixed character window, a table that crosses pages must stay intact as one unit, and each chunk must carry a natural-language description of any figure it covers. One skill must perform both the extraction and the chunking.\n\nYou need to select a skill configuration.\n\nWhich configuration should you select?",
+  "choices": [
+   "The Document Extraction skill followed by the Text Split skill",
+   "The Document Layout skill with `outputFormat` set to `text` and `chunkingProperties.maximumLength` set to 2000, followed by the Text Split skill",
+   "The Azure Content Understanding skill with `chunkingProperties.method` set to `semantic` and with `modelName` and `modelDeployment` configured",
+   "The OCR skill followed by the Text Merge skill"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Azure Content Understanding skill combines content extraction and chunking in a single skill; `semantic` chunking respects paragraph boundaries and handles tables that span chunk boundaries, and setting `modelName` with `modelDeployment` inlines AI-generated figure descriptions into each chunk. Semantic chunking and AI-generated figure descriptions require the 2026-05-01-preview REST API; the 2026-04-01 GA version supports fixed-size chunking only. This pair extracts page text and inline images and then chunks the text by character window. Learn's comparison table shows that the Document Extraction skill performs no table extraction and generates no image descriptions. The Document Layout skill produces a Markdown or text representation and has built-in chunking, which makes it the closest alternative. It outputs tables and figures as plain text, which loses information, and it generates no AI descriptions of figures. OCR recognizes printed and handwritten text in images, and Text Merge recombines that text with the document content. Neither skill chunks content, and neither preserves table structure.",
+  "ref": "https://learn.microsoft.com/azure/search/cognitive-search-skill-content-understanding"
+ },
+ {
+  "id": "5.1.5-01",
+  "obj": "5.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Humongous Insurance builds a knowledge base named Knowledge1 in Foundry IQ on an Azure AI Search service named Search1. Knowledge1 plans a query, decomposes it into subqueries, semantically reranks the results, and synthesizes a cited answer.\n\nAn agent named Agent1 in Foundry Agent Service must call Knowledge1 for grounding. The solution must use keyless authentication and must not store an Azure AI Search key.\n\nYou need to connect Agent1 to Knowledge1.\n\nWhich action should you perform?",
+  "choices": [
+   "Add the Azure AI Search tool to Agent1 with a managed identity connection to Search1, and point it at the index behind Knowledge1",
+   "Create a `RemoteTool` project connection to the Knowledge1 MCP endpoint that uses project managed identity, and then add the MCP tool to Agent1",
+   "Add the File Search tool to Agent1 and upload the source documents to a vector store",
+   "Add an OpenAPI tool to Agent1 that describes the Azure AI Search REST API"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn's documented path is a `RemoteTool` project connection that targets the MCP endpoint of the knowledge base with `ProjectManagedIdentity` authentication, after which the agent calls the `knowledge_base_retrieve` tool. The managed identity satisfies the keyless requirement. The knowledge base MCP endpoint requires the 2026-05-01-preview REST API. The Azure AI Search tool grounds an agent in an index that already exists and is a legitimate retrieval integration. It queries the index directly, so the query planning, decomposition, and answer synthesis that Knowledge1 performs are bypassed. File Search builds a vector store from files that you upload, which is the right pattern when no retrieval pipeline exists. It would duplicate content that Search1 already indexes and ignore Knowledge1 entirely. The OpenAPI tool connects an agent to an HTTP API described by an OpenAPI 3.0 or 3.1 specification. Reaching the search REST API this way skips the knowledge base orchestration and leaves you maintaining the specification.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect"
+ },
+ {
+  "id": "5.1.5-02",
+  "obj": "5.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "City Power & Light calls a knowledge base named Knowledge1 in Azure AI Search from a Python outage-response workflow. A client named `kb_client` is already created.\n\nThe workflow must receive a natural-language answer with citations that a dispatcher reads directly, rather than a set of verbatim passages that the workflow would then have to summarize.\n\nYou need to complete the retrieval request.\n\nWhich code segment should you use?",
+  "choices": [
+   "request = KnowledgeBaseRetrievalRequest(\n    messages=[\n        KnowledgeBaseMessage(\n            role=\"user\",\n            content=[KnowledgeBaseMessageTextContent(text=question)],\n        )\n    ],\n    output_mode=\"extractedData\",\n)\nresult = kb_client.retrieve(retrieval_request=request)",
+   "request = KnowledgeBaseRetrievalRequest(\n    messages=[\n        KnowledgeBaseMessage(\n            role=\"user\",\n            content=[KnowledgeBaseMessageTextContent(text=question)],\n        )\n    ],\n    output_mode=\"answerSynthesis\",\n)\nresult = kb_client.retrieve(retrieval_request=request)",
+   "request = KnowledgeBaseRetrievalRequest(\n    messages=[\n        KnowledgeBaseMessage(\n            role=\"user\",\n            content=[KnowledgeBaseMessageTextContent(text=question)],\n        )\n    ],\n    include_activity=True,\n)\nresult = kb_client.retrieve(retrieval_request=request)",
+   "result = search_client.search(\n    search_text=question,\n    query_type=\"semantic\",\n    semantic_configuration_name=\"semantic-config\",\n    top=5,\n)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Setting `output_mode` to `answerSynthesis` makes the knowledge base use its configured model to generate a natural-language answer with source references. That is the output the dispatcher reads without further processing. Answer synthesis is preview and requires the 2026-05-01-preview REST API. `extractedData` is a supported output mode that returns verbatim content from the knowledge sources. It hands the workflow the passages that the requirement says the workflow must not have to summarize. `include_activity` adds a diagnostic array that reports query planning steps, the models used, and token counts. It is an observability flag and does not change the shape of the answer. This is a classic semantic query issued against a single index with `SearchClient`. It returns ranked documents rather than a synthesized answer, and it never reaches Knowledge1.",
+  "ref": "https://learn.microsoft.com/azure/search/agentic-retrieval-how-to-answer-synthesis"
+ }
+]
