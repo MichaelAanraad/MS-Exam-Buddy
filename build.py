@@ -51,7 +51,7 @@ links = []
 for i, (cat, lvl, eid, k, title) in enumerate(found):
     if i == 0 or found[i - 1][0] != cat:
         links.append(f"{'</ul>' if i else ''}<h2>{cat}</h2><ul>")
-    stars = "&#9733;" * lvl + "&#9734;" * (3 - lvl) if lvl in LEVELS else ""
+    stars = "&#9733;" * lvl if lvl in LEVELS else ""  # filled stars only, no empty ones
     links.append(f'<li><a href="{k}/"><b>{eid}</b> {title}<span class="lvl" role="img" '
                  f'aria-label="Level {lvl} of 3: {LEVELS.get(lvl, "")}" title="{LEVELS.get(lvl, "")}">{stars}</span></a></li>')
 if links:
