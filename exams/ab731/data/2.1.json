@@ -1,0 +1,2450 @@
+[
+ {
+  "id": "2.1.1-01",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso wants to give every employee access to an AI chat assistant without purchasing any additional per-user licensing. Which offering meets this requirement?",
+  "choices": [
+   "Microsoft 365 Copilot Chat",
+   "Microsoft 365 Copilot (the licensed experience)",
+   "Microsoft Security Copilot",
+   "A custom agent built in Copilot Studio"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft 365 Copilot Chat is included with any Microsoft 365 subscription at no extra cost, unlike the licensed Microsoft 365 Copilot add-on.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.1-02",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "How does the grounding of responses differ between Microsoft 365 Copilot Chat (no add-on license) and the fully licensed Microsoft 365 Copilot?",
+  "choices": [
+   "Copilot Chat grounds responses in the web by default with optional access to a user's work content, while licensed Copilot grounds responses in both organizational data via Microsoft Graph and the web",
+   "Copilot Chat grounds responses only in organizational data, while licensed Copilot grounds responses only in the web",
+   "Both experiences ground responses identically in organizational data and the web",
+   "Copilot Chat cannot ground responses in any external or internal data source"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot Chat defaults to web grounding with optional access to work files, while the licensed Microsoft 365 Copilot draws on both Microsoft Graph organizational data and the web.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-03",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An employee opens Microsoft Copilot, the consumer app, on a company-issued laptop that has a Microsoft 365 Copilot license assigned, and switches the context toggle from 'web' to 'work'. What happens next?",
+  "choices": [
+   "The user is moved into the licensed, Graph-grounded Microsoft 365 Copilot experience",
+   "The consumer app deletes the current conversation and starts over",
+   "Nothing changes, because the web and work toggles behave identically",
+   "The user gains access to Microsoft Graph data even without a license"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "On a managed device where the user holds a Microsoft 365 Copilot license, selecting 'work' hands the session off to the licensed, Graph-grounded experience rather than the web-only consumer one.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.1-04",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An HR business partner wants to build and iterate on a low-code conversational agent tailored to an internal onboarding process, without writing code. Which offering is designed for this?",
+  "choices": [
+   "Copilot Studio",
+   "Microsoft 365 Copilot Chat",
+   "GitHub Copilot",
+   "Microsoft Security Copilot"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot Studio is the low-code tool for building and customizing agents, distinct from the ready-made chat and in-app Copilot experiences.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.1-05",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A sales manager gives Copilot in Word a short prompt describing a client proposal and asks it to produce an initial version of the document. Which Word Copilot capability is being invoked?",
+  "choices": [
+   "Draft",
+   "Coaching",
+   "Real-time transcript Q&A",
+   "Automated formula suggestions"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Draft is the Word Copilot feature that generates new document content from a prompt or reference files.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-06",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An analyst asks Excel Copilot to generate an entirely new workbook from a text prompt, expecting the same behavior as PowerPoint's deck generation. What is the actual outcome?",
+  "choices": [
+   "Copilot in Excel cannot generate a full workbook; it is scoped to suggesting formulas, chart types, and data insights on existing data",
+   "Copilot in Excel generates a complete new workbook from the prompt, just like PowerPoint",
+   "Copilot in Excel only works after the add-on license has been purchased twice for that user",
+   "Excel has no Copilot integration of any kind"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Unlike Word and PowerPoint, Excel's Copilot capability is limited to formula, chart, and insight suggestions rather than generating entire new workbooks.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-07",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A team lead wants Copilot to produce a new slide deck that follows the organization's approved template, starting from a short prompt or an existing Word document. Which capability supports this?",
+  "choices": [
+   "PowerPoint Draft",
+   "Excel Draft",
+   "Outlook Draft",
+   "Teams Meeting Copilot"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "PowerPoint's Draft feature creates a new presentation from a prompt or an existing Word file, applying the organization's enterprise templates.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-08",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An executive returns to find a lengthy email thread and needs to catch up without reading every message. Which Outlook Copilot capability addresses this?",
+  "choices": [
+   "Thread summarization",
+   "Tone and clarity coaching",
+   "Drafting a reply from prior emails",
+   "Live meeting transcript Q&A"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Outlook Copilot's summarization feature condenses long email threads so users can catch up quickly.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-09",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Before sending a message to an important client, a manager wants Copilot to flag whether the wording could be read as overly blunt. Which Outlook Copilot capability provides this?",
+  "choices": [
+   "Coaching on tone, clarity, and sentiment",
+   "Summarization of the thread",
+   "Drafting content from prior emails",
+   "Live transcript question answering"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Outlook Copilot's coaching capability reviews a draft's tone, clarity, and sentiment before it is sent.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-10",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An employee returns from a two-week leave, opens a single Teams chat, and asks Copilot to summarize everything they missed. What is Copilot's summary limited to?",
+  "choices": [
+   "Just that one chat thread, not other chats, meetings, or files",
+   "All of that employee's chats, meetings, and files from the leave period",
+   "Meetings only, never chat messages",
+   "Nothing, because Copilot cannot summarize past absences"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot in Teams chat is scoped to the thread it is invoked in and cannot pull in content from other chats, meetings, or files.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-11",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "During a live Teams meeting, a participant asks Copilot who mentioned a specific budget figure in a different meeting held the previous week. What limitation applies?",
+  "choices": [
+   "Copilot in a Teams meeting only draws on that meeting's live transcript and has no access to prior meetings",
+   "Copilot can reference any meeting the organization has ever recorded",
+   "Copilot automatically searches all attendees' mailboxes for the figure",
+   "Answering the question requires the add-on license, regardless of meeting scope"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Teams Meeting Copilot answers only from the current, live transcript and cannot reference prior meetings.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-12",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A project manager wants a summary of key decisions and assigned task owners from a client call placed as a PSTN call through Teams Phone. Is this supported once transcription is enabled and the required license is assigned?",
+  "choices": [
+   "Yes, Copilot in Teams calls captures key points and task owners for both VoIP and PSTN calls",
+   "No, Copilot support is limited to VoIP calls and never applies to PSTN",
+   "No, Copilot in Teams calls can transcribe but cannot summarize",
+   "Yes, but only after the call recording is manually re-uploaded to Stream"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "With transcription enabled via calling policy and a Teams Premium or Microsoft 365 Copilot license assigned, in-call Copilot supports both VoIP and PSTN calls and captures key points, task owners, and next steps.",
+  "ref": "https://learn.microsoft.com/en-us/microsoftteams/copilot-teams-calling-transcription"
+ },
+ {
+  "id": "2.1.1-13",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A product team is brainstorming on a digital whiteboard and wants Copilot to group the scattered sticky notes into common themes. Which app provides this capability?",
+  "choices": [
+   "Whiteboard",
+   "Excel",
+   "Outlook",
+   "Forms"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Whiteboard Copilot can organize sticky notes into themes and summarize the board's content.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-14",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An HR coordinator needs help drafting the question set for an employee satisfaction survey. Which app's Copilot capability is built for this?",
+  "choices": [
+   "Forms",
+   "Loop",
+   "Whiteboard",
+   "Excel"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Forms Copilot is designed to draft survey, poll, and form questions.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-15",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A distributed team wants to co-author a living project plan with AI assistance built directly into the collaborative editing surface, rather than a static document. Which app is purpose-built for this?",
+  "choices": [
+   "Loop",
+   "Outlook",
+   "Excel",
+   "Teams Calls"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Loop is designed for collaborative content creation, with Copilot assistance embedded in that shared editing workflow.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.2-01",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A business leader is deciding whether to buy the paid Microsoft 365 Copilot add-on for a team that already has Microsoft 365 Copilot Chat included with their subscription. What does the paid add-on actually add?",
+  "choices": [
+   "Deep, in-app Copilot experiences with priority access inside apps like Word, Excel, PowerPoint, and Outlook, grounded in the organization's own content",
+   "Access to any AI chat at all, since Copilot Chat provides no chat capability on its own",
+   "A separate consumer-only assistant unrelated to Microsoft 365 apps",
+   "Security operations tooling such as incident investigation"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The paid Microsoft 365 Copilot add-on unlocks full, in-app Copilot experiences with priority access across Office apps, grounded in organizational content, beyond what is included with Copilot Chat.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.1-16",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A finance director asks a licensed Microsoft 365 Copilot Chat user to review a large sales spreadsheet, surface anomalies, and explain the reasoning behind each one. Which built-in agent best fits this task?",
+  "choices": [
+   "Analyst",
+   "Researcher",
+   "A custom Copilot Studio agent",
+   "Microsoft Security Copilot"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Analyst is the built-in agent focused on data and spreadsheet reasoning, making it the right fit for spreadsheet anomaly analysis.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.1-17",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A strategy team needs a multi-step, source-cited report on a competitor, synthesizing both public web content and internal work documents. Which built-in agent should they use?",
+  "choices": [
+   "Researcher",
+   "Analyst",
+   "Forms Copilot",
+   "Whiteboard Copilot"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Researcher performs multi-step, source-cited research across the web and work content, matching this scenario.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/researcher-agent"
+ },
+ {
+  "id": "2.1.1-18",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An IT administrator is concerned that employees could use the Researcher and Analyst agents to process highly sensitive internal data. What control does the admin have?",
+  "choices": [
+   "Admins can block the Researcher and Analyst agents tenant-wide in the Microsoft 365 admin center",
+   "There is no way to restrict these agents; they are always enabled for licensed users",
+   "Only Microsoft support can disable these agents on request",
+   "These agents require a separate purchase and are disabled by default with no admin toggle"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Researcher and Analyst are part of the core licensed Microsoft 365 Copilot Chat experience, and admins can block them for the entire tenant using the Block action in the Microsoft 365 admin center.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/admin/manage/manage-copilot-agents-integrated-apps"
+ },
+ {
+  "id": "2.1.1-19",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A CISO wants an AI assistant focused on threat investigation, incident summarization, and day-to-day security operations rather than document authoring. Which Microsoft offering fits this need?",
+  "choices": [
+   "Microsoft Security Copilot",
+   "Microsoft 365 Copilot Chat",
+   "GitHub Copilot",
+   "Copilot Studio"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Security Copilot is purpose-built for security operations tasks, distinct from the productivity-focused M365 Copilot.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.1-20",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A user asks the licensed Microsoft 365 Copilot to pull details from a colleague's file that the user does not otherwise have permission to open. What happens?",
+  "choices": [
+   "Copilot will not surface that content, because it respects the user's existing Microsoft Graph permissions",
+   "Copilot bypasses file permissions for any licensed user",
+   "Copilot surfaces the content, but only in summarized form",
+   "Copilot forwards the request to an administrator for manual approval"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot's Microsoft Graph grounding respects the user's existing permissions and never surfaces data the user could not already access.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.1-21",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A department head is evaluating whether to buy the Microsoft 365 Copilot add-on license for a small team that mainly needs quick web-based answers with only occasional access to a few work documents, not deep in-app authoring. What is the most cost-effective choice?",
+  "choices": [
+   "Microsoft 365 Copilot Chat, since it is included with the subscription and supports optional access to work files",
+   "The licensed Microsoft 365 Copilot add-on, since it is the only option that can touch work files at all",
+   "Microsoft Security Copilot, since it covers general productivity scenarios as well",
+   "Copilot Studio, since a custom agent is required for any chat-based assistant"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Since the team's needs are limited to web answers with occasional work file access rather than full in-app authoring, the included Copilot Chat meets the need without the added license cost.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.2-02",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A sole proprietor wants a no-cost AI chat assistant for personal use, grounded in public internet content, reachable from a browser without any Microsoft 365 subscription. Which product should they choose?",
+  "choices": [
+   "Microsoft Copilot",
+   "Microsoft 365 Copilot Chat",
+   "Microsoft 365 Copilot",
+   "Microsoft Copilot Studio"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Copilot is the free, consumer-facing assistant grounded in the public web, available at copilot.microsoft.com, in Edge, and in Bing, with no subscription required.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.2-03",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An IT director wants every employee who already holds a Microsoft 365 subscription to gain web-grounded AI chat with enterprise-grade data handling, without the company buying any additional license. Which offering satisfies this without further purchase?",
+  "choices": [
+   "Microsoft 365 Copilot",
+   "Microsoft 365 Copilot Chat",
+   "Microsoft Security Copilot",
+   "Microsoft Copilot Studio"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft 365 Copilot Chat comes bundled with any Microsoft 365 subscription at no extra cost and provides web-grounded chat with enterprise data protection.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.2-04",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A finance manager wants an assistant that automatically answers questions using her organization's emails, files, and meetings stored in Microsoft Graph, without her needing to attach anything to the conversation. Which licensing tier provides this by default?",
+  "choices": [
+   "Microsoft 365 Copilot Chat",
+   "Microsoft Copilot (free consumer version)",
+   "Microsoft 365 Copilot (paid add-on license)",
+   "Microsoft Copilot Studio"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Only the paid Microsoft 365 Copilot add-on grounds responses in organizational data via Microsoft Graph by default; Copilot Chat stays web-grounded unless content is explicitly provided.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.2-05",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An employee signs into Microsoft Copilot on a company-managed laptop where the organization has enabled Microsoft 365 Copilot. They switch a toggle from 'personal' to 'work.' What happens as a result?",
+  "choices": [
+   "The interface theme changes to match the company branding",
+   "The session redirects into Microsoft 365 Copilot with access to organizational data",
+   "The user is automatically issued a permanent Copilot license",
+   "The session switches into GitHub Copilot for coding tasks"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "On a managed device where Microsoft 365 Copilot is enabled, switching to 'work' mode in Microsoft Copilot redirects the session into Microsoft 365 Copilot with organizational data access.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.2-06",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A decision-maker comparing the Microsoft 365 Copilot add-on license to Copilot Chat wants to know what changes inside Office apps such as Word. What is the key practical difference?",
+  "choices": [
+   "Both licenses give identical chat access inside Word",
+   "Users with the Microsoft 365 Copilot add-on get chat embedded in Word, Excel, PowerPoint, and Outlook; Copilot Chat users do not get chat inside those apps",
+   "Copilot Chat users get embedded chat in Office apps, but Microsoft 365 Copilot add-on users do not",
+   "Neither license enables any chat access inside Office apps"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The Microsoft 365 Copilot add-on license provides chat and editing assistance embedded directly inside Word, Excel, PowerPoint, and Outlook; Copilot Chat does not include chat access within those apps.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.2-07",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A decision-maker is weighing whether to buy the Microsoft 365 Copilot add-on for a team that already gets Copilot Chat with their subscription. Which benefit is exclusive to the paid add-on and unavailable through Copilot Chat alone?",
+  "choices": [
+   "Responses grounded in current web content",
+   "A visible enterprise data protection indicator",
+   "Priority access to capacity-limited advanced reasoning models",
+   "Availability through the Microsoft 365 Copilot mobile app"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The paid Microsoft 365 Copilot add-on grants priority access to capacity-limited features such as advanced reasoning models, while Copilot Chat users receive only standard access. Web grounding, the EDP indicator, and mobile availability are shared by both tiers.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.2-08",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An operations lead asks how a user can bring company content into a Copilot Chat conversation, since it is not grounded in organizational data by default. Which of the following is not a supported way to do this?",
+  "choices": [
+   "Uploading a file directly in the chat using the '+' control",
+   "Referencing a file with the '/' ContextIQ command",
+   "Copilot silently indexing every SharePoint site in the background",
+   "Using an agent configured with a connection to organizational data"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Copilot Chat only incorporates organizational content when a user explicitly supplies it through upload, paste, or mention, or via a data-connected agent, never through silent automatic indexing.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.2-09",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A security operations team wants an AI assistant that integrates with Microsoft Defender XDR, Purview, Intune, and Entra to accelerate incident investigation. Which product is purpose-built for this scenario?",
+  "choices": [
+   "Microsoft 365 Copilot Chat",
+   "Microsoft Security Copilot",
+   "Microsoft Copilot (free consumer version)",
+   "Microsoft Copilot Studio"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft Security Copilot is the organization-licensed product built for security teams and integrates with Defender XDR, Purview, Intune, and Entra.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/overview"
+ },
+ {
+  "id": "2.1.2-10",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A department head wants staff to draft and revise content with an AI assistant embedded directly inside their Word, Excel, and PowerPoint files, rather than a separate chat pane alongside the file. Which product fits this need?",
+  "choices": [
+   "Microsoft Copilot (free consumer version)",
+   "Microsoft 365 Copilot Chat",
+   "Microsoft 365 Copilot (paid add-on license)",
+   "Microsoft Copilot Studio"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Microsoft 365 Copilot add-on license provides deep in-app integration with editing capabilities inside Word, Excel, PowerPoint, and Outlook, beyond what Copilot Chat offers.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.2-11",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A university wants to give verified students and teachers free access to an AI assistant that offers code completion inside their development tools. Which product meets this requirement?",
+  "choices": [
+   "GitHub Copilot",
+   "Microsoft 365 Copilot Chat",
+   "Microsoft Security Copilot",
+   "Microsoft Copilot (free consumer version)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "GitHub Copilot is aimed at developers for code assistance and offers free access to verified students and teachers, a distinction from the other Copilot products.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/overview"
+ },
+ {
+  "id": "2.1.3-01",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An administrator wants to build a custom agent grounded in organizational data using a low-code, guided interface rather than writing extensive custom code. Which product should they use?",
+  "choices": [
+   "Microsoft Copilot Studio",
+   "Microsoft 365 Copilot Chat",
+   "GitHub Copilot",
+   "Microsoft Security Copilot"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Copilot Studio is the low-code tool designed to build and customize agents, including ones grounded in organizational data.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/overview"
+ },
+ {
+  "id": "2.1.2-12",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A compliance officer sees the enterprise data protection indicator in Copilot Chat and concludes that it must also be pulling answers from the company's SharePoint and Exchange content by default. Why is this conclusion incorrect?",
+  "choices": [
+   "Enterprise data protection governs how data is handled during a session; it does not mean Copilot Chat is grounded in organizational content by default",
+   "Copilot Chat never has enterprise data protection enabled",
+   "Enterprise data protection only applies to Microsoft Security Copilot, not Copilot Chat",
+   "Copilot Chat is in fact grounded in organizational data by default, so the officer's conclusion is correct"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Enterprise data protection is a data-handling safeguard, not a grounding source; Copilot Chat remains web-grounded by default unless organizational content is explicitly supplied.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.2-13",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A CIO wants tenant-wide governance capabilities, such as Copilot usage analytics and advanced SharePoint content management, available through the Copilot Control System. What licensing step is required to unlock these capabilities?",
+  "choices": [
+   "Assign at least one paid Microsoft 365 Copilot add-on license within the tenant",
+   "Enable Copilot Chat for all users at no extra cost",
+   "Purchase Microsoft Security Copilot capacity units",
+   "Deploy a custom agent in Microsoft Copilot Studio"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot Analytics and SharePoint Advanced Management are included with a Microsoft 365 Copilot license; for E3/E5 tenants this requires assigning the paid add-on to at least one user.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-overview"
+ },
+ {
+  "id": "2.1.2-14",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business decision-maker assumes that the free Microsoft Copilot and Microsoft 365 Copilot Chat are just two names for the same product. What key distinction are they missing?",
+  "choices": [
+   "Microsoft Copilot is a standalone product grounded only in the public web with no subscription needed, while Copilot Chat is bundled with an M365 subscription and adds enterprise data protection plus ways to bring in organizational content",
+   "There is no real distinction between them; they behave identically in every scenario",
+   "Microsoft Copilot requires a paid add-on license, while Copilot Chat is entirely free and needs no subscription at all",
+   "Copilot Chat is intended only for software developers, while Microsoft Copilot serves general consumers"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Copilot is a standalone free consumer product grounded in the public web, whereas Microsoft 365 Copilot Chat is bundled with M365 subscriptions and adds enterprise data protection plus ways to bring in organizational content.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/which-copilot-for-your-organization"
+ },
+ {
+  "id": "2.1.3-02",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business decision-maker wants to stand up a conversational agent for their department without hiring developers or data scientists. Which characteristic of Microsoft Copilot Studio makes this feasible?",
+  "choices": [
+   "It provides a graphical, low-code authoring canvas that lets non-developers configure and publish agents",
+   "It automatically generates and maintains custom source code behind every agent it creates",
+   "It requires provisioning a dedicated Azure Bot Service resource before any agent can be authored",
+   "It restricts agent creation to IT administrators who hold an Azure subscription"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot Studio is explicitly a graphical, low-code tool within the Power Platform, designed so non-developers can build agents.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio"
+ },
+ {
+  "id": "2.1.3-03",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "How does Microsoft define an 'agent' in the context of Copilot Studio?",
+  "choices": [
+   "An AI companion that coordinates a language model, instructions, knowledge, tools, and triggers to pursue goals with some autonomy",
+   "A conversation flow authored entirely as deterministic if/else branching with no language model involved",
+   "A reusable wrapper around an external API that exposes data to Power Platform apps and flows",
+   "A rule-based chatbot limited to matching keywords against a fixed set of FAQ answers"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "An agent coordinates a language model plus instructions, context, knowledge, topics, tools, inputs and triggers, and can act autonomously rather than only answering questions.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio"
+ },
+ {
+  "id": "2.1.3-04",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A department has a large, frequently updated knowledge base and wants an agent to answer varied questions without a business analyst hand-authoring a conversation flow for every possible question. Which Copilot Studio approach best fits, and why?",
+  "choices": [
+   "Generative answers over a connected knowledge source, because it dynamically generates responses from the content instead of requiring one authored flow per question",
+   "A separate topic for every anticipated question, since topics scale better than generative answers for large content sets",
+   "A custom connector, since only wrapped APIs can be grounded in Copilot Studio",
+   "A child agent, since knowledge grounding is only possible by delegating to a separate agent"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Generative answers drawn from connected knowledge sources answer questions dynamically from the underlying content, unlike the topic mechanism, which needs a separate authored flow per question.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio"
+ },
+ {
+  "id": "2.1.3-05",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A team needs to connect an agent to a widely used SaaS CRM system and wants no custom development effort at all. What should they use?",
+  "choices": [
+   "A prebuilt connector",
+   "A custom connector",
+   "A raw HTTP request node in a topic",
+   "A Bot Framework skill hosted in Azure"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Prebuilt connectors are ready-made integrations for thousands of SaaS APIs requiring only configuration, no development time.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/advanced-connectors"
+ },
+ {
+  "id": "2.1.3-06",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company needs to integrate with a niche internal REST API for which no prebuilt connector exists, and wants the integration packaged so it can be reused across several future agents. What is the most appropriate approach?",
+  "choices": [
+   "Build a custom connector",
+   "Add a one-off HTTP request node inside the topic",
+   "Deploy a Bot Framework skill in Azure Bot Service",
+   "Rely on generative answers from a knowledge source"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A custom connector is a low-code/no-code wrapper around a REST API used when no prebuilt connector exists, and unlike ad hoc HTTP requests it can be created once and reused across many agents.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/advanced-connectors"
+ },
+ {
+  "id": "2.1.3-07",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An organization wants an agent to automate a web or desktop application directly, for a task where no API is available at all. Which Copilot Studio capability is designed for this scenario?",
+  "choices": [
+   "Computer use",
+   "A prebuilt connector",
+   "An agent flow",
+   "A topic with node-based branching"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Computer use lets an agent automate web and desktop applications directly from a virtual machine, extending integration scenarios to systems that expose no API.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/integrations"
+ },
+ {
+  "id": "2.1.3-08",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A company already uses Microsoft 365 Copilot but wants to add enterprise-specific instructions, proprietary knowledge, and custom tools on top of it, while still using the existing Copilot orchestrator. What does building this in Copilot Studio represent?",
+  "choices": [
+   "Extending Microsoft 365 Copilot with an agent",
+   "Replacing Microsoft 365 Copilot with a standalone competitor product",
+   "Building a pro-code application outside the Microsoft 365 platform",
+   "Migrating Microsoft 365 Copilot to a Bot Framework skill"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Learn describes this scenario, adding custom instructions/tools/knowledge while reusing the Copilot orchestrator, as extending Microsoft 365 Copilot with an agent built in Copilot Studio.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio"
+ },
+ {
+  "id": "2.1.3-09",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A decision-maker wants a fully branded, standalone agent with complete control over publishing channels, orchestration, and model choice, independent of the Microsoft 365 Copilot interface. Which access approach should they pick?",
+  "choices": [
+   "A standalone Copilot Studio subscription",
+   "The Teams plan bundled with an M365 subscription",
+   "A Bot Framework skill deployed on its own",
+   "A prebuilt connector configured in the maker portal"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The standalone subscription offers full generative-AI agent capability with control over branding, orchestration, and model choice, distinct from the more limited bundled Teams plan.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio"
+ },
+ {
+  "id": "2.1.3-10",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which three ways can an organization pay for Copilot Studio, according to Microsoft's licensing documentation?",
+  "choices": [
+   "A pay-as-you-go Azure meter, prepaid Copilot Credit capacity packs, or the Teams plan bundled with select M365 subscriptions",
+   "A free tier, an enterprise tier, and a government-only tier",
+   "Per-topic billing, per-connector billing, and per-agent billing",
+   "A perpetual license, a term subscription, or an open-source license"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft documents three ways to pay: a pay-as-you-go Azure meter with no upfront commitment, prepaid Copilot Credit capacity packs billed monthly, and the Copilot Studio for Teams plan included with select Microsoft 365 subscriptions.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/billing-licensing"
+ },
+ {
+  "id": "2.1.3-11",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An evaluation team mistakenly believes connectors are a feature unique to Copilot Studio. What is the accurate correction?",
+  "choices": [
+   "Connectors are shared Power Platform components also used by Power Automate and Power Apps",
+   "Connectors function only inside Bot Framework skills",
+   "Connectors are exclusive to agent flows and cannot be referenced from topics",
+   "Connectors always require their own separate Azure subscription"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Power Platform connectors are a shared extensibility mechanism used across Power Automate, Power Apps, and Copilot Studio, not exclusive to any single product.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/integrations"
+ },
+ {
+  "id": "2.1.3-12",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A healthcare organization is building a Copilot Studio agent to answer patient questions and considers marketing it as a diagnostic tool. What is the correct responsible-AI consideration?",
+  "choices": [
+   "The agent should not be positioned as a medical device or a substitute for professional medical advice",
+   "Copilot Studio automatically certifies any agent as a licensed medical device once knowledge sources are added",
+   "Any agent built in Copilot Studio is legally equivalent to a clinical decision support system",
+   "Medical diagnosis is the primary supported use case for Copilot Studio agents"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft explicitly states Copilot Studio is not intended as a medical device and is not a substitute for professional medical advice, diagnosis, or treatment.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio"
+ },
+ {
+  "id": "2.1.3-13",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A large enterprise wants one agent to delegate specialized sub-tasks to other purpose-built agents instead of handling everything in a single monolithic agent. Which Copilot Studio concept supports this?",
+  "choices": [
+   "Child/connected agents",
+   "Topics with node-based branching",
+   "Prebuilt connectors",
+   "Agent flows triggered on a schedule"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Creating a child agent with its own instructions, or connecting to an existing agent, is the documented pattern that lets an agent delegate work to other specialized agents.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/integrations"
+ },
+ {
+  "id": "2.1.3-14",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A team wants an agent to invoke external tools and data sources through an open, standardized protocol rather than through Microsoft's proprietary connector format. Which option should they evaluate?",
+  "choices": [
+   "Model Context Protocol (MCP)",
+   "Bot Framework skills",
+   "A prebuilt connector",
+   "An agent flow"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Model Context Protocol (MCP) lets an agent extend its capabilities to interact with external tools and data in a standardized, scalable way, independent of the Power Platform connector format.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/integrations"
+ },
+ {
+  "id": "2.1.4-01",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "When Microsoft 365 Copilot generates a response, what role does Microsoft Graph play in the process?",
+  "choices": [
+   "It authenticates users and issues sign-in tokens for the session",
+   "It supplies the organizational content, such as mail, chats, calendar items, and documents, that Copilot uses to ground its responses",
+   "It hosts and trains the foundation large language models that power Copilot",
+   "It manages license assignment and billing for Copilot seats"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft Graph is the API/data layer exposing tenant content such as mail, Teams chats, calendar, and documents, which Copilot draws on for grounding before and after calling the LLM.",
+  "ref": "https://learn.microsoft.com/en-us/microsoftsearch/semantic-index-for-copilot"
+ },
+ {
+  "id": "2.1.4-02",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business decision-maker notices that Copilot's answers cite specific internal documents rather than generic industry information. Which concept explains this behavior?",
+  "choices": [
+   "The foundation model was fine-tuned on the company's proprietary data",
+   "Grounding, where Copilot enriches the prompt with content retrieved from Microsoft Graph and the semantic index before it reaches the LLM",
+   "A custom admin-configured response override in the Microsoft 365 admin center",
+   "A Conditional Access policy that filters model output by department"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Grounding is the step where relevant content from Microsoft Graph and the semantic index is appended to the prompt, making responses specific to organizational content rather than generic; the underlying foundation model itself isn't fine-tuned per tenant.",
+  "ref": "https://learn.microsoft.com/en-us/microsoftsearch/semantic-index-for-copilot"
+ },
+ {
+  "id": "2.1.4-03",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "What best describes the semantic index used by Microsoft 365 Copilot?",
+  "choices": [
+   "A relational database of tenant financial and HR records",
+   "A vectorized, semantic index built from Microsoft Graph content that Copilot uses to retrieve relevant material for grounding",
+   "A curated catalog of prompts pre-approved by IT administrators",
+   "A licensing tier that must be purchased to unlock Microsoft Graph API access"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The semantic index is a lexical and vectorized index generated from Microsoft Graph content, used as the retrieval mechanism to find contextually relevant material for grounded prompts.",
+  "ref": "https://learn.microsoft.com/en-us/microsoftsearch/semantic-index-for-copilot"
+ },
+ {
+  "id": "2.1.4-04",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An executive assumes that because Copilot runs inside the Microsoft 365 service boundary, it can retrieve any content stored anywhere in the tenant. Why is this assumption wrong?",
+  "choices": [
+   "Copilot's access to Graph data is always scoped to the signed-in user's existing permissions",
+   "Copilot can only retrieve content that the tenant administrator personally authored",
+   "Copilot draws exclusively from a separate, isolated training dataset rather than tenant data",
+   "Copilot's access to content depends on the operating system of the user's device"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The grounding process honors the same identity-based, role-based access boundary as other Microsoft 365 services, so Copilot never surfaces content the signed-in user could not already access.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "2.1.4-05",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which statement correctly describes how Microsoft 365 Copilot handles user prompts, generated responses, and the grounding data retrieved for them?",
+  "choices": [
+   "They are periodically fed back into training or fine-tuning the foundation large language models",
+   "They are not used to train the underlying foundation large language models",
+   "They are shared with third-party advertising partners to refine ad targeting",
+   "They are exported outside the Microsoft 365 service boundary for long-term external auditing"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft's stated privacy commitment is that Copilot prompts, responses, and grounding data are not used to train the foundation models.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "2.1.4-06",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An organization wants Copilot to ground its responses on records stored in a third-party CRM system that is not natively part of Microsoft 365. What should they implement?",
+  "choices": [
+   "A scheduled process that exports CRM records into a SharePoint document library",
+   "A Copilot connector that brings the CRM content into Microsoft Graph so it becomes available for grounding",
+   "A requirement that users manually paste relevant CRM data into every prompt",
+   "Removal of the semantic index so external systems can be queried directly instead"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Copilot connectors are the extensibility mechanism for pulling third-party or external content into Microsoft Graph so Copilot can ground responses on it while access controls are preserved.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-copilot-connectors"
+ },
+ {
+  "id": "2.1.4-07",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which Microsoft governance solution applies sensitivity labels and data loss prevention policies that can influence what content is exposed to Copilot for grounding?",
+  "choices": [
+   "Microsoft Purview",
+   "Microsoft Graph Explorer",
+   "Azure DevOps",
+   "Power Automate"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Purview provides sensitivity labeling, DLP, and data lifecycle management that govern which content is exposed to Copilot grounding.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "2.1.4-08",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A consultant tells a client that grounding a Copilot response is functionally the same as fine-tuning the underlying LLM on the company's own data. How should this claim be evaluated?",
+  "choices": [
+   "It is correct, since grounding permanently updates the model's weights with the tenant's data",
+   "It is incorrect, since grounding augments the prompt at runtime with retrieved content and does not alter the model's weights",
+   "It is correct, but only when the organization uses Copilot Studio rather than Microsoft 365 Copilot",
+   "It is incorrect solely because grounding relies on keyword search instead of vector search"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Grounding augments the prompt at runtime with retrieved organizational content; it does not alter or fine-tune the foundation model's weights.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture"
+ },
+ {
+  "id": "2.1.4-09",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "From a business value perspective, what problem does Copilot's grounding capability primarily solve for an organization?",
+  "choices": [
+   "It removes the need to manage user permissions on organizational content",
+   "It ensures AI-generated responses are current and specific to the organization by retrieving real content instead of relying only on the model's generic pretrained knowledge",
+   "It eliminates the need for any data governance or compliance policies",
+   "It applies only to organizations running entirely on-premises infrastructure"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Grounding addresses the business need for accurate, current, organization-specific AI responses by retrieving and injecting real content rather than depending solely on the LLM's static pretrained knowledge.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture"
+ },
+ {
+  "id": "2.1.4-10",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A colleague claims that Microsoft Graph is essentially another name for the knowledge sources configured in Microsoft Copilot Studio. Why is this an oversimplification?",
+  "choices": [
+   "Microsoft Graph is the broader data layer underlying Microsoft 365 Copilot generally, while Copilot Studio connectors are just one of several ways content is brought into Graph-backed grounding",
+   "Microsoft Graph is used exclusively by Copilot Studio and by no other Microsoft 365 Copilot experience",
+   "Microsoft Graph is a deprecated technology that has been fully replaced by Copilot Studio",
+   "Microsoft Graph stores only the knowledge base articles authored inside Copilot Studio"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Graph is the broader data layer underlying Microsoft 365 Copilot generally, exposing org-wide content; Copilot Studio connectors are just one mechanism for bringing additional data into Graph-backed grounding, not a synonym for Graph itself.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-copilot-connectors"
+ },
+ {
+  "id": "2.1.4-11",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business unit is considering having its developers build a custom retrieval-augmented generation (RAG) solution on Azure to ground AI answers in company data, instead of relying on Microsoft 365 Copilot's built-in grounding. What is the key business trade-off leadership should weigh?",
+  "choices": [
+   "Microsoft 365 Copilot already delivers managed grounding out of the box with no engineering effort, while a custom Azure solution offers more control and customization at the cost of building and maintaining its own retrieval pipeline",
+   "There is no meaningful trade-off, since Copilot and a custom Azure RAG solution are operationally and functionally identical",
+   "A custom Azure solution is always the cheaper option because it eliminates all Microsoft 365 licensing costs",
+   "Microsoft 365 Copilot cannot ground responses in company data at all, making a custom solution the only viable option"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "This is a classic buy-vs-build decision: Copilot's grounding is a managed capability included with a Copilot license, while a custom RAG solution trades that convenience for greater control at the cost of ongoing engineering and maintenance investment.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture"
+ },
+ {
+  "id": "2.1.5-01",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Ahead of a strategy review, a business unit lead needs a single shareable report that synthesizes findings from public industry articles alongside the team's own emails, files, and meeting notes, with sources cited. Which Microsoft 365 Copilot experience should the lead use?",
+  "choices": [
+   "Copilot Chat with the default conversational model",
+   "The Researcher agent",
+   "The Analyst agent",
+   "Copilot in Excel"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Researcher agent is designed for complex, multi-step research that draws on both web content and the user's permitted work content, producing a structured, source-cited report.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/researcher-agent"
+ },
+ {
+  "id": "2.1.5-02",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A finance analyst has a disorganized sales spreadsheet with dozens of numeric columns and wants it cleaned up, summarized, and turned into calculated insights and charts. Which Copilot experience is purpose-built for this task?",
+  "choices": [
+   "The Researcher agent",
+   "Copilot Chat with the default conversational model",
+   "The Analyst agent",
+   "Copilot in Outlook"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Analyst agent is built for working with numeric and tabular data, using a Python code interpreter to clean, compute, and visualize spreadsheet data.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/analyze-visualize-data-copilot/"
+ },
+ {
+  "id": "2.1.5-03",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An employee has five minutes before a call and just wants a quick one-paragraph summary of a short email thread. Which Copilot option is the most appropriate fit for this need?",
+  "choices": [
+   "The Researcher agent",
+   "The Analyst agent",
+   "Copilot Chat with the default conversational model",
+   "A custom Copilot Studio agent"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Standard Copilot chat is optimized for speed and is the right choice for quick summaries, short replies, and lightweight back-and-forth, not deep multi-source analysis.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/faq-researcher"
+ },
+ {
+  "id": "2.1.5-04",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A department head is evaluating whether to roll out the Researcher agent to their team and asks what it takes to make it available to users. What should they be told about licensing and setup?",
+  "choices": [
+   "It requires purchasing a standalone per-user add-on license",
+   "It is included and preinstalled for users who already have a Microsoft 365 Copilot license",
+   "It is available only to organizations on an E5 agreement, regardless of Copilot licensing",
+   "An admin must manually source and install it from an app marketplace"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Researcher and Analyst are prebuilt, preinstalled agents included with a Microsoft 365 Copilot license, requiring no separate purchase.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/explore-prebuilt-microsoft-365-copilot-agents/"
+ },
+ {
+  "id": "2.1.5-05",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A manager notices that the Researcher agent takes noticeably longer to respond than standard Copilot chat for a similarly worded question, and raises this as a concern. How should this difference be explained?",
+  "choices": [
+   "It signals a defect that will be resolved so Researcher matches chat speed",
+   "It is an intentional design trade-off: Researcher spends more time reasoning across multiple sources to produce a deeper report",
+   "It means the organization's tenant is under-provisioned for Copilot workloads",
+   "It only occurs when the request involves files stored in SharePoint"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Researcher intentionally trades speed for depth, applying longer reasoning across multiple sources to produce a more thorough, cited report.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/researcher-agent"
+ },
+ {
+  "id": "2.1.5-06",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A new Copilot administrator is explaining the Researcher agent's data access model to leadership. Which statement is accurate?",
+  "choices": [
+   "Researcher can search only the public web and has no visibility into internal content",
+   "Researcher can read any organizational content, independent of the requesting user's own permissions",
+   "Researcher draws on both the public web and the requesting user's own permitted work content, such as their files, emails, meetings, and chats",
+   "Researcher requires an administrator to individually grant it access to each mailbox before use"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A common misconception is that Researcher is web-only, but it also mines the user's work content that they already have permission to access.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/researcher-agent"
+ },
+ {
+  "id": "2.1.5-07",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A compliance officer wants employees to be able to trace and verify the claims made in a Researcher agent report back to their original sources. Which built-in behavior addresses this need?",
+  "choices": [
+   "Researcher automatically attaches inline citations linking each claim to the specific web page or work item it drew from",
+   "Researcher requires the user to manually retype every source found during its research",
+   "Researcher strips out source references before finalizing the report to keep it concise",
+   "Researcher stores its sources only in an admin-only audit log inaccessible to the requesting user"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Researcher produces a structured report with inline citations linking back to the specific web pages or permitted work items it used, letting users verify claims and drill into original sources.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/researcher-agent"
+ },
+ {
+  "id": "2.1.5-08",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A security operations team refers to using an 'Analyst agent' to investigate alerts in Microsoft Defender XDR, and a business stakeholder assumes this is the same Analyst agent listed under Agents in Microsoft 365 Copilot Chat. Is that assumption correct?",
+  "choices": [
+   "Yes, it is the same agent used both for spreadsheet analysis and for security investigations",
+   "No, the security-focused capability is a separate Security Copilot offering distinct from the Microsoft 365 Copilot Analyst agent",
+   "Yes, but the Analyst agent must first be reconfigured before it can analyze security alerts",
+   "No, because Microsoft 365 Copilot does not include any agent named Analyst"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The Security Copilot Security Analyst agent is a distinct product for security operations and should not be confused with the Microsoft 365 Copilot Analyst agent used for spreadsheet/data analysis.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/security/security-analyst-agent"
+ },
+ {
+  "id": "2.1.5-09",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A regional director wants actual computed statistics, not an estimated description, for quarterly revenue trends spread across many numeric columns in an Excel workbook. What underlying capability makes the Analyst agent suited to this request?",
+  "choices": [
+   "It compiles a cited narrative report drawn from web and email sources",
+   "It runs a code interpreter behind the scenes to perform real calculations on the data",
+   "It hands the request off to standard Copilot chat to keep response times short",
+   "It performs keyword matching over SharePoint files instead of calculating values"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The Analyst agent uses a Python code interpreter under the hood to run real calculations on spreadsheet data rather than merely describing them.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/analyze-visualize-data-copilot/"
+ },
+ {
+  "id": "2.1.5-10",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A product manager wants to casually brainstorm three or four quick tagline ideas in a back-and-forth exchange. Based on Microsoft's guidance on matching tasks to Copilot options, which is the best fit?",
+  "choices": [
+   "The Analyst agent",
+   "The Researcher agent",
+   "Copilot Chat with the default conversational model",
+   "A Copilot Studio custom agent built for branding"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Standard Copilot chat is the right fit for lightweight, conversational brainstorming rather than deep multi-source research or data analysis.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/faq-researcher"
+ },
+ {
+  "id": "2.1.5-11",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A team wants better results from the Researcher agent and asks for prompting best practices. Which practice does Microsoft recommend?",
+  "choices": [
+   "Keep prompts intentionally vague so Researcher determines the scope on its own",
+   "Write specific prompts that state whether the desired scope is workplace data, the web, or both, and respond to any clarifying questions it asks",
+   "Decline any clarifying questions Researcher raises in order to save time",
+   "Limit Researcher to single-source lookups to reduce processing time"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft recommends being specific in prompts, defining search scope, and responding to Researcher's clarifying questions to get the best results.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/faq-researcher"
+ },
+ {
+  "id": "2.1.5-12",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An executive assumes that Researcher and standard Copilot chat will always produce equivalent-quality answers, differing only in response time. Why is this framing considered misleading?",
+  "choices": [
+   "Standard chat and Researcher apply the same depth of reasoning, so only latency differs between them",
+   "The real distinction is task type: quick, conversational needs versus deep, multi-source, report-worthy analysis, rather than speed alone",
+   "Researcher cannot draw on the user's own work content while standard chat can",
+   "Standard chat produces cited reports, while Researcher does not include citations"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The exam framing centers on matching the tool to the task type, quick/conversational versus deep/multi-source/report-worthy, rather than treating the choice as merely a speed trade-off.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/researcher-agent"
+ },
+ {
+  "id": "2.1.5-13",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A team lead has two upcoming tasks: a competitive-landscape briefing drawing on industry articles and internal strategy documents, and a month-over-month churn calculation from a CSV export. How should these tasks be matched to Copilot agents?",
+  "choices": [
+   "Both tasks should use the Analyst agent, since both start from existing information sources",
+   "The briefing fits the Researcher agent, since it needs a multi-source, cited report; the churn calculation fits the Analyst agent, since it needs numeric computation",
+   "Both tasks should use the Researcher agent, since both require synthesizing information",
+   "The churn calculation fits the Researcher agent because it involves a file, and the briefing fits the Analyst agent because it involves text"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Researcher is scoped to deep reasoning across mixed web and work-content sources into a cited report, while Analyst is scoped to numeric/tabular computation, matching each task to its intended agent.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/researcher-agent"
+ },
+ {
+  "id": "2.1.5-14",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which output characteristic does Microsoft highlight as a key differentiator of the Researcher agent that helps build trust in its answers and supports decision-making?",
+  "choices": [
+   "Real-time collaborative editing with a full version history",
+   "Structured reports that include citations back to the sources used",
+   "Automatic conversion of every report into a PowerPoint presentation",
+   "Exclusive integration with Microsoft Defender XDR alert data"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Researcher produces structured, source-cited reports, and the citations are called out as a key differentiator that builds trust and supports decisions.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/researcher-agent"
+ },
+ {
+  "id": "2.1.6-01",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A department lead wants to stand up a Q&A agent that only needs to answer from public web content, has no budget approved yet for Copilot add-on licenses, and must be available this week. Which approach should they choose?",
+  "choices": [
+   "Create the agent in Agent Builder, grounded only on the web",
+   "Provision a new Power Platform environment and build it in Copilot Studio",
+   "Build a custom engine agent on Azure AI Foundry",
+   "Register an API plugin for use inside M365 Copilot"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Agent Builder can be used at no additional cost for agents grounded only on the web or instructions, without requiring a Copilot license.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/copilot-studio-experience"
+ },
+ {
+  "id": "2.1.6-02",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business leader is comparing two approaches to building an agent: one that reuses Copilot's existing AI engine and orchestration, and one that requires bringing an independently built AI model and logic. Which best describes this distinction?",
+  "choices": [
+   "A declarative agent customizes Copilot using its existing orchestrator and models; a custom engine agent supplies its own independently built orchestrator and model",
+   "A declarative agent always requires Azure hosting, while a custom engine agent never needs external hosting",
+   "A declarative agent can only be built by professional developers, while a custom engine agent is always no-code",
+   "A declarative agent cannot use any knowledge sources, while a custom engine agent can only use knowledge sources"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Declarative agents customize Copilot using its existing orchestrator and models, whereas custom engine agents bring an independently built orchestrator/model, e.g. via Azure AI Foundry or Azure Bot Service.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-declarative-agent"
+ },
+ {
+  "id": "2.1.6-03",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An organization wants Copilot answers to reflect live data from an external ticketing system in real time, without duplicating that data into Microsoft Graph. Which type of connector fits this requirement?",
+  "choices": [
+   "A federated connector, which retrieves content live at query time instead of indexing it",
+   "A synced connector, which copies and indexes the data into Microsoft Graph",
+   "A knowledge source added directly inside a declarative agent's configuration",
+   "An API plugin exposed only through a custom engine agent"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Federated connectors retrieve content in real time without indexing it into Microsoft Graph, unlike synced connectors which copy and index the data ahead of time.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/connectors/federated-connectors-overview"
+ },
+ {
+  "id": "2.1.6-04",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A citizen developer in HR built a simple agent in Agent Builder, but the team now needs multistep approval logic and integration with an external HR system. What is the recommended next step?",
+  "choices": [
+   "Copy the agent into Copilot Studio to add advanced workflow and integration capabilities",
+   "Discard the agent and start over entirely inside Copilot Studio",
+   "Convert the agent into a custom engine agent using only Azure Bot Service",
+   "Continue in Agent Builder, since it already supports multistep approval workflows"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Agents built in Agent Builder can be copied into Copilot Studio to unlock advanced features like complex workflows and business system integration, without rebuilding from scratch.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/copilot-studio-experience"
+ },
+ {
+  "id": "2.1.6-05",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "When Microsoft frames the choice between Agent Builder and Copilot Studio, which factor is NOT one of the primary decision axes?",
+  "choices": [
+   "The programming language the IT department prefers to work in",
+   "The intended audience, such as an individual or small team versus a department or enterprise",
+   "The deployment scope the agent needs to reach",
+   "The governance and administrative controls required"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft frames the Agent Builder vs. Copilot Studio decision around audience, deployment scope, functionality, and governance needs, not programming language preference, since both are no-code/low-code tools.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/copilot-studio-experience"
+ },
+ {
+  "id": "2.1.6-06",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company wants to acquire a ready-made agent from a third-party ISV rather than develop one internally. In the build/buy/extend framework, which category describes this, and where is the resulting agent managed?",
+  "choices": [
+   "Buy, sourced from Partner Center listings and managed through the Microsoft 365 admin center",
+   "Build, developed in-house using the Microsoft 365 Agents Toolkit",
+   "Extend, layered on existing data through a Copilot connector",
+   "Buy, but manageable only from within the Copilot Studio maker portal"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Buying means acquiring agents/solutions from the Microsoft 365 and Copilot program (via Partner Center, consolidating former app stores) and managing them through the admin center.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/ecosystem"
+ },
+ {
+  "id": "2.1.6-07",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An enterprise architect needs an extension platform that supports separate development, test, and production environments, version control, and role-based access as the organization scales its use of agents. Which tool is designed for this level of enterprise governance?",
+  "choices": [
+   "Copilot Studio",
+   "Agent Builder",
+   "The knowledge sources feature built into Microsoft 365 Copilot",
+   "A synced Copilot connector"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot Studio offers enterprise-grade lifecycle management, including multiple environments, versioning, and role-based access control, managed through the Power Platform admin center, unlike the lighter-weight Agent Builder.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/copilot-studio-experience"
+ },
+ {
+  "id": "2.1.6-08",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "When a plugin/action running inside a declarative agent is invoked from a host app such as Teams or Word, what kind of experience does it deliver?",
+  "choices": [
+   "An in-context experience, triggered directly inside the host app",
+   "An immersive experience, opening a dedicated agent chat window",
+   "A federated experience, bypassing the host app entirely",
+   "A synced experience, first indexed into Microsoft Graph"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Plugins/actions enable in-context experiences, such as being invoked via @-mention inside Teams or Word, as opposed to the immersive 1:1 chat experience of a declarative agent.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-plugins"
+ },
+ {
+  "id": "2.1.6-09",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A business decision-maker worries that letting an employee create an agent in Agent Builder could expose data that employee shouldn't normally see. Which statement accurately describes the governance model?",
+  "choices": [
+   "The agent inherits the creator's existing Microsoft 365 permissions and is not granted any new privileges",
+   "The agent automatically receives administrator-level access to all Graph data",
+   "The agent requires separate role-based access configuration for every connected data source",
+   "Only Microsoft 365 administrators are permitted to create agents in Agent Builder"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Agent Builder agents respect the creator's existing user permissions and do not grant new privileges, unlike environment-level governance controls used in Copilot Studio.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/copilot-studio-experience"
+ },
+ {
+  "id": "2.1.6-10",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A small pilot team has no M365 Copilot add-on licenses yet but still wants to try building agents in Copilot Studio. Aside from purchasing a full Copilot license, what licensing option lets them proceed?",
+  "choices": [
+   "Copilot Credits or pay-as-you-go consumption billing",
+   "No billing model is needed, since usage is unlimited and free",
+   "A one-time perpetual license available only through Partner Center",
+   "There is no way to proceed without a full Copilot license"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Without a Copilot license, organizations can use Copilot Credits or pay-as-you-go billing to access these capabilities, in addition to Agent Builder's free web-grounded-only mode.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/copilot-studio-experience"
+ },
+ {
+  "id": "2.1.6-11",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A company needs an agent published externally to its customers, connecting through both prebuilt and custom connectors to external business systems. Which tool is designed for this scenario?",
+  "choices": [
+   "Copilot Studio",
+   "Agent Builder",
+   "A synced Copilot connector on its own",
+   "The Microsoft 365 admin center app catalog on its own"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot Studio is designed for department/enterprise and external-facing agent scenarios, supporting prebuilt/custom connectors and complex integrations, unlike Agent Builder's individual/small-team scope.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/copilot-studio-experience"
+ },
+ {
+  "id": "2.1.6-12",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "How do a Copilot connector and a plugin differ in what they extend?",
+  "choices": [
+   "A connector extends Copilot's knowledge, while a plugin extends Copilot's actions",
+   "A connector extends Copilot's actions, while a plugin extends Copilot's knowledge",
+   "Both a connector and a plugin extend only Copilot's actions",
+   "Both a connector and a plugin extend only Copilot's knowledge"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot connectors extend the knowledge Copilot can draw on, while plugins/actions let a declarative agent perform operations like querying, creating, updating, or deleting data.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-plugins"
+ },
+ {
+  "id": "2.1.6-13",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A small marketing team wants a simple agent grounded on their own SharePoint content, built directly inside the M365 Copilot app by a team member with no coding background. Which option fits best?",
+  "choices": [
+   "Agent Builder",
+   "Copilot Studio",
+   "Microsoft 365 Agents Toolkit",
+   "A custom engine agent hosted on Azure Bot Service"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Agent Builder is the no-code, in-context tool intended for individuals and small teams to create simple Q&A agents grounded on Microsoft Graph content like SharePoint.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/copilot-studio-experience"
+ },
+ {
+  "id": "2.1.6-14",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A team's specialized reasoning workflow exceeds what Copilot's built-in orchestrator and foundation models can handle, and they need full control over both the model and the orchestration logic. Which approach applies?",
+  "choices": [
+   "Build a custom engine agent, for example on Azure AI Foundry",
+   "Extend the solution with a declarative agent and additional plugins",
+   "Buy a prebuilt agent listed on Partner Center",
+   "Extend the solution using a federated Copilot connector"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When Copilot's built-in orchestrator/model isn't sufficient, the build path is a custom engine agent, bringing your own orchestrator and model rather than reusing Copilot's foundation.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-custom-engine-agent"
+ },
+ {
+  "id": "2.1.7-01",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A CIO evaluates whether to standardize on Microsoft's integrated AI stack (Microsoft 365 Copilot, Copilot Studio, Microsoft Graph, Foundry Tools) instead of stitching together several independent AI vendors. What fundamentally distinguishes the integrated solution?",
+  "choices": [
+   "A shared identity, security, and compliance backbone across all the AI components",
+   "A lower per-seat licensing cost than any single standalone AI vendor",
+   "A contractual requirement to remove all non-Microsoft software from the tenant",
+   "Mandatory on-premises hosting for every AI workload"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Integration means the AI apps and services share one identity, security, and compliance foundation (Entra ID, Graph, governance) rather than each maintaining its own stack.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/security-microsoft-365-copilot"
+ },
+ {
+  "id": "2.1.7-02",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An IT director notes that Microsoft 365 Copilot is integrated with Microsoft Graph and Microsoft Entra ID. Without any additional setup, what does Copilot inherit from that integration?",
+  "choices": [
+   "The organization's existing role-based access controls, sensitivity labels, and audit logging",
+   "A separate Copilot-only identity system that replaces Entra ID",
+   "A one-time export of all tenant data into a Copilot-managed store",
+   "Automatic exemption from the organization's existing compliance policies"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Integration with Graph and Entra ID means Copilot automatically inherits the organization's existing access, labeling, compliance, and audit controls rather than needing a duplicate setup.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "2.1.7-03",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A security officer is concerned that integrating Copilot with company data could let it surface confidential files that an individual employee should not see. Which statement correctly addresses this concern?",
+  "choices": [
+   "Copilot only surfaces content the requesting user is already authorized to access",
+   "Copilot uses a shared service identity with elevated read access across the tenant",
+   "Sensitivity labels are evaluated only after content is returned to the user, not before",
+   "Integration grants Copilot broader access than the user has, to improve response quality"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot respects the user's identity-based access boundary during grounding, so it can never surface content the requesting user is not already permitted to see.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "2.1.7-04",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An executive asks how customer data stays protected if one security control around the integrated AI solution is ever compromised. Which strategy does Microsoft rely on?",
+  "choices": [
+   "A defense-in-depth strategy where multiple independent layers continue protecting data if one control fails",
+   "A single perimeter firewall that inspects all inbound and outbound traffic",
+   "User password strength as the sole safeguard for tenant data",
+   "An assumption that no individual control will ever be breached"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft applies defense-in-depth: multiple independent security layers so that a breach in one control does not expose data, since other layers continue protecting it.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/security-microsoft-365-copilot"
+ },
+ {
+  "id": "2.1.7-05",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which set of principles governs Responsible AI consistently across the integrated Microsoft AI stack, including Microsoft 365 Copilot, Copilot Studio, and Foundry Tools?",
+  "choices": [
+   "Fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability",
+   "Uptime SLA, data residency, licensing tier, and support response time",
+   "Speed, scalability, market share, and cost-efficiency",
+   "Open source availability, vendor neutrality, and portability"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's Responsible AI Standard defines six principles, applied consistently across all integrated AI products, not just developer-built solutions.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "2.1.7-06",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A governance lead worries that enabling Copilot tenant-wide will let it surface files that were overshared due to loose SharePoint permissions. What is the correct interpretation of this risk?",
+  "choices": [
+   "Copilot surfaces pre-existing overshared content; the fix is permission cleanup and governance, not disabling Copilot",
+   "Copilot itself creates the oversharing by copying files into a new shared index",
+   "This risk applies only to Copilot Studio agents, never to Microsoft 365 Copilot",
+   "The only safe remediation is to disable Microsoft Graph integration entirely"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Oversharing is a pre-existing data hygiene problem; Copilot surfaces what a user could already technically access, so the remediation is fixing permissions, not rejecting integration.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "2.1.7-07",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Microsoft 365 Copilot uses Microsoft Graph and the Semantic Index to supply an AI model with relevant organizational data at query time so responses are specific and current. What is this process called?",
+  "choices": [
+   "Grounding",
+   "Fine-tuning",
+   "Federation",
+   "Tokenization"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Grounding is the retrieval-augmented process of supplying contextual enterprise data to a model at query time; it is distinct from retraining or fine-tuning the model itself.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture"
+ },
+ {
+  "id": "2.1.7-08",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A compliance manager asks whether grounding a Copilot response in Microsoft Graph data permanently changes the underlying language model. What is the correct answer?",
+  "choices": [
+   "No, grounding supplies contextual data at query time without retraining or altering the model",
+   "Yes, grounding permanently updates the model's weights with the retrieved data",
+   "Yes, but only when the request originates from Copilot Studio, not Microsoft 365 Copilot",
+   "No, because grounding disables the model's pretrained knowledge for that session"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Grounding/RAG injects relevant context into the prompt at inference time; it does not modify or retrain the underlying model.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture"
+ },
+ {
+  "id": "2.1.7-09",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Under Microsoft's Enterprise Data Protection commitments for Copilot, what role does Microsoft hold with respect to customer content processed by the AI?",
+  "choices": [
+   "Data processor, not owner, of the customer content",
+   "Joint owner of the content once Copilot is enabled for the tenant",
+   "Licensed reseller of the content to third-party model providers",
+   "Custodian with rights to use the content for unrelated Microsoft products"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Under the Data Protection Addendum and Product Terms, Microsoft processes customer content as a processor on the customer's behalf; it does not take ownership of that content.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "2.1.7-10",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A retail company wants employees to summarize emails, draft documents, and get meeting recaps using content they already have permission to view, without building anything custom. Which component best fits this need?",
+  "choices": [
+   "Microsoft 365 Copilot / Copilot Chat",
+   "Copilot Studio custom engine agents",
+   "Azure AI Foundry",
+   "Azure AI Search standalone index"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Everyday productivity tasks embedded directly in Word, Excel, Outlook, and Teams, using existing user permissions, is the core use case for Microsoft 365 Copilot / Copilot Chat.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture"
+ },
+ {
+  "id": "2.1.7-11",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business unit wants non-developer, low-code business users to build a custom conversational agent that performs organization-specific actions and taps into internal knowledge. Which product should they use?",
+  "choices": [
+   "Copilot Studio",
+   "Azure AI Foundry",
+   "Microsoft Graph Explorer",
+   "Azure Vision in Foundry Tools"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot Studio is the low-code platform for business users to build and extend conversational agents with organization-specific knowledge and actions.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio"
+ },
+ {
+  "id": "2.1.7-12",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An engineering team asks which layer of the integrated Microsoft AI solution supplies identity-scoped grounding data across Microsoft 365 apps, letting Copilot safely retrieve only content a given user is authorized to see. What is this layer?",
+  "choices": [
+   "Microsoft Graph",
+   "SharePoint Search index",
+   "Microsoft Entra ID",
+   "Power BI dataflows"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Graph is the connective layer that provides identity-scoped access to organizational data, enabling safe, permission-respecting grounding across Microsoft 365 apps. Entra ID supplies the identity itself, and SharePoint's index or Power BI dataflows are single-app data sources, not the cross-app grounding layer.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture"
+ },
+ {
+  "id": "2.1.7-13",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A healthcare provider needs a highly customized AI solution with model choice, large-scale vector search, and image analysis over data sources outside Microsoft 365, exceeding what Copilot's extensibility framework supports. Which set of tools fits this requirement?",
+  "choices": [
+   "Foundry Tools (Azure AI Foundry, Azure AI Search, Azure Vision in Foundry Tools)",
+   "Microsoft 365 Copilot Chat only",
+   "Copilot Studio",
+   "Power BI Copilot visuals"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When requirements exceed Copilot's out-of-box or Copilot Studio extensibility, Foundry Tools provide the developer-facing platform for custom models, search, and vision at scale over any data source.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture"
+ },
+ {
+  "id": "2.1.7-14",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A decision-maker is choosing how to meet a new AI-driven business requirement within the Microsoft ecosystem. Which decision pattern does Microsoft recommend?",
+  "choices": [
+   "Use out-of-box Copilot where it fits, extend via Copilot Studio for org-specific workflows, and build on Foundry Tools only when requirements exceed Copilot's framework",
+   "Always build a fully custom solution on Foundry Tools regardless of the use case",
+   "Use Copilot Studio for every scenario, since it removes the need for Foundry Tools entirely",
+   "Default to third-party AI vendors and reserve Microsoft tools for pilot projects only"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The recommended build-vs-buy-vs-extend pattern favors out-of-box Copilot first, Copilot Studio for organization-specific extension, and Foundry Tools only when needs go beyond Copilot's extensibility.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "2.1.7-15",
+  "obj": "2.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A team wants to build a custom engine agent entirely outside the standard Copilot Studio framework to gain full behavioral control over its logic. What tradeoff does this approach carry?",
+  "choices": [
+   "Full behavioral control comes at the cost of some built-in safety and governance inheritance from the standard framework",
+   "It inherits stronger Responsible AI safeguards than agents built within the standard framework",
+   "It becomes exempt from Microsoft's Enterprise Data Protection terms",
+   "It requires no additional Responsible AI review since the agent is custom-built"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Custom engine agents built outside the standard framework are a fallback only when standard Responsible AI guidelines don't fit the use case, and doing so sacrifices some of the built-in safety and governance the standard framework provides.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "2.1.7-16",
+  "obj": "2.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "When data flows between Dynamics 365, Power Platform, and Azure OpenAI as part of an integrated Microsoft AI solution, how is that data protected in transit and at rest?",
+  "choices": [
+   "Over the Microsoft backbone network with TLS in transit and encryption at rest",
+   "Over the public internet, relying on the receiving application to encrypt the payload",
+   "Encrypted at rest only, since backbone traffic is considered a trusted network",
+   "Protected only if the customer purchases a separate third-party encryption add-on"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Integrated data transfers across Microsoft services use the Microsoft backbone network, protected by TLS in transit and encryption at rest by default.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/security-microsoft-365-copilot"
+ },
+ {
+  "id": "2.1.7-17",
+  "obj": "2.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which set of benefits best summarizes why an organization would adopt Microsoft's integrated AI solution rather than several disconnected AI point tools?",
+  "choices": [
+   "Scalability, consistent governance under a single compliance boundary, reduced shadow IT, and richer grounding with enterprise context",
+   "Lower total headcount across every department regardless of AI adoption",
+   "Elimination of the need for any future Responsible AI review",
+   "Guaranteed removal of all data oversharing risk without further governance work"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The exam-relevant benefit set for integration centers on scalability, unified governance and compliance, reduced shadow IT/duplicate tooling, and faster, richer grounding using enterprise context.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "2.1.8-01",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A business analyst wants to add prebuilt image analysis, translation, and speech-to-text to an application without hiring a data science team. Which offering should they use?",
+  "choices": [
+   "Azure Machine Learning designer",
+   "Foundry fine-tuning jobs",
+   "Foundry Tools",
+   "Azure AI Search"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Foundry Tools (formerly Azure AI services) are prebuilt, cloud-based APIs for vision, speech, translation, and language that require no custom model training or data science expertise.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/what-are-ai-services"
+ },
+ {
+  "id": "2.1.8-02",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which statement best describes the relationship between Microsoft Foundry and Foundry Tools?",
+  "choices": [
+   "Foundry Tools and Microsoft Foundry are unrelated, independently branded products",
+   "Foundry Tools are one category of capability inside the broader Microsoft Foundry platform",
+   "Microsoft Foundry is a legacy predecessor that Foundry Tools fully replaced",
+   "Foundry Tools is the enterprise governance layer that Microsoft Foundry plugs into"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft Foundry is the unified platform (model catalog, agents, fine-tuning, governance) into which Foundry Tools plug in as prebuilt APIs/services.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry"
+ },
+ {
+  "id": "2.1.8-03",
+  "obj": "2.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A retailer wants its customer-support chatbot to ground answers in citations drawn from its internal product manuals and policy documents. Which capability fits this need?",
+  "choices": [
+   "Content Safety",
+   "Custom Vision",
+   "Azure AI Search",
+   "Azure Vision in Foundry Tools"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Azure AI Search is the managed retrieval layer that connects enterprise content to LLMs to produce grounded, cited answers, the standard RAG pattern.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search"
+ },
+ {
+  "id": "2.1.8-04",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A logistics company needs to automatically count vehicles and detect people entering a warehouse from CCTV footage, without training a custom model. Which capability addresses this out of the box?",
+  "choices": [
+   "Custom Vision",
+   "Azure Vision in Foundry Tools",
+   "Foundry fine-tuning",
+   "Azure AI Search agentic retrieval"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Azure Vision in Foundry Tools provides prebuilt object/people detection, counting, and spatial analysis for video without requiring custom model training.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview"
+ },
+ {
+  "id": "2.1.8-05",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A decision-maker wants a single Azure resource that provides model selection from over a thousand models, multi-agent orchestration, fine-tuning, and unified role-based access control for governance. Which offering meets this need?",
+  "choices": [
+   "Foundry Tools",
+   "Azure AI Search",
+   "Custom Vision",
+   "Microsoft Foundry"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Microsoft Foundry is the unified enterprise AI platform combining a large model catalog, agent building, fine-tuning, evaluation, and RBAC governance under one resource.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry"
+ },
+ {
+  "id": "2.1.8-06",
+  "obj": "2.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A healthcare provider is building a multi-agent system where agents need a managed knowledge layer to ground answers across several enterprise data sources. Which capability underpins that grounding layer?",
+  "choices": [
+   "Custom Vision training pipeline",
+   "Content Safety moderation filters",
+   "Foundry IQ, built on Azure AI Search",
+   "Azure Vision spatial analysis"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Foundry IQ is the managed knowledge layer that turns enterprise data into reusable, permission-aware knowledge bases for agents, using Azure AI Search's agentic retrieval underneath.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-foundry-iq"
+ },
+ {
+  "id": "2.1.8-07",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An enterprise architect is evaluating Microsoft Foundry for a large-scale deployment. Which pair of benefits does Microsoft highlight for Microsoft Foundry?",
+  "choices": [
+   "Scalability and security",
+   "Lowest possible cost and offline operation",
+   "Single-model lock-in and manual governance",
+   "No authentication requirements and unlimited free usage"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft positions Microsoft Foundry's key benefits as scalability (unified resource, model routing, large catalog) and security (Entra ID auth, Private Link, layered governance).",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry"
+ },
+ {
+  "id": "2.1.8-08",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A decision-maker needs a model for a complex multimodal reasoning task requiring high accuracy, with cost being a secondary concern. Which type of model from the Foundry catalog best matches this need?",
+  "choices": [
+   "A small on-device model such as Phi-4",
+   "A large flagship model such as GPT-5",
+   "A lightweight model optimized purely for throughput",
+   "An open-weight model chosen only for customization needs"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Large flagship models like GPT-5 in the Foundry model catalog are matched to complex, high-accuracy multimodal reasoning needs where cost is secondary.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry"
+ },
+ {
+  "id": "2.1.8-09",
+  "obj": "2.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A business needs a model that runs efficiently on constrained edge or on-device hardware with a small footprint. Which type of model best matches this need?",
+  "choices": [
+   "A large flagship reasoning model",
+   "A dedicated search index",
+   "An agentic orchestration framework",
+   "A small model such as Phi-4"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Small models such as Phi-4 in the Foundry catalog are designed for constrained, on-device, or low-resource deployment scenarios.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry"
+ },
+ {
+  "id": "2.1.8-10",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which statement correctly distinguishes classic search from agentic retrieval in Azure AI Search?",
+  "choices": [
+   "Classic search is preview-only while agentic retrieval is generally available",
+   "Classic search is single-index and low-latency, while agentic retrieval uses LLM-assisted multi-query planning across multiple knowledge sources",
+   "Agentic retrieval replaces classic search entirely, which is now deprecated",
+   "Classic search requires an agent framework while agentic retrieval does not"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Classic search targets a single index with low latency, whereas agentic retrieval uses LLM-assisted multi-query planning across a knowledge base of multiple knowledge sources; both are complementary and generally available.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-overview"
+ },
+ {
+  "id": "2.1.8-11",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A financial services firm wants to translate customer support tickets into multiple languages and transcribe support calls, using ready-made cloud APIs rather than building models from scratch. Which category of offering satisfies both needs?",
+  "choices": [
+   "Microsoft Foundry agent orchestration only",
+   "Foundry Tools (Translator and Speech services)",
+   "Azure AI Search knowledge sources",
+   "Custom Vision training pipeline"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Foundry Tools includes prebuilt Translator and Speech services that handle translation and transcription without custom model development.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/what-are-ai-services"
+ },
+ {
+  "id": "2.1.8-12",
+  "obj": "2.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An IT leader plans to point Azure AI Search at the public internet, expecting it to crawl and index any website like a general web search engine. Why is this plan mistaken?",
+  "choices": [
+   "Azure AI Search is a managed retrieval and data-grounding service over an organization's own content, not a public web search engine",
+   "Azure AI Search only supports image search, not text or vector search",
+   "Azure AI Search requires no data ingestion because it searches the web automatically",
+   "Azure AI Search can only be queried from within Microsoft Foundry agents"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Azure AI Search is a data-grounding and retrieval layer over an organization's own enterprise or web data that they configure and ingest themselves, not a general public search engine.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search"
+ },
+ {
+  "id": "2.1.8-13",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A manufacturer wants to read text printed on product labels from photographs taken on the factory floor without training any custom model. Which capability directly supports this scenario?",
+  "choices": [
+   "Foundry model fine-tuning",
+   "Custom Vision object detection training",
+   "OCR via Azure AI Vision in Foundry Tools",
+   "Azure AI Search vector search"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Azure AI Vision in Foundry Tools provides prebuilt OCR capability for extracting text from images without any custom training.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview"
+ },
+ {
+  "id": "2.1.8-14",
+  "obj": "2.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A procurement team is deciding between pay-as-you-go and a commitment tier for a Foundry Tools service with predictable, high-volume usage. What is the primary business reason to choose a commitment tier?",
+  "choices": [
+   "Commitment tiers are mandatory for all Foundry Tools regardless of usage pattern",
+   "Predictable high-volume usage can be billed at a discounted, fixed rate compared to pure consumption pricing",
+   "Commitment tiers remove the requirement to have an Azure subscription",
+   "Commitment tiers are only offered for services still in public preview"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Commitment tiers offer discounted fixed pricing that suits organizations with predictable, high-volume consumption, compared to standard pay-as-you-go billing.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/what-are-ai-services"
+ },
+ {
+  "id": "2.1.8-15",
+  "obj": "2.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A team needs only sentiment analysis on customer emails, with no agent orchestration or model catalog browsing required. What is the most efficient choice?",
+  "choices": [
+   "Provision Azure AI Search as the primary component",
+   "Deploy the full Microsoft Foundry platform including agent orchestration",
+   "Build a custom model from scratch using Foundry fine-tuning",
+   "Call the relevant Foundry Tools API directly for the narrow language task"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "For a narrow, single-capability task like sentiment analysis, calling the specific Foundry Tools API directly is more efficient than provisioning the full Foundry platform.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/what-are-ai-services"
+ },
+ {
+  "id": "2.1.8-16",
+  "obj": "2.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A startup only needs prebuilt language and vision APIs and has no plans to orchestrate agents, host a model catalog, or manage projects. Which statement correctly distinguishes Foundry Tools from the full Microsoft Foundry platform for this scenario?",
+  "choices": [
+   "Foundry Tools are standalone prebuilt AI APIs that can be consumed directly, while the full Foundry platform adds project management, model catalog, and agent orchestration on top",
+   "Foundry Tools can only be accessed from inside a Microsoft Foundry project",
+   "Foundry Tools and the full Foundry platform are billed identically and offer identical capabilities",
+   "The full Foundry platform is required before any Foundry Tools API call can be made"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Foundry Tools (formerly Azure AI services) are individually consumable prebuilt APIs; the broader Foundry platform layers project management, the model catalog, and agent orchestration on top for teams that need that scope.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/what-are-ai-services"
+ },
+ {
+  "id": "2.1.9-01",
+  "obj": "2.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A retailer is building a customer-support chat assistant that must reply within a few hundred milliseconds even during peak traffic. Which model type should the solution architect select?",
+  "choices": [
+   "A reasoning model configured with a high thinking level",
+   "A fast, non-reasoning model optimized for low latency and high throughput",
+   "A fine-tuned model trained on the retailer's product catalog",
+   "A small language model intended for offline, on-device use"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Fast, non-reasoning models such as the GPT-4.1 family are optimized for low-latency, high-throughput scenarios like real-time chat, whereas reasoning models trade latency for deeper multi-step analysis.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/model-choice-guide"
+ },
+ {
+  "id": "2.1.9-02",
+  "obj": "2.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A law firm wants an AI assistant that can plan multi-step research across several contracts and call external tools to retrieve clauses. Which model type best fits this requirement?",
+  "choices": [
+   "A fast, non-reasoning conversational model",
+   "A reasoning model designed for multi-step planning and tool use",
+   "A small language model sized for edge deployment",
+   "A model chosen solely for its lowest per-token price"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Reasoning models such as the GPT-5 family excel at structured reasoning, multi-step logic, and agentic tool-calling tasks such as legal or financial analysis.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/model-choice-guide"
+ },
+ {
+  "id": "2.1.9-03",
+  "obj": "2.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company sends prompts of widely varying complexity to a GPT-family deployment and wants the platform to automatically pick the most cost-effective model for each request. Which Foundry capability should they enable?",
+  "choices": [
+   "Provisioned Throughput",
+   "Model router",
+   "Content Understanding",
+   "Batch processing"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Model router analyzes each prompt in real time based on complexity and task type, then routes it to the most cost-effective underlying model while keeping quality within a configurable range.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/model-router"
+ },
+ {
+  "id": "2.1.9-04",
+  "obj": "2.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An organization needs to run an AI feature on a resource-constrained edge device with limited memory and no reliable network connection. Which model choice best satisfies this constraint?",
+  "choices": [
+   "A large reasoning model configured for maximum accuracy",
+   "A small language model such as Phi-4",
+   "A partner model available only through pay-per-token billing",
+   "A model deployed exclusively through Provisioned Throughput"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Small language models like Phi-4 are designed for on-device or resource-constrained deployment footprints, unlike large models that require more compute and typically a network connection.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/foundry-models-overview"
+ },
+ {
+  "id": "2.1.9-05",
+  "obj": "2.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "How do models sold directly by Azure in the Foundry catalog differ from partner and community models?",
+  "choices": [
+   "Azure-sold models include deep Azure integration and a Microsoft SLA, while partner and community models are supported by their own providers",
+   "Partner and community models always score higher on quality benchmarks",
+   "Only Azure-sold models can be evaluated using the catalog's benchmark tools",
+   "Partner and community models cannot be deployed in production environments"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Models sold directly by Azure offer deep Azure integration with a Microsoft SLA and support, whereas partner and community models are supported by their respective providers and offer rapid access to niche innovation.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure"
+ },
+ {
+  "id": "2.1.9-06",
+  "obj": "2.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A decision-maker wants to choose among several catalog models using objective evidence rather than vendor claims. Which factors should drive the comparison?",
+  "choices": [
+   "Benchmark results for quality, safety, cost, and throughput",
+   "The order in which models appear in the catalog",
+   "The release date of each model",
+   "The number of parameters each model advertises"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Foundry's model catalog provides benchmark and leaderboard tools so decisions can be made on measured quality, safety, cost, and throughput rather than vendor marketing.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/foundry-models-overview"
+ },
+ {
+  "id": "2.1.9-07",
+  "obj": "2.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A firm needs to analyze lengthy legal contracts that regularly exceed the token limits of many chat models. Which model characteristic matters most for this scenario?",
+  "choices": [
+   "The size of the model's context window",
+   "The Azure region where the model is deployed",
+   "Whether Provisioned Throughput is enabled",
+   "The model's configured thinking level"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Long documents require models with a sufficiently large context window to process the full input without truncation.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/model-choice-guide"
+ },
+ {
+  "id": "2.1.9-08",
+  "obj": "2.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A retailer wants its assistant to correctly use niche product terminology but wants to avoid the cost and complexity of training a custom model. What should it evaluate first?",
+  "choices": [
+   "Whether retrieval-augmented grounding (RAG) can supply the needed vocabulary and context",
+   "Whether the base model supports a higher thinking level",
+   "Whether Batch processing pricing is available for the model",
+   "Whether the model can be deployed globally"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RAG (retrieval-augmented grounding) is often a correct and cheaper alternative to fine-tuning for domain-specific vocabulary needs, avoiding the added cost and complexity of fine-tuning.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/foundry-models-overview"
+ },
+ {
+  "id": "2.1.9-09",
+  "obj": "2.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which statement best describes Microsoft Foundry?",
+  "choices": [
+   "A unified Azure platform that brings models, agents, and tools together under one management scope",
+   "A standalone code library that runs outside of Azure",
+   "A single proprietary model offered only by Microsoft",
+   "A service restricted to hosting OpenAI models"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Foundry is a unified Azure platform-as-a-service for enterprise AI operations, combining models, agents, and tools under a single management grouping.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry"
+ },
+ {
+  "id": "2.1.9-10",
+  "obj": "2.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A company runs a latency-critical production workload at high scale and needs guaranteed dedicated capacity with a latency SLA. Which deployment option should they choose?",
+  "choices": [
+   "Pay-per-token Standard deployment",
+   "Batch deployment",
+   "Provisioned Throughput deployment",
+   "Data Zone deployment"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Provisioned Throughput gives dedicated capacity and latency SLAs, making it the right choice for latency-critical, high-scale workloads, in contrast to pay-per-token Standard deployment.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/architecture"
+ },
+ {
+  "id": "2.1.9-11",
+  "obj": "2.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A company has a large backlog of non-urgent AI processing jobs and wants to lower the per-token cost of running them. Which Foundry capability should it use?",
+  "choices": [
+   "Batch processing with reduced per-token pricing",
+   "Provisioned Throughput with a latency SLA",
+   "Customer-managed keys",
+   "Global deployment for real-time responses"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Batch processing is asynchronous and offers reduced per-token pricing, making it well-suited for large volumes of non-urgent processing jobs.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/architecture"
+ },
+ {
+  "id": "2.1.9-12",
+  "obj": "2.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A large enterprise wants several teams to reuse the same model deployments and connections without each team repeating IT setup. Which Foundry construct supports this?",
+  "choices": [
+   "Projects within a Foundry resource",
+   "The Content Understanding tool",
+   "A dedicated Global deployment",
+   "Customer-managed keys"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Projects let multiple teams scale usage in parallel while reusing shared model deployments and connections, avoiding repeated IT setup.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/architecture"
+ },
+ {
+  "id": "2.1.9-13",
+  "obj": "2.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "What is the purpose of offering Global, Data Zone, and Regional/Standard deployment types in Foundry?",
+  "choices": [
+   "They let organizations balance latency, throughput, and data residency requirements",
+   "They are purely cosmetic naming differences with no functional impact",
+   "Only Global deployment can meet data residency requirements",
+   "Data Zone deployment restricts usage to a single Azure subscription"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Global, Data Zone, and Regional/Standard deployment types let organizations choose the right balance of latency, throughput, and data residency for their business needs.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/architecture"
+ },
+ {
+  "id": "2.1.9-14",
+  "obj": "2.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business assumes that because exploring Foundry in the portal is free, scaling up production model usage will not add any cost. Why is this assumption wrong?",
+  "choices": [
+   "Actual production usage of deployed models is billed based on consumption, so cost grows as usage scales",
+   "Foundry charges a flat annual license fee regardless of how many models are used",
+   "Production use requires a separate enterprise agreement outside of standard Azure billing",
+   "Only image-generation models are billed; text models remain free at any scale"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Exploring the model catalog is free, but once models are deployed and used in production, billing is usage-based, so cost scales with consumption. Business leaders should budget for this rather than assuming free exploration means free production.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/architecture"
+ },
+ {
+  "id": "2.1.9-15",
+  "obj": "2.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A financial services organization wants assurance that its generative AI application will block unsafe prompts and responses as part of its responsible AI strategy. Which capability of Microsoft's AI platform addresses this need?",
+  "choices": [
+   "Built-in content safety/filtering guardrails applied to inputs and outputs",
+   "Model Router, which automatically selects the cheapest available model",
+   "Batch processing, which reduces cost for non-urgent, asynchronous workloads",
+   "Multi-region deployment, which increases availability"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's AI platform, including Azure AI Foundry, provides built-in content safety filtering that can screen prompts and generated responses for unsafe content, directly supporting responsible AI requirements. This is a capability decision-makers should recognize, not a deployment-configuration detail.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/content-safety/overview"
+ }
+]

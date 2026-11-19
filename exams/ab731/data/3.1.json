@@ -1,0 +1,1640 @@
+[
+ {
+  "id": "3.1.1-01",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "After an AI model has been deployed into production, why should an organization continue to monitor it rather than treating deployment as the final step?",
+  "choices": [
+   "Deployed models retrain and redeploy themselves automatically without any human oversight",
+   "Real-world data can drift over time, degrading performance, so monitoring can trigger retraining and redeployment as part of an ongoing cycle",
+   "Monitoring is only necessary for generative AI systems and not for predictive models",
+   "Once evaluation metrics are met before launch, no further oversight is required"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "AI adoption strategy treats deployment as one loop in an ongoing cycle: monitoring for performance drift can trigger retraining and redeployment, which is why governance plans must budget for continued oversight after go-live.",
+  "ref": "https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/machine-learning-operations-v2"
+ },
+ {
+  "id": "3.1.1-02",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "As an organization scales its use of AI across multiple business units, why is maintaining lineage and auditability of the data and models involved important?",
+  "choices": [
+   "It has no real bearing on compliance or trust in AI-driven decisions",
+   "It supports reproducibility, compliance, and trust by tracking where data and models came from and how they changed over time",
+   "It is only relevant during an initial pilot and can be dropped once a system reaches production",
+   "It matters only for generative AI systems and not for predictive models"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Responsible, scaled AI adoption depends on lineage, auditability, and versioning of data and model assets to support compliance, reproducibility, and organizational trust.",
+  "ref": "https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/machine-learning-operations-v2"
+ },
+ {
+  "id": "3.1.2-01",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "According to Microsoft's Responsible AI Standard, how many distinct principles guide the design and deployment of AI systems?",
+  "choices": [
+   "Four",
+   "Five",
+   "Six",
+   "Eight"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Microsoft's Responsible AI Standard consists of six principles: fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-02",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A company's hiring AI system consistently recommends fewer interviews for equally qualified candidates from one demographic group. Which responsible AI principle is being violated?",
+  "choices": [
+   "Fairness",
+   "Transparency",
+   "Reliability and safety",
+   "Inclusiveness"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fairness requires that AI systems treat similar groups of people equally and avoid affecting people differently based on personal characteristics such as demographic group.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-03",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A bank's loan approval AI denies an application, but the loan officer cannot explain to the customer why the model reached that decision. Which principle addresses this gap?",
+  "choices": [
+   "Transparency",
+   "Fairness",
+   "Privacy and security",
+   "Accountability"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Transparency requires that AI systems be understandable and explainable, especially when a decision has a major impact on people's lives, so stakeholders can see how the outcome was reached.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-04",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A hospital deploying an AI triage tool requires that a clinician review and approve every AI-suggested diagnosis before any action is taken, and that a named team remains answerable for outcomes. Which principle does this practice primarily support?",
+  "choices": [
+   "Accountability",
+   "Reliability and safety",
+   "Fairness",
+   "Privacy and security"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Accountability means the people who design and deploy AI systems remain answerable for outcomes and ensure humans retain meaningful oversight and control rather than letting the AI be the final, unchecked authority.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-05",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business decision-maker is evaluating why the organization should invest in responsible AI governance rather than treating it as a purely technical concern. Which statement best justifies that investment?",
+  "choices": [
+   "Ungoverned AI decisions that affect people's lives can create legal, reputational, and ethical exposure for the business",
+   "Responsible AI guidelines only need to be applied after a model has already been fully deployed to production",
+   "Responsible AI is primarily a marketing consideration with no bearing on legal or regulatory risk",
+   "Governance requirements only apply to AI systems that are built entirely in-house, not to vendor or partner solutions"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Responsible AI matters at the business level because AI decisions can materially affect people's lives; without governance, this creates legal, reputational, and ethical risk regardless of whether the AI is built in-house or sourced from a vendor.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "3.1.2-06",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A generative AI legal assistant confidently cites a court case that does not exist. Which term describes this behavior?",
+  "choices": [
+   "Fabrication (hallucination)",
+   "Bias",
+   "Data residency violation",
+   "Model drift"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fabrications, or hallucinations, occur when a generative AI system produces confident but false or invented information, a key risk that responsible AI practices such as grounding and citation checking are designed to mitigate.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "3.1.2-07",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which responsible AI principle requires that a system continue to perform consistently and resist harmful manipulation even under unexpected or adversarial conditions?",
+  "choices": [
+   "Reliability and safety",
+   "Transparency",
+   "Fairness",
+   "Inclusiveness"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Reliability and safety require systems to perform consistently across a range of conditions, including unexpected ones, and to resist harmful manipulation.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-08",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A retail company's AI chatbot stores full customer chat transcripts without informing customers or offering a way to opt out of data collection. Which principle is most directly at risk?",
+  "choices": [
+   "Privacy and security",
+   "Reliability and safety",
+   "Fairness",
+   "Accountability"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Privacy and security require compliance with privacy laws, including transparency about data collection and use, and giving users control over their own data.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-09",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A product team redesigns an AI feature so that users with visual impairments can also benefit from its recommendations, removing a barrier that previously excluded them. Which principle does this best illustrate?",
+  "choices": [
+   "Inclusiveness",
+   "Transparency",
+   "Privacy and security",
+   "Reliability and safety"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Inclusiveness means AI systems should empower and engage everyone, and inclusive design practices help identify and remove barriers that unintentionally exclude people.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-10",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which formal Microsoft framework underpins all six responsible AI principles?",
+  "choices": [
+   "Responsible AI Standard",
+   "Zero Trust Framework",
+   "AI Governance Charter",
+   "Copilot Trust Center"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The Responsible AI Standard is the formal Microsoft framework that underpins all six responsible AI principles, distinct from the Zero Trust security framework and other governance materials.",
+  "ref": "https://learn.microsoft.com/en-us/compliance/assurance/assurance-artificial-intelligence"
+ },
+ {
+  "id": "3.1.2-11",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A board member asks whether Microsoft's responsible AI principles apply only to custom models the company trains in Azure Machine Learning. What is the most accurate response?",
+  "choices": [
+   "They are a company-wide standard applied across products such as Microsoft 365 Copilot, Copilot Studio, and Microsoft Foundry",
+   "They apply exclusively to custom models trained in Azure Machine Learning",
+   "They apply only to AI systems purchased from third-party vendors, not Microsoft's own products",
+   "They apply only to models deployed outside the customer's home region"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's responsible AI principles are a company-wide standard applied across its AI product portfolio, not limited to Azure Machine Learning or any single deployment scenario.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-12",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Business leadership, IT and security, legal and compliance, and change-management leaders need one recurring forum to align AI adoption with business priorities and set guardrails for responsible use. What should the organization establish?",
+  "choices": [
+   "An AI council with cross-functional representation",
+   "A single designated data scientist as sole AI owner",
+   "An outsourced AI vendor contract that assumes all governance responsibility",
+   "A quarterly marketing review of AI-generated content"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft recommends establishing a small, cross-functional AI council, drawing on business leadership, IT/security, legal/compliance, and change management, to align AI adoption with business priorities and set guardrails for responsible use.",
+  "ref": "https://adoption.microsoft.com/en-us/copilot/ai-council/"
+ },
+ {
+  "id": "3.1.2-13",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A company publishes model cards explaining how its AI credit-scoring system weighs different factors, but no individual or team is designated as responsible when the system produces a harmful outcome. Which principle is missing?",
+  "choices": [
+   "Accountability",
+   "Transparency",
+   "Inclusiveness",
+   "Privacy and security"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Even with transparency in place through published model cards, accountability requires that specific people who design and deploy the system remain answerable for its operation and outcomes.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-14",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which term describes the ability to explain how an AI model arrived at a particular output?",
+  "choices": [
+   "Interpretability",
+   "Redundancy",
+   "Scalability",
+   "Idempotency"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Interpretability, or explainability of model behavior, is the key sub-concept of transparency described in Microsoft's responsible AI guidance.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.2-15",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Microsoft publishes a short document for many of its AI services describing the technology's capabilities, limitations, and intended uses so customers can decide how to deploy it responsibly. What is this document called?",
+  "choices": [
+   "A Transparency Note",
+   "A service level agreement",
+   "A pricing calculator",
+   "A product roadmap"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Transparency Notes help customers understand the inner workings, capabilities, and limitations of an AI technology so they can make informed deployment decisions, in support of the transparency principle.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/responsible-ai/openai/transparency-note"
+ },
+ {
+  "id": "3.1.2-16",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A product team treats recurring factual errors in a medical dosage copilot purely as a technical accuracy bug rather than a governance issue. From a responsible AI standpoint, how should a business decision-maker view this issue?",
+  "choices": [
+   "As a reliability and safety concern that requires business-level governance, not just an engineering fix",
+   "As solely an engineering concern with no business governance implications",
+   "As irrelevant, since generative AI systems are not held to reliability standards",
+   "As relevant only if the copilot is deployed outside the company's home country"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The AB-731 exam frames responsible AI, including reliability and safety, as a governance and strategy function for business leaders, not solely a technical engineering matter.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "3.1.2-17",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An organization deploying an autonomous approval agent wants to ensure the agent never becomes the sole, unchecked authority over decisions affecting employees' careers. Which principle should govern this design choice?",
+  "choices": [
+   "Accountability",
+   "Reliability and safety",
+   "Fairness",
+   "Privacy and security"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Accountability specifically requires that AI never be the final, unchecked authority over decisions affecting people's lives, and that humans retain meaningful control.",
+  "ref": "https://learn.microsoft.com/en-us/agents/design-guidelines/responsible-ai"
+ },
+ {
+  "id": "3.1.2-18",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An AI-driven loan pricing system consistently offers less favorable terms to applicants from a particular neighborhood, even when their financial profiles are otherwise identical to other applicants. Which challenge does this illustrate?",
+  "choices": [
+   "Bias",
+   "Model drift",
+   "Data redundancy",
+   "Rate limiting"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Bias occurs when an AI system produces systematically less favorable outcomes for certain groups, which is exactly what the fairness principle is designed to prevent.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "3.1.2-19",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A privacy officer finds that an AI vendor encrypts all customer data at rest but never discloses what data is collected, nor offers customers a way to review or delete it. What gap does this reveal in the privacy and security principle?",
+  "choices": [
+   "Legal compliance and user control over data are required in addition to technical safeguards like encryption",
+   "No gap exists, since encryption alone satisfies privacy and security requirements",
+   "This is primarily a fairness gap rather than a privacy gap",
+   "This is primarily an inclusiveness gap rather than a privacy gap"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Privacy and security include legal compliance requirements such as transparency about data use and giving users control over their data, not just technical safeguards like encryption.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.1-03",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Within a business's AI adoption roadmap, responsible AI practices such as fairness testing and human oversight are best characterized as which type of activity?",
+  "choices": [
+   "A strategic governance activity integrated into the adoption plan",
+   "A one-time technical certification obtained before launch",
+   "An optional legal disclaimer added after deployment",
+   "A task reserved exclusively for the data science team"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's adoption guidance treats responsible AI as an ongoing governance activity woven into strategy and rollout planning, not a one-off technical checkbox or a purely legal or engineering task.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "3.1.2-20",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A customer service AI gives noticeably lower-quality responses to speakers of a minority language than to speakers of the majority language, giving that group less benefit from the system. Which principle addresses this most directly?",
+  "choices": [
+   "Inclusiveness",
+   "Accountability",
+   "Reliability and safety",
+   "Transparency"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Inclusiveness requires that AI systems empower and engage everyone, and inclusive design should identify and remove barriers such as unequal service quality across language groups.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.1-04",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Compared to responsible AI guidance for traditional predictive models, why does Microsoft publish separate responsible AI design guidance specifically for autonomous AI agents?",
+  "choices": [
+   "Because agents can take multi-step actions and make decisions with less human review, introducing added risks around unchecked authority and accountability",
+   "Because agents are not subject to any of the six Responsible AI Standard principles",
+   "Because agents only process structured data and therefore have no privacy considerations",
+   "Because agent guidance replaces the need for any human oversight"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Autonomous agents can act and decide with reduced human review, so Microsoft's agent-specific guidance emphasizes accountability and oversight risks that go beyond static predictive models, while the same six RAI principles still apply.",
+  "ref": "https://learn.microsoft.com/en-us/agents/design-guidelines/responsible-ai"
+ },
+ {
+  "id": "3.1.2-21",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An executive argues that once an AI system achieves high accuracy on test data, no further responsible AI governance is needed. Why is this reasoning flawed?",
+  "choices": [
+   "High test accuracy alone does not ensure fairness, safety under unexpected conditions, privacy compliance, or accountable human oversight",
+   "Test accuracy is the only measure that responsible AI standards evaluate",
+   "Passing unit tests automatically satisfies all responsible AI principles",
+   "Accuracy and reliability are the same concept, so no additional governance applies"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Responsible AI spans six principles beyond raw accuracy, including fairness, robustness under unexpected conditions, privacy, and accountable human oversight, none of which a single accuracy metric guarantees.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai?view=azureml-api-2"
+ },
+ {
+  "id": "3.1.1-05",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which set of principles does the Microsoft Responsible AI Standard define for evaluating whether an AI solution is responsible?",
+  "choices": [
+   "Fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability",
+   "Fairness, accountability, transparency, and ethics",
+   "Speed, scalability, reliability, security, and fairness",
+   "Accuracy, privacy, inclusiveness, agility, and compliance"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The Microsoft Responsible AI Standard defines six principles: fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai"
+ },
+ {
+  "id": "3.1.1-06",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A business decision-maker questions whether investing in AI governance before scaling adoption will slow the organization down. How does Microsoft's guidance frame the role of governance?",
+  "choices": [
+   "As a legal formality that has no bearing on adoption speed",
+   "As a control that primarily exists to avoid regulatory fines",
+   "As an enabler that lets the organization adopt AI faster and more safely",
+   "As a step that should only be introduced after solutions reach production"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Microsoft frames governance as an enabler of faster, safer adoption rather than a blocker.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai-agents/governance-security-across-organization"
+ },
+ {
+  "id": "3.1.1-07",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "What is the primary purpose of establishing an AI council within an organization?",
+  "choices": [
+   "To write and maintain the source code for AI agents",
+   "To provide cross-functional oversight, guidance, and escalation for AI strategy and high-impact use cases",
+   "To take over the IT department's technical implementation duties",
+   "To approve marketing content unrelated to AI initiatives"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The AI council is a cross-functional body that guides strategy, oversees adoption, and provides escalation for ambiguous or high-impact AI use cases.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/strategy/responsible-ai"
+ },
+ {
+  "id": "3.1.1-08",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "On a cross-functional AI council, which role is primarily responsible for setting strategic direction and prioritizing AI initiatives?",
+  "choices": [
+   "Change management lead",
+   "Executive sponsor",
+   "Risk and compliance officer",
+   "IT and platform enablement lead"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The executive sponsor provides strategic direction and prioritization within the AI council's cross-functional structure.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/strategy/responsible-ai"
+ },
+ {
+  "id": "3.1.1-09",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An AI council includes members from risk, legal, and compliance. What is their primary focus within the council?",
+  "choices": [
+   "Reviewing the technical architecture of AI agents",
+   "Responsible AI, privacy, and regulatory alignment",
+   "End-user training and adoption communications",
+   "Selecting the underlying large language model vendor"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Risk, legal, and compliance members focus on responsible AI, privacy, and regulatory considerations within the council.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/strategy/responsible-ai"
+ },
+ {
+  "id": "3.1.1-10",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A department is preparing to launch an AI agent that automates decisions about customer eligibility for a service. Which governance action best fulfills the fairness principle before go-live?",
+  "choices": [
+   "Rely solely on the model's overall accuracy score as proof it is ready",
+   "Conduct a bias assessment that tests outcomes across demographic groups before deployment",
+   "Deploy the agent and address fairness complaints only if customers report them",
+   "Limit the agent's use to a single, homogeneous group of customers to simplify testing"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Fulfilling the fairness principle requires proactively testing for disparate outcomes across groups before deployment, not relying on aggregate accuracy or reactive complaint handling.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "3.1.1-11",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Beyond explaining how a model reached a given output, the transparency principle also requires that users be told when the content they are viewing was generated by AI rather than a human. What is this requirement commonly called?",
+  "choices": [
+   "AI-generated content disclosure",
+   "Data encryption at rest",
+   "Model retraining cadence",
+   "Vendor pricing transparency"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Transparency includes disclosing to users when they are interacting with or viewing AI-generated content, in addition to explaining model behavior.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "3.1.1-12",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Before any AI solution goes live, which set of elements should an organization define as baseline governance principles?",
+  "choices": [
+   "The marketing budget for the AI product launch",
+   "Control-plane ownership, data governance and compliance, security requirements, and approved development standards",
+   "The number of employees who will use the AI solution daily",
+   "The visual design of the AI application's user interface"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Governance principles establish baseline policies covering control-plane ownership, data governance and compliance, security, and approved development frameworks/protocols.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai-agents/governance-security-across-organization"
+ },
+ {
+  "id": "3.1.1-13",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "According to Microsoft's guidance, which sequence describes how responsible AI is typically applied in practice?",
+  "choices": [
+   "Build team culture first, skip formal governance, then define standards last if needed",
+   "Set standards, establish governance, embed safeguards into delivery and operations, then build team habits and culture",
+   "Deploy AI solutions first, then define principles retroactively if issues arise",
+   "Establish an AI council only after a major incident occurs"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Responsible AI in practice follows the sequence: set standards, establish governance, embed safeguards into delivery/operations, and build team habits/culture.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai-agents/governance-security-across-organization"
+ },
+ {
+  "id": "3.1.1-14",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Two teams disagree on whether a proposed AI use case poses unacceptable risk to customer privacy, and the disagreement cannot be resolved at the team level. What is the appropriate governance mechanism for resolving it?",
+  "choices": [
+   "Escalate the decision to the AI council for review",
+   "Let each team's manager decide independently without coordination",
+   "Postpone the decision indefinitely without documenting it",
+   "Move the use case to production and monitor for complaints"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The AI council provides escalation for ambiguous or high-impact use cases that cannot be resolved at lower levels.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/strategy/responsible-ai"
+ },
+ {
+  "id": "3.1.1-15",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which statement best describes the relationship between Responsible AI principles and an organization's data governance and compliance policies?",
+  "choices": [
+   "They are identical concepts with interchangeable names",
+   "RAI principles form the ethical foundation for AI behavior, while data governance and compliance are separate but aligned policy domains built on top of them",
+   "Data governance and compliance policies replace the need for RAI principles entirely",
+   "RAI principles apply only to Azure Machine Learning workloads, not Copilot-based solutions"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "RAI principles are the ethical foundation for AI behavior, while data governance and compliance are related but distinct policy domains that align with those principles.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai-agents/governance-security-across-organization"
+ },
+ {
+  "id": "3.1.1-16",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "How does the Microsoft Responsible AI Standard turn its six principles into something engineering teams can actually implement?",
+  "choices": [
+   "It defines goals, requirements, and practices for each principle across the AI development lifecycle",
+   "It replaces the principles with a single legally binding disclaimer shown to end users",
+   "It limits the principles to Azure Machine Learning workloads and excludes Copilot-based solutions",
+   "It assigns each principle to a separate regional compliance office with no shared standard"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The Responsible AI Standard operationalizes its six principles by defining goals (what it means to uphold a principle), requirements (how to uphold it), and practices (aids that help satisfy the requirements), applied across the AI development lifecycle.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai"
+ },
+ {
+  "id": "3.1.1-17",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A company designs an AI assistant intended to be usable by employees with a range of abilities, languages, and technical skill levels. Which Responsible AI principle does this design goal most directly reflect?",
+  "choices": [
+   "Inclusiveness",
+   "Privacy and security",
+   "Reliability and safety",
+   "Accountability"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Inclusiveness focuses on designing AI systems that are accessible and usable by people with diverse abilities and backgrounds.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "3.1.1-18",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An AI system that processes sensitive health records must prevent unauthorized data access and avoid leaking confidential information through its outputs. Which Responsible AI principle is most directly relevant here?",
+  "choices": [
+   "Fairness",
+   "Privacy and security",
+   "Inclusiveness",
+   "Transparency"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Privacy and security addresses protecting sensitive data and preventing unauthorized access or data leakage.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "3.1.1-19",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Within an AI council, which responsibility belongs to the change management representative?",
+  "choices": [
+   "Approving the technical architecture of AI agents",
+   "Managing adoption, communications, and feedback related to AI initiatives",
+   "Reviewing regulatory compliance obligations",
+   "Building governance reporting dashboards"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Change management within the AI council focuses on adoption, communications, and feedback, not technical or legal review.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/strategy/responsible-ai"
+ },
+ {
+  "id": "3.1.1-20",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A vendor datasheet describes responsible AI using only four principles: fairness, accountability, transparency, and ethics. How should an organization reconcile this with the broader Microsoft Responsible AI Standard when defining enterprise AI strategy?",
+  "choices": [
+   "Treat the four-principle framing as a full replacement for the Responsible AI Standard",
+   "Recognize the six-principle Responsible AI Standard as the more complete framework, with the four-principle version as a simplified, product-specific framing",
+   "Disregard both frameworks as unrelated to Microsoft",
+   "Apply the four principles only to on-premises AI solutions"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft's canonical Responsible AI Standard defines six principles (fairness, reliability and safety, privacy and security, inclusiveness, transparency, accountability); a shorter four-principle summary in other material should be treated as a simplified subset, not a replacement.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "3.1.1-21",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An organization wants an AI agent to behave consistently and avoid causing harm even when it receives unexpected or edge-case inputs. Which Responsible AI principle addresses this requirement?",
+  "choices": [
+   "Reliability and safety",
+   "Fairness",
+   "Inclusiveness",
+   "Accountability"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Reliability and safety concerns ensuring AI systems perform consistently and safely, including under unexpected conditions.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "3.1.1-22",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Within an organization's AI governance structure, which statement correctly distinguishes day-to-day technical implementation from strategic oversight?",
+  "choices": [
+   "The AI council performs both strategic oversight and day-to-day technical implementation equally",
+   "IT and platform enablement handle technical readiness and implementation, while the AI council as a whole provides strategic oversight and escalation",
+   "Only the executive sponsor performs technical implementation tasks",
+   "Risk, legal, and compliance perform all technical implementation tasks"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Within the AI council, IT and platform enablement handle technical readiness and governance implementation, while the council overall provides strategic oversight and escalation.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/strategy/responsible-ai"
+ },
+ {
+  "id": "3.1.3-01",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A company is standing up its core Microsoft 365 Copilot adoption team before rollout begins. Which set of functions should be represented from the outset?",
+  "choices": [
+   "IT, HR, Communications, and Legal",
+   "IT and Finance only, to control licensing spend",
+   "Communications and external vendor consultants only",
+   "Legal and the executive sponsor only"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft guidance describes the core adoption team as cross-functional, spanning IT, HR, Communications, and Legal rather than being an IT-only initiative.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-minimum-requirements-rollout"
+ },
+ {
+  "id": "3.1.3-02",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An adoption program has moved past initial rollout and now needs to manage growing volumes of AI-referenced content. Which specialty should join the adoption team to address content governance?",
+  "choices": [
+   "An information architect or records-management specialist",
+   "A second help-desk technician to handle support volume",
+   "A procurement specialist to renegotiate licensing",
+   "A payroll administrator to track usage-based costs"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Mature adoption programs add information architecture/records-management expertise to address content governance as usage scales.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-minimum-requirements-rollout"
+ },
+ {
+  "id": "3.1.3-03",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A CIO states, \"Once IT deploys the licenses, the business units will figure out how to use Copilot on their own.\" What is the main weakness in this plan?",
+  "choices": [
+   "It treats adoption as a one-time technical deployment rather than an ongoing cross-functional change effort",
+   "It correctly assigns full ownership of adoption to IT",
+   "It places too much emphasis on HR's role in the rollout",
+   "It underestimates the amount of server capacity required"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Adoption strategy guidance frames adoption as a cross-functional organizational change effort, not an IT-only deployment task.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-minimum-requirements-rollout"
+ },
+ {
+  "id": "3.1.3-04",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An adoption lead wants direct reports to start using Copilot in daily meetings. Which approach reflects Microsoft's recommended practice for driving team-level adoption?",
+  "choices": [
+   "Managers demonstrate their own regular use of the tool before expecting their teams to adopt it",
+   "Managers delegate all usage demonstrations to the champions network",
+   "Managers wait until usage metrics improve before engaging personally",
+   "Managers avoid using the tool themselves so employees are not pressured"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A recurring theme in Microsoft's adoption guidance is that visible manager usage and role-modeling drives team-level adoption far more effectively than delegating usage entirely to champions or waiting on metrics.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/track-copilot-adoption"
+ },
+ {
+  "id": "3.1.3-05",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An organization runs both an AI council and an adoption team in parallel. How do their primary responsibilities differ?",
+  "choices": [
+   "The adoption team executes the rollout day to day, while the AI council provides governance and strategic oversight",
+   "The adoption team sets data-security policy while the AI council trains end users",
+   "The AI council manages licensing costs while the adoption team approves data governance rules",
+   "The two groups perform the same function and exist only for reporting purposes"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The AI council provides cross-functional governance and strategic oversight, while the adoption team is responsible for the practical execution of the rollout.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "3.1.3-06",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which pair of concerns is most commonly cited as a barrier slowing employee adoption of AI tools?",
+  "choices": [
+   "Inaccurate or hallucinated output, and data security concerns",
+   "Excessive executive sponsorship and too many trained champions",
+   "Overly detailed documentation of use cases",
+   "Too many available licenses across departments"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's adoption guidance lists inaccurate output/hallucinations and data security concerns among the most commonly cited barriers to adoption.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/track-copilot-adoption"
+ },
+ {
+  "id": "3.1.3-07",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Six months after rollout, Copilot usage has plateaued. Leadership concludes the sole cause is insufficient end-user training and schedules another generic training session. What is the flaw in this response?",
+  "choices": [
+   "It overlooks other likely causes, such as data quality, governance gaps, or waning leadership engagement",
+   "It correctly isolates training as the only variable that affects a usage plateau",
+   "It shifts too much responsibility onto champions instead of trainers",
+   "It focuses on Legal and Communications instead of the real root cause, which is IT capacity"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Adoption plateaus are frequently misattributed to a training gap when the root cause is often poor data quality, governance issues, or disengaged leadership.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/track-copilot-adoption"
+ },
+ {
+  "id": "3.1.3-08",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An organization's SharePoint content has years of duplicate, outdated files with inconsistent permissions, which is degrading the quality of Copilot's responses. What category of adoption barrier does this represent?",
+  "choices": [
+   "A technical/data barrier",
+   "A human/behavioral barrier",
+   "An organizational budgeting barrier",
+   "A licensing-model barrier"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Poor data quality and legacy content hygiene are technical/data-related barriers that directly affect the accuracy and trustworthiness of AI outputs.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/track-copilot-adoption"
+ },
+ {
+  "id": "3.1.3-09",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An executive proposes measuring the success of the Copilot rollout using only the number of monthly logins per user. What is the best critique of this measurement approach?",
+  "choices": [
+   "Login counts alone don't capture business or human impact, which is the more meaningful indicator of success",
+   "Login counts are the single most reliable metric available and should remain the only KPI",
+   "This method requires no additional tooling, which makes it the preferred approach",
+   "Login counts should be replaced entirely by tracking license renewal costs"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Measuring only usage volume is a common misstep; adoption guidance recommends tying success metrics to business and human impact rather than raw usage counts.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/track-copilot-adoption"
+ },
+ {
+  "id": "3.1.3-10",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A department has strong data governance and no reported security issues, yet leadership still cannot articulate what business problem Copilot is meant to solve. Which category of barrier does this reflect?",
+  "choices": [
+   "An organizational barrier",
+   "A technical barrier",
+   "A human/behavioral barrier",
+   "A licensing barrier"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Unclear or unproven business value is an organizational barrier, distinct from the technical barriers of data quality and security.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/track-copilot-adoption"
+ },
+ {
+  "id": "3.1.3-11",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "How is the role of an AI champion best described within an organization's adoption strategy?",
+  "choices": [
+   "A peer volunteer from the business who models usage and helps colleagues turn early interest into habit",
+   "A help-desk technician assigned to resolve Copilot support tickets",
+   "A Legal reviewer who checks AI outputs for compliance violations",
+   "A consultant retained to run the technical rollout"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Champions are peer volunteers embedded in business units who model usage and reinforce habits, not IT support staff or external consultants.",
+  "ref": "https://learn.microsoft.com/en-us/office365/customlearning/champ_education"
+ },
+ {
+  "id": "3.1.3-12",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A manager argues the champions program is redundant because L&D already runs formal Copilot training sessions. What is the flaw in this reasoning?",
+  "choices": [
+   "Champions provide informal, peer-level reinforcement that supplements formal training rather than duplicating it",
+   "Champions and formal training serve an identical function, so one should be eliminated",
+   "Champions exist mainly to reduce the workload of the L&D team",
+   "Formal training is unnecessary once a champions program is in place"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Champions provide informal peer-level reinforcement of real-world usage; they are a complement to, not a replacement for, formal training.",
+  "ref": "https://learn.microsoft.com/en-us/office365/customlearning/champ_education"
+ },
+ {
+  "id": "3.1.3-13",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An adoption lead is selecting the first cohort of AI champions. Which sources should they draw on to identify strong candidates?",
+  "choices": [
+   "Usage data such as a Copilot Dashboard, together with manager nominations and input from the AI council",
+   "Help-desk ticket volume by department",
+   "Tenure and vacation-day records for each employee",
+   "Job title seniority alone, regardless of actual product usage"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Champions are typically identified through the AI council, user community engagement, manager nomination, or usage data such as a Copilot Dashboard report.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/track-copilot-adoption"
+ },
+ {
+  "id": "3.1.3-14",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A champions program is made up entirely of unpaid volunteers with no defined time commitment or manager backing. After a few months, several champions stop participating. What does this scenario illustrate?",
+  "choices": [
+   "Champion burnout caused by an informal program lacking structure and accountability",
+   "A model outcome that should be replicated in every department",
+   "Evidence that champions programs add little value to adoption efforts",
+   "A sign that too many resources were allocated to the champions program"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Ad hoc, unstructured champion programs without defined commitments or manager backing are a known cause of champion burnout and disengagement.",
+  "ref": "https://learn.microsoft.com/en-us/office365/customlearning/champ_education"
+ },
+ {
+  "id": "3.1.3-15",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "To keep a champions program sustainable over multiple quarters, which practice is most recommended?",
+  "choices": [
+   "Set an explicit minimum time commitment for champions and secure manager approval and support",
+   "Leave expectations undefined so champions can decide their own involvement",
+   "Recruit champions exclusively from the IT department for consistency",
+   "Restrict the program to a single business unit to simplify coordination"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Structured champion programs set explicit guardrails, such as a defined monthly time commitment and manager support, to prevent burnout and ensure sustainability.",
+  "ref": "https://learn.microsoft.com/en-us/office365/customlearning/champ_education"
+ },
+ {
+  "id": "3.1.3-16",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An organization runs an adoption team, an AI council, and a champions network at the same time. How do these three groups differ in purpose?",
+  "choices": [
+   "The adoption team executes the rollout, the AI council governs strategy and oversight, and champions provide peer-level enablement in business units",
+   "All three groups perform identical governance functions and could be merged",
+   "The AI council trains end users while the adoption team sets governance policy",
+   "Champions take over the adoption team's responsibilities once rollout ends"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "These are distinct, testable concepts: adoption team (execution), AI council (governance/oversight), and champions (peer enablement).",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "3.1.3-17",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business unit shows strong initial enthusiasm for Copilot but employees revert to their old workflow within weeks. Which element of the adoption strategy most directly addresses this specific risk?",
+  "choices": [
+   "A champions program that reinforces habit formation through ongoing peer modeling",
+   "An increase in the number of Copilot licenses issued to the unit",
+   "A temporary restriction on Copilot access to reduce support load",
+   "A shift of governance decisions from the AI council to Legal"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Champions programs are specifically designed to convert initial interest into sustained habit through ongoing peer reinforcement.",
+  "ref": "https://learn.microsoft.com/en-us/office365/customlearning/champ_education"
+ },
+ {
+  "id": "3.1.3-18",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Employees report they understand how Copilot works but are hesitant to change habits they've relied on for years and don't fully trust its output. Which type of adoption barrier does this describe?",
+  "choices": [
+   "A human/behavioral barrier",
+   "A technical/data barrier",
+   "An organizational barrier",
+   "A licensing-model barrier"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Habit change and trust are human/behavioral barriers, distinct from technical data issues or organizational ROI concerns.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/track-copilot-adoption"
+ },
+ {
+  "id": "3.1.3-19",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An organization's adoption team is staffed entirely with IT managers, with no representation from the business side. As the program matures and agent management responsibilities emerge, what gap does this create?",
+  "choices": [
+   "Business managers are also needed, since they are expected to eventually take ownership of agent management",
+   "No gap exists, since IT managers can retain agent management responsibilities indefinitely",
+   "This composition is the recommended long-term structure and needs no change",
+   "Business managers are only relevant to Legal compliance, not to agent management"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "As adoption matures, business managers are expected to take ownership of agent management rather than leaving it solely with IT.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-minimum-requirements-rollout"
+ },
+ {
+  "id": "3.1.3-20",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "As an adoption team matures, it wants to better document and refine the business processes that Copilot is being applied to. Which roles should it add to support this?",
+  "choices": [
+   "Business process owners, analysts, and architects",
+   "External auditors focused solely on financial compliance",
+   "A single executive sponsor with no supporting staff",
+   "IT infrastructure engineers with no process ownership"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "As adoption matures, business process owners, analysts, and architects join the adoption team to support process documentation and refinement.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-minimum-requirements-rollout"
+ },
+ {
+  "id": "3.1.3-21",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A newly formed adoption team wants to add a role responsible for structured, ongoing employee training on AI tools. Which function should be added to the team?",
+  "choices": [
+   "A learning & development (L&D) representative",
+   "A second Legal representative",
+   "An additional Communications representative with no training scope",
+   "A finance representative to track license renewal costs"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learning & development representation is added to mature adoption teams specifically to own structured, ongoing training.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-minimum-requirements-rollout"
+ },
+ {
+  "id": "3.1.4-01",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A large volume of SharePoint content in one department covers only a narrow set of business scenarios. Leadership wants to know if this affects Microsoft 365 Copilot output quality for that department. What should they conclude?",
+  "choices": [
+   "Output quality is at risk because the content is not representative of the full range of scenarios, regardless of its volume",
+   "Large data volume alone guarantees accurate and unbiased Copilot responses",
+   "Copilot output quality depends only on licensing tier, not on underlying content",
+   "Narrow content scope only affects search results, never generative responses"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "AI output quality depends on data being representative of real scenarios, not merely large in volume; unrepresentative data risks biased or unreliable output.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "3.1.4-02",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A governance lead is concerned that Microsoft 365 Copilot might surface content that users technically had access to but were never aware was so broadly shared. Which term describes this risk, and what should be done before rollout?",
+  "choices": [
+   "Model drift; retrain the underlying model on curated tenant content",
+   "Prompt injection; enable XPIA classifiers for all users",
+   "Oversharing; run a permission and access assessment using Microsoft Purview before rollout",
+   "Data residency violation; move all content into the EU Data Boundary"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Copilot surfaces only content a user already has permission to access, so overly broad existing permissions (oversharing) become visible; the fix is a Purview-based permission assessment, not a Copilot-side control.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "3.1.4-03",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A CISO asks whether prompts, responses, and data retrieved through Microsoft Graph during Copilot use are used to train the underlying foundation large language models. What is the correct answer?",
+  "choices": [
+   "Only response text is used for training; prompts are discarded immediately",
+   "They are used to train the models, but only for tenants that have not opted out",
+   "They are not used to train the foundation models",
+   "They are used to retrain the models on a rolling monthly basis"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Microsoft's stated data protection commitment is that Copilot prompts, responses, and Graph-grounded data are not used to train the foundation models.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "3.1.4-04",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "During adoption planning for an AI system, which three areas does Microsoft identify as the core security considerations a decision-maker must evaluate?",
+  "choices": [
+   "Application security, data security, and authentication requirements",
+   "Model architecture, token throughput, and GPU capacity",
+   "Network bandwidth, storage capacity, and licensing tier",
+   "Change management, user training, and help-desk staffing"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The exam objective explicitly names application security, data security, and authentication requirements as the security considerations for AI systems.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/security-microsoft-365-copilot"
+ },
+ {
+  "id": "3.1.4-05",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An IT director believes that adopting Microsoft 365 Copilot requires building a separate permission model apart from existing SharePoint and Teams permissions. Is this correct?",
+  "choices": [
+   "Yes, Copilot requires its own dedicated permission layer configured independently of Microsoft 365",
+   "No, Copilot reuses the existing Microsoft 365 and Microsoft Entra permission model rather than introducing a new one",
+   "Yes, but only for content accessed through Excel and Word connected experiences",
+   "No, Copilot ignores existing permissions and instead relies on network-level access controls"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Copilot honors the existing permission model already enforced by Microsoft Graph and Entra rather than adding a parallel permission system.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/security-microsoft-365-copilot"
+ },
+ {
+  "id": "3.1.4-06",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A security architect wants a control that specifically detects attempts to manipulate an AI system into bypassing its instructions or safety guardrails. Which built-in Copilot protection addresses this?",
+  "choices": [
+   "Protected material detection",
+   "Microsoft Entra conditional access policies",
+   "XPIA (cross-prompt injection attack) classifiers",
+   "Data loss prevention labels applied through Purview"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "XPIA classifiers are the built-in Copilot protection specifically aimed at detecting jailbreak and prompt-injection attempts.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/security-microsoft-365-copilot"
+ },
+ {
+  "id": "3.1.4-07",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A compliance officer wants Copilot-generated output screened for content that may infringe third-party copyright or licensing. Which built-in capability addresses this directly?",
+  "choices": [
+   "Harmful content filters for hate and fairness",
+   "Tenant isolation enforced through Microsoft Entra",
+   "Protected material detection",
+   "Sensitivity label inheritance from source documents"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Protected material detection is the specific control aimed at identifying copyrighted or licensed content in generated output.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/security-microsoft-365-copilot"
+ },
+ {
+  "id": "3.1.4-08",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "For privacy planning, which set of compliance and regulatory commitments does Microsoft 365 Copilot inherit from the existing Microsoft 365 commercial cloud?",
+  "choices": [
+   "PCI DSS only, since Copilot is treated as a financial transaction system",
+   "GDPR, the EU Data Boundary, ISO 27001, and HIPAA",
+   "SOC 2 Type I only, with no coverage for EU-specific regulations",
+   "No inherited commitments; each tenant must independently certify Copilot separately"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Copilot is covered by Microsoft 365's existing commercial commitments including GDPR, the EU Data Boundary, ISO 27001, and HIPAA.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "3.1.4-09",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company operating entirely within the EU wants confirmation that all AI processing behind Microsoft 365 Copilot stays within the EU Data Boundary. What should they be told?",
+  "choices": [
+   "EU customer traffic generally stays within the EU Data Boundary, but Anthropic models used in Copilot are out of scope of that boundary",
+   "All models powering Copilot, without exception, are covered by the EU Data Boundary",
+   "The EU Data Boundary applies only to Azure OpenAI workloads, never to Microsoft 365 services",
+   "EU Data Boundary coverage for Copilot must be purchased as a separate add-on"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "While EU traffic generally stays within the EU Data Boundary, Anthropic models used within Copilot are explicitly called out as out of scope of that boundary; EU and UK tenants have Anthropic models disabled by default for this reason.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "3.1.4-10",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An employee wants to review and delete their own history of Copilot interactions without involving an administrator. Where can they do this?",
+  "choices": [
+   "Microsoft Purview eDiscovery",
+   "The My Account portal",
+   "The Microsoft 365 admin center audit log",
+   "Azure AI Foundry activity dashboard"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Individual users can view and delete their own Copilot activity history through the My Account portal.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "3.1.4-11",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "To reduce data movement concerns, an admin disables the tenant-wide 'connected experiences' privacy setting across Microsoft 365 apps. What trade-off should leadership be aware of?",
+  "choices": [
+   "It only disables spell-check and grammar suggestions, with no effect on Copilot",
+   "It can disable Copilot features in apps such as Word, Excel, PowerPoint, Outlook, and OneNote",
+   "It improves Copilot's grounding accuracy without any loss of functionality",
+   "It affects only billing metering and has no impact on available features"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Connected experiences privacy controls, if turned off, can disable Copilot functionality in the named Office apps, creating a real privacy-versus-feature-availability trade-off.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "3.1.4-12",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Generative AI usage costs in Azure AI Foundry (Azure OpenAI Service) are primarily metered based on which unit of consumption?",
+  "choices": [
+   "Number of active user seats per month",
+   "Gigabytes of storage consumed by prompt and response logs",
+   "Tokens processed as input and output",
+   "Number of distinct API endpoints deployed"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Generative AI usage is billed based on tokens consumed for both input and output, priced per unit such as per 1M tokens.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/manage-costs"
+ },
+ {
+  "id": "3.1.4-13",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A finance team is evaluating how Microsoft 365 Copilot can be licensed for their organization. Which set of options correctly describes the available licensing models?",
+  "choices": [
+   "A mandatory multi-year enterprise agreement with no monthly option",
+   "A monthly per-user license, inclusion with certain Microsoft 365 subscriptions, or pay-as-you-go metered usage",
+   "A one-time perpetual license purchased per device",
+   "A free tier with paid add-ons available only for additional storage"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft 365 Copilot licensing explicitly supports a monthly per-user license, inclusion with certain M365 subscriptions, and pay-as-you-go metered usage.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "3.1.4-14",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An organization expects steady, high-volume AI inference workloads in Azure AI Foundry and wants predictable per-unit pricing instead of variable charges. Which pricing model should they choose over pay-as-you-go?",
+  "choices": [
+   "A commitment tier (provisioned throughput)",
+   "Spot pricing with no throughput guarantee",
+   "An extended free trial tier",
+   "A one-time training charge with no ongoing inference cost"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Commitment tiers (provisioned throughput) trade an upfront commitment for predictable, often lower per-unit costs at scale, unlike variable pay-as-you-go pricing.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/manage-costs"
+ },
+ {
+  "id": "3.1.4-15",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A product manager assumes that fine-tuning a model will always lower overall AI costs compared to using a pretrained model as-is. Why is this assumption generally incorrect?",
+  "choices": [
+   "Fine-tuned models are not permitted in commercial cloud environments",
+   "Fine-tuning eliminates token-based charges entirely once deployed",
+   "Fine-tuning adds separate training, hosting, and inference costs that can exceed the cost of using a pretrained model",
+   "Fine-tuning is only available under commitment-tier pricing, which is always more expensive"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Fine-tuning introduces additional training, hosting, and inference costs beyond standard usage, so it is not automatically cheaper than a pretrained model.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/manage-costs"
+ },
+ {
+  "id": "3.1.4-16",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A CFO asks how to justify the token-based cost of a new generative AI feature to the board. Which framing best matches Microsoft's guidance on evaluating AI cost drivers?",
+  "choices": [
+   "Present token and hosting costs in isolation, since AI pricing cannot be tied to business outcomes",
+   "Show only the vendor's list price per token, without accounting for the feature's actual usage patterns",
+   "Connect cost drivers such as tokens and hosting to business value like productivity gains, to build an ROI case",
+   "Report only the total invoice amount, since itemized token costs are not meaningful to a board"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The exam objective on cost explicitly expects cost drivers such as tokens to be weighed against business value and ROI, not treated as a standalone technical figure.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/manage-costs"
+ },
+ {
+  "id": "3.1.4-17",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "From a data security standpoint, how does the Azure OpenAI Service backing Microsoft 365 Copilot handle customer content submitted in prompts?",
+  "choices": [
+   "Human reviewers routinely sample Copilot prompts for quality assurance, with no opt-out available",
+   "Copilot has opted out of human sampling of customer content for abuse review, and Azure OpenAI does not cache that content for this purpose",
+   "Customer prompts are cached indefinitely to improve future model responses",
+   "All customer content is retained permanently in a shared cross-tenant training corpus"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft 365 Copilot has opted out of human review sampling of customer content, and the underlying Azure OpenAI service does not cache that content for such purposes.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "3.1.4-18",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "From a data security standpoint, how does Microsoft 365 Copilot generally protect tenant data and enforce isolation between customers?",
+  "choices": [
+   "Through identity-based access controls and encryption of data at rest and in transit, without using customer data to train the underlying foundation models",
+   "Through a shared administrator account with manual per-tenant approval for each request",
+   "Through plain-text storage protected solely by perimeter network firewalls",
+   "Through physical separation of hardware per customer with no centralized identity system"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot relies on identity-based access control and encryption of data at rest and in transit for tenant isolation, and does not use customer prompts or data to train the underlying foundation models.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/security-microsoft-365-copilot"
+ },
+ {
+  "id": "3.1.5-01",
+  "obj": "3.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A company's employees are all licensed on Microsoft 365 E3, and the organization has not purchased any additional Copilot offering. What Copilot capability is available to these employees right now?",
+  "choices": [
+   "No Copilot capability until a separate add-on or agent license is purchased",
+   "Microsoft 365 Copilot Chat, included at no additional cost with their existing subscription",
+   "The Microsoft 365 Copilot add-on, available immediately at no extra charge",
+   "Metered Copilot usage billed automatically to the tenant's Azure subscription"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft 365 Copilot Chat is included at no extra cost with any eligible Microsoft 365 or Office 365 subscription, including E3. The paid Copilot add-on still requires a separate purchase.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-chat-requirements"
+ },
+ {
+  "id": "3.1.5-02",
+  "obj": "3.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An adoption lead needs to explain the difference between the two grounding modes of Microsoft 365 Copilot Chat to end users. Which description is accurate?",
+  "choices": [
+   "Both modes draw on the same internet index and differ only by which client app launches them",
+   "Web-grounded chat draws on public internet/Bing data, while work-grounded chat draws on the user's organizational content via their Entra work or school account",
+   "Web-grounded chat requires a Microsoft 365 Copilot add-on license, while work-grounded chat does not",
+   "Work-grounded chat is only available to Government Community Cloud tenants"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Copilot Chat has a web-grounded mode using internet/Bing data and a work-grounded mode that draws on the user's organizational content via their Entra account. Neither mode requires the paid Copilot add-on.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-chat-requirements"
+ },
+ {
+  "id": "3.1.5-03",
+  "obj": "3.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A business wants Copilot to draft and summarize content directly inside Word, Excel, and Outlook, not just through a chat interface. What must they add to their existing qualifying Microsoft 365 subscription?",
+  "choices": [
+   "Nothing further, since Copilot Chat already delivers this experience",
+   "The Microsoft 365 Copilot add-on license",
+   "A prepaid Copilot capacity pack allocated in the Power Platform admin center",
+   "A pay-as-you-go billing policy tied to Azure"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Deep in-app integration across Office apps requires the paid Microsoft 365 Copilot add-on, layered on top of an existing qualifying base subscription.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-licensing"
+ },
+ {
+  "id": "3.1.5-04",
+  "obj": "3.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A procurement manager asks whether Microsoft 365 Copilot can be purchased as a completely standalone product, without any other Microsoft 365 subscription in place. What is the correct answer?",
+  "choices": [
+   "Yes, it has been offered as a standalone SKU since general availability",
+   "Yes, but only for Government Community Cloud tenants",
+   "No, it requires an existing qualifying base subscription such as Business Standard or E3/E5",
+   "No, it requires only a standalone Azure subscription with no Microsoft 365 plan"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Microsoft 365 Copilot is an add-on plan and is never sold standalone; it requires a qualifying base subscription such as Business Standard or E3/E5.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-licensing"
+ },
+ {
+  "id": "3.1.5-05",
+  "obj": "3.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A finance director wants to understand how pay-as-you-go Copilot usage will show up on invoices. How is it billed?",
+  "choices": [
+   "As a per-seat charge in the Microsoft 365 admin center",
+   "As metered consumption through an Azure subscription",
+   "As a flat monthly fee in the Power Platform admin center",
+   "As an app purchase through the Microsoft Store"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Pay-as-you-go is a consumption model tied to an Azure subscription and billed via Azure meters, separate from Microsoft 365 seat licensing.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/pay-as-you-go/meters"
+ },
+ {
+  "id": "3.1.5-06",
+  "obj": "3.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Microsoft meters Microsoft 365 Copilot Chat agent and SharePoint agent usage under pay-as-you-go using a single unified currency. What is it called?",
+  "choices": [
+   "Copilot Credits",
+   "Compute Units",
+   "Service Tokens",
+   "Usage Points"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft uses Copilot Credits as the unified, feature-based consumption currency for pay-as-you-go agent usage.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/pay-as-you-go/meters"
+ },
+ {
+  "id": "3.1.5-07",
+  "obj": "3.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A prepaid Capacity Pack for Copilot pay-as-you-go usage provides which type of benefit to an organization?",
+  "choices": [
+   "A fixed monthly allotment of Copilot Credits included in the cost, refreshed each billing cycle",
+   "Unlimited Copilot usage with no metering at all",
+   "A one-time lifetime credit balance that never renews",
+   "A discount code redeemable only for Azure OpenAI fine-tuning"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Capacity Packs provide a prepaid, fixed monthly allotment of Copilot Credits that refreshes each billing period, giving organizations predictable cost for steady usage.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/pay-as-you-go/copilot-capacity-packs"
+ },
+ {
+  "id": "3.1.5-08",
+  "obj": "3.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An admin purchases a standalone prepaid Capacity Pack without configuring any pay-as-you-go billing policy. What happens when the pack's monthly credits run out partway through the month?",
+  "choices": [
+   "Overage usage automatically flows to Azure billing without interruption",
+   "The tenant is invoiced an overage fee at month end",
+   "The Copilot Chat agent or SharePoint agent service pauses until the next billing cycle",
+   "The tenant is automatically upgraded to a larger capacity pack tier"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Without a paired pay-as-you-go billing policy, a standalone capacity pack simply stops providing service once its credits run out, resuming next billing cycle.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/pay-as-you-go/copilot-capacity-packs"
+ },
+ {
+  "id": "3.1.5-09",
+  "obj": "3.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Leadership wants Copilot agent availability to continue uninterrupted during usage spikes, with any overage billed automatically rather than the service pausing. Which configuration meets this requirement?",
+  "choices": [
+   "A prepaid Capacity Pack used on its own with no Azure subscription",
+   "A Capacity Pack paired with a pay-as-you-go billing policy for automatic overage billing",
+   "Pay-as-you-go alone, with no capacity pack in place",
+   "Microsoft 365 Copilot Chat with no further configuration"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Pairing a Capacity Pack with a pay-as-you-go billing policy lets usage continue uninterrupted, with overage automatically billed to Azure instead of the service pausing.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/pay-as-you-go/copilot-capacity-packs"
+ }
+]
