@@ -10,6 +10,7 @@ difficulty levels. Original questions, not exam dumps.
 | AB-650 | Administering Microsoft 365 and AI Services | `docs/ab650/` |
 | GH-600 | Developing in Agentic AI Systems | `docs/gh600/` |
 | AI-300 | Operationalizing Machine Learning and Generative AI Solutions | `docs/ai300/` |
+| AI-103 | Developing AI Apps and Agents on Azure | `docs/ai103/` |
 
 Open `docs/index.html` in a browser, or host it on GitHub Pages:
 

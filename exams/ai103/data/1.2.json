@@ -1,0 +1,236 @@
+[
+ {
+  "id": "1.2.2-01",
+  "obj": "1.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Vineyard plans a customer-facing assistant for its European business. A compliance requirement states that prompts and responses must be processed only within the EU Data Boundary.\n\nTraffic is bursty and unpredictable, so the company wants pay-per-token billing. The company also wants higher default quota than a deployment that is pinned to one Azure region provides, and it accepts that requests can be served by any region inside the EU Data Boundary.\n\nYou need to recommend a deployment type.\n\nWhich deployment type should you recommend?",
+  "choices": [
+   "Global Standard",
+   "Standard",
+   "Data Zone Standard in an EU region",
+   "Data Zone Provisioned in an EU region"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn's selection criteria map an EU data zone requirement to DataZone Standard or DataZone Provisioned in an EU region, and a variable, bursty pattern to pay-per-token standard types. Data Zone Standard also provides higher default quotas than geography-based deployment types while keeping processing inside the specified zone. Global Standard routes traffic to any Azure region where the model is deployed and offers the highest default quota. Learn states that Global deployments can process prompts in any geography, which breaks the EU Data Boundary requirement. A Standard deployment processes data in the deployment region only, so it satisfies data residency. Learn positions it for single-region requirements and it carries lower default quota than the data zone option the company asked for. Data Zone Provisioned honors the same EU boundary and adds reserved capacity with predictable latency. Capacity is purchased in provisioned throughput units rather than billed per token, which contradicts the bursty, pay-per-token requirement.",
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/deployment-types#choose-the-right-deployment-type"
+ },
+ {
+  "id": "1.2.4-01",
+  "obj": "1.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wide World Importers deploys a Foundry project from a GitHub repository by using a GitHub Actions workflow. The workflow provisions Bicep templates and publishes an agent version.\n\nA security standard forbids storing any long-lived client secret in the repository or in GitHub Actions secrets. The workflow must still sign in to Azure and act under a Microsoft Entra identity that holds the required roles.\n\nYou need to configure authentication for the workflow.\n\nWhich action should you perform?",
+  "choices": [
+   "Configure a federated identity credential for the repository, then sign in with the Azure Login action by using OpenID Connect",
+   "Create a service principal, store its client secret as a GitHub Actions secret, and pass the secret to the Azure Login action in the `creds` input",
+   "Store the Foundry project endpoint and an API key as GitHub Actions secrets and call the REST API directly",
+   "Enable a system-assigned managed identity on the Foundry resource and reference it from the workflow"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's prerequisites for using the Azure Login action with OpenID Connect are to configure a federated identity credential on a Microsoft Entra application or a user-assigned managed identity so that it trusts tokens issued by GitHub Actions to your repository. The runner then exchanges a short-lived token, so no client secret is stored anywhere. A client secret with the Azure Login action is a supported and widely used pattern. The secret is long-lived credential material held in the repository configuration, which is precisely what the standard forbids. An API key is also long-lived credential material, and it authenticates to a data plane rather than to Azure Resource Manager. Bicep provisioning would have nothing to sign in with. A managed identity on the Foundry resource lets that resource call other Azure services. A GitHub-hosted runner is outside Azure and cannot borrow it, so the workflow still has no way to authenticate.",
+  "ref": "https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect#prerequisites"
+ },
+ {
+  "id": "1.2.1-01",
+  "obj": "1.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel plans a Foundry Agent Service deployment. A data-exfiltration control states that outbound traffic from the agents must stay inside the corporate virtual network, and a data-residency control states that files, conversation threads, and vector stores must live in the company's own Azure resources.\n\nThe company already runs Azure Storage, Azure Cosmos DB for NoSQL, and Azure AI Search accounts that the agents will use.\n\nYou need to recommend an environment setup.\n\nWhich setup should you recommend?",
+  "choices": [
+   "Basic agent setup, with a private endpoint added to the Foundry account",
+   "Standard agent setup with Bring Your Own virtual network",
+   "Standard agent setup with public networking",
+   "Standard agent setup with public networking, and public network access disabled on the Foundry account"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn's comparison table shows that only Standard Setup with Private Networking provides private network isolation through Bring Your Own virtual network, described as keeping traffic confined to your network environment to help prevent data exfiltration. Standard setup also requires bringing your own Azure Storage, Azure AI Search, and Azure Cosmos DB, which satisfies the residency control. Basic setup stores conversation history, files, and vector stores in the platform's built-in storage, which breaks the residency control immediately. A private endpoint secures inbound access only and would not confine the agents' outbound traffic. Standard setup with public networking does keep all agent data in your own resources and supports customer-managed keys. Learn marks private network isolation as unavailable in this option, so outbound agent traffic still leaves the virtual network. Disabling public network access and adding a private endpoint secures inbound communication, and Learn notes that this can be applied to any setup. Learn is explicit that private network isolation refers to secured agent outbound communication, which this configuration does not provide.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/environment-setup#set-up-your-agent-environment"
+ },
+ {
+  "id": "1.2.1-02",
+  "obj": "1.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank plans to run hosted agents in a new Microsoft Foundry account. A compliance policy states that agent egress must never traverse the public internet, and the network team must own the IP ranges, the firewall, the peering, and the routing so that agents reach on-premises systems over ExpressRoute.\n\nA colleague proposes creating the Foundry account first, testing with public egress, and adding the virtual network configuration afterward.\n\nYou need to identify the correct action.\n\nWhich action should you perform?",
+  "choices": [
+   "Create the Foundry account, and then add virtual network injection to the existing account",
+   "Create the Foundry account, and then configure a managed virtual network for it",
+   "Create the Foundry account with public egress, and then add a private endpoint for inbound access from the virtual network",
+   "Create the Foundry account with virtual network injection into a subnet delegated to `Microsoft.App/environments`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Bring-your-own virtual network is the option in which you control IP ranges, firewall, peering, and routing, and Learn pairs it with VPN or ExpressRoute for reaching on-premises resources. The subnet must be dedicated, must use RFC 1918 address space, must be delegated to `Microsoft.App/environments`, and the injection must be set when the account is created. This is the proposal in the stem, and Learn rules it out directly: network injection is part of the create-resource flow and cannot be added to an existing account. Moving to a different network configuration afterward requires creating new projects. A managed virtual network delivers full isolation with no public egress, and Learn recommends it when you cannot manage IP ranges or your IP space overlaps. Microsoft owns the network in that model, which conflicts with the requirement that the bank own peering and routing. Adding a private endpoint secures the inbound path so that only callers inside the virtual network reach the Foundry endpoint. Learn states that with public egress the agents still reach data and Azure resources over public networking, so the compliance policy is unmet.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/concepts/networking-options#bring-your-own-virtual-network-requirements"
+ },
+ {
+  "id": "1.2.1-03",
+  "obj": "1.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lamna Healthcare Company plans a standard agent setup for a Microsoft Foundry account. Two Foundry projects run under the account, and every agent in both projects uses the Responses API runtime.\n\nThe company plans to reuse an existing Azure Cosmos DB for NoSQL account for thread storage. Capability host provisioning fails during deployment if the account has insufficient throughput.\n\nYou need to identify the minimum total throughput to configure on the Azure Cosmos DB account.\n\nWhich value should you configure?",
+  "choices": [
+   "3,000 RU/s",
+   "6,000 RU/s",
+   "10,000 RU/s",
+   "15,000 RU/s"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Standard setup provisions five containers per project, and each container requires a minimum of 1,000 RU/s, so two Responses API projects need 5 x 1,000 x 2. Learn states this exact calculation and result. Learn does state 3,000 RU/s as a documented floor, so the number is real. It covers three containers for a single project, and the stem describes two projects on the Responses API runtime. Learn gives 6,000 RU/s as the worked example for two projects that use only classic Assistants API agents, which provision three containers each. The stem specifies the Responses API runtime, which provisions five containers per project. This value exceeds the documented minimum and would raise cost without changing whether provisioning succeeds. The question asks for the minimum.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/use-your-own-resources#standard-agent-setup-use-existing-service-resources-and-storage-accounts"
+ },
+ {
+  "id": "1.2.1-04",
+  "obj": "1.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "City Power & Light plans a generative AI assistant for operators at 40 electrical substations. Each substation has intermittent or absent connectivity to Azure, and operational data must never leave the substation.\n\nThe platform team already operates Azure Arc-enabled Kubernetes clusters at each site, and it needs to manage model serving through the same Kubernetes workflows.\n\nYou need to recommend an inference platform.\n\nWhich platform should you recommend?",
+  "choices": [
+   "Foundry Local on Azure Local, deployed as an Azure Arc extension",
+   "A Global Standard model deployment in the nearest Azure region",
+   "A managed compute deployment in a Foundry project",
+   "A Regional Provisioned model deployment over ExpressRoute"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's workload table maps serving models for chat or generation on-premises, processing data that cannot leave the premises, and operating fully disconnected to Foundry Local on Azure Local. It installs as an Azure Arc extension and is managed through Kubernetes custom resources, which matches the existing operating model of the team. Learn currently marks Foundry Local on Azure Local as preview and available by request, and it supports Helm-based deployment alongside the Arc extension. Global Standard routes inference dynamically to any Azure region and requires connectivity for every request. It fails both the residency requirement and the disconnected requirement. Managed compute is a managed GPU platform-as-a-service that hosts open-source and custom models on dedicated accelerators. Those accelerators run inside Azure, not at the substation. Regional Provisioned keeps processing inside one Azure region and provides reserved capacity with predictable latency, which addresses residency at the Azure level. ExpressRoute is still a network path to Azure, so a connectivity outage at a substation stops inference.",
+  "ref": "https://learn.microsoft.com/azure/azure-sovereign-clouds/private/foundry-local/overview"
+ },
+ {
+  "id": "1.2.2-02",
+  "obj": "1.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Coho Winery stores 2 million historical customer reviews in a container in Azure Blob Storage. A data science team must classify the sentiment of every review by using a Foundry model.\n\nThe classification job runs once, no user waits on a response, and the results are needed within 24 hours. The team must minimize the cost per token, and the job must not consume the tokens-per-minute quota of the Global Standard deployment that serves the live recommendation application.\n\nYou need to select a deployment type.\n\nWhich deployment type should you select?",
+  "choices": [
+   "Global Standard, with the requests sent concurrently from the application",
+   "Global Batch, with the requests submitted in a single input file",
+   "Global Provisioned, sized for the throughput that the job requires",
+   "Data Zone Standard, with the requests sent concurrently from the application"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn describes Global Batch as handling large-scale processing by sending a large number of requests in a single file, with a 24-hour target turnaround at 50 percent less cost than Global Standard. Learn also states that Global Batch requests have a separate enqueued token quota, which avoids any disruption of online workloads. Global Standard bills per token and carries the highest default quota, so the job would eventually complete. It draws from the same tokens-per-minute quota as the live recommendation application, and Learn prices it at twice the batch rate. Global Provisioned reserves model processing capacity and delivers predictable throughput for latency-sensitive traffic. It bills hourly for reserved provisioned throughput units, which is the most expensive option for a one-time offline job. Data Zone Standard confines processing to a Microsoft-defined data zone and bills per token at the standard rate. The stem states no residency requirement, and this deployment type provides neither the batch discount nor the asynchronous file-based submission that the job needs.",
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/deployment-types#choose-the-right-deployment-type"
+ },
+ {
+  "id": "1.2.2-03",
+  "obj": "1.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A. Datum Corporation runs a two-week prototype in a Microsoft Foundry project located in the West US 3 region. Developers must compare eight candidate models by changing one string in the code.\n\nThe prototype requires no reserved throughput, no custom content filter, and no fine-tuned models. The team wants to avoid creating and deleting a deployment for every candidate model.\n\nYou need to recommend an approach.\n\nWhich approach should you recommend?",
+  "choices": [
+   "Create a Global Standard deployment for each candidate model",
+   "Create a Developer deployment for each candidate model",
+   "Create a Global Batch deployment for each candidate model",
+   "Use instant access, and pass the model name in the `model` parameter"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Instant access lets you call a supported model by name with no deployment, through the same API, SDK, and client, so switching models means changing one string. Learn lists West US 3 as the only supported region during preview and notes that reserved throughput, custom content filters, and fine-tuned models still require a deployment. Global Standard is the general-purpose production path and carries the highest default quota. It requires one deployment per model, which is the create-and-delete cycle the stem rules out. The Developer deployment type is real and is the lowest-cost entry in the comparison table. Learn scopes it to fine-tuned model evaluation only, and it carries a fixed 24-hour lifetime with no SLA. Global Batch processes asynchronous request files at 50 percent of the Global Standard price with a 24-hour target turnaround. Interactive model comparison is the wrong workload for an asynchronous deployment type.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/instant-models"
+ },
+ {
+  "id": "1.2.3-01",
+  "obj": "1.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Blue Yonder Airlines serves a rebooking assistant from a Global Provisioned deployment named Deployment1 in a Microsoft Foundry resource. A Global Standard deployment named Deployment2 of the same model and version exists in the same resource.\n\nEvery evening, a two-hour traffic burst exhausts the provisioned throughput units of Deployment1, and callers receive HTTP 429 responses. The airline will not purchase more provisioned throughput units, and the application code must not change.\n\nYou need to absorb the burst.\n\nWhich action should you perform?",
+  "choices": [
+   "Increase the `--sku-capacity` value of Deployment1",
+   "Set the `x-ms-spillover-deployment` header on each inference request",
+   "Set the `spilloverDeploymentName` property of Deployment1 to Deployment2",
+   "Create a second Global Provisioned deployment in another region, and load balance in the application"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn documents `spilloverDeploymentName` as the deployment property that routes overage traffic to a standard deployment in the same resource, and it applies to all requests with no client change. Spillover initiates on a non-200 response such as the 429 returned when provisioned throughput units are exhausted, and both deployments already meet the same-resource and matching-data-processing prerequisites. Raising the SKU capacity adds provisioned throughput units and would clear the 429 responses. The airline explicitly refuses to buy more units, so this fails the stated cost constraint. This header is the documented way to enable spillover for selected inference requests, which is useful when only some workloads should overflow. Setting a header on every request is an application change, which the stem forbids. A second provisioned deployment raises aggregate capacity, and each region carries its own quota. It buys more provisioned throughput units and requires routing logic in the application, so it breaks both constraints.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/spillover-traffic-management#enable-spillover-for-all-requests-on-a-provisioned-deployment"
+ },
+ {
+  "id": "1.2.3-02",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Northwind Traders must create a model deployment named Deployment1 in a Microsoft Foundry resource by using the Azure CLI.\n\nDeployment1 must reserve 50 provisioned throughput units. A data residency policy requires that inference traffic be processed only in the Azure region where the deployment is created.\n\nYou need to create Deployment1.\n\nWhich command should you run?",
+  "choices": [
+   "az cognitiveservices account deployment create \\\n  --name $accountName \\\n  --resource-group $resourceGroupName \\\n  --deployment-name Deployment1 \\\n  --model-name gpt-4o \\\n  --model-version 2024-08-06 \\\n  --model-format OpenAI \\\n  --sku-capacity 50 \\\n  --sku-name ProvisionedManaged",
+   "az cognitiveservices account deployment create \\\n  --name $accountName \\\n  --resource-group $resourceGroupName \\\n  --deployment-name Deployment1 \\\n  --model-name gpt-4o \\\n  --model-version 2024-08-06 \\\n  --model-format OpenAI \\\n  --sku-capacity 50 \\\n  --sku-name GlobalProvisionedManaged",
+   "az cognitiveservices account deployment create \\\n  --name $accountName \\\n  --resource-group $resourceGroupName \\\n  --deployment-name Deployment1 \\\n  --model-name gpt-4o \\\n  --model-version 2024-08-06 \\\n  --model-format OpenAI \\\n  --sku-capacity 50 \\\n  --sku-name DataZoneProvisionedManaged",
+   "az cognitiveservices account deployment create \\\n  --name $accountName \\\n  --resource-group $resourceGroupName \\\n  --deployment-name Deployment1 \\\n  --model-name gpt-4o \\\n  --model-version 2024-08-06 \\\n  --model-format OpenAI \\\n  --sku-capacity 50 \\\n  --sku-name GlobalStandard"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "`ProvisionedManaged` is the SKU name for Regional Provisioned, which allocates reserved provisioned throughput units and keeps traffic in the specific Azure region of the deployment. Learn names it the deployment type for strict single-region data residency requirements, and `--sku-capacity` sets the number of units. `GlobalProvisionedManaged` reserves capacity and delivers the highest availability, so the throughput half of the requirement is satisfied. Learn states that global provisioned routes traffic across Azure regions, which breaks the residency policy. `DataZoneProvisionedManaged` reserves capacity and confines processing to a Microsoft-defined data zone such as the US or the EU. A data zone spans several regions, so it is broader than the single region the policy requires. `GlobalStandard` is a pay-per-token deployment type that provides no reserved capacity and best-effort service. It also routes traffic to any Azure region, so it fails both stated requirements.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/provisioned-quickstart#create-a-provisioned-deployment"
+ },
+ {
+  "id": "1.2.3-03",
+  "obj": "1.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud runs three model deployments in one Microsoft Foundry resource. A deployment named Deployment1 serves an internal moderation-training tool, and Deployment1 must filter only content that is detected at the high severity level.\n\nThe other two deployments must keep the default filtering behavior. The configuration must persist for every call to Deployment1.\n\nYou need to configure content safety for Deployment1.\n\nWhich action should you perform?",
+  "choices": [
+   "Change the severity threshold on the default safety policy of the Foundry resource",
+   "Set the `raiPolicyName` property in the `instant` block of the Foundry account",
+   "Create a guardrail in the Foundry resource, and assign it to Deployment1 only",
+   "Send a request-level `x-policy-id` header on every call to Deployment1"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn states that a guardrail is represented as a responsible AI policy, a resource-level object in Azure Resource Manager, and that you assign it to a model deployment by setting the `raiPolicyName` property on that deployment. Each control sets a severity level threshold per risk category, so assigning the guardrail to Deployment1 alone leaves the other two deployments on the Microsoft default guardrail. Default safety settings apply to all models deployed to the resource, so relaxing the threshold there would change filtering for all three deployments. The stem requires the other two deployments to keep default behavior. The `instant` block sets a default responsible AI policy for instant access models at the account level, and it is a real property. Learn states that the policy applies uniformly to every instant access model and cannot vary per model, and it does not govern a named deployment. A request-level `x-policy-id` header overrides the deployment-level guardrail for one API call, and Learn documents it as a supported option. It applies per call rather than per deployment, so it does not persist, and it is unavailable for image input scenarios.",
+  "ref": "https://learn.microsoft.com/azure/foundry/guardrails/how-to-create-guardrails"
+ },
+ {
+  "id": "1.2.4-02",
+  "obj": "1.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "First Up Consultants deploys a hosted agent to a Microsoft Foundry project from a GitHub Actions workflow. The workflow signs in to Azure by using a Microsoft Entra federated credential and OpenID Connect (OIDC), and it deploys the agent by using code deployment mode.\n\nThe workflow fails at the step that creates the new agent version. You must grant the workflow identity the access that Microsoft Learn documents for this deployment mode, scoped to the target Foundry project.\n\nYou need to assign roles to the workflow identity.\n\nWhich roles should you assign?",
+  "choices": [
+   "The Foundry Agent Consumer role and the Reader role",
+   "The Foundry User role and the Contributor role",
+   "The Foundry Project Manager role and the Cognitive Services Usages Reader role",
+   "The Foundry Account Owner role and the Search Index Data Reader role"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn's hosted agent CI/CD prerequisites state that code deployment mode requires the Foundry User role and the Contributor role on the target Foundry project. Foundry User supplies the data-plane development permissions and Contributor supplies the control-plane permission to create and update resources. Foundry Agent Consumer is the least-privilege role for a principal that only calls an existing agent endpoint. It grants no permission to create an agent version, and Reader adds no write permission either. Foundry Project Manager is documented as sufficient to deploy a hosted agent generally, so the first role is plausible. Cognitive Services Usages Reader is a quota-viewing role and supplies none of the control-plane write permission that code deployment mode requires. Foundry Account Owner is an account-scope administrative role, which is broader than the project scope the stem specifies. Search Index Data Reader grants read access to an Azure AI Search index and is unrelated to creating an agent version.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/set-up-cicd-hosted-agent#set-up-a-github-pipeline-for-hosted-agents"
+ },
+ {
+  "id": "1.2.4-03",
+  "obj": "1.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Nod Publishers runs a GitHub Actions job that verifies a hosted agent after deployment. The job runs outside an Azure Developer CLI project directory, installs the Foundry extensions, and then runs `azd ai agent show --no-prompt --output json`.\n\nThe command exits with a structured error stating that it cannot resolve the Foundry project. The team must set the project context for every `azd ai` command in the job without passing a flag on each command.\n\nYou need to fix the job.\n\nWhich action should you perform?",
+  "choices": [
+   "Set the `PROJECT_ENDPOINT` environment variable on the job",
+   "Add the `--no-prompt` and `--output json` flags to every `azd ai` command in the job",
+   "Run `azd env new` in the runner before the command",
+   "Set the `FOUNDRY_PROJECT_ENDPOINT` environment variable on the job"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn documents the resolution order as the `--project-endpoint` flag, the active azd environment inside an azd project, the global config set by `azd ai project set`, and finally the `FOUNDRY_PROJECT_ENDPOINT` environment variable. Setting it once at the job or workflow level applies to every `azd ai` command that follows. `PROJECT_ENDPOINT` is the conventional variable name for a Foundry project endpoint in application code and Foundry SDK samples. The Azure Developer CLI does not read it when it resolves project context. `--no-prompt` suppresses interactive prompts and `--output json` selects machine-readable output, and both are correct practice for an unattended job. Both flags are already present on the failing command, and neither supplies an endpoint, so the resolution error remains. `azd env new` creates a new Azure Developer CLI environment inside an azd project on disk. The job deliberately runs outside an azd project directory, so there is no project for the environment to belong to.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/set-up-ci-cd-cli#set-the-project-context-in-ci"
+ }
+]

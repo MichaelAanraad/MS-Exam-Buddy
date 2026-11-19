@@ -1,0 +1,272 @@
+[
+ {
+  "id": "4.1.2-01",
+  "obj": "4.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Best For You Organics Company collects written product reviews. A single review often praises one attribute of a product and criticizes another, for example \"the packaging is beautiful but the seal is flimsy\".\n\nThe merchandising team must see which attribute each opinion refers to and the sentiment attached to that attribute, rather than one label for the whole review. The team uses Azure AI Language and does not train a model.\n\nYou need to configure the request.\n\nWhich action should you perform?",
+  "choices": [
+   "Read the document-level sentiment label and confidence scores from the response",
+   "Call key phrase extraction and score each returned phrase separately",
+   "Train a custom text classification project with one class per product attribute",
+   "Call sentiment analysis with the `opinionMining` flag set to `true`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn documents opinion mining as aspect-based sentiment analysis that surfaces a target, which is the noun or verb, together with the assessment adjective and its sentiment. The REST API requires the `opinionMining=true` flag on a sentiment analysis request, and results are returned inside the sentiment response. Document-level sentiment returns one label for the whole review and can only report `mixed` when positive and negative sentences coexist. It never says which attribute the positive part refers to. Key phrase extraction returns the main concepts in unstructured text as a list. The list carries no sentiment, so pairing an attribute with an opinion would still be guesswork. Custom text classification assigns your own labels to whole documents or utterances and requires labeled training data. The stem rules out model training, and the output is still document level.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/language-service/sentiment-opinion-mining/how-to/call-api#opinion-mining"
+ },
+ {
+  "id": "4.1.3-01",
+  "obj": "4.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Winery translates English marketing copy into German by using the Azure Translator text translation API.\n\nSix product names must appear in the German output exactly as the brand team spells them, and the current output translates them into ordinary German nouns. Only these six proper nouns are affected, the input is plain text rather than HTML, and the team cannot train or host a model.\n\nYou need to correct the translations.\n\nWhich approach should you use?",
+  "choices": [
+   "Wrap each product name in `<mstrans:dictionary translation=\"...\">` markup and set the `from` parameter on the request",
+   "Wrap each product name in a `<span class=\"notranslate\">` element",
+   "Train a Custom Translator model that contains a phrase dictionary, deploy it, and pass its category identifier on each request",
+   "Set the `profanityAction` parameter to `Marked` on the request"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn documents the dynamic dictionary as markup you supply inside the request to prescribe the translation of a word or phrase, and calls it safe for proper nouns such as personal names and product names. It also states that you must use the `from` parameter instead of autodetection, and that the feature works the same way with plain text and HTML. The `notranslate` class does prevent translation of the wrapped content, which is a documented technique. Learn notes that it works only when the input `textType` is set to HTML, and the stem states the input is plain text. Custom Translator builds a domain-tuned model and can hold a phrase dictionary that is applied with 100 percent probability. It requires training and deploying a model, which the stem excludes, and Learn recommends it only when many terms make dynamic dictionaries unwieldy. `profanityAction` decides whether profane words are left alone, marked, or deleted in the output. It has no bearing on how a brand name is rendered.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/translator/text-translation/how-to/use-dynamic-dictionary"
+ },
+ {
+  "id": "4.1.1-01",
+  "obj": "4.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders runs a contact center. Each interaction produces a two-party transcript between one customer and one support agent.\n\nAfter every interaction, the wrap-up screen must display two separate fields: why the customer contacted the company, and what the support agent tried in response. The team uses Azure AI Language and does not want one blended paragraph.\n\nYou need to select a summarization approach.\n\nWhich approach should you select?",
+  "choices": [
+   "Conversation summarization with the `chapterTitle` and `narrative` aspects",
+   "Extractive text summarization over the transcript",
+   "Conversation summarization with the `issue` and `resolution` aspects",
+   "Conversation summarization with the `recap` aspect"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn describes issue and resolution summarization as a call center feature for two-party customer and agent conversations, returning the customer issue in one field and the solutions tried in another. The wrap-up screen needs exactly those two fields. The `chapterTitle` and `narrative` aspects segment a conversation into topical sections and summarize each one. They produce a timeline of the discussion rather than the two named business fields. Extractive summarization selects the most representative sentences from the original text. Learn positions text summarization for documents rather than speaker-attributed transcripts, and it never separates a reason from a response. The `recap` aspect condenses a long conversation into one concise paragraph. A single paragraph is the blended output the stem rejects.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/language-service/summarization/overview#key-features-for-conversation-summarization"
+ },
+ {
+  "id": "4.1.1-02",
+  "obj": "4.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A. Datum Corporation extracts structured records from free-text field-service reports by using a chat model deployment named Deployment1 in a Microsoft Foundry project.\n\nA developer writes a Python application that creates an `OpenAI` client named `client` by passing a bearer token provider built from `DefaultAzureCredential`. The developer defines a Pydantic model named `ServiceReport` that declares the required properties.\n\nThe application deserializes the model response into `ServiceReport`. The deserialization fails intermittently because the model omits a property or adds one that is not in the contract. The response must conform to the supplied schema exactly.\n\nYou need to complete the inference call.\n\nWhich code segment should you use?",
+  "choices": [
+   "completion = client.chat.completions.create(\n    model=\"Deployment1\",\n    messages=messages,\n    response_format={\"type\": \"json_object\"},\n)",
+   "completion = client.beta.chat.completions.parse(\n    model=\"Deployment1\",\n    messages=messages,\n    response_format=ServiceReport,\n)",
+   "completion = client.chat.completions.create(\n    model=\"Deployment1\",\n    messages=messages,\n    temperature=0,\n)",
+   "completion = client.chat.completions.create(\n    model=\"Deployment1\",\n    messages=messages,\n    seed=42,\n)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The `parse` helper accepts a Pydantic model as `response_format`, converts it into a strict JSON Schema, and returns the typed object on `message.parsed`. This is the documented Structured Outputs pattern for Python, and it enforces that every field is required and that `additionalProperties` is false. JSON mode guarantees that the response is syntactically valid JSON but cannot guarantee adherence to a schema you supply. Learn positions Structured Outputs as the feature that closes exactly this gap. Setting `temperature` to 0 makes sampling more focused and is a real parameter for reducing variability. It constrains randomness rather than shape, so a missing or extra property is still possible. The `seed` parameter asks the service to make a best effort to return consistent results for identical requests. Reproducing the same malformed object is not the same as conforming to a schema.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/structured-outputs"
+ },
+ {
+  "id": "4.1.1-03",
+  "obj": "4.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lucerne Publishing runs an editorial review tool over long manuscript chapters that are stored as plain text. Editors need the tool to surface the sentences that collectively convey the main idea of each chapter.\n\nFor every surfaced sentence, the tool must display a rank score that indicates relevance to the main idea, together with the start position and the length of that sentence in the source text, so that an editor can jump straight to it.\n\nYou need to select a feature of Azure AI Language.\n\nWhich feature should you select?",
+  "choices": [
+   "Key phrase extraction",
+   "Abstractive summarization",
+   "Named entity recognition (NER)",
+   "Extractive summarization"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn's comparison is explicit: extractive summarization returns sentences together with a rank score, plus the offset and length of each extracted sentence, which covers every requirement in the stem. Note that summarization retires from Azure AI Language on March 31, 2029, so plan a migration path to Microsoft Foundry models. Key phrase extraction evaluates unstructured text and returns the main concepts as a list of phrases. Learn also notes that this feature returns no confidence score, so it delivers neither ranked sentences nor positions. Abstractive summarization generates concise, coherent sentences that are not verbatim extracts from the source. Because the sentences are new, there is no offset in the original text for an editor to jump to. Named entity recognition categorizes spans of text into general types such as people, organizations, and dates. It identifies entities rather than the sentences that carry the main idea.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/language-service/summarization/how-to/summarize"
+ },
+ {
+  "id": "4.1.1-04",
+  "obj": "4.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wide World Importers builds an agent named Agent1 in Foundry Agent Service. During a conversation, Agent1 must call Azure AI Language capabilities as tools, including named entity recognition, summarization, and personally identifiable information redaction.\n\nThe team must not write or host wrapper code for each capability, and must not train a custom model. The team wants one endpoint that exposes the Azure AI Language capabilities to Agent1 through a standard protocol.\n\nYou need to select an integration.\n\nWhich integration should you select?",
+  "choices": [
+   "The Azure Language MCP server from the Foundry tool catalog",
+   "The Azure Language Intent Routing agent",
+   "The Azure Language Exact Question Answering agent",
+   "A custom function tool that calls the Azure AI Language REST API"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The remote Azure Language MCP server is listed in the Foundry tool catalog and exposes named entity recognition, summarization, PII redaction, and other Azure AI Language features to an agent through the Model Context Protocol. Learn rates its setup complexity as low, requiring only a connection and an endpoint, and notes that the server is currently in preview. This prebuilt agent combines Conversational Language Understanding with Custom Question Answering to route conversations deterministically. It solves intent routing, not general access to language-analysis capabilities, and it requires deployed CLU and CQA projects. This prebuilt agent returns verbatim responses drawn from a Custom Question Answering project. It handles FAQ-style scenarios and exposes no entity recognition, summarization, or redaction. Function calling is a legitimate pattern, but you define the function and your application executes it. That is precisely the wrapper code the team refuses to write and host.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/language-service/concepts/foundry-tools-agents"
+ },
+ {
+  "id": "4.1.2-02",
+  "obj": "4.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Lamna Healthcare Company must share patient intake forms with an external auditor. The forms are Microsoft Word files and PDF files that are stored in an Azure Blob Storage container.\n\nThe shared copies must have patient names, addresses, and health identifiers removed. The redacted output must remain in the original file formats with font, spacing, and layout preserved, and the process must also return structured JSON metadata that lists each detected entity and its confidence score.\n\nYou need to select a feature of Azure AI Language.\n\nWhich feature should you select?",
+  "choices": [
+   "Text PII detection",
+   "Conversation PII detection",
+   "Document-based PII detection",
+   "Text analytics for health"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn's feature-selection table maps native `.pdf`, `.docx`, and `.txt` input to Document-based PII, whose key strength is redacted files with document fidelity plus JSON metadata. It runs as a single asynchronous workflow across source and target Blob Storage containers. Text PII processes raw text strings and returns synchronous detection and redaction results for apps, prompts, logs, and tickets. You would have to build your own text extraction and document reconstruction pipeline, which destroys the original layout. Conversation PII processes turn-based chat and transcript payloads where turn boundaries affect detection and masking. Intake forms are native files, not conversation turns. Text analytics for health extracts and labels medical information such as diagnoses and medications, and adds relation extraction and assertion detection. It surfaces clinical concepts rather than redacting identifiers inside a native file.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/language-service/personally-identifiable-information/overview"
+ },
+ {
+  "id": "4.1.2-03",
+  "obj": "4.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fourth Coffee collects free-text customer reviews of its stores. A review such as \"The coffee was excellent, but the seating was uncomfortable\" must produce a separate sentiment for the coffee and for the seating.\n\nThe current pipeline returns one label for the whole review and one label per sentence, which hides the split opinion. A developer uses the Azure AI Language client library for Python, and a `TextAnalyticsClient` object named `client` that authenticates by using `DefaultAzureCredential` is already created.\n\nYou need to return each opinion target together with its assessment.\n\nWhich code segment should you use?",
+  "choices": [
+   "result = client.analyze_sentiment(documents)",
+   "result = client.extract_key_phrases(documents)",
+   "result = client.analyze_sentiment(documents, show_opinion_mining=True)",
+   "result = client.recognize_entities(documents)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Opinion mining, also called aspect-based sentiment analysis, surfaces each target such as coffee or seating with its assessment adjective and per-target scores, and the Python client library enables it with `show_opinion_mining=True`. Note that sentiment analysis and opinion mining retire from Azure AI Language on March 31, 2029. This call returns document-level and sentence-level sentiment labels with confidence scores. That is exactly the behavior the pipeline already has, and it is what hides the split opinion. Key phrase extraction returns the main concepts in the text as a list of phrases. It returns no sentiment at all, so it cannot separate the coffee from the seating. Named entity recognition categorizes spans into general types such as people, organizations, and locations. Detecting that \"seating\" is an entity does not attach an opinion or a sentiment to it.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/language-service/sentiment-opinion-mining/overview"
+ },
+ {
+  "id": "4.1.2-04",
+  "obj": "4.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys operates a community forum. The moderation pipeline calls the Azure AI Content Safety text analysis API and rejects any post whose severity for Hate, Sexual, Violence, or Self-harm exceeds a configured threshold.\n\nThe trust and safety team must also reject posts that promote unsafe modification of toy battery packs. Reviewers report that posters describe the modification in continually changing wording, so a fixed set of terms does not catch it, and the concept maps to none of the four default harm categories.\n\nYou need to extend detection.\n\nWhich capability should you use?",
+  "choices": [
+   "A text blocklist of the prohibited terms",
+   "Prompt Shields for documents",
+   "Groundedness detection",
+   "Custom categories in Azure AI Content Safety"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Custom categories let you define and detect categories that are unique to your environment, and a trained category generalizes across phrasing instead of matching fixed terms. Learn positions custom categories as the option when prebuilt categories or content filtering are not enough to align with your own Responsible AI policy. Note that custom categories (standard) retires on September 1, 2026, so plan a migration to custom text classification in Azure AI Language. Blocklists add custom terms, with regular expression support, to the default AI classifiers, and they are the right tool for a known and finite term list. The stem states that the wording changes continually, so term matching does not generalize. Prompt Shields for documents detects instructions embedded in grounding data that attempt to hijack a model session. It is an injection defense and does not classify community content against a policy. Groundedness detection checks whether a model response is supported by supplied source material. It evaluates generated output rather than user-submitted posts.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-safety/how-to/improve-performance"
+ },
+ {
+  "id": "4.1.3-02",
+  "obj": "4.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Wingtip Toys runs an internal web application. An employee uploads one Microsoft Word file at a time and immediately downloads a French version of the same file.\n\nThe application must preserve the original layout, must apply a company glossary of product names that is supplied as a tab-separated values file with each request, and must not require an Azure Blob Storage account.\n\nYou need to select an approach in Azure Translator.\n\nWhich approach should you select?",
+  "choices": [
+   "Asynchronous batch document translation",
+   "Synchronous document translation",
+   "Text translation, after extracting the strings from the file",
+   "Custom Translator, after training a model on the glossary"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn describes synchronous document translation as accepting a single document per request, returning the translated file directly in the response with the source presentation preserved, and requiring no Azure Blob Storage. A glossary is attached as a second multipart form field, and `.tsv` is a supported glossary format. Batch document translation reads source files from a Blob Storage source container and writes results to a target container, which suits translating large numbers of files. The stem rules out the storage account and describes one file per request. Text translation converts strings in real time and has no concept of document structure. Extracting and reinserting the strings loses the Word layout that the requirement protects. Custom Translator builds a domain-tuned neural machine translation model and requires training and deployment before use. It addresses terminology quality across a corpus, not per-request glossary application to a single file.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/translator/document-translation/latest/quickstarts/synchronous"
+ },
+ {
+  "id": "4.1.3-03",
+  "obj": "4.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders translates customer product reviews from Spanish into English by using the Azure Translator text translation API. Some of the reviews contain profanity.\n\nEvery English review that reaches the public website must read as an ordinary sentence with the profane words gone and nothing left in their place, so no asterisks, no markup, and no placeholder characters may appear. The rest of each review must be translated normally, and the team does not want to train or deploy a model.\n\nYou need to configure the translate request.\n\nWhich configuration should you use?",
+  "choices": [
+   "Set `profanityAction` to `Deleted`",
+   "Set `profanityAction` to `Marked`, and leave `profanityMarker` at its default value",
+   "Set `profanityAction` to `Marked`, and set `profanityMarker` to `Tag`",
+   "Set `profanityAction` to `NoAction`, and set `category` to a Custom Translator category identifier"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's profanity table states that `Deleted` removes profane words from the output without replacement, which is the only value that leaves nothing in their place. The rest of the sentence is still translated, and no training or deployment is involved. `Marked` is a real value, and its default `profanityMarker` value of `Asterisk` replaces each profane word with asterisks. Asterisks are exactly the placeholder characters that the requirement forbids. `Marked` combined with a `profanityMarker` value of `Tag` surrounds each profane word with `<profanity>` XML tags. The profane word survives inside the tags, so the published review would still contain it. `NoAction` is the default and passes profanity from the source straight through to the target. The `category` parameter selects a deployed Custom Translator system, which the stem excludes and which performs no profanity filtering.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/translator/text-translation/how-to/use-profanity-filtering"
+ },
+ {
+  "id": "4.1.3-04",
+  "obj": "4.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. translates support tickets from English into Spanish by calling a large language model deployment through the Azure Translator text translation `2026-06-06` API in a Microsoft Foundry resource.\n\nReviewers report that the model renders the company's product terminology inconsistently. The support team can supply roughly 200 prealigned source and target sentence pairs, has no larger parallel corpus, and needs terminology updates to take effect within minutes rather than after a retraining cycle.\n\nYou need to improve terminology consistency.\n\nWhich approach should you implement?",
+  "choices": [
+   "Train and deploy a Custom Translator model on the sentence pairs",
+   "Set the `tone` parameter to `formal` on each target",
+   "Set the `allowFallback` parameter to false on each target",
+   "Create an adaptive dataset and pass its `adaptiveDatasetId` on each target"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Adaptive custom translation accepts 5 to 10,000 prealigned segment pairs, creates the dataset index in minutes, and applies few-shot retrieval at inference to steer terminology, context, and style with no training or separate deployment. Learn names rapidly evolving or low-volume content such as support tickets as its target use case. Custom Translator builds a dedicated neural machine translation model through end-to-end training, and Learn states that it typically uses at least 10,000 parallel sentence pairs with training that can take up to 48 hours. Litware, Inc. has neither the corpus nor the retraining window. The `tone` parameter is a real `2026-06-06` control that selects formal, informal, or neutral output for LLM-based translation. It shapes register rather than terminology. The `allowFallback` parameter controls whether the service substitutes a general system when the requested model does not support a language pair. It governs failure behavior, not word choice.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/translator/foundry/adaptive-custom-translation"
+ },
+ {
+  "id": "4.1.4-01",
+  "obj": "4.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adventure Works Cycles routes incoming supplier compliance documents to review queues. Each document is a plain text file in an Azure Blob Storage container.\n\nA single document can belong to more than one queue at the same time, for example both `Environmental` and `LaborStandards`. The categories are defined by Adventure Works Cycles and match no prebuilt category, and the company can label a training set of existing documents.\n\nYou need to select a feature of Azure AI Language.\n\nWhich feature should you select?",
+  "choices": [
+   "Single label classification in custom text classification",
+   "Multi label classification in custom text classification",
+   "Custom named entity recognition (custom NER)",
+   "Key phrase extraction"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Multi label classification assigns multiple customer-defined classes to each document, which is Learn's documented pattern for content that carries more than one category at once. Note that custom text classification retires from Azure AI Language on March 31, 2029, so plan a migration path to Microsoft Foundry models. Single label classification assigns exactly one class per document, which Learn illustrates with a movie script classified as either Romance or Comedy. A document that belongs to two queues could not be represented. Custom NER extracts domain-specific entity spans from unstructured text, such as a client name, a loan amount, or a payment date. It labels spans inside a document rather than assigning categories to the document as a whole. Key phrase extraction returns the main concepts in the text as a list of phrases and involves no training step. Phrases are not queue assignments, and the feature cannot learn customer-defined categories.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/language-service/custom-text-classification/overview"
+ },
+ {
+  "id": "4.1.4-02",
+  "obj": "4.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Trey Research processes clinical notes to build a research cohort. The pipeline uses text analytics for health and already extracts diagnoses, medications, and symptoms.\n\nAnalysts report a defect. A note that reads \"patient denies chest pain\" adds the patient to the chest pain cohort, and a note that reads \"start metformin if fasting glucose remains high\" adds the patient to the metformin cohort. The pipeline must record that an extracted concept is negated or hypothetical so that these patients are excluded.\n\nYou need to address the defect.\n\nWhich capability of text analytics for health should you use?",
+  "choices": [
+   "Named entity recognition",
+   "Relation extraction",
+   "Assertion detection",
+   "Entity linking"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Assertion detection adds contextual modifiers to extracted entities across the categories certainty, conditionality, association, and temporality, which is how Learn represents negation and conditional mentions. Both defect examples in the stem fall under those modifiers. Named entity recognition performs the semantic extraction of words and phrases that map to supported health entity types such as diagnosis, medication name, and symptom. It is the step the pipeline already runs, and it is what produces the false positives. Relation extraction identifies meaningful connections between extracted concepts, such as associating a condition with a time. A relation does not record whether the concept itself was denied or hypothetical. Entity linking disambiguates extracted entities by associating them with preferred names and codes from the Unified Medical Language System Metathesaurus. Attaching a standard code to a concept says nothing about whether the concept was denied.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/language-service/text-analytics-for-health/overview"
+ },
+ {
+  "id": "4.1.4-03",
+  "obj": "4.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "First Up Consultants runs a contact center. Supervisors review each recorded call as a two-party transcript between a customer and an agent.\n\nFor every call, the review record must state the customer problem in one field and the steps the agent tried in a separate field. Supervisors reject a single paragraph that blends the two, and they reject any output that segments the call into timed sections.\n\nYou need to configure conversation summarization in Azure AI Language.\n\nWhich combination of summarization aspects should you request?",
+  "choices": [
+   "`issue` and `resolution`",
+   "`recap` only",
+   "`chapterTitle` and `narrative`",
+   "`followUpTasks` only"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn describes issue and resolution as the call-center-focused aspects that summarize a two-party conversation into the customer issue and the solutions the agent tried. They produce the two separate fields the supervisors require. Recap condenses a lengthy conversation into a concise one-paragraph overview. That single blended paragraph is exactly what the stem rules out. These two aspects work together to segment a conversation into chapters, generating a title and a summary for each segment with timestamps. The stem explicitly rejects segmenting the call into timed sections. Follow-up tasks summarizes the action items and tasks that arise during a conversation. Action items are neither the customer problem nor the steps already tried.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/language-service/summarization/how-to/summarize"
+ }
+]

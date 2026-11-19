@@ -1,0 +1,236 @@
+[
+ {
+  "id": "3.2.6-01",
+  "obj": "3.2.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Southridge Video archives recorded panel discussions. For each recording, the editorial team needs a transcript in which every line is attributed to a distinct speaker, an inferred list of topics derived from the spoken words and the on-screen text, and detection of named entities such as brands and locations.\n\nThe team wants prebuilt insights and does not define an extraction schema of its own.\n\nYou need to recommend a service.\n\nWhich service should you recommend?",
+  "choices": [
+   "Azure Content Understanding with a custom video analyzer",
+   "Azure AI Video Indexer",
+   "Azure AI Vision image analysis",
+   "Azure AI Custom Vision"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn's selection guidance sends deep video insights such as speaker enumeration to Video Indexer, and its insight list includes topics inference derived from transcription and optical character recognition content and named entities extraction, and its transcription insight performs speaker diarization that attributes each transcribed line to a speaker. Every requirement in the stem maps to a prebuilt Video Indexer insight. Content Understanding segments video into scenes and extracts fields from a schema that you define, and Learn steers deep prebuilt insights away from it. Building a schema is exactly the work the team says it does not want to do. Image analysis operates on still images and returns captions, tags, objects, and text. It has no concept of a timeline, a speaker, or an inferred topic. Custom Vision trains image classification and object detection models from labeled images. It handles neither audio nor transcripts.",
+  "ref": "https://learn.microsoft.com/azure/azure-video-indexer/insights-overview#insights"
+ },
+ {
+  "id": "3.2.4-01",
+  "obj": "3.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wingtip Toys publishes assembly guides that contain busy photographs. Each photograph shows several separate parts laid out on a workbench.\n\nAn accessibility review found that one short sentence per photograph is not enough. Each photograph now needs a set of one-sentence descriptions covering the individual regions of the image, and each description must carry coordinates so that the guide can pair it with the correct part callout.\n\nYou need to select an Azure AI Vision Image Analysis feature.\n\nWhich feature should you select?",
+  "choices": [
+   "Caption, with gender-neutral captioning enabled",
+   "Tags, filtered by confidence score",
+   "Smart Crops, with a list of aspect ratios",
+   "Dense Captions"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn defines Dense Captions as generating one-sentence descriptions of up to 10 regions of the image in addition to describing the whole image, and states that it also returns bounding box coordinates of the described regions. Both requirements in the stem map directly to that feature. Caption generates a single human-readable sentence that describes the whole image, and Learn presents it as the standard alt-text feature. One sentence for the entire workbench is the limitation the accessibility review already rejected. Tags returns content tags for thousands of recognizable objects, living beings, scenery, and actions. A keyword list is neither a sentence nor positioned on the image. Smart Crops returns coordinates for a representative sub-region so that a thumbnail preserves the important content. It supplies geometry with no description attached.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/computer-vision/concept-describe-images-40"
+ },
+ {
+  "id": "3.2.1-01",
+  "obj": "3.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Humongous Insurance builds an application that reviews photographs submitted with motor claims. Adjusters must ask free-form questions in natural language about any submitted photograph, such as which panel is damaged and whether an airbag deployed.\n\nHumongous Insurance holds no labeled training images, and the adjusters cannot enumerate the questions in advance, so no fixed extraction schema exists.\n\nYou need to recommend an approach.\n\nWhich approach should you recommend?",
+  "choices": [
+   "Train an Azure AI Custom Vision object detection model on the claim photographs",
+   "Call Azure AI Vision Image Analysis with the `tags` visual feature",
+   "Send each photograph to a vision-enabled chat model deployment by using the Chat Completions API",
+   "Create an Azure Content Understanding custom analyzer with a field schema"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Vision-enabled chat models are large multimodal models that analyze images and provide textual responses to questions about them, and Learn states that they answer general questions about what is present in the images you upload. Neither labeled data nor a schema is required. Custom Vision trains image classification and object detection models from your own labeled images. Humongous Insurance holds no labeled data, and a trained detector answers only for the classes it was trained on. The `tags` feature returns a keyword list drawn from a fixed taxonomy of recognizable objects and scenery. A keyword list cannot answer an arbitrary question phrased in natural language. Content Understanding extracts structured fields from images and is the right choice when the output shape is known in advance. It requires a field schema, which the scenario explicitly rules out.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/gpt-with-vision"
+ },
+ {
+  "id": "3.2.2-01",
+  "obj": "3.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adventure Works Cycles publishes photographs of assembled bicycles. For each photograph, the merchandising team requires a separate one-sentence description of each prominent region of the image, together with the bounding-box coordinates of every described region.\n\nYou need to select an Azure AI Vision Image Analysis visual feature.\n\nWhich visual feature should you select?",
+  "choices": [
+   "`denseCaptions`",
+   "`caption`",
+   "`tags`",
+   "`smartCrops` with a requested crop aspect ratio"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Dense Captions generates one-sentence descriptions for up to 10 prominent regions of an image, and it also returns the bounding-box coordinates of each described region. Note that Image Analysis 4.0 is deprecated and retires on September 25, 2028, so plan a migration. Caption describes the content of the whole image with a single complete sentence. It produces one description and returns no per-region bounding boxes. Tags returns a detailed list of words related to the image content. A word list is neither a sentence nor a coordinate. Smart Crops returns the rectangle coordinates that crop an image to a requested aspect ratio while preserving the area of interest. It returns geometry with no description attached to it.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/computer-vision/how-to/call-analyze-image-40#select-visual-features"
+ },
+ {
+  "id": "3.2.2-02",
+  "obj": "3.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Nod Publishers stores scanned promotional posters as JPEG files. Each poster is dominated by printed and handwritten text such as titles, dates, and venue names.\n\nNod Publishers must generate a description of each poster for an Azure AI Search index, and the description must reflect the text that appears on the poster.\n\nYou need to select a prebuilt Azure Content Understanding analyzer.\n\nWhich analyzer should you select?",
+  "choices": [
+   "`prebuilt-imageSearch`",
+   "`prebuilt-image`, used as a base analyzer through the `baseAnalyzerId` property",
+   "`prebuilt-videoSearch`",
+   "`prebuilt-documentSearch`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The `prebuilt-documentSearch` analyzer extracts content and layout as Markdown, captures printed and handwritten content, and accepts image file formats as input, which is why Learn routes text-heavy images to it. It also produces the RAG-ready output that an Azure AI Search index needs. The `prebuilt-imageSearch` analyzer analyzes standalone images and returns a one-paragraph description of the visual content. Learn states that image analyzers are not optimized for scenarios where analysis is based primarily on extracted text, and directs those cases to a document field extraction schema instead. The `prebuilt-image` analyzer is a base analyzer that supplies fundamental image processing and exists mainly as a parent to inherit from through the `baseAnalyzerId` property. It is a building block rather than a ready-to-use description generator. The `prebuilt-videoSearch` analyzer extracts transcripts and per-segment descriptions from video, and it segments footage automatically. The input here is a still JPEG file.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/prebuilt-analyzers#analyzer-types"
+ },
+ {
+  "id": "3.2.3-01",
+  "obj": "3.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "City Power & Light builds an inspection assistant. Field technicians upload photographs of substation equipment, and the assistant answers questions about the readings shown on small analog gauges in each photograph.\n\nThe assistant uses a vision-enabled chat model deployment. Technicians report that the assistant misreads the gauge numerals. The application currently sends each image with the `detail` property set to `low`.\n\nYou need to improve recognition of the small numerals.\n\nWhich change should you make?",
+  "choices": [
+   "Set the `detail` property to `high`",
+   "Increase the `max_tokens` value on the request",
+   "Send 10 images of the same gauge in one chat call",
+   "Set `temperature` to 0 on the request"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn states that the low resolution setting returns faster responses and uses fewer input tokens, but that it can affect the accuracy of object and text recognition within the image. Raising `detail` to `high` restores the sampling resolution that the small numerals require. The `max_tokens` parameter caps the length of the generated response and prevents truncation. It has no influence on how the image itself is sampled. Ten images per chat call is the documented limit, so this request is valid. Extra copies of an image that was sampled at low resolution add no pixels the model never received. Setting `temperature` to 0 makes sampling more focused and repeatable. It makes the same misreading more consistent rather than more accurate.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/gpt-with-vision#api-details"
+ },
+ {
+  "id": "3.2.4-02",
+  "obj": "3.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Bellows College automates alt text for approximately 30,000 photographs on its public course catalog. Bellows College calls the Azure AI Vision Image Analysis 4.0 caption model and publishes the returned sentence directly into the HTML `alt` attribute.\n\nAn accessibility audit identifies published sentences that do not match the photograph they describe. Bellows College must reduce the number of inaccurate sentences that reach the live site while keeping the pipeline automated.\n\nYou need to change the pipeline.\n\nWhich change should you make?",
+  "choices": [
+   "Concatenate the dense caption sentences into the `alt` attribute",
+   "Request the caption in each supported caption language, and publish the longest result",
+   "Publish only the captions above a confidence threshold, and route the rest to human review",
+   "Enable the `smartCrops` visual feature, and publish the crop coordinates"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn's alt-text guidance names a confidence threshold as the way to accept only sufficiently reliable captions, and it notes that the right level varies by image type and usage scenario. Captions below the threshold go to a person instead of to the live site. Note that Image Analysis 4.0 is deprecated and retires on September 25, 2028, so plan a migration. Dense Captions describes up to 10 regions of an image and returns their bounding boxes. Concatenating those sentences yields a paragraph, which is not what a screen reader should announce for an alt attribute. Learn states that image captions in the Image Analysis 4.0 API are available in English only, so the multilanguage request is not possible on that version. Sentence length is also not a proxy for accuracy. Smart Crops returns rectangle coordinates for a requested aspect ratio so that the area of interest is preserved. Crop geometry adds nothing to what a screen reader announces.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/computer-vision/use-case-alt-text"
+ },
+ {
+  "id": "3.2.5-01",
+  "obj": "3.2.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Munson's Pickles and Preserves Farm photographs every jar that leaves the packing line. For each photograph, the quality team requires a structured record that contains a defect category chosen from a fixed list, a generated description of the defect, and a confidence score with a reference back to the location in the image that each value came from.\n\nMunson's Pickles and Preserves Farm wants straight-through processing for high-confidence records and human review for the rest.\n\nYou need to select an approach.\n\nWhich approach should you select?",
+  "choices": [
+   "An Azure AI Vision Image Analysis call that requests the `tags` and `objects` visual features",
+   "An Azure AI Custom Vision image classification model trained on labeled jar photographs",
+   "An Azure Content Understanding pro mode analyzer applied to the jar photographs",
+   "An Azure Content Understanding custom analyzer in standard mode with a field schema"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Standard mode is the default, accepts images as input, and supports extract, classify, and generate fields together with grounding and confidence scores. Custom analyzers inherit image processing from `prebuilt-image` through the `baseAnalyzerId` property. Tags and objects return taxonomy keywords and bounding boxes drawn from a fixed vocabulary. Neither produces a customer-defined field schema, a generated defect description, or grounding back to the source region. Custom Vision predicts a class and a probability for the whole image, which does cover the category requirement. It has no mechanism for generating a free-text description or returning a per-field grounding reference. Pro mode adds multi-step reasoning, multiple input documents, and reference data, which makes it the most tempting distractor. Learn states that pro mode is currently available only for documents, and that it offers neither confidence scores nor grounding, which removes the two capabilities the review workflow depends on.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/standard-pro-modes#pro-mode-overview"
+ },
+ {
+  "id": "3.2.5-02",
+  "obj": "3.2.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Southridge Video catalogs archive photographs with a custom Azure Content Understanding image analyzer named Analyzer1. The archivists require a field that describes the facial expression of each person shown in a photograph.\n\nAnalyzer1 currently returns no expression information.\n\nYou need to enable the capability.\n\nWhich action should you perform?",
+  "choices": [
+   "Set `returnDetails` to `true` in the configuration of Analyzer1",
+   "Set `enableSegment` to `true` in the configuration of Analyzer1",
+   "Add the `people` visual feature of Azure AI Vision Image Analysis to Analyzer1",
+   "Request approval through an Azure support request, and then set `disableFaceBlurring` to `true`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Face description is a limited-access feature. Learn states that customers must request that face blurring be disabled through an Azure support request, and that the analyzer configuration must then set `disableFaceBlurring` to `true`. The `returnDetails` property controls whether granular details such as transcript phrases and camera shot timestamps appear in the response. It does not unlock face description fields. The `enableSegment` property controls whether content is treated as one unit or divided into segments that the generative model creates. Segmentation applies to video and has no meaning for a still photograph. The `people` visual feature belongs to Azure AI Vision Image Analysis and returns bounding boxes for detected people. It is a different service, and it returns no description of an expression.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/image/overview#face-description-fields"
+ },
+ {
+  "id": "3.2.6-02",
+  "obj": "3.2.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Lucerne Publishing analyzes recorded author interviews with a custom Azure Content Understanding video analyzer. The post-production team must repackage each interview at the exact points where the camera cuts, and requires those cut points as timestamps in milliseconds.\n\nThe current analyzer response contains Markdown, a transcript, and key frames, but contains no cut timestamps.\n\nYou need to return the cut timestamps.\n\nWhich action should you perform?",
+  "choices": [
+   "Read the `keyFrameTimesMs` array that the analyzer already returns",
+   "Set `enableSegment` to `true`, and describe the cuts in `contentCategories`",
+   "Set `returnDetails` to `true`, and read the `cameraShotTimesMs` array",
+   "Process the interviews with Azure AI Video Indexer scene segmentation"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The `cameraShotTimesMs` array identifies the points where camera shots change, expressed as timestamps in milliseconds, and Learn states that the output is included only when `returnDetails` is set to `true`. Shot detection is documented for precise editing and repackaging at existing edits. The `keyFrameTimesMs` array holds the timestamps of representative frames sampled from each shot, and it is returned without `returnDetails`. Key frames are samples taken inside shots rather than the boundaries between shots. Setting `enableSegment` to `true` with `contentCategories` asks the generative model to slice the video into logical scenes that you describe in natural language. Those segments are semantic chapters rather than the physical camera cuts the team must edit on. Video Indexer scene segmentation is real and determines when a scene changes based on visual cues. A scene is composed of a series of consecutive shots, so it is coarser than a cut point, and it moves the workload to a second service.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/video/elements#audiovisual-elements"
+ },
+ {
+  "id": "3.2.6-03",
+  "obj": "3.2.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Margie's Travel processes recorded destination broadcasts with Azure Content Understanding. Each broadcast must be divided into one segment per destination story, and advertisement breaks must be excluded from the segments.\n\nThe segmentation logic belongs to Margie's Travel and is expressed most naturally as a sentence of plain English.\n\nYou need to configure the custom analyzer.\n\nWhich configuration should you apply?",
+  "choices": [
+   "Set `enableSegment` to `true`, and describe the segmentation in `contentCategories`",
+   "Set `enableSegment` to `false`, and define the destination fields in `fieldSchema` for the entire video",
+   "Set `returnDetails` to `true`, and read the `cameraShotTimesMs` array",
+   "Set `disableFaceBlurring` to `true`, and define a prominent-person field"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Custom segmentation is enabled by setting `enableSegment` to `true`, and `contentCategories` carries a natural-language string that tells the generative model how to segment the video. Learn's own example segments a news broadcast into distinct stories while ignoring advertisements and promotions. Setting `enableSegment` to `false` treats the entire video file as a single segment and extracts metadata across its full duration. That whole-video mode produces no per-story segments. Reading `cameraShotTimesMs` exposes the timestamps of camera cuts. Cuts occur many times inside one story, so they do not correspond to the story boundaries the scenario requires. Setting `disableFaceBlurring` to `true` enables limited-access face description fields such as the name of a prominent person. It changes what is described rather than how the video is divided.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/video/overview#field-extraction-and-segmentation"
+ },
+ {
+  "id": "3.2.7-01",
+  "obj": "3.2.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Best For You Organics Company processes supplier paperwork with Azure Content Understanding. For each shipment, an analyzer must read the packing list and the delivery note together as inputs, compare both against a signed supply agreement that Best For You Organics Company provides once when the analyzer is created, and report every discrepancy.\n\nAll of the files are PDF documents.\n\nYou need to configure the analyzer.\n\nWhich configuration should you use?",
+  "choices": [
+   "Standard mode, with one analyzer run per file and a custom comparison step",
+   "Standard mode, with the supply agreement summarized inside the field schema description",
+   "Pro mode, with the packing list, the delivery note, and the supply agreement all supplied as inputs",
+   "Pro mode, with the packing list and the delivery note as inputs and the supply agreement as reference data"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Pro mode supports multiple input documents and lets you provide reference data at analyzer creation time, and Learn's headline example validates an invoice against a contract supplied as reference data. Pro mode is currently limited to documents, which the all-PDF input set satisfies. Learn documents pro mode only in the `2025-05-01-preview` API version, which retired on July 15, 2026. Standard mode is optimized for processing single files with straightforward field extraction, and it performs no cross-file analysis. The comparison logic falls back to custom code, which is exactly the effort pro mode is designed to remove. A field schema description guides how one field is populated during a single analysis. It is not a mechanism for supplying an entire agreement document as context. Supplying every related file as an input is a supported pattern, and Learn suggests it when quality issues appear. It skips the reference dataset feature, which is what the scenario describes when it states that the agreement is provided once at analyzer creation time.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/standard-pro-modes#pro-mode-overview"
+ },
+ {
+  "id": "3.2.8-01",
+  "obj": "3.2.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A. Datum Corporation inspects photographs of warehouse aisles. For each photograph, the safety team requires the pixel coordinates of a rectangle around every detected object, so that the application can draw an overlay on the original photograph.\n\nThe safety team requires no customer-defined field schema and requires no written description of the scene.\n\nYou need to select a capability.\n\nWhich capability should you select?",
+  "choices": [
+   "Azure Content Understanding image field extraction with a generated field for each object",
+   "Azure AI Vision Image Analysis object detection",
+   "Azure AI Vision Image Analysis image tagging",
+   "Azure Content Understanding `prebuilt-imageSearch`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Object detection returns the bounding box coordinates in pixels for each object found in the image, which is exactly the geometry the overlay needs. Note that Image Analysis 4.0 is deprecated and retires on September 25, 2028, so plan a migration. Content Understanding extracts structured fields from images against a schema you define, and Learn routes standard image analysis such as object detection to Azure Vision instead. The scenario also states that no field schema is wanted. Image tagging applies content words to the whole image and returns no coordinates. Learn notes that tags can include contextual terms such as indoor that cannot be localized with a bounding box at all. The `prebuilt-imageSearch` analyzer returns a one-paragraph description of the image content for search and retrieval scenarios. Prose is the wrong output shape for drawing a rectangle.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/computer-vision/concept-object-detection-40"
+ }
+]

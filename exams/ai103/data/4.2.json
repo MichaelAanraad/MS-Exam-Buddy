@@ -1,0 +1,218 @@
+[
+ {
+  "id": "4.2.2-01",
+  "obj": "4.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso Suites operates a text-based agent named Agent1 in Foundry Agent Service. Agent1 already carries the instructions and tools that the business approved.\n\nThe company plans to add a phone channel. Callers must speak to Agent1 and hear spoken replies with low latency, and the solution must provide noise suppression, echo cancellation, and end-of-turn detection without the team deploying an audio model or writing its own speech to text, model, and text to speech chain. Agent1 must remain the single place where instructions are maintained.\n\nYou need to add the voice modality.\n\nWhich approach should you implement?",
+  "choices": [
+   "Chain batch transcription, a chat model call, and batch synthesis in the application",
+   "Train a custom speech model and call it before each request to Agent1",
+   "Connect Agent1 to the Voice Live API by using the agent identifier",
+   "Deploy a `gpt-realtime` model and rebuild the agent instructions in the session configuration"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn documents a Voice Live agent mode where the agent identifier connects the session, all agent settings are handled internally, and the fully managed API supplies noise suppression, echo cancellation, and advanced end-of-turn detection. No audio model deployment is required because Voice Live deploys the model for you. Batch transcription and batch synthesis are asynchronous services for prerecorded audio and long-form output. Their turnaround makes a live phone conversation impossible. Custom speech fine-tunes recognition accuracy for domain vocabulary and noisy audio, which is a real Azure AI Speech capability. It improves transcription quality but supplies no spoken output, no interruption handling, and no orchestration. `gpt-realtime` is a genuine low-latency speech model, and Voice Live can use it. Deploying it directly moves the instructions out of Agent1 and into session code, which the stem forbids.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/voice-live"
+ },
+ {
+  "id": "4.2.1-01",
+  "obj": "4.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud runs a voice agent that reads answers aloud with a prebuilt neural voice through Azure AI Speech text to speech.\n\nAbout 90 product and component names are mispronounced. The correct pronunciations must be defined once in a single artifact that is stored centrally, reused by every response the agent speaks, and updated without changing application code. The team will not train a voice model.\n\nYou need to correct the pronunciations.\n\nWhich approach should you use?",
+  "choices": [
+   "Wrap each product name in a `phoneme` element that specifies an `alphabet` and `ph` value in every response",
+   "Wrap each product name in a `prosody` element in every response",
+   "Publish a custom lexicon file and reference it from the SSML `lexicon` element",
+   "Train and deploy a custom neural voice for the agent"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn states that to define how multiple entities are read you create an XML structured custom lexicon file, upload it, and reference it with the SSML `lexicon` element by URI. One published file covers all terms and can be updated at its storage location without touching the application. The `phoneme` element supplies a phonetic pronunciation inline and is the documented way to define how a single entity is read. With about 90 terms, the markup must be repeated in every response, which is exactly the per-response maintenance the stem rules out. The `prosody` element adjusts pitch, contour, rate, and volume of the spoken text. It changes delivery rather than which sounds a word maps to. Custom neural voice creates a brand voice from recordings of a specific speaker and is limited access. It changes who appears to be speaking, not how a product name is pronounced, and the stem excludes voice training.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/speech-synthesis-markup-pronunciation#custom-lexicon"
+ },
+ {
+  "id": "4.2.1-02",
+  "obj": "4.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Margie's Travel converts destination guides into audio for its mobile application. Each guide is a plain text article that produces roughly 40 minutes of narration.\n\nThe conversion runs overnight as a publishing job. No listener waits on the request, and the application downloads the finished audio files the next morning.\n\nYou need to select an approach in Azure AI Speech.\n\nWhich approach should you select?",
+  "choices": [
+   "Real-time speech synthesis through the Speech SDK",
+   "The Voice Live API",
+   "Fast transcription",
+   "The batch synthesis API"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn describes the batch synthesis API as the asynchronous path for long-form text to speech, naming audio books, news articles, and documents, and states that it can create synthesized audio longer than 10 minutes. You submit the text, poll for status, and download the audio when the job succeeds. Real-time synthesis returns audio as it is generated and suits interactive playback. Learn frames content longer than about 10 minutes as a batch synthesis scenario, so a 40-minute narration falls outside this pattern. Voice Live provides low-latency, bidirectional voice conversations for agents and assistants. There is no conversation in this scenario, only long-form narration. Fast transcription converts prerecorded audio to text synchronously with predictable latency. It runs in the opposite direction from the requirement.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/batch-synthesis"
+ },
+ {
+  "id": "4.2.1-03",
+  "obj": "4.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Alpine Ski House stores prerecorded guest service calls as single-channel `.wav` files. A support tool must return the transcript of one selected file while the user waits, and must label which of the two speakers said each phrase.\n\nA developer writes a Python application that uses the Azure AI Speech transcription client library. A `TranscriptionClient` object named `client` is already created, and the calls are recorded in English only.\n\nYou need to complete the transcription options.\n\nWhich code segment should you use?",
+  "choices": [
+   "options = TranscriptionOptions(locales=[\"en-US\"])",
+   "options = TranscriptionOptions(\n    locales=[\"en-US\"],\n    phrase_list=PhraseListProperties(phrases=[\"Alpine Ski House\"]),\n)",
+   "options = TranscriptionOptions(\n    locales=[\"en-US\"],\n    diarization_options=TranscriptionDiarizationOptions(max_speakers=2),\n)",
+   "options = TranscriptionOptions(locales=[\"en-US\", \"fr-FR\", \"de-DE\"])"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "`TranscriptionDiarizationOptions` with `max_speakers` enables speaker diarization, which Learn documents as the way to label different speakers within a single audio channel. Each returned phrase then carries a `speaker` value alongside its text. This call transcribes the file synchronously and returns combined phrases, which meets the latency requirement. It attaches no `speaker` value to each phrase, so the two speakers remain undistinguished. `PhraseListProperties` is a real option that biases recognition toward supplied terms such as a brand name. Biasing improves word accuracy rather than speaker attribution. Supplying several candidate locales enables language identification, and the service selects the best match per phrase. The calls are in one known language, and locale detection does not separate speakers.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/fast-transcription-create"
+ },
+ {
+  "id": "4.2.1-04",
+  "obj": "4.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "The Phone Company builds a voice self-service line that reads an account number back to the caller. The account number `4815` must be spoken as \"four eight one five\" rather than as \"four thousand eight hundred fifteen\".\n\nThe application submits Speech Synthesis Markup Language (SSML) to Azure AI Speech text to speech, and the voice and speaking rate are already correct.\n\nYou need to mark up the account number.\n\nWhich SSML markup should you use?",
+  "choices": [
+   "<say-as interpret-as=\"cardinal\">4815</say-as>",
+   "<say-as interpret-as=\"number_digit\">4815</say-as>",
+   "<prosody rate=\"-20.00%\">4815</prosody>",
+   "<emphasis level=\"strong\">4815</emphasis>"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn documents `number_digit` as speaking the text as a sequence of individual digits, with the example `123456789` pronounced \"1 2 3 4 5 6 7 8 9\". That is exactly the required reading. The `cardinal` value is real, and Learn's example shows the enclosed text spoken as a whole number. That is precisely the reading the requirement rejects. The `prosody` element specifies changes to pitch, contour, range, rate, and volume. Slowing the delivery does not change how the engine interprets the number. The `emphasis` element changes the stress applied to the enclosed text. Stress is a delivery attribute, not a content-type instruction.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/speech-synthesis-markup-pronunciation"
+ },
+ {
+  "id": "4.2.2-02",
+  "obj": "4.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Blue Yonder Airlines runs a training agent that coaches cabin crew on a fixed English safety announcement. A crew member reads the announcement aloud, and the agent returns a written critique of the delivery.\n\nA developer writes a Python application that uses the Azure AI Speech SDK. The application creates a `SpeechRecognizer` object for the `en-US` locale and applies a `PronunciationAssessmentConfig` object whose `reference_text` value is the announcement. Every other setting is left at its default.\n\nInstructors report that the critique flags mispronounced words, but never reports a word of the announcement that the crew member skipped, or a word that the crew member added and that the announcement does not contain.\n\nYou need to return the omission and insertion errors.\n\nWhich action should you perform?",
+  "choices": [
+   "Set `granularity` to `Phoneme` on the `PronunciationAssessmentConfig` object",
+   "Set `enable_miscue` to `True` on the `PronunciationAssessmentConfig` object",
+   "Call `enable_prosody_assessment()` on the `PronunciationAssessmentConfig` object",
+   "Set `grading_system` to `HundredMark` on the `PronunciationAssessmentConfig` object"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn documents `EnableMiscue` as the setting that enables miscue calculation by comparing the pronounced words to the reference text, and states that when the value is `True` the `ErrorType` result can be set to `Omission` or `Insertion`. The default value is `False`, which is why the skipped and added words never appear. Granularity sets the lowest level of evaluation, and `Phoneme` returns scores at the full text, word, syllable, and phoneme levels. It changes how finely the scores are reported rather than whether the spoken words are compared against the reference text. Prosody assessment evaluates stress, intonation, speaking speed, and rhythm, and it adds a `ProsodyScore` to the result. It reports how natural the delivery sounds, and Learn notes that it is available only in the `en-US` locale, but it detects no missing or extra words. The grading system calibrates the point scale, where `HundredMark` returns a 0 to 100 score instead of the default 0 to 5 score. Rescaling the numbers surfaces no new error types.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/how-to-pronunciation-assessment#set-configuration-parameters"
+ },
+ {
+  "id": "4.2.2-03",
+  "obj": "4.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Bellows College transcribes archived lecture recordings by using the Azure AI Speech batch transcription API. Accuracy is poor on roughly 2,000 course codes and discipline-specific terms.\n\nA developer proposes supplying the terms at request time so that no model training is needed. The college can also provide audio recordings together with human-labeled reference transcriptions.\n\nYou need to reduce the word error rate for the archived recordings.\n\nWhich approach should you implement?",
+  "choices": [
+   "Add the terms to a phrase list on the batch transcription request",
+   "Enable language identification on the batch transcription request",
+   "Enable speaker diarization on the batch transcription request",
+   "Train a custom speech model, and transcribe against a custom endpoint"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Custom speech fine-tunes a base model from your own audio and human-labeled transcripts, and Learn names a large phrase list as one of the cases that calls for training a custom model instead. Once the model is deployed to a custom endpoint, the archive can be transcribed against it and the improvement measured as word error rate. Phrase lists are a real runtime biasing feature applied at the endpoint level, but Learn states that they are not available with batch transcription and that a phrase list should not exceed 500 phrases. The proposal breaks both constraints. Language identification selects a locale from a candidate list. The lectures are in one known language, so detection changes nothing about the vocabulary that is recognized. Diarization labels which speaker said each phrase. Speaker attribution does not affect which words the model recognizes.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/improve-accuracy-phrase-list"
+ },
+ {
+  "id": "4.2.2-04",
+  "obj": "4.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank trains a custom speech model for its collections call recordings. Before the model is deployed, a reviewer must report whether the custom model is more accurate than the base model.\n\nThe reviewer must produce one quantitative number for each model and must be able to attribute the errors to insertions, deletions, and substitutions.\n\nYou need to configure the accuracy test.\n\nWhich dataset should you supply to the test?",
+  "choices": [
+   "Related text consisting of sentences that contain the collections vocabulary",
+   "Audio recordings with human-labeled transcriptions from outside the training data",
+   "Audio recordings without transcriptions, taken from the training data",
+   "A pronunciation file that maps spoken forms to display forms"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn states that an accuracy test requires a collection of audio files with their corresponding human-labeled transcriptions, and it recommends an acoustic dataset different from the one used to train the model for a realistic sense of performance. The test then reports word error rate, calculated as insertions plus deletions plus substitutions divided by the total number of words in the reference transcript. Related text is a real custom speech training data type that adapts the language model to domain wording. Training input cannot measure accuracy, because there is nothing to compare the recognition output against. Audio alone lets you play back recordings and inspect recognition quality by ear. Without a reference transcript there is no denominator and no error counts, so no word error rate can be calculated. Pronunciation data teaches the model how a term is spoken and is another training input. It produces no measurement of model accuracy.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/how-to-custom-speech-evaluate-data"
+ },
+ {
+  "id": "4.2.3-01",
+  "obj": "4.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Consolidated Messenger analyzes recorded dispatcher calls. For each recording, the application must answer questions about the speaker's tone and about whether the dispatcher followed the escalation script, rather than return only the words that were spoken.\n\nA developer writes a Python application that uses an `AzureOpenAI` client named `client` authenticated with `DefaultAzureCredential` and `get_bearer_token_provider`. A deployment of `gpt-4o-mini-audio-preview` named Deployment1 exists, and the recording is base64 encoded in a variable named `encoded_string`. The response must be returned as text.\n\nYou need to send the recording to the model.\n\nWhich code segment should you use?",
+  "choices": [
+   "completion = client.audio.transcriptions.create(\n    model=\"Deployment1\",\n    file=open(\"call.wav\", \"rb\"),\n)",
+   "completion = client.chat.completions.create(\n    model=\"Deployment1\",\n    messages=[{\"role\": \"user\", \"content\": \"Describe the tone of the call.\"}],\n)",
+   "completion = client.chat.completions.create(\n    model=\"Deployment1\",\n    modalities=[\"text\"],\n    messages=[{\"role\": \"user\", \"content\": [\n        {\"type\": \"text\", \"text\": \"Did the dispatcher follow the escalation script?\"},\n        {\"type\": \"input_audio\",\n         \"input_audio\": {\"data\": encoded_string, \"format\": \"wav\"}},\n    ]}],\n)",
+   "completion = client.chat.completions.create(\n    model=\"Deployment1\",\n    modalities=[\"text\", \"audio\"],\n    audio={\"voice\": \"alloy\", \"format\": \"wav\"},\n    messages=[{\"role\": \"user\", \"content\": \"Read the escalation script aloud.\"}],\n)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Audio-enabled models introduce the audio modality into the existing `/chat/completions` API, and pairing an `input_audio` part with a text instruction is the documented audio-in, text-out pattern that Learn lists for audio analysis. The recording reaches the model, so tone and script adherence can be assessed directly. The audio transcriptions endpoint returns the words that were spoken in the file. It hands you a transcript to reason over in a later step, but on its own it answers no question about tone or script adherence. This is a valid chat completions call, but the message carries text only. The model never receives the recording, so any answer about the call would be invented. This is the text and audio input to spoken output pattern that Learn illustrates for generating a spoken reply. It requests audio back and, as written, sends no recording for the model to analyze.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/audio-completions-quickstart"
+ },
+ {
+  "id": "4.2.3-02",
+  "obj": "4.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The Graphic Design Institute records admissions calls. For each recording, an analytics dashboard needs a speaker-separated transcript, a call summary, the call sentiment, the companies and people mentioned, and a set of relevant call categories.\n\nThe team wants a prebuilt Azure Content Understanding analyzer and does not want to define any custom fields.\n\nYou need to select an analyzer.\n\nWhich analyzer should you select?",
+  "choices": [
+   "`prebuilt-callCenter`",
+   "`prebuilt-audioSearch`",
+   "`prebuilt-videoSearch`",
+   "`prebuilt-documentSearch`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's post-call analysis analyzer returns conversation transcripts with speaker role detection, a call summary, call sentiment, a list of companies mentioned, a list of people with name and role, and relevant call categories. Every item on the dashboard appears on that list. The conversation analysis analyzer returns conversation transcripts and a conversation summary. It stops short of sentiment, mentioned entities, and call categories, which would force the team to define custom fields. This analyzer extracts keyframes, a transcript, and chapter segments from video. The admissions recordings are audio, and the outputs do not match the dashboard. This analyzer extracts document layout as structured Markdown with tables and figure descriptions. It targets documents, which is the wrong modality entirely.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/audio/overview"
+ },
+ {
+  "id": "4.2.4-01",
+  "obj": "4.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud runs multilingual sales calls. During a single call, a participant can switch between languages, and the set of languages that will be spoken is not known before the call starts.\n\nThe application must deliver spoken translation with low latency, in a natural voice that preserves the speaker's style and tone.\n\nYou need to select a capability of Azure AI Speech.\n\nWhich capability should you select?",
+  "choices": [
+   "Speech translation that uses an `AutoDetectSourceLanguageConfig` object with a candidate language list",
+   "Batch transcription that uses multiple candidate locales",
+   "Video translation",
+   "The Live Interpreter API"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn describes Live Interpreter as continuously identifying the language being spoken without requiring an input language, handling language switching within one session, and delivering low-latency speech-to-speech translation in a natural voice that preserves the speaker's style and tone. Using personal voice with Live Interpreter requires approved access through the limited access process. This is genuine multilingual speech translation, and continuous language identification can detect language changes during the audio. It requires a candidate list of up to 10 languages, and the stem states that the languages cannot be enumerated in advance. Batch transcription processes prerecorded audio asynchronously and returns text. It cannot serve a live call and synthesizes no speech. Video translation localizes a recorded video by extracting the dialogue audio, transcribing it, translating it, and dubbing it in batch mode. It targets finished video files rather than a live conversation.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/speech-translation"
+ },
+ {
+  "id": "4.2.4-02",
+  "obj": "4.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam Residences publishes recorded property tour videos in English. The marketing team must release Spanish and Japanese versions of each finished `.mp4` file.\n\nEach released video must carry a dubbed audio track that is synchronized to the original footage and translated subtitles. An editor must be able to review and correct the translated content before the video is published.\n\nYou need to select a capability of Azure AI Speech.\n\nWhich capability should you select?",
+  "choices": [
+   "Real-time speech translation that uses a `TranslationRecognizer` object",
+   "Batch transcription followed by Azure Translator text translation",
+   "Video translation",
+   "Text to speech avatar"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn describes video translation as automatically extracting the dialogue audio, transcribing it, translating it, and dubbing the content in the target language with synchronized subtitles and multi-speaker voice matching. It also includes a human-in-the-loop content editing step so that an editor can review and correct the translated content before publishing. Real-time speech translation converts streaming audio as it is spoken and can synthesize the translation. It targets live conversations and produces no dubbed video, no subtitles, and no review step. Both services are real and would yield a translated transcript of the narration. You would still have to build synthesis, time alignment to the footage, subtitle generation, and the editorial review workflow yourself. Text to speech avatar synthesizes video of a photorealistic presenter speaking supplied text. It creates new footage rather than localizing the existing property tour.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/speech-service/video-translation-overview"
+ }
+]

@@ -1,0 +1,182 @@
+[
+ {
+  "id": "5.2.3-01",
+  "obj": "5.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Munson's Pickles and Preserves Farm builds a custom Azure Content Understanding document analyzer named Analyzer1 for supplier agreements.\n\nAnalyzer1 already returns the counterparty name and the effective date. The team now adds a field that must hold a two-sentence plain-language summary of the termination terms. That summary never appears as a contiguous span of text anywhere in the agreement, and it is not chosen from a fixed list of categories.\n\nYou need to define the new field.\n\nWhich field definition should you use?",
+  "choices": [
+   "Define the field with a `method` value of `generate`",
+   "Define the field with a `method` value of `extract`",
+   "Define the field with a `method` value of `classify`",
+   "Define the field and set `estimateFieldSourceAndConfidence` to `true`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn defines `generate` as producing values freely from the input content by using AI models, and names summarization as the example. A summary that appears nowhere verbatim is exactly the case the method exists for. `extract` returns values directly as they appear in the input content, such as dates on a receipt or line items on an invoice. There is no contiguous span to lift, so the field would come back empty or truncated. `classify` assigns content to one of a predefined set of categories, such as a call sentiment or a chart type. A free-form summary is not a category, so no candidate label would fit. `estimateFieldSourceAndConfidence` turns on confidence scores and source references for extracted values, which is a genuine analyzer setting. It reports how reliable a value is rather than deciding how the value is produced.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/analyzer-reference#processing-configuration"
+ },
+ {
+  "id": "5.2.2-01",
+  "obj": "5.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. receives one PDF file per supplier submission. Each file concatenates several document types, such as a loan application followed by an invoice and a cover letter, in an order that varies.\n\nA single Azure Content Understanding call must split the file into its constituent documents, identify the type of each part, and extract fields defined for that specific type. Parts that match no known type must be identified but must not go through field extraction.\n\nYou need to configure Content Understanding.\n\nWhich approach should you use?",
+  "choices": [
+   "Run the `prebuilt-invoice` analyzer against the whole file and ignore the other parts",
+   "Create a classifier analyzer that routes each category to a custom analyzer, and leave the unmatched category unrouted",
+   "Create one custom analyzer that contains every field from every document type, and run it against the whole concatenated file",
+   "Enable pro mode on a custom analyzer so that it reasons across the whole file"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn describes a classifier that splits and categorizes content and uses the `analyzerId` property on a category to route that category to the analyzer that extracts its fields. It also states that categories without an `analyzerId` are classified but not routed to an analyzer, which is exactly the required handling for unknown parts. `prebuilt-invoice` is a domain-specific analyzer preconfigured for invoice fields. Applied to a concatenated file it has no way to isolate the invoice portion, and the other document types are simply lost. A single wide analyzer is valid and would return a field schema, but every field is evaluated against the entire file. Fields from the wrong document type would be filled from unrelated pages, which degrades extraction accuracy. Pro mode adds multi-step reasoning across multiple inputs and reference data, and invoice matching is one of its scenarios. Learn's comparison shows that grounding and confidence scores are not supported in pro mode, and pro mode does not perform the classify-and-route split this pipeline needs. Pro mode is documented only for the `2025-05-01-preview` API version, which Learn retired on July 15, 2026, so it is not available on the `2025-11-01` GA API.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/how-to/classification-content-understanding-studio#step-2-classify-and-route-with-custom-analyzers"
+ },
+ {
+  "id": "5.2.1-01",
+  "obj": "5.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel receives one scanned PDF file per booking. A single file concatenates a passport scan, a hotel invoice, and an insurance form, and the page count of each section varies from booking to booking.\n\nAzure Content Understanding must split the file into sections, decide which section is which, and route each section to a different analyzer for field extraction, all within one analyze request.\n\nYou need to configure the analyzer.\n\nWhich configuration should you use?",
+  "choices": [
+   "Set `segmentPerPage` to true",
+   "Call `prebuilt-documentFieldSchema` against the file",
+   "Set `omitContent` to true and call `prebuilt-documentFields` with `returnDetails` set to true",
+   "Set `enableSegment` to true and give each `contentCategories` entry an `analyzerId`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "`contentCategories` defines the categories, and `enableSegment` set to true splits the file into segments and classifies each one. Setting `analyzerId` on a category routes that segment to the matching analyzer inside the same analyze operation. This property forces one segment per page instead of using logical content boundaries. The sections here span a varying number of pages, and the property performs no classification and no routing. This utility analyzer inspects a document and proposes a field schema, which helps when you encounter a new document type. It returns a schema suggestion rather than split and routed output. `prebuilt-documentFields` extracts key-value pairs, `omitContent` suppresses the original content object in the response, and `returnDetails` adds confidence scores and bounding boxes. None of these settings splits the file or selects an analyzer per section.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/classifier"
+ },
+ {
+  "id": "5.2.1-02",
+  "obj": "5.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. processes engineering change notices that an internal system generates as digital PDF files. Every file is machine readable, and the archive contains no scans and no photographs.\n\nThe pipeline must read the content directly from the internal structure and encoding of each file, with no optical character recognition (OCR) step and no language model.\n\nYou need to select a prebuilt Azure Content Understanding analyzer.\n\nWhich analyzer should you select?",
+  "choices": [
+   "`prebuilt-digitalParse`",
+   "`prebuilt-read`",
+   "`prebuilt-layout`",
+   "`prebuilt-documentSearch`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "This analyzer extracts machine-readable content by directly analyzing the internal structure and encoding of the file, and it requires no language model and no embedding model. Learn routes scanned or image-based documents to other analyzers, which confirms this is the digital-born case. `prebuilt-read` provides foundational optical character recognition for words, paragraphs, formulas, and barcodes. It performs the recognition step that the requirement excludes. `prebuilt-layout` adds layout analysis such as paragraphs, tables, and figure detection on top of recognition. It is richer than the requirement asks for and still relies on recognition rather than the file encoding. `prebuilt-documentSearch` produces Markdown, figure descriptions, chart analysis, and a document summary for RAG ingestion. Those capabilities depend on a language model, which the requirement rules out.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/prebuilt-analyzers"
+ },
+ {
+  "id": "5.2.1-03",
+  "obj": "5.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lamna Healthcare Company scans patient intake forms as PDF files. Each form contains a table of prior medications that spans pages, and each form embeds a clinic logo and a signature image.\n\nThe extraction must return the table structure, the paragraphs and their document roles, and the location and detected type of each figure. A compliance rule prohibits any processing that requires a language model or an embedding model.\n\nYou need to select a prebuilt Azure Content Understanding analyzer.\n\nWhich analyzer should you select?",
+  "choices": [
+   "`prebuilt-read`",
+   "`prebuilt-documentSearch`",
+   "`prebuilt-layout`",
+   "`prebuilt-documentFields`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "`prebuilt-layout` extracts words, figures, paragraphs, and tables, identifies document structure and formatting, and detects figure types with location information. Learn states that this prebuilt requires no language model and no embedding model. `prebuilt-read` requires no language model and no embedding model, so it does satisfy the compliance rule. It provides foundational text extraction without layout analysis, so it returns no table structure and no figure locations. `prebuilt-documentSearch` returns tables, figure descriptions, and chart analysis, which covers the extraction list generously. It is a RAG analyzer whose descriptions and summaries depend on generative capabilities, so it breaches the compliance rule. `prebuilt-documentFields` is a utility analyzer that returns key-value pairs and backs domain-specific analyzers when the input does not match a predefined schema. It returns pairs rather than table structure and figure locations.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/prebuilt-analyzers"
+ },
+ {
+  "id": "5.2.2-02",
+  "obj": "5.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Munson's Pickles and Preserves Farm receives supplier invoices as PDF files. For each invoice, the finance team must confirm that the line items and pricing agree with the supply contract that governs that supplier, and flag each discrepancy for review.\n\nThe contract is a separate PDF file. Azure Content Understanding must reason across the invoice and the contract in one analyze request and return the discrepancies as structured fields.\n\nYou need to configure the solution.\n\nWhich approach should you use?",
+  "choices": [
+   "Standard mode with `enableSegment` set to true and a `contentCategories` entry for each supplier",
+   "Standard mode with `estimateFieldSourceAndConfidence` set to true",
+   "Pro mode with the contract supplied as reference data at analyzer creation",
+   "The `prebuilt-contract` analyzer applied to the contract"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Pro mode adds multi-step reasoning, accepts more than one input document, and takes reference data that you supply at analyzer creation, and Learn names invoice-against-contract validation as its headline scenario. Note that pro mode returns no grounding and no confidence scores, and it supports documents only. Learn documents pro mode only in the `2025-05-01-preview` API version, which retired on July 15, 2026, so confirm availability in the `2025-11-01` GA API before relying on it. Segmentation and content categories split a file into sections and classify each one, which is genuinely useful for mixed batches of documents. Classification decides what a section is, and it never compares one document against another. This setting returns a confidence score and a grounding reference for each extracted field, which is what enables straight-through processing. It reports certainty about a single document and performs no cross-document validation. `prebuilt-contract` is a domain-specific analyzer that extracts fields such as parties, terms, and obligations from a contract. It reads the contract in isolation and produces no comparison.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/standard-pro-modes#pro-mode-overview"
+ },
+ {
+  "id": "5.2.2-03",
+  "obj": "5.2.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Southridge Video ingests production style guides as PDF files into a retrieval-augmented generation (RAG) index. The ingestion job runs on a virtual machine that carries a managed identity.\n\nFor each file, the job must receive Markdown that preserves layout, textual descriptions of the embedded diagrams, and a one-paragraph summary of the whole document. No custom field schema is required.\n\nYou need to complete the call.\n\n```python\nfrom azure.ai.contentunderstanding import ContentUnderstandingClient\nfrom azure.ai.contentunderstanding.models import AnalysisInput\nfrom azure.identity import DefaultAzureCredential\n\nclient = ContentUnderstandingClient(\n    endpoint=os.environ[\"CONTENTUNDERSTANDING_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\npoller = client.begin_analyze(\n    analyzer_id=\"# [1]\",\n    inputs=[AnalysisInput(url=document_url)],\n)\nmarkdown = poller.result().contents[0].markdown\n```\n\nWhich analyzer ID should you use at `# [1]`?",
+  "choices": [
+   "`prebuilt-document`",
+   "`prebuilt-documentSearch`",
+   "`prebuilt-read`",
+   "`prebuilt-invoice`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "`prebuilt-documentSearch` extracts content and layout elements as Markdown, provides textual explanations of images, charts, and diagrams, and generates a one-paragraph summary of the document. Learn recommends it for document ingestion in RAG workflows. `prebuilt-document` is a base analyzer whose purpose is to act as the parent of a custom analyzer through the `baseAnalyzerId` property. It is a starting point for customization rather than a ready-made extractor for this scenario. `prebuilt-read` provides foundational optical character recognition without layout analysis. It returns neither figure descriptions nor a document summary. `prebuilt-invoice` is a domain-specific analyzer tuned for invoice fields such as totals, dates, and line items. Style guides are the wrong document genre for it.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/prebuilt-analyzers"
+ },
+ {
+  "id": "5.2.2-04",
+  "obj": "5.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. builds a custom Azure Content Understanding document analyzer named Analyzer1 for warranty claims. The output grounds an agent, so the schema defines three fields.\n\n`ClaimNumber` must be captured exactly as it is printed on the page. `Severity` must be one of the values Low, Medium, or High. `ClaimSummary` must be a short paragraph that appears nowhere in the source document.\n\nYou need to set the generation method for each field.\n\nWhich combination should you use?",
+  "choices": [
+   "`ClaimNumber`: generate; `Severity`: extract; `ClaimSummary`: classify",
+   "`ClaimNumber`: extract; `Severity`: classify; `ClaimSummary`: generate",
+   "`ClaimNumber`: classify; `Severity`: generate; `ClaimSummary`: extract",
+   "`ClaimNumber`: extract; `Severity`: generate; `ClaimSummary`: extract"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "`extract` returns a value as it appears in the content and is supported for document analyzers, which fits a printed claim number. `classify` selects from a predefined set of categories, and `generate` produces a value that is not present in the input, such as a summary. Learn also requires `estimateSourceAndConfidence` to be true on any field whose method is `extract`. Every assignment here is inverted. `generate` would compose a claim number rather than read one, `extract` cannot choose from a category list, and `classify` cannot compose a paragraph. `classify` would force a claim number into one of a fixed set of options. `extract` on a summary fails outright, because the summary text does not exist anywhere in the source document. The claim number assignment is correct, which makes this the most tempting distractor. `generate` on `Severity` gives up the fixed value set that a category list enforces, and `extract` cannot return a summary that is absent from the page.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/best-practices"
+ },
+ {
+  "id": "5.2.3-02",
+  "obj": "5.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Blue Yonder Airlines runs an Azure Content Understanding document analyzer named Analyzer1 over maintenance manuals. Analyzer1 returns Markdown that a text splitter chunks for a retrieval-augmented generation (RAG) index.\n\nThe manuals contain rate tables. In the current output, each table is emitted as an HTML block, and the splitter breaks those blocks apart. The tables must appear as Markdown tables in the analyze-result Markdown.\n\nYou need to change the analyzer configuration.\n\nWhich configuration option should you set?",
+  "choices": [
+   "`tableFormat`",
+   "`chartFormat`",
+   "`annotationFormat`",
+   "`enableLayout`"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "`tableFormat` sets the representation format of tables in the analyze-result Markdown, defaults to `html`, and accepts `markdown`. Learn points to the `markdown` value for simple tables in documentation or text-based processing. `chartFormat` sets the representation format of extracted charts and defaults to a Chart.js-compatible structure. It governs charts, not tables. `annotationFormat` sets how annotations such as highlights and underlines are represented, and Learn's analyzer configuration reference lists `markdown` as its only supported value. It has no effect on how a table is serialized. `enableLayout` extracts paragraphs, lines, reading order, and structural elements, and it is enabled by default. Turning it on again leaves the table serialization unchanged.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/analyzer-reference#processing-configuration"
+ },
+ {
+  "id": "5.2.3-03",
+  "obj": "5.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys analyzes safety test reports with an Azure Content Understanding document analyzer named Analyzer1. Each report embeds bar charts that plot failure rates by product line.\n\nA downstream reasoning model must receive the underlying data series of each chart as a structured object that the application can re-render, rather than a sentence that describes what the chart shows.\n\nYou need to change the analyzer configuration.\n\nWhich configuration option should you enable?",
+  "choices": [
+   "`enableFormula`",
+   "`enableBarcode`",
+   "`enableFigureDescription`",
+   "`enableFigureAnalysis`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "`enableFigureAnalysis` performs deeper analysis of figures, including chart data extraction and diagram component identification, and Content Understanding returns chart structure in a Chart.js-compatible format. That is the re-renderable object the reasoning model needs. `enableFormula` detects mathematical formulas and equations and returns them in LaTeX. It targets equations, not plotted data. `enableBarcode` decodes linear and two-dimensional barcodes such as QR Code, Code 128, and Data Matrix. Barcodes are unrelated to chart data series. `enableFigureDescription` generates a natural-language text description of a figure, diagram, or illustration, which is the right setting for accessibility text. It returns the descriptive sentence that the requirement explicitly rejects.",
+  "ref": "https://learn.microsoft.com/azure/ai-services/content-understanding/concepts/analyzer-reference#processing-configuration"
+ }
+]

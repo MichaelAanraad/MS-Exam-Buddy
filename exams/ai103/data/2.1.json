@@ -1,0 +1,542 @@
+[
+ {
+  "id": "2.1.6-01",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Nod Publishers develops a Python application that must call the Responses API through a Microsoft Foundry project named Project1. The project endpoint is stored in an environment variable named `PROJECT_ENDPOINT`.\n\nCalls must be routed through Project1 so that the project's connections and observability settings apply, and the application must authenticate keylessly with Microsoft Entra ID.\n\nYou need to create the client that issues the Responses API call.\n\nWhich code segment should you use?",
+  "choices": [
+   "from azure.ai.projects import AIProjectClient\nfrom azure.identity import DefaultAzureCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\nopenai = project.get_openai_client()",
+   "from openai import OpenAI\nfrom azure.identity import DefaultAzureCredential, get_bearer_token_provider\n\ntoken_provider = get_bearer_token_provider(\n    DefaultAzureCredential(), \"https://ai.azure.com/.default\"\n)\nopenai = OpenAI(\n    base_url=os.environ[\"PROJECT_ENDPOINT\"],\n    api_key=token_provider,\n)",
+   "from azure.ai.projects import AIProjectClient\nfrom azure.core.credentials import AzureKeyCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=AzureKeyCredential(os.environ[\"PROJECT_KEY\"]),\n)\nopenai = project.get_openai_client()",
+   "from azure.ai.projects import AIProjectClient\nfrom azure.identity import DefaultAzureCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\nopenai = project.telemetry.get_openai_client()"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "This is the documented Foundry pattern: build an `AIProjectClient` from the project endpoint and a `DefaultAzureCredential`, then call `get_openai_client()` to obtain an OpenAI client bound to that project. The same code authenticates through a developer sign-in locally and through a managed identity once deployed. `get_bearer_token_provider` with an `OpenAI` client is a real keyless pattern, and Learn uses it against a resource-level `/openai/v1/` base URL. Learn documents the OpenAI-compatible base URL as the project endpoint with `/openai/v1` appended, so this segment omits the required path suffix and never resolves to the project's Responses endpoint. `AzureKeyCredential` is a genuine credential type in the Azure SDK. It reads an API key, which violates the keyless requirement in the stem. The `telemetry` operations group on `AIProjectClient` is real and exposes calls such as retrieving the Application Insights connection string. It does not return an OpenAI client, so this segment would fail.",
+  "ref": "https://learn.microsoft.com/azure/foundry/what-is-foundry#your-first-api-call"
+ },
+ {
+  "id": "2.1.4-01",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam Residences prepares to release a tenant-support agent. A trust and safety review must happen before deployment.\n\nThe team has no labeled evaluation dataset and no library of attack prompts. The review must simulate an adversarial user across content-risk categories, apply attack strategies of varying complexity to the seed prompts, and produce an Attack Success Rate score card that the release board can read.\n\nYou need to select an approach.\n\nWhich approach should you select?",
+  "choices": [
+   "Run the Groundedness Pro evaluator against production traces",
+   "Run risk and safety evaluators against a dataset that reviewers write by hand",
+   "Enable continuous evaluation on the deployed agent",
+   "Run automated scans with the AI Red Teaming Agent"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn describes the AI Red Teaming Agent as running automated scans that simulate adversarial probing from a curated set of seed prompts, applying PyRIT attack strategies grouped by complexity, and generating a score card with Attack Success Rate. It is positioned for the design, development, and pre-deployment stages. Groundedness Pro returns a binary pass or fail for consistency with retrieved context, backed by Azure AI Content Safety. It measures fabrication against sources and cannot probe the system with adversarial input. Risk and safety evaluators score responses for harmful content and are a genuine part of the evaluation catalog. They require input data, so a hand-written dataset reintroduces exactly the manual bottleneck the stem removes. Continuous evaluation samples production traffic after deployment and surfaces quality and safety metrics on the monitoring dashboard. The stem requires a check before the agent reaches production, so there is no traffic to sample.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/ai-red-teaming-agent"
+ },
+ {
+  "id": "2.1.2-01",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "City Power & Light hosts a retrieval-augmented generation (RAG) web application on Azure App Service. The application has a system-assigned managed identity that already holds the required data-plane role on an Azure AI Search index named Index1.\n\nThe service must perform the retrieval and augment the prompt on the server side, so the application must not issue its own search request or paste passages into the messages. No API key or admin key may appear in the code.\n\nYou need to complete the chat completion call.\n\nWhich code segment should you use?",
+  "choices": [
+   "results = search_client.search(query)\nmessages.append({\"role\": \"system\", \"content\": str(results)})\nresponse = openai_client.chat.completions.create(\n    model=deployment, messages=messages\n)",
+   "response = openai_client.chat.completions.create(\n    model=deployment,\n    messages=messages,\n    extra_body={\"data_sources\": [{\n        \"type\": \"azure_search\",\n        \"parameters\": {\n            \"endpoint\": search_url,\n            \"index_name\": index_name,\n            \"authentication\": {\"type\": \"api_key\", \"key\": search_key},\n        }}]},\n)",
+   "response = openai_client.chat.completions.create(\n    model=deployment,\n    messages=messages,\n    extra_body={\"data_sources\": [{\n        \"type\": \"azure_search\",\n        \"parameters\": {\n            \"endpoint\": search_url,\n            \"index_name\": index_name,\n            \"authentication\": {\"type\": \"system_assigned_managed_identity\"},\n        }}]},\n)",
+   "response = openai_client.chat.completions.create(\n    model=deployment,\n    messages=messages,\n    tools=[{\"type\": \"code_interpreter\"}],\n)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn's sample configures an `azure_search` data source with `system_assigned_managed_identity` authentication and passes it through `extra_body` on the chat completion call. The service retrieves from Index1 and augments the prompt, and the App Service identity supplies the credential, so no key is stored. Retrieving passages yourself and appending them to the messages is a valid hand-built RAG loop. The stem forbids it, because the retrieval and prompt augmentation must happen in the service. This is the correct `data_sources` shape, and `api_key` is a supported authentication type for an Azure AI Search data source. It places a search key in the code, which the stem prohibits. The Code Interpreter tool runs Python in a sandbox for analysis and charting. It performs no retrieval, so the model would answer without grounding.",
+  "ref": "https://learn.microsoft.com/azure/app-service/tutorial-ai-openai-search-python#frequently-asked-questions"
+ },
+ {
+  "id": "2.1.1-01",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Bellows College builds a lab-report checker. Students upload a photograph of a handwritten data table, and the application must ask a deployed multimodal model to describe what the table shows.\n\nThe photograph is already available at a public HTTPS URL. The application uses the chat completions API against a vision-capable deployment.\n\nYou need to send the photograph and the question in one request.\n\nWhich code segment should you use?",
+  "choices": [
+   "response = client.chat.completions.create(\n    model=deployment,\n    messages=[{\"role\": \"user\", \"content\": image_url}],\n)",
+   "response = client.images.generate(\n    model=deployment,\n    prompt=\"Describe the handwritten data table\",\n)",
+   "response = client.embeddings.create(\n    model=deployment,\n    input=image_url,\n)",
+   "response = client.chat.completions.create(\n    model=deployment,\n    messages=[{\"role\": \"user\", \"content\": [\n        {\"type\": \"text\", \"text\": \"Describe the handwritten data table\"},\n        {\"type\": \"image_url\", \"image_url\": {\"url\": image_url}},\n    ]}],\n)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn's vision samples build the user message as a content array that mixes a `text` part with an `image_url` part carrying the image address. That array shape is how a chat completions request delivers an image and a question to a vision-capable deployment in one call. Passing the URL as a plain string sets the message content to text. The model receives the characters of the address and never fetches or sees the photograph. The image generations endpoint synthesizes a new image from a prompt. It produces a picture rather than an analysis, so nothing about the student's table is read. The embeddings endpoint converts input into a vector for similarity search. It returns numbers rather than a description, and it is not the multimodal chat path.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/gpt-with-vision?pivots=programming-language-python#create-a-new-python-application"
+ },
+ {
+  "id": "2.1.5-01",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. maintains a Foundry project named Project1. A platform team already created a connection to an Azure AI Search service in Project1 and named it `search-connection`.\n\nA Python application must attach the Azure AI Search tool to an agent, and that tool requires the connection identifier. The application must read the identifier from Project1 at run time so that the value is never hard-coded in configuration, and it must authenticate keylessly.\n\nYou need to obtain the connection identifier.\n\nWhich code segment should you use?",
+  "choices": [
+   "project = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\nconnection = project.connections.get(\"search-connection\")\nconnection_id = connection.id",
+   "project = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\nconnection_id = project.agents.get(\"search-connection\").id",
+   "search_client = SearchClient(\n    endpoint=os.environ[\"SEARCH_ENDPOINT\"],\n    index_name=\"Index1\",\n    credential=DefaultAzureCredential(),\n)\nconnection_id = search_client.get_index_statistics()",
+   "connection_id = os.environ[\"SEARCH_CONNECTION_ID\"]"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's setup sample for the Azure AI Search tool builds an `AIProjectClient` with `DefaultAzureCredential` and calls `project.connections.get(connection_name)` to read `connection.id`. That is the documented way to resolve a project connection identifier at run time without a stored value. `project.agents` is a real operations group, and `get` on it retrieves an agent by name. Connections and agents are different resources, so a connection name passed there would not resolve. `SearchClient` talks to the search data plane and `get_index_statistics` returns document counts and storage size. Neither call knows anything about Foundry project connections. Reading an environment variable does return an identifier, and it authenticates nothing on its own. It hard-codes the value in configuration, which the stem prohibits, and it silently breaks if the platform team recreates the connection.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search?pivots=python#setup"
+ },
+ {
+  "id": "2.1.1-02",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Wide World Importers builds an image-tagging service in a Microsoft Foundry project named Project1. The service must run a small open-weight vision model that is published in the Hugging Face collection of the Foundry model catalog.\n\nThe model must run on dedicated GPU capacity, and the deployment must sit in a fully private network that permits no outbound internet traffic. The service must reach the model through the same project endpoint and the same Microsoft Entra ID authentication that Project1 already uses for its other models.\n\nYou need to select a deployment option for the model.\n\nWhich deployment option should you select?",
+  "choices": [
+   "A managed compute deployment in Project1",
+   "A standard deployment in the Foundry resource",
+   "A provisioned throughput deployment of the model in the Foundry resource",
+   "Instant access to the model through the project endpoint"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn routes open-source and community models from the Foundry catalog, including the Hugging Face collection, to managed compute, which hosts them on dedicated GPU capacity in a Foundry project. Model weights are pre-staged in Microsoft-managed storage, so the deployment needs no outbound network access, and it is served on the same project endpoint with the same authentication as every other deployment type. Managed compute is in preview. Standard deployment in Foundry resources is the preferred path, and Learn scopes it to Foundry Models sold by Azure and to select models from partners and community. A Hugging Face collection model is not served by that option, so the portal routes the model to managed compute instead. Provisioned throughput reserves throughput units and applies to Foundry Models sold by Azure. Managed compute bills hourly per accelerator family instead, so provisioned throughput units cannot be purchased for an open-weight catalog model. Instant access lets you call supported models by name with no deployment at all, which is the lowest-friction path when it applies. It covers supported Foundry models rather than open-weight catalog models, and it reserves no dedicated GPU capacity.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/deployments-overview"
+ },
+ {
+  "id": "2.1.1-03",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Trey Research runs a standard model deployment named Deployment1 in a Microsoft Foundry resource. Deployment1 targets one specific version of a chat model.\n\nA validation policy states that Deployment1 must not begin serving a newer model version until the team completes a regression test. The operations team also requires that Deployment1 keep answering requests after the current model version reaches its retirement date, with no manual change.\n\nYou need to configure the version upgrade policy for Deployment1.\n\nWhich policy should you configure?",
+  "choices": [
+   "Configure Deployment1 to upgrade once a new default version becomes available",
+   "Configure Deployment1 to opt out of automatic model version upgrades",
+   "Convert Deployment1 to a provisioned deployment type, and manage model migrations manually",
+   "Configure Deployment1 to upgrade once the current version expires"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn describes this policy as automatically updating the deployment when its current version is retired. The version stays fixed until the retirement date, which preserves the regression test window, and the automatic update at expiry keeps Deployment1 answering requests with no manual change. This policy automatically moves the deployment to the new default version, and Learn states that the change lands within two weeks of the default changing. A new version would reach production before the regression test finishes, which the validation policy forbids. This policy requires a manual upgrade, so the deployment never moves to a new version on its own. Learn states that a deployment which opts out stops working once the model is retired, which fails the availability requirement. Provisioned deployment types are real, and Learn notes that automatic model updates are supported only for standard deployment types. Converting the deployment removes the upgrade policy rather than configuring it, and it commits the team to reserved capacity that the scenario never asks for.",
+  "ref": "https://learn.microsoft.com/azure/foundry/foundry-models/concepts/model-versions"
+ },
+ {
+  "id": "2.1.1-04",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Alpine Ski House prototypes a trail-conditions summarizer in a Microsoft Foundry project named Project1, which is created in the West US 3 region. The project endpoint is stored in an environment variable named `PROJECT_ENDPOINT`.\n\nProject1 contains no model deployments. The developer must call `gpt-5-mini` immediately, must use keyless authentication, and must not create a model deployment.\n\nYou need to write the code that calls the model.\n\nWhich code segment should you use?",
+  "choices": [
+   "from azure.ai.projects import AIProjectClient\nfrom azure.identity import DefaultAzureCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\nopenai = project.get_openai_client()\nresponse = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=\"Summarize today's trail report.\",\n)",
+   "from azure.ai.projects import AIProjectClient\nfrom azure.identity import DefaultAzureCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\ndeployment = project.deployments.get(\"gpt-5-mini\")\nopenai = project.get_openai_client()\nresponse = openai.responses.create(\n    model=deployment.name,\n    input=\"Summarize today's trail report.\",\n)",
+   "from openai import AzureOpenAI\n\nclient = AzureOpenAI(\n    azure_endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    api_key=os.environ[\"PROJECT_KEY\"],\n    api_version=\"preview\",\n)\nresponse = client.responses.create(\n    model=\"gpt-5-mini\",\n    input=\"Summarize today's trail report.\",\n)",
+   "from azure.ai.projects import AIProjectClient\nfrom azure.identity import DefaultAzureCredential\n\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=DefaultAzureCredential(),\n)\nopenai = project.get_openai_client(agent_name=\"Agent1\")\nresponse = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=\"Summarize today's trail report.\",\n)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Instant access lets you pass a supported model name directly in the `model` parameter with no deployment created first, and Learn documents this exact project-client plus `get_openai_client` shape. `DefaultAzureCredential` keeps the call keyless through Microsoft Entra ID. `project.deployments` is a real operation group that enumerates models deployed to the project. Project1 has no deployments, so the lookup finds nothing and the call fails. `AzureOpenAI` is a real client class, but it reads an API key from an environment variable and therefore breaks the keyless requirement. Learn recommends Microsoft Entra ID over keys for anything past prototyping. The `agent_name` keyword is real: it repoints the OpenAI client base URL at a named agent's endpoint. It also requires `allow_preview=True` on the `AIProjectClient` constructor and raises `ValueError` without it, and no agent is involved in this scenario.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/instant-models"
+ },
+ {
+  "id": "2.1.1-05",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Bellows College prototypes a student advising assistant in a Microsoft Foundry project named Project1 by calling a model through instant access.\n\nBefore release, the compliance office requires a content filtering policy that applies to this one model and differs from the policy applied to every other model that Project1 uses. The assistant also requires reserved throughput so that latency stays stable during registration week.\n\nYou need to recommend an approach.\n\nWhich approach should you recommend?",
+  "choices": [
+   "Pin the instant access model to a specific version by appending the version date to the model name",
+   "Set a default Responsible AI policy at the Foundry account level",
+   "Create a model deployment, attach a custom content filter to it, and use a provisioned deployment type",
+   "Request a global quota increase for the model"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn's own decision table routes custom content filtering policies per model, provisioned throughput, and endpoint-specific configuration to deployments rather than instant access. A deployment satisfies both requirements at once, and instant access and deployments can coexist in the same project. Version pinning is a genuine instant access feature that routes requests to one fixed model version. It stabilizes model behavior, not content filtering or throughput. Learn confirms that a default Responsible AI policy can be set at the account level through the API, so this is a real control. That policy applies uniformly to every instant access model, which is precisely what the per-model requirement forbids. A quota increase raises the throughput ceiling drawn from the shared global quota pool. It reserves nothing and changes no content filtering behavior.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/instant-models"
+ },
+ {
+  "id": "2.1.1-06",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Best For You Organics Company builds a quality-control tool that asks a multimodal model to read allergen text from a photograph of a product label.\n\nThe photographs are captured on a factory tablet and are not reachable from a public URL. A data-retention policy states that label photographs must not be persisted in any Azure AI service.\n\nYou need to send one photograph and one question in a single Responses API request.\n\nWhich code segment should you use?",
+  "choices": [
+   "response = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=[{\n        \"role\": \"user\",\n        \"content\": [\n            {\"type\": \"input_text\",\n             \"text\": \"Which allergens are listed?\"},\n            {\"type\": \"input_image\",\n             \"image_url\": f\"data:image/jpeg;base64,{b64_image}\"},\n        ],\n    }],\n)",
+   "uploaded = openai.files.create(\n    file=open(\"label.jpg\", \"rb\"),\n    purpose=\"vision\",\n)\nresponse = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=[{\n        \"role\": \"user\",\n        \"content\": [\n            {\"type\": \"input_text\",\n             \"text\": \"Which allergens are listed?\"},\n            {\"type\": \"input_image\", \"file_id\": uploaded.id},\n        ],\n    }],\n)",
+   "response = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=\"Which allergens are listed?\",\n    tools=[{\"type\": \"image_generation\"}],\n)",
+   "response = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=\"Which allergens are listed?\",\n    tools=[{\n        \"type\": \"mcp\",\n        \"server_label\": \"label_service\",\n        \"server_url\": \"https://labels.internal/mcp\",\n    }],\n)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn documents base64 image input on the Responses API as an `input_image` content part whose `image_url` carries a `data:` URI. The bytes travel inside the request body, so nothing is stored in the service and no public URL is needed. Uploading with `purpose=\"vision\"` and then referencing the returned file identifier is a genuine and supported alternative for image input. It persists the photograph as a file in the service, which the retention policy forbids. The image generation tool is real and lets a model produce images during a response. This scenario reads an existing photograph rather than creating a new one. The Model Context Protocol tool connects a response to tools hosted on an MCP server endpoint. It is a tool bridge, not a way to attach image content to a prompt.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/responses"
+ },
+ {
+  "id": "2.1.2-02",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank runs a retrieval-augmented generation (RAG) application over an Azure AI Search index named Index1. Index1 is populated from an Azure Data Lake Storage Gen2 container whose files already carry access control list (ACL) assignments.\n\nEvery grounding passage returned for a question must be limited to the documents that the signed-in user is permitted to read. The trimming must happen inside the search pipeline rather than in application code after the query returns.\n\nYou need to enforce the permissions.\n\nWhich approach should you use?",
+  "choices": [
+   "Assign the Search Index Data Reader role on the search service to every user, and let each user query Index1 directly",
+   "Create a scoring profile on Index1 that weights a department field, and select that scoring profile on every query",
+   "Retrieve a larger result set with the application identity, and drop the documents the caller cannot read in application code",
+   "Enable permission filters on Index1 and pass the caller's token in the `x-ms-query-source-authorization` header"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn documents the native pattern as enabling permission filters on the index, adding a permission filter to a string field, loading documents with their associated ACLs, and passing the caller's Microsoft Entra token in `x-ms-query-source-authorization`. Azure AI Search then builds the security filter internally and excludes documents that do not match. The Search Index Data Reader role grants read access to the whole index, and Learn does require the calling application to hold it. A role assignment is service-wide rather than per document, so a user who holds it can still retrieve every document in Index1. A scoring profile boosts documents by weighted fields during query execution, which reorders results. Boosting changes ranking rather than eligibility, so an unauthorized document is demoted rather than removed. Post-query trimming in the application is the pattern Learn contrasts with native enforcement. Learn states that filtering inside the search pipeline performs better than loading larger result sets and trimming them in your application, and this option also places the security decision in custom code.",
+  "ref": "https://learn.microsoft.com/azure/search/search-document-level-access-overview"
+ },
+ {
+  "id": "2.1.2-03",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "City Power & Light operates a retrieval-augmented generation (RAG) application over an Azure AI Search index named Index1. Index1 contains an outage-procedure description field, a vector field of embeddings, and a semantic configuration named `my-semantic-config`.\n\nOperators ask conversational questions and also paste exact equipment codes. Retrieval must combine lexical matching with vector similarity, and the merged results must then be rescored by the semantic reranker in the same request.\n\nYou need to issue the query.\n\nWhich code segment should you use?",
+  "choices": [
+   "results = search_client.search(\n    query_type=\"simple\",\n    search_text=\"transformer T-4471 tripped overnight\",\n    select=[\"Id\", \"Procedure\"],\n    top=5,\n)",
+   "results = search_client.search(\n    vector_queries=[vector_query],\n    select=[\"Id\", \"Procedure\"],\n    top=5,\n)",
+   "results = search_client.search(\n    search_text=\"transformer T-4471 tripped overnight\",\n    scoring_profile=\"recency\",\n    select=[\"Id\", \"Procedure\"],\n    top=5,\n)",
+   "results = search_client.search(\n    search_text=\"transformer T-4471 tripped overnight\",\n    vector_queries=[vector_query],\n    query_type=\"semantic\",\n    semantic_configuration_name=\"my-semantic-config\",\n    select=[\"Id\", \"Procedure\"],\n    top=5,\n)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Supplying both `search_text` and `vector_queries` runs a hybrid query whose two result sets are merged with Reciprocal Rank Fusion. Adding `query_type=\"semantic\"` with a semantic configuration name applies the semantic reranker to the merged list in the same request. `query_type=\"simple\"` runs a keyword-only query scored by BM25, which handles the equipment codes well. It contributes no vector similarity, so conversational phrasing that does not share terms with the procedure text is missed. Passing only `vector_queries` runs a pure vector query. Exact identifiers such as `T-4471` have no reliable representation in embedding space, which is the failure mode the stem describes. A scoring profile boosts documents by criteria such as freshness after retrieval, and `recency` is a valid profile name to reference. Boosting cannot surface a document that the initial query never retrieved.",
+  "ref": "https://learn.microsoft.com/azure/search/hybrid-search-how-to-query"
+ },
+ {
+  "id": "2.1.2-04",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Coho Vineyard builds an agent named Agent1 that grounds its answers in a knowledge base in Azure AI Search. The knowledge base references a single knowledge source that indexes viticulture reports.\n\nAgent1 must reason over the retrieved source material itself, combine it with the conversation history, and produce its own wording with citations. Reviewers report that Agent1 currently repeats a prewritten paragraph and cannot reason across passages.\n\nYou need to change the knowledge base configuration.\n\nWhich change should you make?",
+  "choices": [
+   "Configure the output mode as answer synthesis",
+   "Configure the knowledge base output mode as `extractedData`",
+   "Set the retrieval reasoning effort to minimal",
+   "Add a second knowledge source to the knowledge base"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "`extractedData` returns verbatim, unprocessed content for grounding and reasoning, which is what Learn recommends for integration with Foundry Agent Service. Agent1 then does the reasoning and the wording itself. Answer synthesis returns a pregenerated natural-language answer with citations, which is the behavior the reviewers already observe. Learn states that it limits the agent's ability to reason over source content. Answer synthesis is preview and requires the 2026-05-01-preview REST API. Retrieval reasoning effort controls whether an LLM reformulates the user query before retrieval, and minimal effort bypasses that planning step to cut cost and latency. It governs query planning, not the shape of the returned content. Adding a knowledge source broadens coverage, and the agentic retrieval engine queries all referenced sources in a single request. More sources do not change how the response content is formatted.",
+  "ref": "https://learn.microsoft.com/azure/search/agentic-retrieval-how-to-create-pipeline"
+ },
+ {
+  "id": "2.1.2-05",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Coho Winery builds an agent named Agent1 in a Microsoft Foundry project named Project1. A separate data team owns an Azure AI Search index named Index1 that holds tasting notes and refreshes it nightly.\n\nA project connection to the search service already exists, and the connection identifier is stored in a variable named `connection_id`. The tasting notes must not be copied into Project1, and no files may be uploaded.\n\nYou need to define the tool for Agent1.\n\nWhich code segment should you use?",
+  "choices": [
+   "tool = AzureAISearchTool(\n    azure_ai_search=AzureAISearchToolResource(\n        indexes=[\n            AISearchIndexResource(\n                project_connection_id=connection_id,\n                index_name=\"Index1\",\n                query_type=AzureAISearchQueryType.SIMPLE,\n            ),\n        ]\n    )\n)",
+   "tool = FileSearchTool(\n    vector_store_ids=[vector_store.id],\n)",
+   "tool = MCPTool(\n    server_label=\"tasting-notes\",\n    server_url=\"https://notes.internal/mcp\",\n    require_approval=\"never\",\n)",
+   "tool = WebSearchTool()"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "`AzureAISearchTool` grounds an agent in an existing index by pairing a project connection identifier with an index name, which is the documented shape in the Foundry SDK. The data team keeps owning Index1, and nothing is duplicated into Project1. `FileSearchTool` grounds an agent in a vector store that you create by uploading files. Building that vector store would duplicate the tasting notes and violate the no-upload constraint. `MCPTool` connects an agent to tools exposed by a Model Context Protocol server endpoint. It would require Coho Winery to build and host that server, which is unnecessary when a first-class search integration exists. `WebSearchTool` grounds an agent in public web results. Tasting notes are private content in Index1 and are not on the public web.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search"
+ },
+ {
+  "id": "2.1.3-01",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Consolidated Messenger runs a multistep claims pipeline that chains several model calls and tool calls and takes about 20 minutes per claim.\n\nThe pipeline runs on compute that is redeployed and scaled in regularly. When a host restarts partway through, the pipeline restarts from the beginning, which re-consumes every token already spent and repeats every completed step.\n\nYou need to preserve completed work across host restarts.\n\nWhich approach should you implement?",
+  "choices": [
+   "Increase the retry count on the model client",
+   "Move the pipeline to a Global Batch deployment",
+   "Implement the pipeline with durable execution so that each step is checkpointed",
+   "Set `background` to true on the Responses API request"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn defines durable execution around automatic checkpointing of every state transition, including model responses and tool call results, so execution resumes on a healthy host from the last checkpoint. Completed model calls are not repeated, which preserves both token spend and elapsed time. Client retries handle a transient failure on one call by repeating that call. They keep no state across a host restart, so the pipeline still begins again from step one. Global Batch is a real deployment type that processes large asynchronous jobs at a discount with roughly 24-hour turnaround. It changes billing and turnaround, not the fault tolerance of a multistep pipeline. Background tasks are a genuine Responses API feature that queues a single long-running response and lets you poll its status. It applies to one response, not to a chain of model and tool steps.",
+  "ref": "https://learn.microsoft.com/azure/durable-task/sdks/durable-task-for-ai-agents"
+ },
+ {
+  "id": "2.1.3-02",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso Pharmaceuticals designs a two-step trial-intake workflow. The first step reads an unstructured investigator narrative and summarizes the patient history, which benefits from language model reasoning.\n\nThe second step applies a fixed regulatory eligibility rule set. Auditors require that the second step produce the identical outcome for identical inputs on every run, with no model variance.\n\nYou need to design the workflow.\n\nWhich design should you use?",
+  "choices": [
+   "Use an agent executor for both steps and set the temperature of the second step to 0",
+   "Use an agent executor for the first step and a deterministic executor for the second step",
+   "Use a human-in-the-loop gate for the second step",
+   "Replace the workflow with one agent that has the eligibility rules in its instructions"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn frames workflows as a dial per step: use an agent executor when the model should decide, and a deterministic executor with regular business logic when the code should determine the outcome. A fixed rule set expressed as code is reproducible by construction. Lowering the temperature makes sampling more focused and is a real tuning lever. Learn positions a workflow with agent executors as the least predictable end of the spectrum, so model variance remains possible and the audit requirement is unmet. A human-in-the-loop gate pauses the workflow and waits for a person to answer or approve. It adds a reviewer rather than removing model variance, and it does not scale to every intake. A single agent with tools is the most flexible and least predictable option on the spectrum. Placing regulatory rules in instructions leaves their application to the model.",
+  "ref": "https://learn.microsoft.com/agent-framework/journey/workflows"
+ },
+ {
+  "id": "2.1.3-03",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso Suites builds an agent named Agent1 in a Microsoft Foundry project named Project1. Agent1 must answer questions about a single housekeeping standards document that a developer holds locally as `standards.md`.\n\nThe hotel group operates no Azure AI Search service and does not plan to create one. The platform must handle parsing, chunking, and embedding without additional code.\n\nYou need to add a tool to Agent1.\n\nWhich code segment should you use?",
+  "choices": [
+   "agent = project.agents.create_version(\n    agent_name=\"Agent1\",\n    definition=PromptAgentDefinition(\n        model=\"gpt-5-mini\",\n        instructions=\"Answer housekeeping questions.\",\n        tools=[CodeInterpreterTool()],\n    ),\n)",
+   "agent = project.agents.create_version(\n    agent_name=\"Agent1\",\n    definition=PromptAgentDefinition(\n        model=\"gpt-5-mini\",\n        instructions=\"Answer housekeeping questions.\",\n        tools=[WebSearchTool()],\n    ),\n)",
+   "vector_store = openai.vector_stores.create(name=\"Standards\")\nwith open(\"standards.md\", \"rb\") as f:\n    openai.vector_stores.files.upload_and_poll(\n        vector_store_id=vector_store.id, file=f\n    )\nagent = project.agents.create_version(\n    agent_name=\"Agent1\",\n    definition=PromptAgentDefinition(\n        model=\"gpt-5-mini\",\n        instructions=\"Answer housekeeping questions.\",\n        tools=[FileSearchTool(\n            vector_store_ids=[vector_store.id])],\n    ),\n)",
+   "agent = project.agents.create_version(\n    agent_name=\"Agent1\",\n    definition=PromptAgentDefinition(\n        model=\"gpt-5-mini\",\n        instructions=\"Answer housekeeping questions.\",\n        tools=[AzureAISearchTool(\n            azure_ai_search=AzureAISearchToolResource(\n                indexes=[AISearchIndexResource(\n                    project_connection_id=connection_id,\n                    index_name=\"Index1\")]))],\n    ),\n)"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn's documented File Search pattern creates a vector store, uploads the file with `upload_and_poll`, and passes the vector store identifier to `FileSearchTool`. The service performs parsing, chunking, and embedding, so no search service and no extra code are required. `CodeInterpreterTool` runs Python in a sandbox for calculation and charting. It is not a retrieval mechanism over a document. `WebSearchTool` grounds an agent in public web results. An internal housekeeping standard is not published on the web. `AzureAISearchTool` grounds an agent in an existing Azure AI Search index reached through a project connection. Contoso Suites operates no search service, so there is no index and no connection to reference.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/file-search"
+ },
+ {
+  "id": "2.1.3-04",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. runs a multistep pricing pipeline against a GPT-5 reasoning model deployment named Deployment1 through the Responses API.\n\nDuring incident reviews, engineers must see how the model worked toward each answer so that they can identify where the reasoning went wrong. The approach must remain within the Microsoft Acceptable Use Policy.\n\nYou need to expose the model's intermediate reasoning to the engineers.\n\nWhich action should you perform?",
+  "choices": [
+   "Set `reasoning_effort` to `high` on every request",
+   "Request a reasoning summary on the Responses API request",
+   "Add an instruction that tells the model to return its raw chain of thought in the response",
+   "Read the `reasoning_tokens` value in `completion_tokens_details`"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn documents the reasoning summary parameter on the Responses API as the supported way to receive summaries of the model's chain of thought. Learn also notes that summaries are not guaranteed on every request, which is expected behavior. `reasoning_effort` controls how long the model spends processing, with options that include none, minimal, low, medium, high, and xhigh on supported models. Raising it produces more hidden reasoning tokens without revealing any of them. Prompting for the raw chain of thought is a genuine technique that people attempt. Learn states that extracting raw reasoning by any method other than the reasoning summary parameter is unsupported, can violate the Acceptable Use Policy, and can lead to throttling or suspension. `reasoning_tokens` is a real field inside `completion_tokens_details` that reports how many hidden tokens the model consumed. It is a count, so it shows cost and effort but no reasoning content.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning"
+ },
+ {
+  "id": "2.1.4-02",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam Residences runs a retrieval-augmented generation (RAG) leasing assistant. A compliance team maintains an approved reference answer for each test question.\n\nReviewers confirm that the assistant never states anything unsupported by the retrieved context. The failure they report is the opposite: responses routinely omit mandatory disclosure sentences that appear in the approved reference answers.\n\nYou need to add an automated evaluator that measures this specific gap.\n\nWhich evaluator should you use?",
+  "choices": [
+   "Groundedness, with `context` and `response`",
+   "Relevance, with `query` and `response`",
+   "Response Completeness, with `ground_truth` and `response`",
+   "Document Retrieval, with `retrieval_ground_truth` and `retrieved_documents`"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn defines Response Completeness as the recall aspect: how completely a response covers the expected information compared to ground truth. It requires `ground_truth` and `response`, which the approved reference answers supply. Groundedness measures the precision aspect of a response: whether it contains content outside the grounding context. Reviewers already confirm that precision is fine, so this evaluator would report no problem. Relevance measures how accurately and directly the response addresses the query, and it needs no ground truth. A response can address the question well and still omit a mandatory disclosure. Document Retrieval compares retrieved documents against query relevance labels and returns search quality metrics such as fidelity and NDCG. Learn classifies it as a process evaluator aimed at the retrieval step, so it reports nothing about what the final response omits.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rag-evaluators"
+ },
+ {
+  "id": "2.1.4-03",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "First Up Consultants prepares a nightly quality gate for a generative feature in a Microsoft Foundry project named Project1.\n\nA curated JSONL file of query, context, and response rows is already uploaded to Project1, and its dataset identifier is stored in a variable named `data_id`. The evaluation must score every row in that stored file, and it must not generate new samples and must not sample production traces.\n\nYou need to create the evaluation run.\n\nWhich code segment should you use?",
+  "choices": [
+   "eval_run = openai_client.evals.runs.create(\n    eval_id=eval_object.id,\n    name=\"nightly-run\",\n    data_source=CreateEvalJSONLRunDataSourceParam(\n        type=\"jsonl\",\n        source=SourceFileID(type=\"file_id\", id=data_id),\n    ),\n)",
+   "eval_run = openai_client.evals.runs.create(\n    eval_id=eval_object.id,\n    name=\"nightly-run\",\n    data_source={\n        \"type\": \"azure_ai_synthetic_data_gen_preview\",\n        \"item_generation_params\": {\n            \"type\": \"synthetic_data_gen_preview\",\n            \"samples_count\": 5,\n        },\n    },\n)",
+   "eval_run = openai_client.evals.runs.create(\n    eval_id=eval_object.id,\n    name=\"nightly-run\",\n    data_source={\n        \"type\": \"azure_ai_trace_data_source_preview\",\n        \"trace_source\": {\n            \"type\": \"agent_filter\",\n            \"agent_name\": \"Agent1\",\n        },\n    },\n)",
+   "eval_run = openai_client.evals.runs.create(\n    eval_id=eval_object.id,\n    name=\"nightly-run\",\n    data_source={\n        \"type\": \"azure_ai_target_completions\",\n        \"source\": {\"type\": \"file_id\", \"id\": data_id},\n        \"input_messages\": input_messages,\n        \"target\": target,\n    },\n)"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn's dataset evaluation sample creates the run with `CreateEvalJSONLRunDataSourceParam` and a `SourceFileID` that points at the uploaded file, which runs each evaluator on every row already present. Nothing is generated and nothing is sampled from production. The synthetic data generation data source is real and produces new evaluation items from a prompt and a model deployment. Generating new samples is exactly what the stem forbids. The trace data source samples conversations from Application Insights, and the `agent_filter` shape selects them by agent name and time window. That reads production traffic rather than the curated file. The target completions data source is real and sends each stored input to a live model or agent target to produce fresh responses. The file already contains the responses to score, so calling a target adds cost and changes what is measured.",
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/develop/cloud-evaluation"
+ },
+ {
+  "id": "2.1.4-04",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee runs a retrieval-augmented generation (RAG) assistant over a supplier document library that suppliers can upload to.\n\nA red team seeds several documents with hidden instructions that attempt to override the system message. The team must now measure, across an evaluation dataset, how often the assistant's responses actually complied with instructions injected through the retrieved context.\n\nYou need to select a built-in evaluator.\n\nWhich evaluator should you select?",
+  "choices": [
+   "Protected Materials",
+   "Groundedness Pro",
+   "Code Vulnerability",
+   "Indirect Attack"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn defines Indirect Attack (XPIA) as measuring whether the response fell for an indirect jailbreak attempt injected through retrieved context. That is the compliance rate the team needs to quantify. Protected Materials detects unauthorized use of copyrighted or protected content in output. It is a real risk and safety evaluator, but it says nothing about injected instructions. Groundedness Pro determines whether a response is strictly consistent with the retrieved context by using the Azure AI Content Safety service. A response that obeys an injected instruction can still be traceable to the retrieved text, so this evaluator can pass it. Code Vulnerability identifies security issues in code that a model generates. The attack surface here is prose in grounding documents, not generated code.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/built-in-evaluators"
+ },
+ {
+  "id": "2.1.4-05",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The Graphic Design Institute pilots a generative critique feature against a model deployment named Deployment1.\n\nDuring the pilot, the safety team must measure how often prompts would be flagged as jailbreak attempts before any request is refused. No request may be blocked during the pilot, and the signal must be returned to the application so that the team can log it.\n\nYou need to configure the content filter for Deployment1.\n\nWhich configuration should you apply?",
+  "choices": [
+   "Create a blocklist of exact-match terms and apply it to Deployment1",
+   "Set the violence severity threshold on the input filter to High",
+   "Set Prompt Shields on the input filter to Annotate only",
+   "Enable streaming mode on the output filter"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn states that filters such as Prompt Shields let you choose whether the model annotates content, blocks it, or both, and that Annotate only runs the model and returns annotations through the API response without filtering. That produces the measurement the safety team needs while blocking nothing. A blocklist filters content that contains terms you enumerate in advance, which is useful for competitor names or internal project names. Jailbreak prompts are phrased in ordinary language and endlessly variable, so term matching does not measure them. Raising the violence threshold to High narrows what is blocked to only high-severity content, so it is a real configurability option. It governs a harm category rather than jailbreak detection, and content at that severity is still blocked. Streaming mode filters generated output in near real time to reduce latency. It applies to model output rather than to incoming prompts, and it does not turn blocking off.",
+  "ref": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/content-filters"
+ },
+ {
+  "id": "2.1.5-02",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Humongous Insurance extracts claim details from adjuster notes by calling the Responses API through a Microsoft Foundry project client. A variable named `schema` holds a JSON Schema for the claim record.\n\nThe downstream service deserializes the response into a strongly typed object. The pipeline fails intermittently because the model sometimes omits a property or adds one that the schema does not define, so the output must conform exactly to `schema`.\n\nYou need to change the request.\n\nWhich code segment should you use?",
+  "choices": [
+   "response = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=notes,\n    text={\"format\": {\"type\": \"json_object\"}},\n)",
+   "response = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=notes,\n    instructions=\"Reply with JSON only and include every field.\",\n)",
+   "response = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=notes,\n    extra_body={\"structured_inputs\": {\"claimType\": \"auto\"}},\n)",
+   "response = openai.responses.create(\n    model=\"gpt-5-mini\",\n    input=notes,\n    text={\n        \"format\": {\n            \"type\": \"json_schema\",\n            \"name\": \"Claim\",\n            \"strict\": True,\n            \"schema\": schema,\n        }\n    },\n)"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Structured Outputs constrains the model to match the supplied JSON Schema exactly when the format type is `json_schema` and `strict` is true. Constraints to remember are that every field must appear in `required` and that `additionalProperties` must be false. JSON mode guarantees that the output parses as valid JSON, which removes malformed responses. It cannot guarantee adherence to a schema you supply, so missing and extra properties still occur. An instruction in the prompt asks for the shape without enforcing it, which is the intermittent-failure state the stem already describes. Nothing constrains the decoder. Structured inputs is a real Foundry feature that substitutes named values into instructions or tool parameters at runtime. It shapes the request, not the response.",
+  "ref": "https://learn.microsoft.com/azure/foundry/openai/how-to/structured-outputs"
+ },
+ {
+  "id": "2.1.5-03",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lamna Healthcare Company builds a Python service that generates embeddings for clinical summaries and then calls a chat model.\n\nThe service uses no Foundry platform tools, no agents, and no evaluations. The architects require the lowest possible latency and the maximum compatibility with existing OpenAI client code.\n\nYou need to recommend a software development kit (SDK).\n\nWhich SDK should you recommend?",
+  "choices": [
+   "The Foundry SDK",
+   "The OpenAI SDK",
+   "Microsoft Agent Framework",
+   "The Anthropic SDK"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn's SDK selection guidance names the OpenAI SDK for maximum OpenAI compatibility, lowest latency, and embedding generation, reached at the resource endpoint `https://<resource-name>.openai.azure.com/openai/v1`. All three stated requirements map to it. The Foundry SDK is a thin client over all Foundry project APIs and is the right choice when an application needs agents, evaluations, or platform tools. This service needs none of those, and the project endpoint adds a layer the requirement does not want. Microsoft Agent Framework is the recommended orchestration layer for hosted agents and multi-agent systems, and it depends on the Foundry SDK for project access. There are no agents to orchestrate here. The Anthropic SDK targets Anthropic Claude models deployed in Foundry at the `/anthropic` endpoint. It is bound to one model family and is not an embeddings client.",
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/develop/sdk-overview"
+ },
+ {
+  "id": "2.1.5-04",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. maintains two Python code bases that coordinate several agents, each built on a different orchestration library. The duplication produces conflicting abstractions and overlapping dependencies.\n\nThe platform team must consolidate on one orchestration layer, and the resulting agents must run as hosted agents in Microsoft Foundry with a managed endpoint and automatic scaling.\n\nYou need to recommend an orchestration layer.\n\nWhich orchestration layer should you recommend?",
+  "choices": [
+   "Microsoft Agent Framework",
+   "Semantic Kernel",
+   "AutoGen",
+   "LangChain with the `langchain-azure-ai` package"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Learn names Microsoft Agent Framework the recommended orchestration layer for hosted agents in Foundry and advises teams that previously used AutoGen or Semantic Kernel to consolidate on it. Agents written with it are packaged and run by Foundry with a managed endpoint and automatic scaling. Semantic Kernel is a real and supported orchestration SDK with its own agent types. Learn's migration guidance points multi-agent orchestration toward Agent Framework, so keeping Semantic Kernel preserves the duplication the team is removing. AutoGen is a genuine multi-agent framework and one of the two products Learn calls out by name. Consolidating on it moves against the documented direction for hosted agents in Foundry. `langchain-azure-ai` is a real integration that lets LangChain use Foundry models and server-side tools. It is a model and tool integration rather than the recommended orchestration layer for Foundry hosted agents.",
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/develop/sdk-overview"
+ },
+ {
+  "id": "2.1.5-05",
+  "obj": "2.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Lucerne Publishing builds an editorial pipeline in Python by using Microsoft Agent Framework. Two agents already exist: `writer_agent` drafts a blurb, and `reviewer_agent` critiques it.\n\nThe pipeline must start at `writer_agent`, and the output of `writer_agent` must flow to `reviewer_agent`. The two agents must not run at the same time.\n\nYou need to build the workflow.\n\nWhich code segment should you use?",
+  "choices": [
+   "workflow = Agent(\n    client=FoundryChatClient(credential=AzureCliCredential()),\n    instructions=\"Draft and then review the blurb.\",\n    tools=[writer_agent, reviewer_agent],\n)",
+   "workflow = WorkflowBuilder(\n    start_executor=writer_agent\n).build()",
+   "workflow = project.agents.create_version(\n    agent_name=\"Editorial\",\n    definition=PromptAgentDefinition(\n        model=\"gpt-5-mini\",\n        instructions=\"Draft and then review the blurb.\",\n    ),\n)",
+   "workflow = WorkflowBuilder(\n    start_executor=writer_agent\n).add_edge(writer_agent, reviewer_agent).build()"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn's sequential workflow sample sets `start_executor` to the writer agent and calls `add_edge` to connect it to the reviewer agent before `build`. A direct edge makes the output of the first agent flow into the second, one after the other. Wrapping agents as tools on a primary agent is a real pattern, and the primary agent keeps ownership of the task. The model then decides whether and when to call each one, so the fixed draft-then-review order is not guaranteed. `WorkflowBuilder` with only a start executor produces a valid one-node workflow. With no edge defined, `reviewer_agent` is never reached. `project.agents.create_version` with a `PromptAgentDefinition` creates a single prompt agent in the project. One agent with combined instructions is not a two-executor pipeline.",
+  "ref": "https://learn.microsoft.com/agent-framework/workflows/agents-in-workflows"
+ },
+ {
+  "id": "2.1.6-02",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Margie's Travel deploys an application named App1 that constructs an `AIProjectClient` for a Microsoft Foundry project named Project1. Project1 is hosted in a Foundry resource.\n\nApp1 must reach the project's agents, files, and evaluations, and it reads the endpoint from an environment variable named `PROJECT_ENDPOINT`.\n\nYou need to identify the value to store in `PROJECT_ENDPOINT`.\n\nWhich value should you store?",
+  "choices": [
+   "`https://<resource-name>.openai.azure.com/openai/v1`",
+   "`https://<resource-name>.services.ai.azure.com/anthropic`",
+   "`https://<service-name>.search.windows.net/knowledgebases/<knowledge-base-name>/mcp`",
+   "`https://<resource-name>.services.ai.azure.com/api/projects/<project-name>`"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Learn documents the Foundry project endpoint in exactly this form, and it is the single endpoint through which the Foundry SDK exposes the project APIs. `AIProjectClient` also appends `/openai/v1` to it when `get_openai_client` builds the OpenAI-compatible client. This is the real Azure OpenAI endpoint used by the OpenAI SDK for maximum compatibility and lowest latency. It addresses the resource rather than a project, so it exposes no agents, files, or evaluations. This is the real endpoint for Anthropic Claude models deployed in Foundry, reached with the Anthropic SDK. It serves one model family and is not a project endpoint. This is the Model Context Protocol endpoint that Azure AI Search exposes for a knowledge base, and an agent reaches it through `MCPTool`. It addresses a search service and returns grounding results, so it exposes no agents, files, or evaluations.",
+  "ref": "https://learn.microsoft.com/azure/foundry/how-to/develop/sdk-overview"
+ },
+ {
+  "id": "2.1.6-03",
+  "obj": "2.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Munson's Pickles and Preserves Farm runs an application named App1 on Azure Container Apps. App1 connects to a Microsoft Foundry project named Project1.\n\nTwo user-assigned managed identities are attached to the container app. Only one of them, named Identity1, holds a role assignment on Project1, and its client identifier is available in an environment variable named `IDENTITY1_CLIENT_ID`. The solution must use keyless authentication.\n\nYou need to construct the credential.\n\nWhich code segment should you use?",
+  "choices": [
+   "from azure.identity import DefaultAzureCredential\n\ncredential = DefaultAzureCredential()\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=credential,\n)",
+   "from azure.identity import DefaultAzureCredential\n\ncredential = DefaultAzureCredential(\n    managed_identity_client_id=os.environ[\n        \"IDENTITY1_CLIENT_ID\"\n    ]\n)\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=credential,\n)",
+   "from azure.identity import AzureCliCredential\n\ncredential = AzureCliCredential()\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=credential,\n)",
+   "from azure.identity import ClientSecretCredential\n\ncredential = ClientSecretCredential(\n    tenant_id=os.environ[\"TENANT_ID\"],\n    client_id=os.environ[\"IDENTITY1_CLIENT_ID\"],\n    client_secret=os.environ[\"CLIENT_SECRET\"],\n)\nproject = AIProjectClient(\n    endpoint=os.environ[\"PROJECT_ENDPOINT\"],\n    credential=credential,\n)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn documents `managed_identity_client_id` on `DefaultAzureCredential` as the way to name the user-assigned identity that `ManagedIdentityCredential` should use. Passing the client identifier of Identity1 makes the choice explicit while keeping the same credential chain that works during local development. A bare `DefaultAzureCredential` is the correct pattern when exactly one managed identity is attached. With two user-assigned identities present, the credential cannot know which one to use, so the request can be made with the identity that holds no role assignment. `AzureCliCredential` reads the sign-in from a local Azure CLI session. No Azure CLI session exists inside a container app, so token acquisition fails. `ClientSecretCredential` authenticates a service principal with a client secret. It works, and it reintroduces a long-lived secret, which breaks the keyless requirement.",
+  "ref": "https://learn.microsoft.com/azure/developer/python/sdk/authentication/credential-chains"
+ },
+ {
+  "id": "2.1.6-04",
+  "obj": "2.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Nod Publishers creates a Microsoft Foundry project named Project1 in the West US 3 region. A developer must prototype against instant access models by calling the project endpoint from Python.\n\nThe developer never creates or publishes agents, never assigns roles to other principals, and never manages model deployments.\n\nYou need to assign a built-in role to the developer. The solution must follow the principle of least privilege.\n\nWhich role should you assign?",
+  "choices": [
+   "Foundry Agent Consumer",
+   "Cognitive Services Usages Reader",
+   "Foundry User",
+   "Foundry Project Manager"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Learn lists the Foundry User role on the project or account as the prerequisite for using instant access models, and that role covers data-plane development work such as calling models. It stops short of project management, which matches the stated behavior. Foundry Agent Consumer is the least-privilege role for a principal that only calls an existing agent endpoint. The developer calls models directly through the project endpoint rather than an agent, so this role does not grant what is needed. Cognitive Services Usages Reader is a real role that exposes usage and quota information. It grants no inference permission at all. Foundry Project Manager, which was previously named Azure AI Project Manager, adds project management permissions, agent publishing, and the ability to conditionally assign the Foundry User role. The developer performs none of those actions, so the role over-grants.",
+  "ref": "https://learn.microsoft.com/azure/foundry/concepts/instant-models"
+ },
+ {
+  "id": "2.1.6-05",
+  "obj": "2.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Northwind Electric Cars builds an application that creates an agent in a Microsoft Foundry project named Project1. A project connection to an Azure AI Search service already exists and is named `my-search-connection`.\n\nThe agent tool definition requires the connection identifier rather than the connection name. The application must resolve that identifier at run time and must not hard-code it.\n\nYou need to obtain the connection identifier.\n\nWhich code segment should you use?",
+  "choices": [
+   "deployment = project.deployments.get(\n    \"my-search-connection\"\n)\nconnection_id = deployment.name",
+   "connection = project.connections.get(\n    \"my-search-connection\"\n)\nconnection_id = connection.id",
+   "dataset = project.datasets.upload_file(\n    name=\"my-search-connection\",\n    version=\"1\",\n    file_path=\"./connection.json\",\n)\nconnection_id = dataset.id",
+   "agent = project.agents.create_version(\n    agent_name=\"my-search-connection\",\n    definition=PromptAgentDefinition(model=\"gpt-5-mini\"),\n)\nconnection_id = agent.id"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Learn's own sample resolves a connection identifier by calling `project.connections.get` with the connection name and reading the `id` property. That identifier is what tool definitions such as `AISearchIndexResource` expect. `project.deployments` is a real operation group that enumerates the models deployed to a project. A connection is not a deployment, so the lookup does not find it. `project.datasets.upload_file` uploads a document and creates a versioned dataset reference in the project. It creates new content instead of reading existing connection metadata. `project.agents.create_version` creates a new version of an agent from a definition. It returns an agent identifier, which is unrelated to a project connection.",
+  "ref": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search"
+ }
+]
