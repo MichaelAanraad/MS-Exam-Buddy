@@ -12,6 +12,7 @@ difficulty levels. Original questions, not exam dumps.
 | AI-300 | Operationalizing Machine Learning and Generative AI Solutions | `docs/ai300/` |
 | AI-103 | Developing AI Apps and Agents on Azure | `docs/ai103/` |
 | AB-731 | AI Transformation Leader | `docs/ab731/` |
+| AI-200 | Developing AI Cloud Solutions on Azure | `docs/ai200/` |
 
 Open `docs/index.html` in a browser, or host it on GitHub Pages:
 
