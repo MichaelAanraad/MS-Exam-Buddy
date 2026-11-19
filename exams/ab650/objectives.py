@@ -1,6 +1,8 @@
 # Change these lines (plus DOMAINS and GROUPS) to build a practice exam for another certification.
 EXAM = "AB-650"
 EXAM_TITLE = "Administering Microsoft 365 and AI Services"
+CATEGORY = "Microsoft 365"  # start-page group
+LEVEL = 2  # 1 entry/business, 2 associate, 3 expert
 STUDY_GUIDE = "https://learn.microsoft.com/credentials/certifications/resources/study-guides/ab-650"
 
 # Source: STUDY_GUIDE (fetched 2026-11-10)

@@ -1,6 +1,8 @@
 # Change these three lines (plus DOMAINS and GROUPS) to build a practice exam for another certification.
 EXAM = "AI-500"
 EXAM_TITLE = "Designing and Implementing Multi-Agent AI Solutions"
+CATEGORY = "AI"  # start-page group
+LEVEL = 3  # 1 entry/business, 2 associate, 3 expert
 STUDY_GUIDE = "https://learn.microsoft.com/credentials/certifications/resources/study-guides/ai-500"
 
 # Source: STUDY_GUIDE (fetched 2026-10-20)

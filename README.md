@@ -85,6 +85,7 @@ AZ-104.
 | `DOMAINS`, `GROUPS`, `OVERRIDE` | domains, weights, questions per objective |
 | `TOTAL` | bank size the validator and build check |
 | `REF_PREFIXES` | optional; allowed `ref` URL prefixes (default learn.microsoft.com; GH-600 adds docs.github.com) |
+| `CATEGORY`, `LEVEL` | optional; start-page group (default `Other`) and difficulty order inside it: 1 entry/business, 2 associate, 3 expert (default 2) |
 
 The simulation (50 questions, 100 minutes) matches role-based exams; adjust it
 in `template.html` if your exam differs.

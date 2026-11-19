@@ -1,6 +1,8 @@
 # Change these lines (plus DOMAINS and GROUPS) to build a practice exam for another certification.
 EXAM = "DP-800"
 EXAM_TITLE = "Developing AI-Enabled Database Solutions"
+CATEGORY = "Data"  # start-page group
+LEVEL = 2  # 1 entry/business, 2 associate, 3 expert
 STUDY_GUIDE = "https://learn.microsoft.com/credentials/certifications/resources/study-guides/dp-800"
 
 # Source: STUDY_GUIDE (fetched 2026-11-13; skills measured as of March 12, 2026)
