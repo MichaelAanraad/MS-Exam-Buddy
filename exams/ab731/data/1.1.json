@@ -1,0 +1,2792 @@
+[
+ {
+  "id": "1.1.1-01",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A retail planning manager wants to forecast next quarter's unit sales as a precise numeric value from several years of historical sales data. Which type of AI solution is best suited to this task?",
+  "choices": [
+   "A generative AI foundation model prompted to write a sales estimate",
+   "A traditional regression model trained on the historical sales data",
+   "A generative AI image model fine-tuned on sales charts",
+   "A large language model used without any grounding data"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Regression is the classical ML task for predicting a continuous numeric value from historical data; generative AI is not designed for precise numeric forecasting.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-900"
+ },
+ {
+  "id": "1.1.1-02",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which statement best distinguishes generative AI from classical, discriminative AI?",
+  "choices": [
+   "Generative AI can only process images, while classical AI can only process text",
+   "Generative AI creates new content, while classical AI predicts a label, category, or value from existing data",
+   "Generative AI needs no data at all, while classical AI always needs labeled data",
+   "Generative AI is used only internally, while classical AI is used only for customer-facing scenarios"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The core distinction is that generative AI produces novel content, whereas classical/discriminative AI predicts a category, number, or anomaly flag from existing data.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/explore-generative-ai/2-what-is-generative-ai"
+ },
+ {
+  "id": "1.1.1-03",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A bank's risk team wants to flag transactions that deviate from a customer's normal spending pattern. Which category of AI capability does this represent?",
+  "choices": [
+   "Anomaly detection, a classical/discriminative AI task",
+   "Text generation, a generative AI task",
+   "Image generation, a generative AI task",
+   "Prompt engineering, a generative AI technique"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Flagging deviations from a learned normal pattern is anomaly detection, a classical discriminative AI task, not a generative AI capability.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-900"
+ },
+ {
+  "id": "1.1.1-04",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which concept is central to how a generative AI solution produces useful output, but has no direct equivalent in a traditional regression or classification pipeline?",
+  "choices": [
+   "The prompt, including instructions and any grounding context supplied to the model",
+   "The training dataset used to build the solution",
+   "The evaluation metric used to measure accuracy",
+   "The environment where the solution is deployed"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The prompt, and how it is engineered and grounded, is the mechanism unique to generative AI for shaping output; classical regression and classification pipelines have no equivalent concept.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/explore-generative-ai/2-what-is-generative-ai"
+ },
+ {
+  "id": "1.1.1-05",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A quality assurance team needs to automatically detect and classify defects visible in photographs of manufactured parts. Which type of AI is most appropriate?",
+  "choices": [
+   "A generative text model that summarizes defect reports",
+   "Computer vision, a classical/discriminative AI capability trained to classify image content",
+   "A generative image model that creates new images of defects",
+   "Clustering applied to unlabeled customer feedback"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Detecting and classifying defects in images is a computer vision task, a discriminative/predictive AI capability distinct from generative image creation.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-900"
+ },
+ {
+  "id": "1.1.1-06",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A marketing manager wants a solution that can draft several original variations of ad copy from a short creative brief. Which type of AI capability does this scenario call for?",
+  "choices": [
+   "Classification, to sort briefs into predefined categories",
+   "Clustering, to group similar briefs together",
+   "Generative AI, to produce new textual content conditioned on the prompt",
+   "Regression, to predict a numeric engagement score"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Producing original new text conditioned on a prompt is a generative AI task, not a discriminative task like classification, clustering, or regression.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/explore-generative-ai/2-what-is-generative-ai"
+ },
+ {
+  "id": "1.1.1-07",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which of the following is a classical machine learning task rather than a generative AI capability?",
+  "choices": [
+   "Generating a product description from a set of attributes",
+   "Summarizing a long contract into key points",
+   "Clustering unlabeled customer records into similarity-based segments",
+   "Producing a chatbot response grounded in company documents"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Clustering groups unlabeled data by similarity and is a classical ML task; the other options involve producing new content, which is generative AI.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-900"
+ },
+ {
+  "id": "1.1.1-08",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A compliance officer needs a loan-approval solution that is highly explainable and produces consistent, repeatable decisions for regulatory reporting. Which approach best fits this requirement?",
+  "choices": [
+   "A generative AI foundation model prompted with the regulatory guidelines",
+   "A traditional classification model trained on structured historical loan data",
+   "An image generation model fine-tuned on scanned loan documents",
+   "A large language model used with no grounding or fine-tuning"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Traditional classification models on structured data are generally more explainable and deterministic, making them a better fit than generative AI when explainability and consistency are required.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-900"
+ },
+ {
+  "id": "1.1.1-09",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which risk is most specifically associated with generative AI, as distinct from classical predictive AI?",
+  "choices": [
+   "Overfitting to the training data",
+   "Hallucination (fabrication), where the model produces plausible-sounding but incorrect content",
+   "Underfitting due to insufficient features",
+   "Class imbalance in labeled training data"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Hallucination, or fabrication, the production of plausible but incorrect content, is a risk specifically associated with generative AI outputs and is explicitly called out as an AI Transformation Leader exam topic.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.1-10",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A business wants to add a new AI-powered writing-assistant capability within weeks rather than months. Which generative AI adoption approach best supports this speed-to-value goal, compared to building a custom classical ML model?",
+  "choices": [
+   "Prompt engineering and grounding an existing pretrained foundation model with company content",
+   "Collecting years of labeled examples to train a new model from scratch",
+   "Designing and validating a custom neural network architecture in-house",
+   "Running an extended multi-month data-labeling and feature-engineering project"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Prompting and grounding a pretrained foundation model, for example via retrieval-augmented generation, lets a business stand up a capability in weeks, avoiding the months-long data collection and training cycle a custom classical model would require.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/explore-generative-ai/"
+ },
+ {
+  "id": "1.1.1-11",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A company must choose between a generative AI chatbot and a classical classification model to route support tickets into five fixed categories. Which factor most strongly favors the classical classification model?",
+  "choices": [
+   "The task is narrow, well-defined, and maps to a small fixed set of categories",
+   "The company wants to produce varied, natural-language responses to customers",
+   "The company has no historical labeled data available yet",
+   "The task requires generating new content for each ticket"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A narrow, well-defined task mapping to a fixed set of categories is exactly where classical classification adds value, rather than a generative AI approach.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-900"
+ },
+ {
+  "id": "1.1.1-12",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A CIO is comparing a generative AI foundation model against building a separate classical ML model for each new task, such as drafting emails, summarizing reports, and writing code snippets. What business advantage does the foundation model approach typically offer?",
+  "choices": [
+   "A single foundation model can be applied to many different tasks through different prompts, rather than requiring a separately trained model for each task",
+   "It eliminates the need for any human review of outputs",
+   "It guarantees lower ongoing compute cost than every classical model combined",
+   "It removes the possibility of incorrect or biased output entirely"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A key business advantage of foundation models is versatility: one pretrained model can be prompted for many different tasks, unlike classical ML where a separate model is typically trained per task.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/explore-generative-ai/"
+ },
+ {
+  "id": "1.1.1-13",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which statement most accurately reflects how generative AI models produce output, in a way that a business decision-maker should understand?",
+  "choices": [
+   "They predict the next most probable token or element given a prompt and its context",
+   "They compare each input to a lookup table of predefined answers",
+   "They calculate a fixed numeric score using a regression formula",
+   "They cluster the prompt into predefined categories before responding"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Generative AI models work by predicting the next most probable token or element given a prompt and context, distinguishing them from classical predictive approaches.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/explore-generative-ai/2-what-is-generative-ai"
+ },
+ {
+  "id": "1.1.1-14",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business runs millions of simple structured-data predictions per day, such as approve-or-decline decisions for routine transactions, and needs minimal latency and cost per prediction. Which approach is typically most efficient for this scenario?",
+  "choices": [
+   "A lightweight traditional classification model trained specifically for this task",
+   "A large generative AI foundation model prompted for each transaction",
+   "A generative AI image model fine-tuned on transaction screenshots",
+   "A large language model with no grounding, queried per transaction"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "For high-volume, low-latency structured predictions, a lightweight model trained specifically for the task is typically far cheaper and faster to run than invoking a large generative AI foundation model per request.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.1-15",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An online retailer believes its generative AI chatbot, since it can write fluent personalized text, can fully replace the existing recommendation engine that ranks products by predicted purchase likelihood from customer behavior data. What is the main flaw in this reasoning?",
+  "choices": [
+   "Ranking products by predicted purchase likelihood is a discriminative task best served by a model trained on structured behavioral data, not an inherent strength of generative text models",
+   "Generative AI chatbots cannot generate any text about products",
+   "Recommendation engines require no historical customer data to function",
+   "Generative AI models are always cheaper to run than recommendation models at scale"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Ranking or predicting purchase likelihood from behavioral data is a discriminative/predictive task suited to models trained on structured data; fluent text generation does not make a generative AI model inherently better at this ranking task.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-900"
+ },
+ {
+  "id": "1.1.1-16",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Because generative AI models can produce plausible-sounding but factually incorrect content (fabrications), which control should a business add specifically for a customer-facing generative AI solution that a traditional classification model's output would not typically require?",
+  "choices": [
+   "A human review or content-moderation step before generated responses reach customers",
+   "A larger set of labeled training examples for the classification model",
+   "Additional decision-tree branches in the classification logic",
+   "Switching the classification model to a regression algorithm"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Because generative AI can fabricate plausible but incorrect content, guidance recommends human review or content moderation before customer-facing release, a control not typically needed for a classification model's bounded, predefined outputs.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.2-01",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A retail company wants its employees to draft emails, summarize meeting notes, and generate slide content inside Outlook, Word, and PowerPoint using a licensed assistant that works immediately after deployment, with no development team building anything custom. Which solution should the company adopt?",
+  "choices": [
+   "Microsoft 365 Copilot",
+   "Microsoft Copilot Studio",
+   "Microsoft Foundry",
+   "Azure AI Search"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft 365 Copilot is the ready-made, buy-oriented assistant embedded directly in M365 apps for everyday productivity tasks, requiring no custom development.",
+  "ref": "https://learn.microsoft.com/en-us/training/paths/drive-value-generative-ai-solutions/"
+ },
+ {
+  "id": "1.1.2-02",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An HR business analyst with no coding background wants to build a custom agent that answers policy questions and connects to an internal SharePoint knowledge base, configuring the agent's behavior entirely through natural-language instructions. Which solution should the analyst use?",
+  "choices": [
+   "Microsoft Foundry",
+   "Microsoft Copilot Studio",
+   "Azure Machine Learning",
+   "Microsoft 365 Copilot"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Copilot Studio is the low-code platform designed for business users to build custom copilots/agents using natural language and connect them to enterprise data.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/architecture-overview"
+ },
+ {
+  "id": "1.1.2-03",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A software team must select and fine-tune a foundation model, build a retrieval-augmented generation application over proprietary legal documents, and apply monitoring and governance controls before releasing the application to production. Which platform should the team use?",
+  "choices": [
+   "Microsoft Copilot Studio",
+   "Microsoft 365 Copilot",
+   "Microsoft Foundry",
+   "Azure AI Search"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Microsoft Foundry is the pro-developer platform for model selection, fine-tuning, RAG application development, and governance/observability controls. Azure AI Search could supply retrieval within such a solution but is not itself the end-to-end development and governance platform.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/"
+ },
+ {
+  "id": "1.1.2-04",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which underlying model type is most closely associated with modern generative AI systems that produce human-like text?",
+  "choices": [
+   "Large language models, which generate original text based on learned patterns",
+   "Linear regression models, which estimate a continuous numeric outcome",
+   "Decision tree classifiers, which assign records to predefined categories",
+   "Time-series forecasting models, which project future values from historical trends"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Large language models are the generative architecture behind text-producing gen-AI systems, while regression, classification, and forecasting models are predictive techniques that estimate or categorize existing data rather than create new content.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.2-05",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A finance department manually processes several thousand similar invoices every week, a task that is repetitive and high in volume. Which business value driver best explains why a generative AI solution would benefit this process?",
+  "choices": [
+   "Automation of a repetitive, high-volume task, reducing manual effort",
+   "Improved statistical accuracy of quarterly revenue forecasts",
+   "Reduced storage requirements for the invoice archive",
+   "Simplified network topology between regional offices"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Automation is a core source of gen-AI business value when a process is repetitive and high-volume, reducing manual effort and operational cost.",
+  "ref": "https://learn.microsoft.com/en-us/training/paths/drive-value-generative-ai-solutions/"
+ },
+ {
+  "id": "1.1.2-06",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company's customer support volume grows tenfold overnight during a product launch. Which characteristic of managed generative AI platforms allows the company to absorb this surge without a proportional increase in support staff?",
+  "choices": [
+   "Model fine-tuning of the deployed model",
+   "Dedicated on-premises hosting capacity",
+   "Elastic, scalable capacity provided by the managed platform",
+   "Manual infrastructure scaling coordinated by IT staff"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Scalability lets managed gen-AI platforms absorb much larger request volumes automatically, without staff having to provision hardware or scale infrastructure by hand.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/"
+ },
+ {
+  "id": "1.1.2-07",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A legal team reviews a single, highly nuanced contract each month, a task requiring deep human judgment and rare edge-case analysis. How should this task be characterized when evaluating it as a candidate for generative AI automation?",
+  "choices": [
+   "A strong candidate, because all legal review work benefits equally from automation",
+   "A strong candidate, because scalability value applies regardless of task volume",
+   "A weak candidate, because contract text cannot be processed by language models",
+   "A weak candidate, because it is low-volume and judgment-dependent rather than repeatable"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Scalability and automation value is realized for repeatable, high-volume, or time-sensitive processes; a low-volume, judgment-heavy task is a weaker candidate. Language models can process contract text; the limiting factor here is task frequency and judgment dependence, not technical inability.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.2-08",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A company wants to extend its Microsoft 365 Copilot experience so it can surface data from a proprietary line-of-business system and take actions on the user's behalf, configured by business users rather than professional developers. Which tool provides this extensibility?",
+  "choices": [
+   "Microsoft Foundry",
+   "Microsoft Copilot Studio",
+   "Azure AI Search",
+   "Power BI Desktop"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Copilot Studio provides the extensibility framework used to extend Microsoft 365 Copilot with connections to enterprise data and actions, using low-code, natural-language configuration.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/architecture-overview"
+ },
+ {
+  "id": "1.1.2-09",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which sequence correctly orders Microsoft's generative AI solutions from the least custom development effort to the most?",
+  "choices": [
+   "Microsoft Foundry, Copilot Studio, Microsoft 365 Copilot",
+   "Copilot Studio, Microsoft Foundry, Microsoft 365 Copilot",
+   "Microsoft 365 Copilot, Microsoft Foundry, Copilot Studio",
+   "Microsoft 365 Copilot, Copilot Studio, Microsoft Foundry"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The spectrum runs buy (Microsoft 365 Copilot) to extend (Copilot Studio) to build (Microsoft Foundry), in order of increasing customization and development effort.",
+  "ref": "https://learn.microsoft.com/en-us/training/paths/build-foundation-extend-microsoft-365-copilot/"
+ },
+ {
+  "id": "1.1.2-10",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A department head describes a project that forecasts next quarter's sales figures using a regression model and asks whether it should be classified as a generative AI initiative. What is the correct response?",
+  "choices": [
+   "Yes, because any project involving AI qualifies as generative AI",
+   "No, because it is a predictive AI task that estimates numeric outcomes rather than creating new content",
+   "Yes, because regression output counts as newly generated content",
+   "No, but only because the project analyzes sales rather than text"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Predictive tasks like regression and forecasting are traditional/predictive AI, distinct from generative AI, which specifically creates new content.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.2-11",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A mid-size company wants a chatbot that triages incoming customer inquiries, routes them to the correct department, and escalates urgent cases to a human agent. The company has no dedicated engineering team and needs to launch quickly. Which solution best fits this need?",
+  "choices": [
+   "Microsoft Foundry",
+   "A custom model trained on Azure Machine Learning",
+   "Microsoft Copilot Studio",
+   "Azure Kubernetes Service"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Copilot Studio enables business users to build custom agents with triggers and escalation logic using low-code, natural-language configuration, without a dedicated engineering team.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/architecture-overview"
+ },
+ {
+  "id": "1.1.2-12",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which scenario best illustrates automation as a source of generative AI business value?",
+  "choices": [
+   "An agent drafting and routing routine customer emails with minimal human oversight",
+   "A dashboard displaying historical sales trends for a quarterly review",
+   "A firewall rule blocking unauthorized inbound network traffic",
+   "A database index that speeds up a recurring query"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Automation value comes from gen-AI agents executing multi-step, repetitive tasks like drafting and routing with minimal human oversight.",
+  "ref": "https://learn.microsoft.com/en-us/training/paths/drive-value-generative-ai-solutions/"
+ },
+ {
+  "id": "1.1.2-13",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A company's leadership believes that any project labeled 'automation' delivers equal business value regardless of how often the underlying task occurs. Which statement best corrects this assumption?",
+  "choices": [
+   "Automation value is greatest for infrequent, one-off decisions that require deep judgment",
+   "Automation and scalability provide no measurable business value in any scenario",
+   "Automation value depends solely on the size of the underlying language model",
+   "Automation value is realized most for tasks that are repeatable, high-volume, or time-sensitive"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The AB-731 skill outline specifies that scalability/automation value applies specifically to repeatable, high-volume, or time-sensitive processes, not to task labeling or model size alone.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.2-14",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A hospital network wants its developers to build a production-grade clinical documentation assistant using a fine-tuned model, with strict responsible AI governance and observability built into the release process. Which Microsoft solution is designed for this scenario?",
+  "choices": [
+   "Microsoft 365 Copilot Chat",
+   "Microsoft Copilot Studio",
+   "Microsoft Foundry",
+   "Microsoft Teams"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Microsoft Foundry is the unified platform for pro-developer teams to fine-tune models and apply governance, observability, and responsible AI controls in production.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/"
+ },
+ {
+  "id": "1.1.2-15",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which statement about how Microsoft 365 Copilot grounds its responses is accurate?",
+  "choices": [
+   "It is grounded only in publicly available internet search results",
+   "It is grounded in the signed-in user's Microsoft Graph data, such as email, documents, and calendar within their tenant",
+   "It requires the user to manually upload every relevant document before each query",
+   "It only accesses data stored outside the user's Microsoft 365 tenant"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft 365 Copilot is grounded in Microsoft Graph data, drawing on the signed-in user's tenant content like email, documents, and calendar.",
+  "ref": "https://learn.microsoft.com/en-us/training/paths/drive-value-generative-ai-solutions/"
+ },
+ {
+  "id": "1.1.2-16",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A business leader wants to embed generative AI into a custom-built, customer-facing application with full control over model selection, prompt engineering, and hosting infrastructure. Which solution best fits this requirement?",
+  "choices": [
+   "Microsoft 365 Copilot",
+   "Microsoft Copilot Studio",
+   "Microsoft Foundry",
+   "An upgraded Microsoft 365 subscription"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Foundry provides developer-level control over model selection and infrastructure needed for custom application development, unlike the low-code Copilot Studio or out-of-the-box Copilot.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/"
+ },
+ {
+  "id": "1.1.2-17",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A colleague insists that Microsoft Foundry is always the correct starting point, even for common productivity needs already covered by existing Microsoft 365 apps. Why is this assumption a misconception?",
+  "choices": [
+   "Foundry is unable to process any text-based requests",
+   "Foundry is only available as a limited preview and cannot be used for real work",
+   "Copilot Studio and Foundry are functionally identical products",
+   "For needs matching existing app scenarios, buying or extending with Copilot or Copilot Studio is usually the appropriate lower-effort choice"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "For simple, common productivity needs already matching existing app scenarios, buying or extending (Copilot or Copilot Studio) is the appropriate lower-effort choice rather than building on Foundry.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.2-18",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A team building an application on Microsoft Foundry needs to extract structured data, such as invoice totals and line items, from scanned documents without training and maintaining a custom machine learning model. Which capability should they use?",
+  "choices": [
+   "A prebuilt Foundry Tools model, such as Document Intelligence, used directly through the service",
+   "A custom model trained from scratch within Microsoft Foundry",
+   "Microsoft Copilot Studio's topic authoring canvas",
+   "Microsoft 365 Copilot's meeting recap feature"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Foundry Tools include prebuilt, ready-to-use AI models, such as Document Intelligence, that let teams add proven AI capabilities like document extraction without training or maintaining a custom model.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/"
+ },
+ {
+  "id": "1.1.2-19",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A team wants to focus its engineering effort on unique business logic rather than on managing servers, applying security patches, and configuring networking for its generative AI application. Which aspect of Microsoft's managed AI platforms most directly supports this goal?",
+  "choices": [
+   "Higher fine-tuning accuracy for domain-specific models",
+   "Lower per-token pricing for all API calls",
+   "Removal of the need for any responsible AI review",
+   "Scalable, managed infrastructure, security, and governance provided by the platform"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Managed platforms like Foundry and Copilot Studio supply scalable infrastructure, security, and governance so teams can focus on differentiation rather than infrastructure management. Responsible AI review is still required regardless of platform.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/"
+ },
+ {
+  "id": "1.1.3-01",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which term describes a large-scale model trained on broad, diverse data (text, code, images) that serves as a general-purpose starting point for many different downstream business tasks?",
+  "choices": [
+   "Foundation model",
+   "Fine-tuned model",
+   "Retrieval-augmented model",
+   "Distilled model"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A foundation model is a large model pretrained on broad, diverse data that serves as a general-purpose base for many downstream tasks.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-02",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business is evaluating a pretrained model offered through a managed AI service. Which statement best describes what 'pretrained' means in this context?",
+  "choices": [
+   "The provider already trained it on general-purpose data, so it can be used as-is with prompting and grounding",
+   "Its weights are permanently frozen after one customer's fine-tuning job completes",
+   "It can only respond to questions about the exact data used to train it",
+   "It is created by merging several fine-tuned models into a single deployable artifact"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Pretrained models are trained by the provider on massive general-purpose data and can be used directly via prompting and grounding without any weight changes.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-03",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A business analyst argues that fine-tuning and retrieval-augmented generation (RAG) are essentially the same customization approach. What is the key flaw in this argument?",
+  "choices": [
+   "RAG retrieves external data at inference time without changing model weights, while fine-tuning performs additional training that changes the weights",
+   "RAG only works with foundation models, while fine-tuning only works with pretrained models",
+   "RAG needs a labeled dataset of thousands of examples, while fine-tuning needs none",
+   "Both approaches permanently embed data into the model weights, just through different training algorithms"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RAG grounds responses with retrieved external data without altering the model, whereas fine-tuning performs additional training that adjusts the model's weights.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-04",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A customer-service organization needs its chatbot to consistently respond in a specific brand voice across thousands of conversations, and its current lengthy few-shot prompts are slow and expensive to run. Which approach best addresses this need?",
+  "choices": [
+   "Fine-tune a pretrained model on examples that demonstrate the desired tone and style",
+   "Deploy a larger foundation model while keeping the existing prompts unchanged",
+   "Expand the RAG knowledge base with additional retrieved documents",
+   "Raise the temperature setting used when calling the pretrained model"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fine-tuning is well suited to enforcing a consistent style, tone, or brand voice while also shortening prompts and reducing token cost.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-05",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Compared with relying on long prompts against a pretrained model, what is a key business benefit of fine-tuning for a recurring, well-defined task?",
+  "choices": [
+   "Shorter prompts at inference time, which lowers token usage, cost, and latency",
+   "No further retraining will ever be required as business data changes",
+   "Automatic compliance with all applicable data-privacy regulations",
+   "Guaranteed 100% output accuracy regardless of task"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Because task-specific behavior is baked into the fine-tuned model's weights, fewer instructions and examples need to be repeated in every prompt, lowering tokens, cost, and latency.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-06",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company wants a smaller, cheaper model to match the task performance of a much larger foundation model for one narrow use case. Which fine-tuning strategy directly supports this goal?",
+  "choices": [
+   "Distillation, training the smaller model on the larger model's production outputs",
+   "Expanding the smaller model's context window",
+   "Running the smaller model at a higher sampling temperature",
+   "Disabling the smaller model's safety filters"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Distillation fine-tunes a smaller model on a larger model's outputs, letting it approximate the larger model's task performance at lower cost.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-07",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Compared with the scale of data used to pretrain a foundation model, roughly how much labeled data does Microsoft's guidance suggest is typically needed to fine-tune a model effectively?",
+  "choices": [
+   "Hundreds to a few thousand high-quality prompt-response pairs",
+   "Millions to billions of unlabeled documents",
+   "A single labeled example covering the target task",
+   "No data, since fine-tuning only adjusts hyperparameters"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fine-tuning leverages the base model's existing broad knowledge, so it typically only needs a small, high-quality, task-specific dataset of hundreds to a few thousand examples.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-08",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A stakeholder claims that once a model has been fine-tuned, it will never need further training. Why is this claim incorrect?",
+  "choices": [
+   "A fine-tuned model must be re-tuned when the underlying data changes or the provider updates the base model",
+   "A fine-tuned model automatically retrains itself each time it is queried",
+   "Fine-tuning permanently disables the base foundation model for every other customer",
+   "A fine-tuned model can only ever be deployed a single time"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fine-tuning creates ongoing maintenance obligations, since the custom model may need to be re-tuned as source data evolves or the provider updates the base model.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-09",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An organization's customer FAQ chatbot already gives satisfactory answers using a well-crafted prompt plus grounding on its knowledge base. What is the most cost-effective next step?",
+  "choices": [
+   "Keep using the pretrained model with prompting and grounding, without fine-tuning",
+   "Immediately fine-tune the model on all historical support tickets",
+   "Replace the pretrained model with a model trained from scratch",
+   "Turn off grounding and rely purely on a newly fine-tuned model"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When a pretrained model with prompt engineering and grounding already meets the need, Microsoft's guidance favors that lower-cost path over the added expense and maintenance of fine-tuning.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-10",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A stakeholder proposes fine-tuning a model quickly using whatever historical data is easiest to pull, without vetting its quality or representativeness. What is the main business risk of this approach?",
+  "choices": [
+   "The model may learn and amplify biases or produce unreliable outputs that mirror flaws in the training data",
+   "The fine-tuning job will refuse to run and no model will be produced",
+   "The model will automatically discard bad examples during training with no risk to output quality",
+   "The base foundation model will be permanently deleted once fine-tuning starts"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fine-tuning on data that is small, unrepresentative, or low quality risks producing a specialized model that is inaccurate or biased, since it inherits the flaws present in its training examples.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-11",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A finance director is budgeting for a fine-tuned model deployment. Beyond the one-time training cost, what ongoing cost should they plan for that a shared pay-as-you-go pretrained model does not incur?",
+  "choices": [
+   "An hourly hosting charge for the dedicated fine-tuned deployment, billed even when it is idle",
+   "A one-time licensing fee paid only when the model is first deployed",
+   "A per-user seat fee charged regardless of API usage",
+   "A mandatory annual retraining fee set by the platform provider"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A deployed fine-tuned model incurs an hourly hosting cost in addition to per-token inference cost, and that hosting cost accrues even during periods of low or no use, unlike a shared pretrained model.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/fine-tuning-cost-management"
+ },
+ {
+  "id": "1.1.3-12",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A vendor tells a business audience that a fine-tuned model and a foundation model are essentially the same thing, since 'both are just AI models.' Which response best refutes this?",
+  "choices": [
+   "A foundation model is a broad, general-purpose base, while a fine-tuned model has undergone additional training on a smaller, task-specific dataset to specialize its behavior",
+   "Foundation models cannot be deployed to production, while fine-tuned models can",
+   "Fine-tuned models are always open source, while foundation models are always proprietary",
+   "Foundation models require no training at all, while fine-tuned models require pretraining from scratch"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The core distinction is scope and specialization: foundation models are broad bases, while fine-tuned models are those bases further trained on task-specific data to specialize them.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-13",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A stakeholder believes a foundation model can only ever generate plain text and cannot serve as the base for tasks involving code or images. Why is this belief inaccurate?",
+  "choices": [
+   "Foundation models are pretrained on broad, diverse data spanning text, code, and images, so they can underpin tasks across those data types",
+   "Foundation models are retrained from scratch by each customer before any use, which adds support for new data types",
+   "A foundation model gains image and code understanding only after it has been fine-tuned at least once",
+   "Foundation models process every data type by first converting it into a retrieved document through RAG"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Foundation models are pretrained on large-scale, diverse data that spans multiple modalities such as text, code, and images, making them broadly applicable general-purpose bases.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.3-14",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which statement best summarizes when an organization should consider fine-tuning rather than simply using a pretrained foundation model with prompting?",
+  "choices": [
+   "Fine-tune when prompt engineering and RAG have proven insufficient for a well-defined, recurring task and quality training data is available; otherwise prefer the pretrained model with prompting",
+   "Always fine-tune first, since it is cheaper than any prompt-engineering effort",
+   "Never fine-tune, since a pretrained model with prompting handles every business scenario equally well",
+   "Fine-tune only when no labeled data exists for the task"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's guidance positions fine-tuning as the right choice only after prompting and RAG fall short on a specific, recurring task and quality data exists to support it.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations"
+ },
+ {
+  "id": "1.1.4-01",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "You are evaluating billing for a generative AI solution built on Azure AI Foundry. Which unit of measurement forms the basis for model usage charges?",
+  "choices": [
+   "The token",
+   "The individual API request",
+   "The active user session",
+   "The number of deployed prompt templates"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Model usage is billed per token processed (input and output tokens), making the token the fundamental cost unit.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "1.1.4-02",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business unit wants to reduce its AI service costs without cutting the number of requests it serves. What is the recommended cost-optimization approach?",
+  "choices": [
+   "Match the model's capability to the task, rather than defaulting to the most powerful (and costly) model for everything",
+   "Standardize on the largest available flagship model for every workload",
+   "Increase the maximum output length allowed for every request",
+   "Purchase reserved capacity regardless of how predictable the workload is"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Right-sizing model choice to the complexity of the task is a core cost-optimization lever; using the most capable model for simple tasks wastes money without adding proportional value.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/control-plane/how-to-optimize-cost-performance"
+ },
+ {
+  "id": "1.1.4-03",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A product owner is considering replacing a standard AI model with a cheaper, smaller variant. Besides cost per token, what else should be evaluated before switching?",
+  "choices": [
+   "Whether the smaller model's answer quality and response speed still meet business requirements",
+   "Only the two models' marketing names",
+   "Only the original training data cutoff date",
+   "Only the maximum context window length"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Model selection should weigh cost against whether quality and performance still meet business needs, not cost alone.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/control-plane/how-to-optimize-cost-performance"
+ },
+ {
+  "id": "1.1.4-04",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A workload generates a high, steady, and predictable volume of requests, and the business needs guaranteed latency and capacity. Which billing model is the best fit?",
+  "choices": [
+   "Provisioned throughput",
+   "Pay-per-token (standard/serverless) billing",
+   "Microsoft 365 Copilot Credits",
+   "Per-seat licensing"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Provisioned throughput reserves capacity for a fixed cost, trading token-cost variability for guaranteed throughput and latency on high, predictable volumes.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput"
+ },
+ {
+  "id": "1.1.4-05",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A startup's usage of a generative AI model is low overall but occurs in unpredictable bursts. Which billing approach minimizes its financial risk?",
+  "choices": [
+   "Pay-per-token (standard/serverless) billing",
+   "A reserved provisioned throughput commitment",
+   "An annual contract sized to cover worst-case peak load",
+   "A fixed monthly capacity plan set at average expected usage"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Pay-per-token billing scales directly with actual consumption, avoiding the fixed cost of reserved capacity for low or unpredictable usage.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "1.1.4-06",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "How does a Microsoft 365 Copilot license relate to usage-based, token-driven billing such as Copilot Credits?",
+  "choices": [
+   "The license governs access to Copilot, while Copilot Credit consumption billing applies separately in specific extensibility scenarios",
+   "The license already includes unlimited consumption billing for any custom agent built on top of it",
+   "Consumption-based billing replaces the need to hold a Copilot license altogether",
+   "License fees and consumption charges are always combined into a single invoice line"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The M365 Copilot add-on license or Copilot Chat governs access, while usage-based Copilot Credit billing is a separate mechanism that applies only in specific extensibility scenarios.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/cost-considerations"
+ },
+ {
+  "id": "1.1.4-07",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A team builds a Copilot Studio agent that only answers from its own authored instructions and public web content, without connecting to any organizational data source. What is the billing implication of this design?",
+  "choices": [
+   "It does not trigger additional Copilot Credit usage charges",
+   "It always incurs Copilot Credit charges for every user query",
+   "It requires the organization to purchase provisioned throughput capacity",
+   "It is billed automatically against the organization's Azure AI Foundry token quota"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Agents that rely only on their own instructions or public-web content do not trigger additional usage-based Copilot Credit charges; charges apply when grounding in organizational data.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/cost-considerations"
+ },
+ {
+  "id": "1.1.4-08",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An organization is comparing a declarative agent published inside Microsoft 365 Copilot against a custom engine agent hosted on its own Azure infrastructure. What is the key cost distinction between the two?",
+  "choices": [
+   "The declarative agent adds no separate hosting cost, whereas the custom engine agent can add external hosting charges",
+   "Both options always incur identical total costs regardless of hosting location",
+   "The custom engine agent is hosted by Microsoft free of charge in every scenario",
+   "The declarative agent requires its own dedicated Azure subscription to run"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Declarative agents run within Microsoft 365 Copilot's existing hosting at no extra hosting cost, while custom engine agents hosted externally (e.g., App Service, Foundry) can incur additional hosting charges.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/cost-considerations"
+ },
+ {
+  "id": "1.1.4-09",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "When building the ROI case for a proposed generative AI solution, which combination of costs should a decision-maker weigh against the expected business value?",
+  "choices": [
+   "Licensing, token/consumption charges, hosting, and change management costs together",
+   "Only the per-token price of the selected model",
+   "Only the one-time build and implementation cost",
+   "Only the recurring Copilot license fee"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "ROI requires comparing the full cost picture (licensing, consumption, hosting, adoption/change management) against the value generated, not just one cost component.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "1.1.4-10",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A team defaults to always deploying the most capable available model for every task, regardless of complexity. Why does Microsoft's cost guidance caution against this as a general strategy?",
+  "choices": [
+   "Larger or older models typically cost more per token, often for only marginal quality gains on simple tasks",
+   "The most capable models are provided at no charge under standard Azure agreements",
+   "The most capable models cannot be billed using pay-per-token pricing",
+   "Model capability has no bearing on which licensing tier applies"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Bigger or older models generally have a higher per-token price, and for simple tasks a smaller model can deliver similar quality at much lower cost.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/control-plane/how-to-optimize-cost-performance"
+ },
+ {
+  "id": "1.1.4-11",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Independent of any subscription or license fee, which two factors multiply together to determine the raw consumption cost of a model deployment in Azure AI Foundry?",
+  "choices": [
+   "The number of tokens processed and the price per token",
+   "The number of registered users and the number of monthly active hours",
+   "The number of deployed models and their release date",
+   "The number of API endpoints and the number of Azure regions used"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Consumption cost equals the number of tokens processed multiplied by the price per token, separate from subscription license fees.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "1.1.4-12",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A planning team assumes that fine-tuning a model is always cost-neutral compared to using a pretrained model as-is, and builds its ROI case on that assumption. Why is this assumption problematic?",
+  "choices": [
+   "Fine-tuning introduces its own cost considerations that must be weighed separately against using a pretrained model",
+   "Fine-tuned models are always billed at the same rate as a free tier offering",
+   "Fine-tuning eliminates all future token-based billing for that model",
+   "Pretrained models cannot be used in a production environment at all"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Choosing between fine-tuned and pretrained models is itself a cost/ROI lever, since fine-tuning carries additional cost considerations beyond standard token pricing.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "1.1.4-13",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A finance team wants to prevent spend on Azure AI Foundry model deployments from silently exceeding an approved threshold. Which capability should they set up?",
+  "choices": [
+   "Azure Cost Management budgets with alerts scoped to the AI resource or resource group",
+   "A one-time cost estimate generated only at deployment time",
+   "The maximum context window configured on the model deployment",
+   "The token quota assigned to a single developer's API key"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's guidance recommends creating Cost Management budgets and alerts scoped to the relevant resources so spending anomalies trigger a notification before costs run away.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/concepts/manage-costs"
+ },
+ {
+  "id": "1.1.5-01",
+  "obj": "1.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A business decision-maker notices that a generative AI chatbot occasionally states incorrect information as if it were certain. What underlying characteristic of generative models causes this behavior?",
+  "choices": [
+   "The model generates statistically plausible text and has no built-in mechanism to verify facts against current, authoritative sources",
+   "The model was never tested before release",
+   "The model deliberately withholds correct answers to lower operating costs",
+   "The model can only produce this behavior when handling numerical data"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Hallucinations occur because generative models predict statistically likely text rather than retrieving verified facts, absent grounding to authoritative data.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-02",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A solution architect wants to lower the rate at which a generative AI application invents facts by connecting it to current enterprise data whenever it answers a question. Which approach should the architect adopt?",
+  "choices": [
+   "Retrieval-Augmented Generation (RAG)",
+   "Increasing the response token limit",
+   "Reducing the number of supported languages",
+   "Switching to a smaller model to lower latency"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RAG grounds responses by retrieving relevant authoritative data at query time and feeding it into the prompt, reducing reliance on unverified training patterns.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-03",
+  "obj": "1.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "After implementing RAG in a Copilot Studio agent, a project sponsor concludes the agent can no longer produce incorrect answers and cancels the planned quality review. Why is this conclusion unfounded?",
+  "choices": [
+   "Grounding reduces but does not eliminate the risk of incorrect output, so ongoing evaluation and monitoring are still needed",
+   "RAG is designed only to improve response speed, not accuracy",
+   "RAG functions solely for agents that generate images",
+   "Cancelling review is appropriate because RAG guarantees factual output"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Grounding lowers hallucination risk but is not a complete guarantee; organizations must still evaluate and monitor outputs for factual errors.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-04",
+  "obj": "1.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A company wants its Copilot Studio agent to answer only from its approved data sources and clearly say when it doesn't know, rather than falling back on the model's general knowledge. What is this configuration choice best described as?",
+  "choices": [
+   "Restricting the agent to grounded responses only, to reduce the risk of ungrounded or fabricated answers",
+   "Adding more conversation topics without changing how answers are generated",
+   "Upgrading to a larger, more capable model",
+   "Disabling all topic triggers so every request is handled generically"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Limiting an agent to grounded responses only trades some flexibility for a lower risk of fabricated answers, an important trust/accuracy design decision for business owners of an agent.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/fallback-topic"
+ },
+ {
+  "id": "1.1.5-05",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "When planning risk mitigation for a generative AI deployment, how should a team distinguish the challenge of 'reliability' from the challenge of factual accuracy?",
+  "choices": [
+   "Reliability concerns how consistently the system behaves across similar or edge-case inputs, while accuracy concerns whether a specific output is factually correct",
+   "They describe the same risk using different terminology from different Microsoft teams",
+   "Reliability applies only to server uptime and has no relation to model output behavior",
+   "Reliability measures how quickly a model responds, while accuracy measures cost per token"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Reliability is about consistent, dependable behavior across inputs and edge cases, whereas fabrication/accuracy concerns whether a given output is factually correct.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-06",
+  "obj": "1.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An organization observes that its generative AI hiring assistant consistently ranks candidates from one demographic group more favorably, even when qualifications are equivalent. Which challenge does this scenario illustrate?",
+  "choices": [
+   "Bias, stemming from skewed patterns in the data used to train or fine-tune the model",
+   "Reliability, because the tool fails to produce the same output twice",
+   "Latency, because slower responses correlate with lower rankings",
+   "A content safety filtering gap unrelated to training data"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Bias arises when training data contains skewed or stereotyped societal patterns that the model reproduces in its outputs.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-07",
+  "obj": "1.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A governance team designing a bias-mitigation plan for a new generative AI solution wants an approach that addresses risk at more than one point in the system. Which combination best reflects Microsoft's recommended layered approach?",
+  "choices": [
+   "Curating diverse and representative training data, applying model-level alignment, adding safety-system content filtering, and evaluating for bias before deployment",
+   "Applying a single content filter to outputs immediately before they reach the user",
+   "Increasing the underlying model's parameter count and leaving other controls unchanged",
+   "Restricting the application to a smaller set of internal employees"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's guidance emphasizes layered mitigation spanning data quality, model-level alignment, safety-system filtering, and evaluation, not a single fix.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-08",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Before a model reaches production, a governance team needs a way to quantify how often it fabricates content and whether its outputs show demographic bias. Which capability should they rely on?",
+  "choices": [
+   "Evaluation tools within Azure AI Foundry that measure metrics such as hallucination rate and bias",
+   "The prompt flow designer's autosave history",
+   "Network latency dashboards in Azure Monitor",
+   "The model card's version number and release date"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Azure AI Foundry provides evaluation tooling specifically designed to measure hallucination rate and bias before a model is deployed to production.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/responsible-ai-studio/"
+ },
+ {
+  "id": "1.1.5-09",
+  "obj": "1.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which sequence of stages describes Microsoft's Responsible AI lifecycle for surfacing and addressing risks such as fabrication and bias?",
+  "choices": [
+   "Identify, Measure, Mitigate, Operate",
+   "Design, Build, Test, Release",
+   "Draft, Approve, Publish, Archive",
+   "Collect, Label, Train, Retrain"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's Responsible AI Standard defines a four-stage lifecycle of Identify, Measure, Mitigate, and Operate for managing AI risks.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-10",
+  "obj": "1.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A team wants to block harmful or unsafe content from a generative AI application in real time using Azure AI Content Safety. In Microsoft's four-layer mitigation framework, at which level does this control operate?",
+  "choices": [
+   "Safety system level",
+   "Model level",
+   "Positioning level",
+   "Governance level"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The safety system level uses tools like Azure AI Content Safety to detect and block harmful outputs in real time, distinct from model-level alignment or app-level UX design.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-11",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A product team refines its system prompts and adds visible source citations in the application's interface to reduce the chance users act on fabricated content. At which layer of the mitigation framework does this work take place?",
+  "choices": [
+   "Application level",
+   "Model level",
+   "Safety system level",
+   "Positioning level"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Prompt/metaprompt engineering and UX design choices like citing sources are application-level mitigations within the four-layer mitigation framework.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-12",
+  "obj": "1.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company publishes documentation describing what its generative AI assistant can and cannot do, and clearly discloses to users that the content they see is AI-generated. Which layer of Microsoft's mitigation framework does this activity belong to?",
+  "choices": [
+   "Positioning level",
+   "Model level",
+   "Safety system level",
+   "Application level"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The positioning level covers user education, transparency, and documentation of capabilities and limitations, complementing the model, safety system, and application layers.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-13",
+  "obj": "1.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A design team is concerned employees may accept AI-generated content without scrutiny. Which interface design practice does Microsoft's responsible AI guidance recommend to address this?",
+  "choices": [
+   "Design the experience to prompt human review and editing of AI output, and clearly disclose when content was AI-generated",
+   "Present AI output identically to human-authored content so users are not distracted by disclaimers",
+   "Remove review steps from the workflow so output reaches users faster",
+   "Route all output directly to end customers without any internal checkpoint"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Human-in-the-loop UX design, disclosure of AI involvement, and encouraging review reduce overreliance and keep humans accountable for final content.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "1.1.5-14",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which set of principles forms Microsoft's Responsible AI framework that organizations are expected to apply when adopting generative AI?",
+  "choices": [
+   "Fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability",
+   "Scalability, availability, performance, and cost optimization",
+   "Encryption, authentication, authorization, and auditing",
+   "Speed to market, personalization, automation, and adoption rate"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's Responsible AI principles are fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/responsible-ai-overview"
+ },
+ {
+  "id": "1.1.5-15",
+  "obj": "1.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A large enterprise adopting generative AI across multiple business units wants consistent, cross-functional oversight of responsible AI principles. What governance structure does Microsoft recommend for this purpose?",
+  "choices": [
+   "Establishing an AI council supported by a formal Responsible AI Standard",
+   "Assigning oversight to a single developer on the engineering team",
+   "Outsourcing all AI governance decisions to the marketing department",
+   "Handling concerns informally through the IT helpdesk as they arise"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft recommends establishing an AI council and adopting a Responsible AI Standard to govern principles and ensure cross-functional oversight.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/responsible-ai-overview"
+ },
+ {
+  "id": "1.1.5-16",
+  "obj": "1.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A stakeholder argues that switching to a larger, more capable flagship model will fully eliminate fabrication in the organization's generative AI application. Why is this argument flawed?",
+  "choices": [
+   "Fabrication can occur in generative models of any size, and grounding techniques such as RAG, not raw model scale, are what reduce the risk",
+   "Fabrication is a defect found only in preview-stage models and disappears once a model reaches general availability",
+   "Larger models are architecturally incapable of generating unsupported statements",
+   "Model size only affects response speed and has no bearing on fabrication risk mitigation strategies"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Model size does not eliminate hallucination; it is a general property of generative models that grounding techniques like RAG specifically address.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-17",
+  "obj": "1.1.5",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A healthcare organization considers disabling content safety filters in Azure AI Foundry for its patient-facing generative AI assistant to reduce operating cost. How should this proposal be evaluated from a responsible AI perspective?",
+  "choices": [
+   "The filters form a core layer of the mitigation framework and should not be treated as optional, particularly in a sensitive domain like healthcare",
+   "The filters are a convenience feature with negligible effect on output safety",
+   "The filters apply only to scenarios involving image generation, so disabling them is low risk here",
+   "Disabling the filters is acceptable as long as human review is removed as well"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Azure AI Content Safety guardrails form a core layer of the mitigation framework and should not be treated as optional, particularly in sensitive domains like healthcare.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/openai/overview"
+ },
+ {
+  "id": "1.1.5-18",
+  "obj": "1.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A business leader assumes responsible AI is purely an engineering concern handled entirely through model tuning. Which fact from Microsoft's guidance best counters this assumption?",
+  "choices": [
+   "Microsoft's framework spans governance structures such as an AI council, application-level UX design, and user education, extending well beyond model tuning alone",
+   "Responsible AI considerations only apply during the initial model training phase and not afterward",
+   "Only data scientists are qualified to evaluate fairness and bias in a deployed solution",
+   "Enabling content filters alone fully satisfies an organization's responsible AI obligations"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Responsible AI mitigation spans model, safety system, application, and positioning levels, plus governance structures like an AI council, making it a cross-organizational responsibility.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "1.1.6-01",
+  "obj": "1.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A business analyst wants better responses from a generative AI model but has no access to retrain it or adjust its parameters. Which approach should they use to improve output quality?",
+  "choices": [
+   "Fine-tune the model on labeled examples",
+   "Apply prompt engineering to the input",
+   "Increase the model's parameter count",
+   "Redesign the model's architecture"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Prompt engineering crafts instructions, context, and examples to guide output quality without any retraining or weight changes, unlike fine-tuning.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "1.1.6-02",
+  "obj": "1.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An HR manager asks a generative AI model to 'Draft a job posting for a data analyst role' without providing any sample postings. What type of prompting is this?",
+  "choices": [
+   "Few-shot prompting",
+   "Zero-shot prompting",
+   "Chain-of-thought prompting",
+   "Grounded prompting"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Zero-shot prompting provides only an instruction or task with no examples to condition the response.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "1.1.6-03",
+  "obj": "1.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A support team includes three sample customer emails paired with the ideal reply for each, then asks the model to draft a reply to a new email. Which technique are they using?",
+  "choices": [
+   "Few-shot prompting",
+   "Zero-shot prompting",
+   "Chain-of-thought prompting",
+   "Retrieval-augmented generation"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Few-shot (or one-shot) prompting includes example input/output pairs in the prompt to condition the response for that single inference, unlike chain-of-thought prompting (step-by-step reasoning) or retrieval-augmented generation (grounding on external documents).",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "1.1.6-04",
+  "obj": "1.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "After a few-shot prompt produces a good result, a manager assumes the model has permanently learned that pattern for every future conversation. Why is this assumption incorrect?",
+  "choices": [
+   "Few-shot examples only shape that single inference and do not alter the model's underlying weights",
+   "Few-shot prompting only works if paired with fine-tuning",
+   "The model discards few-shot examples immediately and never uses them",
+   "Few-shot examples permanently update the model's training data"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Few-shot examples shape only the current inference; they do not change the model's parameters or persist across unrelated future sessions.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "1.1.6-05",
+  "obj": "1.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A finance team wants a generative AI model to expose its intermediate reasoning steps before giving a final answer, so errors are easier to spot. Which technique should they use?",
+  "choices": [
+   "Chain-of-thought prompting",
+   "Few-shot prompting",
+   "Zero-shot prompting",
+   "Cue-based prompting"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Chain-of-thought prompting asks the model to reason step-by-step and show its work before the final answer, reducing errors and easing verification.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "1.1.6-06",
+  "obj": "1.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A team is writing prompts for a reasoning-optimized model, such as an o-series or GPT-5 style model. What does Microsoft guidance say about using chain-of-thought prompting here?",
+  "choices": [
+   "It is required for the model to produce any usable output",
+   "It is generally unnecessary, since the model already reasons internally",
+   "It doubles accuracy compared to a plain instruction",
+   "It must be paired with fine-tuning to have any effect"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft explicitly notes chain-of-thought prompting is not recommended for reasoning models like the o-series or GPT-5, since they already reason internally.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "1.1.6-07",
+  "obj": "1.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An organization is training business users on writing effective prompts for Microsoft 365 Copilot. Which four-element framework does the training recommend?",
+  "choices": [
+   "Task, Audience, Tone, Length",
+   "Goal, Context, Expectations, Source",
+   "Input, Process, Output, Feedback",
+   "Instructions, Examples, Cue, Format"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The M365 Copilot training module teaches the Goal, Context, Expectations, Source framework for business-user prompting.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/write-effective-prompts-do-more-prompting/"
+ },
+ {
+  "id": "1.1.6-08",
+  "obj": "1.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "In the Goal, Context, Expectations, Source prompt framework used for Microsoft 365 Copilot, which element identifies what data Copilot should base its answer on?",
+  "choices": [
+   "Context",
+   "Expectations",
+   "Source",
+   "Goal"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Source specifies what data or information the Copilot response should draw from, helping ground the answer.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/write-effective-prompts-do-more-prompting/"
+ },
+ {
+  "id": "1.1.6-09",
+  "obj": "1.1.6",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "In the Goal, Context, Expectations, Source prompt framework, which element specifies the desired format, tone, and length of the response?",
+  "choices": [
+   "Goal",
+   "Source",
+   "Expectations",
+   "Context"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Expectations captures the desired output format, audience, and length, guiding how the response should be shaped.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/write-effective-prompts-do-more-prompting/"
+ },
+ {
+  "id": "1.1.6-10",
+  "obj": "1.1.6",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A business wants to reduce hallucinated facts in AI-generated reports but does not want to fund a large data-integration project right now. Which low-cost lever should they try first?",
+  "choices": [
+   "Fine-tune the model on proprietary data",
+   "Build a full retrieval-augmented generation pipeline",
+   "Improve the design and structure of prompts",
+   "Retrain the model from scratch"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Prompt engineering is a low-cost, no-code lever business users can apply to improve output quality, in contrast to more expensive fine-tuning or data-integration approaches like RAG.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.6-11",
+  "obj": "1.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A compliance officer assumes that because a team applied strong prompt engineering, every AI-generated output is now guaranteed accurate and needs no further review. Why is this assumption flawed?",
+  "choices": [
+   "Prompt engineering changes the model's weights, which guarantees accuracy",
+   "Outputs must still be validated, since prompt engineering alone does not guarantee factual accuracy",
+   "Prompt engineering makes grounding unnecessary",
+   "Only fine-tuning can ever improve output accuracy"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft stresses that generated outputs must still be validated, and grounding is the complementary technique for factual reliability rather than a replacement for review.",
+  "ref": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering"
+ },
+ {
+  "id": "1.1.7-01",
+  "obj": "1.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A healthcare clinic's virtual assistant currently answers questions using only the language model's built-in knowledge, which is outdated. Leadership wants answers based on the clinic's current internal policy documents. Which capability should the solution add?",
+  "choices": [
+   "Grounding",
+   "Fine-tuning the model on historical chat transcripts",
+   "Increasing the model's temperature parameter",
+   "Applying output content filters only"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Grounding supplies the LLM with relevant, current organizational content at query time so responses are anchored in real data rather than only the model's static training data.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-02",
+  "obj": "1.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which statement best describes retrieval-augmented generation (RAG) as an architecture pattern?",
+  "choices": [
+   "It retrains the model's weights directly on proprietary data before deployment",
+   "It combines retrieval of information from proprietary data sources with text generation by the LLM",
+   "It compresses prompts so they fit within the model's context window",
+   "It filters harmful content from the model's output after generation"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "RAG combines two steps: retrieving relevant content from enterprise or proprietary sources and having the LLM generate a response synthesized from that retrieved content.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-03",
+  "obj": "1.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A business stakeholder asks whether adopting RAG means the underlying language model must be retrained on the company's data. What should they be told?",
+  "choices": [
+   "Yes, RAG always fine-tunes the model on the retrieved data before each response",
+   "No, RAG retrieves relevant content at query time and adds it to the prompt without changing the model's weights",
+   "Yes, RAG is simply another name for fine-tuning",
+   "No, RAG bypasses the language model and returns raw search results to the user"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "RAG is not fine-tuning; it retrieves relevant data at query time and injects it into the prompt/context, leaving the model's weights unchanged.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-04",
+  "obj": "1.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Which of the following is the strongest business justification for adding grounding to a generative AI solution?",
+  "choices": [
+   "It removes the need for any content moderation on generated responses",
+   "It reduces fabricated or inaccurate answers by anchoring responses in real, current data",
+   "It guarantees the solution will require no further maintenance",
+   "It removes the need for access control on the underlying enterprise data"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Grounding reduces hallucinations by anchoring responses in real, current, organization-specific content rather than only the model's static training data.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-05",
+  "obj": "1.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Why do many generative AI solutions include a safety and governance validation step after retrieving grounding data and generating a response?",
+  "choices": [
+   "To rewrite the user's original question for clarity",
+   "To retrieve additional content from configured knowledge sources",
+   "To check the generated response for harmful content and flag claims not supported by the retrieved data",
+   "To translate the response into additional languages automatically"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Organizations add a safety and governance validation step to catch harmful content and unsupported claims before a response reaches the user, reducing reputational and compliance risk.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/retrieval-augmented-generation"
+ },
+ {
+  "id": "1.1.7-06",
+  "obj": "1.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A decision-maker states that adopting RAG will completely eliminate hallucinated answers from the AI assistant. Why is this claim inaccurate?",
+  "choices": [
+   "RAG grounds responses in retrieved data, which reduces but does not guarantee elimination of fabricated content",
+   "RAG can only be used with structured databases, never unstructured text",
+   "RAG has no measurable effect on the accuracy of generated answers",
+   "RAG increases the likelihood of fabricated content because it adds more text to the prompt"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RAG reduces hallucinations by grounding answers in retrieved data, but it does not guarantee elimination, which is precisely why a safety and governance validation step still checks for unsupported claims.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/retrieval-augmented-generation"
+ },
+ {
+  "id": "1.1.7-07",
+  "obj": "1.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A healthcare organization plans to ground its AI assistant using patient records from a proprietary database. Which requirement is most critical to address before deployment?",
+  "choices": [
+   "Maximizing the total volume of patient data retrieved for every query",
+   "Ensuring retrieval respects access control so each user only sees data they are authorized to view",
+   "Retraining the model monthly on the entire patient dataset",
+   "Removing citations from responses to simplify the interface"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Grounding requires security and governance, including security trimming, so that retrieval only surfaces data the requesting user is authorized to see.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-08",
+  "obj": "1.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which statement correctly contrasts RAG with fine-tuning as approaches for using proprietary data with an LLM?",
+  "choices": [
+   "They are two names for the same underlying process",
+   "RAG retrieves relevant data at query time without altering the model, while fine-tuning updates the model's weights through additional training",
+   "Fine-tuning retrieves data at query time, while RAG updates the model's weights",
+   "Neither approach can incorporate an organization's proprietary data"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "RAG injects retrieved content into the prompt at query time, leaving the model unchanged, whereas fine-tuning actually retrains the model's weights, giving each a different cost, latency, and data-freshness tradeoff.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-09",
+  "obj": "1.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An organization wants new product documentation published each day to be reflected in its AI assistant's answers, without retraining the model. What does this scenario primarily highlight?",
+  "choices": [
+   "The need to keep grounding data fresh through incremental updates to the retrieval index",
+   "The need to fine-tune the model nightly on the new documentation",
+   "The need to remove citations so updates can be applied faster",
+   "The need to delay indexing new content until the next major release"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Content readiness for grounding requires data to be kept fresh through incremental updates, which is a key advantage of RAG over retraining.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-10",
+  "obj": "1.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Why are citations and source provenance considered a business requirement for grounded AI solutions rather than just a technical nicety?",
+  "choices": [
+   "They are required only for legal contracts, not general question answering",
+   "They let users trace an answer back to its source, which builds trust and allows verification",
+   "They reduce the number of knowledge sources the solution must query",
+   "They remove the need for a separate content moderation step"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Citations and provenance let users trace an answer back to its source, which is essential for building trust and enabling verification of AI-generated content.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/retrieval-augmented-generation"
+ },
+ {
+  "id": "1.1.7-11",
+  "obj": "1.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A team plans to ground its AI assistant using content from multiple systems, including one with strict access controls. What should they verify before deployment?",
+  "choices": [
+   "Whether retrieval will automatically and correctly enforce each user's existing access permissions on the retrieved content",
+   "Whether the chat interface uses a light or dark color theme",
+   "Whether the model was trained before a specific calendar year",
+   "Whether the retrieved content is stored on one server or replicated across several"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Not every knowledge source automatically carries over an existing permission model when connected for retrieval, so organizations must verify and, where needed, explicitly configure access enforcement before go-live.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/retrieval-augmented-generation"
+ },
+ {
+  "id": "1.1.7-12",
+  "obj": "1.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A project team assumes that retrieving as much source content as possible for every query will always produce the best answers from an AI assistant. Why is this assumption flawed from a business perspective?",
+  "choices": [
+   "Excessive or irrelevant retrieved content can dilute the most relevant context and actually reduce answer quality",
+   "Retrieval has no practical limit on how much content can be used per query",
+   "More retrieved content always improves accuracy regardless of relevance",
+   "This limitation applies only to fine-tuned models, not to retrieval-based solutions"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Retrieval works best when it returns concise, highly relevant content; pulling in excessive or irrelevant material can crowd out what matters and degrade the quality of the generated answer.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-13",
+  "obj": "1.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A support team wants to use RAG to answer specific factual questions drawn from a large internal FAQ knowledge base. Is this an appropriate use case?",
+  "choices": [
+   "No, RAG is intended only for image generation tasks",
+   "Yes, RAG is well suited to factual question answering and specific fact retrieval",
+   "No, RAG should not be used for FAQ-style questions",
+   "Yes, but only after the model has been fine-tuned first"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Microsoft's guidance identifies RAG as best suited for factual Q&A, FAQs, and specific fact retrieval scenarios.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/retrieval-augmented-generation"
+ },
+ {
+  "id": "1.1.7-14",
+  "obj": "1.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A legal team wants an AI solution to perform deep comparative analysis across many lengthy contracts to assess policy compliance. Is RAG the ideal architecture for this task?",
+  "choices": [
+   "Yes, RAG is designed for deep document comparison and complex multi-document reasoning",
+   "No, RAG is best suited to factual question answering and fact retrieval, not full document analysis or compliance evaluation",
+   "Yes, because RAG always retrieves and reasons over entire documents at once",
+   "No, because RAG cannot be applied to legal documents at all"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Per Microsoft's own guidance, RAG is best for factual Q&A and fact retrieval, not for full document analysis or complex compliance evaluation across lengthy documents.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/retrieval-augmented-generation"
+ },
+ {
+  "id": "1.1.7-15",
+  "obj": "1.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which of the following is NOT a typical knowledge source configured for content retrieval in a Copilot Studio RAG solution?",
+  "choices": [
+   "SharePoint",
+   "Dataverse",
+   "Graph connectors and uploaded files",
+   "The language model's original pretraining corpus"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Retrieval draws from configured knowledge sources such as SharePoint, Dataverse, Graph connectors, Azure AI Search, uploaded files, or public web search, not from the model's original static pretraining corpus.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/retrieval-augmented-generation"
+ },
+ {
+  "id": "1.1.7-16",
+  "obj": "1.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Why must an organization's source content be broken into smaller, well-organized pieces before it can be used effectively to ground an AI assistant's answers?",
+  "choices": [
+   "Smaller, focused pieces of content can be retrieved and matched to a question more precisely, improving answer relevance and quality",
+   "It is only a legacy practice with no real benefit for modern AI systems",
+   "It removes the need to secure or govern access to the content",
+   "It applies only to image data, not to text-based documents"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Preparing content in smaller, focused pieces lets retrieval return precise, relevant material for a given question instead of unwieldy full documents, improving grounded answer quality.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-17",
+  "obj": "1.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which scenario best illustrates a valid business use of RAG beyond a conversational chatbot?",
+  "choices": [
+   "A custom application built on Azure AI Search that retrieves proprietary content to ground generated answers",
+   "A batch process that classifies images with no text generation or retrieval involved",
+   "A translation feature that converts fixed phrase lists between languages without querying any external content",
+   "A spell-checker embedded in a word processor that flags typos using a static dictionary"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RAG is a general architecture pattern usable across custom AI solutions, including applications built on Azure AI Search within Microsoft Foundry, not just chatbots or Copilot experiences. The other options involve no retrieval of external content to ground generated text.",
+  "ref": "https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/retrieval-augmented-generation"
+ },
+ {
+  "id": "1.1.7-18",
+  "obj": "1.1.7",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company is deciding between fine-tuning and RAG to keep its AI assistant's answers current with frequently changing product pricing. Which factor most favors RAG?",
+  "choices": [
+   "RAG can incorporate updated pricing data at query time without the cost and delay of retraining the model",
+   "Fine-tuning automatically re-trains itself whenever underlying data changes, at no additional cost",
+   "RAG requires the model to be retrained every time pricing changes, just like fine-tuning",
+   "Fine-tuning is generally cheaper and faster to keep current than RAG for frequently changing data"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RAG retrieves current data at query time, making it cheaper and faster to keep answers up to date compared to the cost and delay of retraining the model via fine-tuning.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.7-19",
+  "obj": "1.1.7",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An organization wants a custom AI solution to ground its answers in existing SharePoint and OneDrive content while preserving each user's existing access permissions, without building and maintaining a separate search index. Which Microsoft capability is designed for this?",
+  "choices": [
+   "A capability that lets custom applications retrieve relevant content directly from the Microsoft 365 content index while honoring existing permissions",
+   "A fine-tuning pipeline that retrains the model on exported SharePoint content",
+   "Azure AI Search, which always requires content to be re-indexed into a new vector store first",
+   "Microsoft Purview, which is used only for compliance auditing, not retrieval"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft 365 offers a capability for custom applications to ground responses in relevant Microsoft 365 content without replicating or re-indexing it separately, while continuing to honor existing access and governance controls.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/api/ai-services/retrieval/overview"
+ },
+ {
+  "id": "1.1.7-20",
+  "obj": "1.1.7",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A data governance team is reviewing a planned RAG solution. Which of the following is a valid governance concern they should raise about the grounding data?",
+  "choices": [
+   "Whether the retrieved data respects data residency and regulatory compliance boundaries",
+   "Whether the language model's training data was collected before a specific year",
+   "Whether end users prefer a dark or light color theme in the chat interface",
+   "Whether the retrieval index is hosted on one server or replicated across several"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Grounding requires security and governance considerations including data residency and compliance boundaries, which are core business requirements for a RAG solution.",
+  "ref": "https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview"
+ },
+ {
+  "id": "1.1.8-01",
+  "obj": "1.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A retailer wants its AI assistant to answer questions using content from thousands of scanned invoice documents. What does this scenario illustrate about preparing data to ground an AI solution?",
+  "choices": [
+   "Unstructured documents need to be processed and indexed for semantic retrieval, unlike neatly structured tables that can be queried directly",
+   "Any document format can be used for grounding without any preparation",
+   "Only real-time API data can be used to ground an AI assistant",
+   "Structured and unstructured content require exactly the same preparation steps"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Unstructured content such as scanned documents must be processed and indexed for semantic retrieval, while structured, tabular data is better served by direct query, a different data-readiness path an organization must plan for.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-unstructured-data"
+ },
+ {
+  "id": "1.1.8-02",
+  "obj": "1.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A finance team wants its AI assistant to return the exact total of a Dataverse sales table for the last quarter. Why is vector-based semantic search not well suited to this request?",
+  "choices": [
+   "Semantic search ranks content by relevance rather than performing precise aggregation over structured rows",
+   "Semantic search cannot be configured to access Dataverse tables under any circumstance",
+   "Semantic search is limited to image and video content only",
+   "Semantic search requires the data to be reformatted as unstructured documents first"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Structured, tabular data is better served by direct query or a code interpreter, since semantic search is designed for relevance-based retrieval, not precise aggregation.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-code-interpreter-structured-data"
+ },
+ {
+  "id": "1.1.8-03",
+  "obj": "1.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which term describes a training dataset that reflects the full diversity of the population and scenarios an AI solution will encounter in production?",
+  "choices": [
+   "A representative dataset",
+   "A normalized dataset",
+   "A synthetic dataset",
+   "A curated dataset"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A representative dataset mirrors the actual population and scenarios the model will encounter, which is essential for fair and reliable outcomes.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.8-04",
+  "obj": "1.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An HR screening AI is trained mostly on resumes from one demographic group, resulting in lower-quality recommendations for other groups. Which outcome and Responsible AI principle are most directly involved?",
+  "choices": [
+   "Biased recommendations, violating fairness",
+   "Increased latency, violating reliability and safety",
+   "Data exposure, violating privacy and security",
+   "Unclear reasoning, violating transparency"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Non-representative training data causes the model to underserve underrepresented groups, directly violating the fairness principle of Responsible AI.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "1.1.8-05",
+  "obj": "1.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A business leader assumes that adding as much data as possible to an AI system will automatically improve its accuracy. What is the flaw in this assumption?",
+  "choices": [
+   "Data quality, relevance, and representativeness affect accuracy more than volume alone",
+   "AI systems reject any dataset beyond a fixed maximum size",
+   "Additional data always introduces bias with no exceptions",
+   "Larger datasets eliminate the need for grounding entirely"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Volume alone does not guarantee better outcomes; poor-quality or unrepresentative data can degrade performance even at large scale.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.8-06",
+  "obj": "1.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company grounds its AI assistant in internal documents using retrieval-augmented generation (RAG), but the assistant continues to give outdated policy guidance. What is the most likely cause?",
+  "choices": [
+   "The knowledge source documents themselves are outdated or of poor quality",
+   "RAG is incompatible with internal document repositories",
+   "The underlying language model has stopped generating responses",
+   "Grounding guarantees answers are always current regardless of source content"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RAG grounds responses in retrieved data, but if that source data is outdated or low quality, the grounded answers will still be wrong.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-copilot-studio"
+ },
+ {
+  "id": "1.1.8-07",
+  "obj": "1.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A team is deciding whether to fine-tune a model on newly released product specifications or ground it with retrieval-augmented generation (RAG) instead. Which factor favors RAG for this scenario?",
+  "choices": [
+   "RAG can incorporate the new content by updating the knowledge source, without retraining the model",
+   "RAG permanently bakes the new content into the model's weights, unlike fine-tuning",
+   "Fine-tuning always retrieves the latest data automatically at query time",
+   "RAG and fine-tuning have identical update costs and timelines"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "RAG lets an organization refresh what the model can reference simply by updating the connected knowledge source, avoiding the retraining cycle that fine-tuning requires to reflect new information.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-copilot-studio"
+ },
+ {
+  "id": "1.1.8-08",
+  "obj": "1.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "To correct biased outputs, a team fine-tunes a model on a dataset that heavily overrepresents one customer segment. What is the likely result?",
+  "choices": [
+   "The existing bias is likely to be reinforced rather than corrected",
+   "The bias is automatically resolved because fine-tuning always improves fairness",
+   "Fine-tuning has no measurable effect on the model's fairness",
+   "Fine-tuning only changes response speed, not output bias"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fine-tuning on non-representative data reinforces the existing skew in the dataset, amplifying bias rather than resolving it.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai"
+ },
+ {
+  "id": "1.1.8-09",
+  "obj": "1.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which of the following is an example of structured data used as a knowledge source for an AI solution?",
+  "choices": [
+   "A Dataverse table of customer orders",
+   "A folder of scanned support-ticket PDFs",
+   "A set of recorded customer service call transcripts",
+   "An archive of employee onboarding emails"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Dataverse tables are structured, tabular data, in contrast to documents, transcripts, and emails, which are unstructured.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-copilot-studio"
+ },
+ {
+  "id": "1.1.8-10",
+  "obj": "1.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An executive argues that data quality only matters while training a model, not when the model retrieves grounding data to answer a live question. Why is this reasoning incorrect?",
+  "choices": [
+   "Grounding solutions retrieve data at query time, so poor-quality source data directly degrades live answers",
+   "Grounding never involves external data sources, only the trained model",
+   "Data quality only affects structured data, never documents used for grounding",
+   "Retrieval-augmented systems automatically correct quality issues before responding"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Since grounding solutions retrieve source data at query time to produce answers, low-quality grounding data directly produces low-quality live responses.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.8-11",
+  "obj": "1.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which of the following best defines 'data quality' in the context of an AI solution?",
+  "choices": [
+   "The accuracy, completeness, consistency, and timeliness of the data",
+   "The total volume of data available to the solution",
+   "The file format used to store the data, such as CSV or JSON",
+   "The number of distinct knowledge sources connected to the solution"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Data quality refers to attributes like accuracy, completeness, consistency, and timeliness, not volume, format, or source count.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.8-12",
+  "obj": "1.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A hospital's AI triage assistant recommends different treatment priorities for patients with identical symptoms based on their zip code, reflecting patterns in historical data. Which Responsible AI principle is most directly at risk?",
+  "choices": [
+   "Fairness",
+   "Transparency",
+   "Accountability",
+   "Inclusiveness"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Fairness requires that AI systems treat people with similar circumstances similarly; unequal treatment based on a proxy variable like zip code signals a fairness violation rooted in data bias.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai"
+ },
+ {
+  "id": "1.1.8-13",
+  "obj": "1.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A company is connecting two knowledge sources to an AI agent: SharePoint policy documents (unstructured text) and a database table of current inventory levels (structured data). What is the most effective way to make both usable by the agent?",
+  "choices": [
+   "Use semantic search over the documents, and query the structured table directly for precise, up-to-date values",
+   "Convert the database table into documents so every source is handled the same way",
+   "Query both sources directly and skip any retrieval processing for the documents",
+   "Apply identical processing to both sources, since data type does not affect retrieval"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Unstructured documents are best retrieved through semantic/document search, while structured tabular data is better served by querying it directly for precise, current values rather than treating it like text.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-code-interpreter-structured-data"
+ },
+ {
+  "id": "1.1.8-14",
+  "obj": "1.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which scenario best illustrates a data quality problem, as distinct from a data type or representativeness issue?",
+  "choices": [
+   "A customer database contains duplicate and outdated records that were never cleaned",
+   "A model is trained only on data from a single region, ignoring others",
+   "A knowledge source consists of PDF files rather than database tables",
+   "A knowledge source mixes structured and unstructured content"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Duplication and staleness are core data quality issues (accuracy, consistency, timeliness), distinct from data type or population representativeness.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.8-15",
+  "obj": "1.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A team wants an AI agent to perform reliable calculations and table joins on an uploaded spreadsheet, rather than relying on the model's own math reasoning to estimate the result. Which capability addresses this need?",
+  "choices": [
+   "A code interpreter feature that runs generated code for deterministic, reproducible computation on structured data",
+   "Semantic search that retrieves the most similar text passages",
+   "A visual card-formatting feature for chat responses",
+   "Trigger phrases that route conversations to the right topic"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A code interpreter capability lets the agent generate and run code against structured data files, producing deterministic, reproducible results instead of relying on the model's inherent math ability.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-code-interpreter-structured-data"
+ },
+ {
+  "id": "1.1.8-16",
+  "obj": "1.1.8",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A company wants to reduce the risk of AI bias stemming from its training data. Which recommendation best addresses the root cause?",
+  "choices": [
+   "Audit datasets for representativeness across the populations the AI will serve",
+   "Increase the total amount of training data regardless of source diversity",
+   "Disable grounding entirely to avoid any data-related issues",
+   "Rely on fine-tuning after deployment to correct any bias that surfaces"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Ensuring representativeness across relevant populations addresses the root cause of bias, whereas volume increases or after-the-fact fine-tuning alone do not fix underlying data skew.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/responsible-ai"
+ },
+ {
+  "id": "1.1.8-17",
+  "obj": "1.1.8",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "When assessing how data affects the reliability of an AI solution, which three factors should a business leader evaluate?",
+  "choices": [
+   "Data type, data quality, and representativeness of the dataset",
+   "Data type, storage cost, and encryption method",
+   "Data quality, data ownership, and retention period",
+   "Representativeness of the dataset, compression method, and backup frequency"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Evaluating an AI solution's data foundation means looking at the type of data, its quality, and how representative it is of the populations and scenarios the AI will serve.",
+  "ref": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
+ },
+ {
+  "id": "1.1.9-01",
+  "obj": "1.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A compliance officer is reviewing whether Microsoft 365 Copilot interactions could end up improving the underlying foundation models over time. What should the officer be told?",
+  "choices": [
+   "Prompts, responses, and Microsoft Graph grounding data are not used to train the foundation LLMs",
+   "Interactions are used to retrain the model, but only after being anonymized",
+   "Interactions are used to train the model unless the tenant is on a trial license",
+   "Interactions are used to train the model only during off-peak hours to limit performance impact"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft explicitly excludes Microsoft 365 Copilot prompts, responses, and grounding data from being used to train the foundation LLMs, as part of its enterprise data protection commitments.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "1.1.9-02",
+  "obj": "1.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An IT director is worried that employees could use Microsoft 365 Copilot to surface content from files they cannot already open directly. How should the director evaluate this risk?",
+  "choices": [
+   "Copilot can only surface content the requesting user already has at least view permission to",
+   "The risk is low because Copilot caches only anonymized summaries of every document in the tenant",
+   "The risk is low because Copilot access is scoped entirely by the user's assigned Microsoft 365 license tier",
+   "Copilot temporarily elevates the user's read access for the duration of the chat session to generate a complete answer"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot respects the existing permissions model in Microsoft Graph and SharePoint; it never grants new or elevated access beyond what the requesting user already has.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "1.1.9-03",
+  "obj": "1.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Which control primarily enforces logical separation of customer data between tenants using Microsoft 365 Copilot?",
+  "choices": [
+   "Microsoft Entra authorization combined with role-based access control",
+   "Per-tenant firewall rules configured manually by each customer",
+   "A shared service principal scoped by contractual agreement",
+   "Client-side encryption keys generated by the end-user device"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Tenant isolation for Copilot is enforced through Microsoft Entra ID authorization and RBAC, along with encryption at rest and in transit.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "1.1.9-04",
+  "obj": "1.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A finance document in SharePoint has a Microsoft Purview sensitivity label with restricted permissions applied. A user without access to that document asks Copilot a question that relates to its contents. What happens?",
+  "choices": [
+   "Copilot honors the label's restrictions, so the document's content is not surfaced to that user",
+   "Copilot surfaces a redacted summary that omits only the numeric figures",
+   "Copilot surfaces the content but appends a visible sensitivity watermark to the response",
+   "Copilot notifies the document owner and waits for approval before responding"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot inherits and honors Purview sensitivity labels and Information Rights Management restrictions, so protected content is not exposed to users lacking access.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "1.1.9-05",
+  "obj": "1.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A security team is cataloguing risks that are novel to generative AI systems rather than carried over from traditional web applications. Which risk belongs in that category?",
+  "choices": [
+   "Crafted input that manipulates a model into disregarding its original instructions",
+   "Weak password policies enabling credential-stuffing attacks",
+   "Excessive request volume causing service degradation",
+   "Misconfigured server certificates leading to trust warnings"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Prompt injection (including cross-prompt injection attacks) is a novel risk specific to generative AI, where malicious input attempts to override the model's intended behavior.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "1.1.9-06",
+  "obj": "1.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A security team wants to understand how Microsoft reduces the risk of attackers manipulating Microsoft 365 Copilot through malicious instructions embedded in external content. Which approach describes Microsoft's mitigation?",
+  "choices": [
+   "Layered protections, including screening that blocks high-risk prompts before they reach the model plus separate content-harm filters",
+   "Every prompt referencing external content is queued for manual review by a Microsoft engineer",
+   "External content sources are disabled tenant-wide by default to remove the attack surface entirely",
+   "Mitigation relies solely on the requesting user's own judgment, supported by periodic security awareness training"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft uses a defense-in-depth approach, screening and blocking risky prompts before they reach the model and applying separate content-harm filters for categories like hate, violence, and self-harm.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "1.1.9-07",
+  "obj": "1.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An organization's security policy separately tracks prompt injection and data breach as distinct incident categories. Which statement justifies keeping them separate?",
+  "choices": [
+   "Prompt injection targets how the model interprets its instructions, and while it can lead to data exposure, it is a distinct attack vector from a breach itself",
+   "The two terms describe identical events and only differ by which team reports them",
+   "A prompt injection can only be logged after a data breach has already been confirmed",
+   "Prompt injection is a legal/compliance classification rather than a technical one, unlike data breach"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Prompt injection targets how the model interprets instructions and is a distinct application-security vector, separate from (though potentially a precursor to) a data breach.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "1.1.9-08",
+  "obj": "1.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A vendor risk assessor asks where Microsoft 365 Copilot actually sends and processes a user's prompt along with the grounding data retrieved for it. What is the accurate description?",
+  "choices": [
+   "It stays within the Microsoft 365 service boundary and is processed via the Azure OpenAI Service",
+   "It is routed to the public OpenAI API using the organization's own subscription key",
+   "It is processed on the end user's local device with no cloud round trip",
+   "It is routed through a third-party AI provider selected during tenant onboarding"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft 365 Copilot processing stays within the Microsoft 365 service boundary and uses the Azure OpenAI Service rather than public OpenAI endpoints, and Azure OpenAI does not cache customer content.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "1.1.9-09",
+  "obj": "1.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A CISO asks whether Microsoft 365 Copilot traffic goes through the same human abuse-review process applied to general Azure OpenAI Service customers. What should the CISO be told?",
+  "choices": [
+   "Microsoft 365 Copilot has opted out of that standard human abuse-monitoring review",
+   "Yes, and a human reviewer approves each response before it reaches the user",
+   "Yes, but only for prompts submitted outside business hours",
+   "Review only applies to prompts in languages other than English"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft 365 Copilot has opted out of the standard Azure OpenAI abuse-monitoring human review process to further protect customer data privacy.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "1.1.9-10",
+  "obj": "1.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A governance lead is mapping where security fits within Microsoft's Responsible AI Standard. How should this relationship be described?",
+  "choices": [
+   "Privacy and security form one of several pillars alongside fairness, reliability, inclusiveness, transparency, and accountability",
+   "Security is a separate framework that predates and is unrelated to the Responsible AI Standard",
+   "The Responsible AI Standard is essentially another name for Microsoft's security controls",
+   "Security was added as an additional pillar only after the original standard's publication"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The Responsible AI Standard covers fairness, reliability/safety, privacy/security, inclusiveness, transparency, and accountability; security is one component, not the whole framework.",
+  "ref": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai/secure"
+ },
+ {
+  "id": "1.1.9-11",
+  "obj": "1.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A compliance team wants to know which certifications extend to their organization's Microsoft 365 Copilot deployment. Which statement is accurate?",
+  "choices": [
+   "Copilot inherits existing Microsoft 365 commitments such as GDPR, the EU Data Boundary, and ISO/IEC 27001/27018, in addition to ISO 42001 for AI management",
+   "Copilot requires an entirely separate AI-specific certification with no relationship to existing Microsoft 365 commitments",
+   "Only ISO 42001 applies, superseding all prior Microsoft 365 compliance certifications for that tenant",
+   "Certifications apply only to human-authored content, not to any Copilot-generated output"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot inherits the underlying Microsoft 365 compliance commitments (GDPR, EU Data Boundary, ISO/IEC 27018, ISO 27001) plus ISO 42001 for AI management systems, rather than requiring wholly separate AI certifications.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "1.1.9-12",
+  "obj": "1.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "During grounding, what keeps the Microsoft 365 Copilot Semantic Index from returning content the requesting user is not authorized to view?",
+  "choices": [
+   "Retrieval operates within the requesting user's existing identity-based access boundary",
+   "The index only stores content that has been explicitly marked as public by an admin",
+   "Retrieval is filtered afterward by a separate manual approval step before the response is shown",
+   "Access is limited based on the size of the user's mailbox"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The Semantic Index performs grounding within the boundaries of the requesting user's existing identity-based access, preventing exposure of content the user cannot already view.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "1.1.9-13",
+  "obj": "1.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An organization is auditing overly broad sharing permissions in SharePoint as part of preparing for a Copilot rollout. Why does this matter for Copilot's data exposure model?",
+  "choices": [
+   "Copilot surfaces only what a user already has access to, so gaps in source-system permissions directly translate into broader Copilot exposure",
+   "Copilot maintains its own independent access list that overrides SharePoint permissions",
+   "Permission hygiene mainly affects storage costs rather than what Copilot can expose",
+   "Copilot cannot connect to a SharePoint site at all until sharing is fully locked down"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Since Copilot surfaces only what a user already has view access to, overly broad or misconfigured permissions in source systems directly translate into broader Copilot exposure.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "1.1.9-14",
+  "obj": "1.1.9",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Which set of categories is covered by Microsoft's content-harm filtering as part of its defense-in-depth approach to AI-generated content?",
+  "choices": [
+   "Hate & Fairness, Sexual, Violence, and Self-harm",
+   "Spelling, Grammar, Tone, and Formatting consistency",
+   "Network latency, uptime, throughput, and cost thresholds",
+   "Font size, color contrast, and layout accessibility"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft's content-harm filtering covers categories such as Hate & Fairness, Sexual, Violence, and Self-harm, in addition to jailbreak/XPIA classifiers and protected-material detection.",
+  "ref": "https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-privacy"
+ },
+ {
+  "id": "1.1.9-15",
+  "obj": "1.1.9",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A knowledge worker asks whether prompts they submit to Microsoft 365 Copilot might be retained and reused within another customer's session. What is the accurate answer?",
+  "choices": [
+   "No, Azure OpenAI Service does not cache customer content, and tenant data stays logically isolated",
+   "Yes, prompts are cached briefly and can surface in other tenants' sessions for efficiency",
+   "Yes, but only prompts exceeding a certain length are cached across tenants",
+   "No, but only if the user manually clears their chat history at the end of each day"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Azure OpenAI Service, as used by Microsoft 365 Copilot, does not cache customer content, and tenant data remains logically isolated and is not shared across customers.",
+  "ref": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+ },
+ {
+  "id": "1.1.9-16",
+  "obj": "1.1.9",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A compliance officer wants a retained, searchable record of who exchanged which prompts and responses with Microsoft 365 Copilot, for later investigation. Which capability provides this?",
+  "choices": [
+   "Microsoft Purview audit logging of Copilot interaction events",
+   "Power BI usage metrics reports for the tenant",
+   "Azure Monitor Application Insights for App Service",
+   "Microsoft Defender for Cloud secure score recommendations"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot and AI-application interaction events are captured automatically as part of Microsoft Purview Audit once auditing is enabled for the organization, giving compliance teams a searchable record of prompts and responses.",
+  "ref": "https://learn.microsoft.com/en-us/purview/audit-copilot"
+ },
+ {
+  "id": "1.1.10-01",
+  "obj": "1.1.10",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A regional retailer wants to predict weekly product demand per store using two years of historical sales figures. Which approach should the retailer choose?",
+  "choices": [
+   "A generative AI model prompted to describe expected demand in narrative form",
+   "A machine learning model trained on the historical sales data to predict future demand",
+   "A digital assistant that answers store managers' questions about inventory",
+   "A model that generates promotional images for underperforming products"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Forecasting a numeric target from structured historical data is a classical machine learning scenario, not a content-generation task suited to generative AI.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/overview-what-is-azure-machine-learning?view=azureml-api-2"
+ },
+ {
+  "id": "1.1.10-02",
+  "obj": "1.1.10",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "How does Microsoft describe Azure Machine Learning as a service?",
+  "choices": [
+   "A service for accelerating and managing the end-to-end machine learning lifecycle, including training, deployment, and MLOps",
+   "A managed relational database service tuned for high-volume transactions",
+   "A hosted large language model used to draft business documents",
+   "A dashboarding tool for visualizing pre-computed business metrics"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Microsoft Learn defines Azure Machine Learning as a cloud service for accelerating and managing the machine learning project lifecycle, covering training, deployment, and MLOps.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/overview-what-is-azure-machine-learning?view=azureml-api-2"
+ },
+ {
+  "id": "1.1.10-03",
+  "obj": "1.1.10",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Compared with performing analysis manually, what business value does machine learning primarily provide?",
+  "choices": [
+   "It removes the need for any historical data before predictions can be made",
+   "It automates and scales predictive or classification tasks across large data volumes",
+   "It guarantees fully autonomous decisions without any human review",
+   "It produces original written or visual content on demand"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "ML's core value driver is automating and scaling analytical/predictive tasks that would otherwise require manual statistical effort.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/business-value-microsoft-azure-ai-solutions/"
+ },
+ {
+  "id": "1.1.10-04",
+  "obj": "1.1.10",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A data science team is starting a new project to build a predictive model. Which activity should occur first in the machine learning lifecycle?",
+  "choices": [
+   "Publishing the model to a production endpoint",
+   "Collecting, cleaning, and labeling the source data",
+   "Setting up drift monitoring for the deployed model",
+   "Tuning the model's hyperparameters during training"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The lifecycle begins with data preparation, since model quality depends on clean, representative, well-labeled data before any training can occur.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/overview-what-is-azure-machine-learning?view=azureml-api-2"
+ },
+ {
+  "id": "1.1.10-05",
+  "obj": "1.1.10",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A company's fraud-detection model has been in production for a year, and its accuracy is declining as customer behavior changes. What should the team do next, according to the machine learning lifecycle?",
+  "choices": [
+   "Leave the model unchanged, since production is the final stage of the lifecycle",
+   "Monitor for the performance change, then retrain and redeploy the model",
+   "Replace the model with a document-generation tool instead",
+   "Stop using predictive models for this business problem altogether"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The ML lifecycle is iterative: monitoring for performance degradation or drift triggers retraining and redeployment, closing the loop rather than ending at deployment.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-model-management-and-deployment?view=azureml-api-2"
+ },
+ {
+  "id": "1.1.10-06",
+  "obj": "1.1.10",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A manufacturer has abundant sensor readings from its production line but no one has labeled which readings preceded a past equipment failure. The team wants the algorithm to group similar readings on its own to surface unusual patterns. Which approach fits this need?",
+  "choices": [
+   "Supervised learning trained on labeled failure examples",
+   "Unsupervised learning that clusters the sensor data without pre-existing labels",
+   "A retrieval-augmented generative model that summarizes maintenance manuals",
+   "A rules engine encoding each technician's manual inspection checklist"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "When no labeled outcomes exist and the goal is to discover structure or groupings in the data itself, unsupervised learning (such as clustering) is the fitting approach, unlike supervised learning which requires labeled examples.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/business-value-microsoft-azure-ai-solutions/"
+ },
+ {
+  "id": "1.1.10-07",
+  "obj": "1.1.10",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "What does the term MLOps refer to within the machine learning lifecycle?",
+  "choices": [
+   "A style of prompt engineering used to guide language model output",
+   "The application of DevOps practices, such as CI/CD, to manage, audit, and reproduce models in production",
+   "A pricing tier for reserved Azure virtual machine capacity",
+   "A framework limited to labeling and cleaning training data"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "MLOps applies DevOps practices like CI/CD to the ML lifecycle, enabling collaboration between data scientists and engineers with auditability and reproducibility in production.",
+  "ref": "https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/machine-learning-operations-v2"
+ },
+ {
+  "id": "1.1.10-08",
+  "obj": "1.1.10",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "How should a business decision-maker distinguish machine learning from generative AI when scoping a new project?",
+  "choices": [
+   "Machine learning creates new unstructured content, while generative AI predicts outcomes from historical data",
+   "Machine learning learns patterns from historical, labeled data to predict or classify, while generative AI uses pretrained foundation models to create new content",
+   "The two terms describe the same underlying technology under different branding",
+   "Generative AI always requires more historical labeled data to operate than machine learning does"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Machine learning is defined by learning from historical/labeled data to predict or classify, whereas generative AI uses pretrained foundation models to generate new content.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/business-value-microsoft-azure-ai-solutions/"
+ },
+ {
+  "id": "1.1.8-18",
+  "obj": "1.1.8",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A company wants to build a churn-prediction model using historical customer data that is unlabeled and inconsistent. What guidance should leadership give before investing further in the project?",
+  "choices": [
+   "Proceed directly to model training, since data quality has no effect on model outcomes",
+   "Invest in data quality and preparation first, since a model's predictions are only as reliable as the data used to train it",
+   "Data preparation can be skipped as long as the model will be served through a real-time endpoint",
+   "Data preparation is unnecessary as long as results are reviewed after training"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A recurring business-value theme is that AI outcomes are only as good as the underlying data; leadership should prioritize data quality and readiness before investing in model development.",
+  "ref": "https://learn.microsoft.com/en-us/azure/machine-learning/overview-what-is-azure-machine-learning?view=azureml-api-2"
+ },
+ {
+  "id": "1.1.10-09",
+  "obj": "1.1.10",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A logistics company wants to route incoming support tickets into predefined categories such as billing, shipping, and technical, using thousands of previously labeled tickets. Which solution best fits this need?",
+  "choices": [
+   "A tool that drafts new category names dynamically for each ticket",
+   "A machine learning classification model trained on the labeled historical tickets",
+   "A manual triage process performed entirely by support staff",
+   "A model that translates tickets into other languages before routing"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Classifying items into predefined categories using historical labeled examples is a textbook supervised machine learning classification scenario.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/business-value-microsoft-azure-ai-solutions/"
+ },
+ {
+  "id": "1.1.10-10",
+  "obj": "1.1.10",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A facilities team wants to predict the likelihood of equipment failure from years of sensor readings, in order to schedule preventive maintenance. Given a clear, measurable target and ample historical data, which approach is best suited to this scenario?",
+  "choices": [
+   "A tool that drafts maintenance reports in natural language",
+   "A machine learning model trained to predict failure likelihood from the sensor history",
+   "A tool that summarizes technician notes from past repairs",
+   "A model that generates diagrams illustrating equipment layouts"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Predictive maintenance relies on a clear, measurable target (failure likelihood) derived from historical sensor data, making it a classical machine learning scenario rather than a content-generation task suited to generative AI.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/business-value-microsoft-azure-ai-solutions/"
+ }
+]

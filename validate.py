@@ -16,6 +16,9 @@ OBJ = objectives()
 # Opt-in per exam (set in that exam's objectives.py): imported question banks that have one
 # explanation per question and no per-choice rationale. Only the rationale checks are relaxed.
 IMPORTED_SINGLE_EXPLANATION = bool(getattr(_settings, "IMPORTED_SINGLE_EXPLANATION", False))
+# Opt-in per exam: imported banks keep their source wording. Skips the stem-wording, banned-phrase,
+# Python-only, multi-stem and giveaway checks only; ASCII, explanations, refs and coverage still apply.
+RELAXED_STYLE = bool(getattr(_settings, "RELAXED_STYLE", False))
 REF_PREFIXES = tuple(getattr(_settings, "REF_PREFIXES", ("https://learn.microsoft.com/",)))
 DIFF = ("easy", "medium", "hard")
 TYPES = ("single", "multi", "yesno", "order", "dragdrop", "dropdown")
@@ -140,9 +143,10 @@ def check(qs, groups):
             err.append(f"{i}: unknown case {q['case']}")
         exam_text = " ".join([st] + ch + boxes)
         low = exam_text.lower()
-        err += [f"{i}: banned phrase '{b.strip()}'" for b in BANNED if b in low]
-        if not q.get("series") and t != "yesno" and not re.search(r"\b(What|Which|How)\b[^?]*\bshould\b[^?]*\?", st):
-            err.append(f"{i}: question sentence must be What/Which/How ... should ...?")
+        if not RELAXED_STYLE:  # relaxed exams keep their source wording
+            err += [f"{i}: banned phrase '{b.strip()}'" for b in BANNED if b in low]
+            if not q.get("series") and t != "yesno" and not re.search(r"\b(What|Which|How)\b[^?]*\bshould\b[^?]*\?", st):
+                err.append(f"{i}: question sentence must be What/Which/How ... should ...?")
         whys = q.get("rationale", []) + q.get("notes", []) + [w for x in tg if isinstance(x, dict) for w in x.get("why", [])]
         short = [w for w in whys if len(w) < MIN_WHY]
         if short:
@@ -154,9 +158,9 @@ def check(qs, groups):
         # the study guide names Python only
         text = exam_text + " " + " ".join([q.get("explanation", "")] + whys)
         # case-sensitive .NET so domains such as vault.azure.net pass
-        if re.search(r"```(csharp|cs|c#|dotnet)\b", text, re.I) or re.search(r"\bC#|\.NET\b", text):
+        if not RELAXED_STYLE and (re.search(r"```(csharp|cs|c#|dotnet)\b", text, re.I) or re.search(r"\bC#|\.NET\b", text)):
             err.append(f"{i}: use Python, not C#/.NET")
-        if t == "multi" and "Each correct answer" not in st:
+        if not RELAXED_STYLE and t == "multi" and "Each correct answer" not in st:
             err.append(f"{i}: multi stem must say 'Each correct answer ...'")
         if re.search(r"[^\x00-\x7f]", exam_text):
             err.append(f"{i}: non-ASCII in stem or choices")
@@ -174,7 +178,7 @@ def check(qs, groups):
             err.append(f"case {c.get('id')}: non-ASCII text")
 
     # giveaway: correct choice clearly longest (random baseline ~25% for 4 choices)
-    single = [q for q in qs if q.get("type") == "single" and len(q.get("choices", [])) == 4]
+    single = [] if RELAXED_STYLE else [q for q in qs if q.get("type") == "single" and len(q.get("choices", [])) == 4]
     longest = [q["id"] for q in single
                if len(q["choices"][q["answer"][0]]) > 1.25 * max(len(c) for i, c in enumerate(q["choices"]) if i != q["answer"][0])]
     if single and len(longest) / len(single) > 0.15:
