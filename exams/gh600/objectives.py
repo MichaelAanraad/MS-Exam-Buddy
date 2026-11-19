@@ -1,7 +1,7 @@
 # Change these lines (plus DOMAINS and GROUPS) to build a practice exam for another certification.
 EXAM = "GH-600"
 EXAM_TITLE = "Developing in Agentic AI Systems"
-CATEGORY = "AI"  # start-page group
+CATEGORY = "GitHub"  # start-page group
 LEVEL = 2  # 1 entry/business, 2 associate, 3 expert
 STUDY_GUIDE = "https://learn.microsoft.com/credentials/certifications/resources/study-guides/gh-600"
 # The study guide points to GitHub Docs for most topics, so refs may come from either site.

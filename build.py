@@ -35,7 +35,7 @@ print(f"docs/{exam.KEY}/index.html: {len(qs)} questions, {len(html) // 1024} KB"
 
 # landing page: one link per exam that has been built
 LEVELS = {1: "Entry / business", 2: "Associate", 3: "Expert"}
-CATEGORY_ORDER = ["AI", "Data", "Microsoft 365"]  # other categories follow alphabetically
+CATEGORY_ORDER = ["AI", "Data", "Microsoft 365", "GitHub"]  # other categories follow alphabetically
 found = []  # (category, level, exam id, folder, title)
 for k in exam.EXAMS:
     if os.path.isfile(os.path.join(exam.ROOT, "docs", k, "index.html")):
