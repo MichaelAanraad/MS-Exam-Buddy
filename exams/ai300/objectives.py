@@ -1,6 +1,8 @@
 # Change these lines (plus DOMAINS and GROUPS) to build a practice exam for another certification.
 EXAM = "AI-300"
 EXAM_TITLE = "Operationalizing Machine Learning and Generative AI Solutions"
+CATEGORY = "AI"  # start-page group
+LEVEL = 2  # 1 entry/business, 2 associate, 3 expert
 STUDY_GUIDE = "https://learn.microsoft.com/credentials/certifications/resources/study-guides/ai-300"
 # GitHub Actions and the GitHub integration are in the study guide, so refs may also come from GitHub Docs.
 REF_PREFIXES = ("https://learn.microsoft.com/", "https://docs.github.com/")
