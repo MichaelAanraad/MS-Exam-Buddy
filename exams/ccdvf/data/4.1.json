@@ -1,0 +1,74 @@
+[
+ {
+  "id": "4.1.1-01",
+  "obj": "4.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The nightly batch job of Relecloud calls the Messages API and logs several kinds of failures. The 429 responses include a retry-after header. The team is writing a retry policy and wants the job to stop retrying errors that cannot succeed without a change to the request itself.\n\nWhich error type should the policy treat as not retryable?",
+  "choices": [
+   "rate_limit_error (HTTP 429)",
+   "invalid_request_error (HTTP 400)",
+   "overloaded_error (HTTP 529)",
+   "api_error (HTTP 500)"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A 400 invalid_request_error means the format or content of the request is wrong, so the request must be fixed rather than retried. Rate limit errors are retried after the wait in retry-after, and overloaded and internal errors are transient, so they are retried with exponential backoff. A 429 caused by a spend cap would also fail on retry, but this stem describes rate limiting with a retry-after header.",
+  "ref": "https://platform.claude.com/docs/en/api/errors"
+ },
+ {
+  "id": "4.1.2-01",
+  "obj": "4.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. runs a customer agent in Python on the Messages API. Intermittently, the API rejects a request with a 400 error stating that tool_use ids were found without tool_result blocks immediately after. It happens only on turns in which Claude requests two tools at once. The team is deciding where to investigate first.\n\nWhich cause should you investigate first?",
+  "choices": [
+   "The system prompt does not tell Claude to call tools one at a time",
+   "The model tier is too small to handle parallel tool calls reliably",
+   "The loop returns a tool_result for only one of the tool_use blocks when two are requested",
+   "The tool descriptions are ambiguous about which tool to select"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A 400 error is returned when the API validates the request, before any model output exists, and the message points at the history that the harness built. Each tool_use block needs its own tool_result in the next user message, so the integration layer is the place to look. Prompt wording, model tier, and tool descriptions change what Claude decides to call, not whether the request you send is well formed.",
+  "ref": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+ },
+ {
+  "id": "4.1.3-01",
+  "obj": "4.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys is building an evaluation set for a classifier that routes support tickets. The first draft contains 200 clear, well-written tickets that the team wrote by hand. Production tickets include typos, missing details, and tickets that fit two categories.\n\nWhich action should you take to make the evaluation set representative?",
+  "choices": [
+   "Add real production tickets, including ambiguous and malformed ones, in realistic proportions",
+   "Add copies of the few-shot examples that are already in the prompt",
+   "Add only the tickets that the model previously misrouted",
+   "Add more clear, well-written tickets until the set reaches 1,000 items"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Evaluation sets should reflect the real task mix and include edge cases such as missing information and ambiguous inputs. Copying few-shot examples leaks prompt content into the test, using only past failures distorts the overall score, and adding more clean tickets enlarges the set without covering the cases that production traffic contains.",
+  "ref": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+ },
+ {
+  "id": "4.1.3-02",
+  "obj": "4.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud evaluates a ticket-routing prompt. The report shows 93 percent overall accuracy, above the 90 percent target. The per-category breakdown shows that the account_closure category, 6 percent of volume, scores 58 percent, and misrouted closures lead to regulatory complaints.\n\nWhich action should you take before release?",
+  "choices": [
+   "Release the prompt, because the overall accuracy is above the target",
+   "Set a per-category threshold and analyze the account_closure errors",
+   "Enlarge the set with more examples from the largest categories",
+   "Switch to a volume-weighted average of the category scores"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "An aggregate score can hide a weak category that is rare but costly, so per-category results, and a per-category threshold for high-risk classes, should gate the release; a confusion matrix shows where closures are misrouted. Releasing on the aggregate ignores the risk, more examples from large categories raise the overall estimate without exposing the weakness, and a volume-weighted average gives roughly the same overall number again.",
+  "ref": "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing"
+ }
+]

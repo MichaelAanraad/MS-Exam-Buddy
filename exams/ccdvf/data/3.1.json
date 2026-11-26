@@ -1,0 +1,76 @@
+[
+ {
+  "id": "3.1.1-01",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A developer at Adatum Corporation wants Claude Code to follow a personal preference, such as using a particular local test database port, in one repository only. The preference must not be committed to version control or shared with teammates.\n\nWhich location should you use for the instruction?",
+  "choices": [
+   "CLAUDE.md in the project root",
+   "~/.claude/CLAUDE.md in the home directory",
+   "A managed policy CLAUDE.md deployed by the organization",
+   "CLAUDE.local.md in the project root, added to .gitignore"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "CLAUDE.local.md is the project-level personal file: Claude Code loads it with the project files, and it is meant to be listed in .gitignore. The project CLAUDE.md is committed and shared with the team, the user-level file applies to every project rather than one repository, and a managed policy file is deployed organization-wide by administrators.",
+  "ref": "https://code.claude.com/docs/en/memory"
+ },
+ {
+  "id": "3.1.1-02",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders has a 300-line release checklist that is relevant only when a developer prepares a release, so Claude Code must not load it into every session. Developers also want to start it by typing a slash command, and it must run in the main conversation so that it can use what has already been discussed.\n\nWhich Claude Code component should you use?",
+  "choices": [
+   "The project CLAUDE.md file",
+   "A skill defined in a SKILL.md file in the project",
+   "A custom subagent defined in .claude/agents",
+   "A PostToolUse hook that prints the checklist"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A skill loads its full content only when it is relevant or invoked with /skill-name, and it runs in the main conversation. CLAUDE.md loads at session start and costs context in every request, a subagent works in its own isolated context without the earlier discussion, and a hook runs on lifecycle events rather than as instructions the developer starts on demand.",
+  "ref": "https://code.claude.com/docs/en/features-overview"
+ },
+ {
+  "id": "3.1.2-01",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Wide World Importers finishes a bug fix in a Claude Code session and now starts an unrelated task in the same session. The earlier file contents and discussion are not relevant to the new task.\n\nWhich command should you use?",
+  "choices": [
+   "/compact, to summarize the conversation so far",
+   "/resume, to reopen an earlier session",
+   "/clear, to start a new conversation with empty context",
+   "/rewind, to restore the conversation to an earlier checkpoint"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Running /clear between unrelated tasks starts a fresh conversation with empty context, and the previous session stays available through /resume. /compact keeps a summary of the old conversation, which is useful when the same task continues but wastes context here. /resume and /rewind bring back earlier history instead of clearing it.",
+  "ref": "https://code.claude.com/docs/en/sessions"
+ },
+ {
+  "id": "3.1.2-02",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Blue Yonder Airlines runs Claude Code in a CI job with claude -p to review each pull request. No person is present to answer permission prompts, and the job stalls when Claude Code asks to run git diff. The team wants only the Read tool and git diff pre-approved, and every other action that would need approval refused.\n\nWhich two options should you use? Each correct answer presents part of the solution.",
+  "choices": [
+   "--output-format json",
+   "--allowedTools with the tools that the review needs",
+   "--permission-mode bypassPermissions",
+   "--max-turns with a low limit",
+   "--permission-mode dontAsk"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "--allowedTools pre-approves the listed tools, and --permission-mode dontAsk refuses anything else that would have prompted, so the job neither stalls nor runs unapproved actions. bypassPermissions would approve every action, which violates the requirement. --output-format json only changes how the result is formatted, and --max-turns caps the length of the run but does not resolve permission prompts.",
+  "ref": "https://code.claude.com/docs/en/best-practices"
+ }
+]

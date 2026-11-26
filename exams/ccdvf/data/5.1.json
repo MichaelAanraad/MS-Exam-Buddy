@@ -1,0 +1,292 @@
+[
+ {
+  "id": "5.1.1-01",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys generates product taglines by calling a Claude model that accepts sampling parameters. The team runs the same prompt several times and finds that the taglines are too similar to one another. The team wants more varied wording without rewriting the prompt.\n\nWhich request change should you make?",
+  "choices": [
+   "Decrease the temperature value",
+   "Increase the temperature value",
+   "Increase the max_tokens limit",
+   "Add a stop sequence to the request"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Temperature controls the randomness of token selection: higher values give more diverse wording, and lower values favor the most probable wording. Lowering it would make the taglines even more alike. The max_tokens limit only caps the output length, and a stop sequence only ends generation early, so neither changes the variety.",
+  "ref": "https://platform.claude.com/docs/en/about-claude/glossary"
+ },
+ {
+  "id": "5.1.1-02",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. built a Python service that calls the Messages API to extract invoice totals into JSON. A unit test sends the same invoice twice with temperature set to 0 and asserts that the two response strings are identical. The test fails intermittently, and the team needs a test that is reliable.\n\nWhat should you do?",
+  "choices": [
+   "Assert on the parsed fields, such as the extracted total, instead of comparing the raw response text",
+   "Pin the request to one specific model snapshot so that the response text repeats exactly",
+   "Increase max_tokens so that truncation cannot cause two responses to differ",
+   "Send the test requests through a cloud provider endpoint, which returns repeatable text"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Even with temperature set to 0, Claude output is not fully deterministic, and identical inputs can produce different outputs across calls, both on Anthropic's own service and through third-party cloud providers. A test should therefore check the properties that matter, such as the parsed total. Pinning a snapshot, raising max_tokens or changing the provider does not remove the variation.",
+  "ref": "https://platform.claude.com/docs/en/about-claude/glossary"
+ },
+ {
+  "id": "5.1.1-03",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. has a Python chat service that sends a long conversation history, a system prompt, 30 tool definitions and several large tool results to Claude, with max_tokens set to 8000. Some requests fail because the prompt is too long. A developer proposes to estimate the size by counting only the latest user message.\n\nWhich approach should you recommend to check whether a request fits the context window?",
+  "choices": [
+   "Count the system prompt and messages, because tool definitions do not use space in the context window",
+   "Count the input messages and ignore max_tokens, because output tokens have a separate window",
+   "Count the system prompt, tool definitions and messages with the token counting endpoint, and leave room for the output",
+   "Send the request and rely on the API to drop the oldest messages when the prompt is too long"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The context window holds everything in the request, including the system prompt, tool definitions, tool results and messages, plus the output that Claude generates. The token counting endpoint accepts the same inputs as a message request, so it gives a realistic estimate. The API does not trim old messages for you: an input that exceeds the window is rejected with an error.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/context-windows"
+ },
+ {
+  "id": "5.1.1-04",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Relecloud plans to move a Python pipeline from an older Claude model to a newer model in the same tier. The newer model uses a newer tokenizer than the older one. The finance team has a cost spreadsheet that is based on token counts that were measured on the older model, and it needs a reliable estimate for the new model.\n\nWhich action should you take?",
+  "choices": [
+   "Reuse the existing counts, because identical text produces the same number of tokens on every model",
+   "Count the prompts with a tokenizer library for the older model and apply the new model prices",
+   "Divide the character count of each prompt by four and apply the new model prices",
+   "Count the same prompts with the token counting endpoint, and pass the ID of the new model"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Different tokenizers can produce different token counts for the same text, and later models produce noticeably more tokens, so counts from an older model do not carry over. Counting with the model ID you plan to use gives a reliable figure; the endpoint returns an estimate that is close to the billed value. A character-based rule of thumb or an older tokenizer is not reliable enough for a budget.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/token-counting"
+ },
+ {
+  "id": "5.1.2-01",
+  "obj": "5.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank routes about two million short customer messages each day into one of eight intent categories. The output is a single label that the application can check against a fixed list. Cost per request and response time matter more than deep reasoning.\n\nWhich model tier should you use?",
+  "choices": [
+   "Sonnet",
+   "Opus",
+   "Haiku",
+   "Sonnet with extended thinking"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Haiku is the smallest and fastest tier, suited to high-volume, latency-sensitive work such as classification where the output can be checked. Sonnet and Opus cost more per request and add capability that a single-label task does not need. Sonnet with extended thinking adds cost and latency for reasoning that the task does not require.",
+  "ref": "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+ },
+ {
+  "id": "5.1.2-02",
+  "obj": "5.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation runs an interactive support assistant on Opus for every request. About 80 percent of requests are short FAQ lookups, and the rest need multi-step reasoning. Message length does not predict difficulty. Users wait for each reply, and no automatic check can tell whether an answer is correct. The team wants to reduce cost without lowering quality on the hard requests.\n\nWhich design should you choose?",
+  "choices": [
+   "Classify each request with a Haiku call, then send easy requests to Haiku or Sonnet and hard requests to Opus",
+   "Send every request to Haiku first, and rerun on Opus any reply that a user rates poorly after reading it",
+   "Route requests to Sonnet or Opus based on the length of the user message, because length tracks difficulty",
+   "Fine-tune Haiku on the hard requests through the Claude API so that it can replace Opus for all traffic"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A small, fast Haiku call can act as the router, so most requests move to cheaper tiers while hard ones still reach Opus. Rerunning after poor ratings exposes users to bad answers and doubles latency, and no automatic failure signal exists. Message length is stated not to predict difficulty, and the Claude API does not currently offer fine-tuning.",
+  "ref": "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+ },
+ {
+  "id": "5.1.2-03",
+  "obj": "5.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys needs an agent to review 600 source files for one class of defect. Each file check is independent and routine, the total work is far larger than one context window, and a final step must reason across all findings to produce a prioritized report.\n\nWhich design should you use?",
+  "choices": [
+   "A single Opus session that reads every file in sequence and keeps all findings in its context",
+   "A Haiku orchestrator that delegates the per-file checks to Opus subagents and writes the final report",
+   "A single Haiku session that works through the files in turn and writes the final report",
+   "An Opus orchestrator that delegates the per-file checks to Sonnet subagents and synthesizes their findings"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Delegating routine, independent work to a cheaper tier pays off when the work exceeds one context window or has a long tail of routine tasks, while a stronger model handles the synthesis. A single Opus session cannot hold the work in one window and pays the top-tier price for routine checks. The Haiku orchestrator pays for Opus on routine work, and a single Haiku session is weak for the cross-file reasoning.",
+  "ref": "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+ },
+ {
+  "id": "5.1.2-04",
+  "obj": "5.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. is considering a pairing of a small executor model with an Opus advisor for a 12-step refactoring task. The task is one dependent chain and fits comfortably in one context window. Nobody has measured how a single model performs on this task at different effort levels.\n\nWhat should you do first?",
+  "choices": [
+   "Build an orchestrator in which Sonnet subagents each handle one step of the refactoring",
+   "Measure one model at several effort levels on a sample of real tasks, and compare the cost per solved task",
+   "Add a Haiku router in front of the pipeline so that a tier is chosen for each request",
+   "Move the task to Opus at the highest effort setting and skip any measurement"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Anthropic's guidance is to tune one model before adding a second, and to compare configurations on cost per solved task. A dependent chain that fits in one context does not benefit from delegation, so subagents and a router add cost without a clear gain. Choosing the top tier and effort without measuring may pay for capability the task does not need.",
+  "ref": "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+ },
+ {
+  "id": "5.1.3-01",
+  "obj": "5.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. runs a Python assistant that sends the same 20,000-token policy handbook plus a short new question in every request. Requests arrive every few seconds during business hours, and users wait for each reply. Input cost is high because the handbook is processed again each time.\n\nWhich feature should you use to lower the input cost?",
+  "choices": [
+   "The Message Batches API",
+   "The token counting endpoint",
+   "Streaming responses",
+   "Prompt caching, with cache_control on the handbook"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Prompt caching stores the repeated prefix, and later requests read it at a fraction of the normal input price. The Batches API is asynchronous and cannot serve users who wait for a reply. Token counting only measures a request and does not cache anything, and streaming changes how output is delivered, not what the input costs.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+ },
+ {
+  "id": "5.1.3-02",
+  "obj": "5.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud's support agent sends a large system prompt that is marked with cache_control on the Claude API, and it uses the default cache settings. Customers submit requests about every 8 minutes. Usage data shows cache_creation_input_tokens on nearly every request and almost no cache reads.\n\nWhich change should you make to increase cache hits?",
+  "choices": [
+   "Set the ttl value of the cache_control block to 1h",
+   "Keep the default lifetime, because each cache read refreshes the entry",
+   "Move the cache_control marker from the system prompt to the user message",
+   "Increase the max_tokens value so that cache entries are retained longer"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The default cache lifetime is 5 minutes, and a read refreshes it only when it happens before the entry expires. With a gap of about 8 minutes, each entry expires and is written again. A 1-hour lifetime keeps the entry alive between requests, at a higher write price than the default. Moving the marker or changing max_tokens does not change the lifetime.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+ },
+ {
+  "id": "5.1.3-03",
+  "obj": "5.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation adds cache_control to a short system prompt of about 300 tokens in a Python assistant that calls the Claude API. Every response reports cache_creation_input_tokens and cache_read_input_tokens as 0, and no error is returned.\n\nWhat should you do first to explain this behavior?",
+  "choices": [
+   "Check whether the cache lifetime expired before the first request finished",
+   "Change the cache_control type to a persistent type so that the entry is written",
+   "Compare the length of the cached prefix with the minimum cacheable prompt length for the model in use",
+   "Check whether tool_choice changed between requests, which blocks cache writes"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A prefix that is shorter than the minimum cacheable length for the model is processed without caching, and the API returns no error, so both cache counters stay at 0. Compare the prefix size with the minimum for your model. Expiry could only matter after a write, ephemeral is the only supported cache type, and a tool_choice change affects message blocks but does not block writes.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+ },
+ {
+  "id": "5.1.3-04",
+  "obj": "5.1.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Woodgrove Bank's agent sends a tool list, a long system prompt and reference documents, followed by the customer question. The code builds the tool list for each request from the tools that the customer is likely to need, and it places the customer name at the top of the system prompt. The cache hit rate is low even though requests arrive seconds apart and the prefix is well above the minimum cacheable size.\n\nWhich two changes should you make? Each correct answer presents part of the solution.",
+  "choices": [
+   "Send the same complete tool list in every request",
+   "Raise the cache lifetime to 1 hour",
+   "Send requests concurrently so that each one reuses an entry that another request wrote",
+   "Move the customer-specific text after the cache breakpoint",
+   "Increase the size of the reference documents so that the prefix is cacheable"
+  ],
+  "answer": [
+   0,
+   3
+  ],
+  "explanation": "A cache hit needs an identical prefix in the order tools, system and messages, and changing tool definitions invalidates the whole cache. Keeping the tool list fixed and moving the per-customer text behind the breakpoint restores a stable prefix. A longer lifetime does not help when requests are seconds apart, an entry is available only after the first response starts, and the prefix is already large enough.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+ },
+ {
+  "id": "5.1.4-01",
+  "obj": "5.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys must classify 200,000 archived support documents with Claude. Nobody is waiting on the individual results, the results are needed the next morning, and the team wants the lowest cost.\n\nWhich option should you use?",
+  "choices": [
+   "Synchronous Messages API requests with streaming",
+   "The Message Batches API",
+   "Synchronous Messages API requests with prompt caching",
+   "The token counting endpoint"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The Message Batches API processes large volumes of requests asynchronously at a 50 percent discount, which fits work that does not need an immediate response. Synchronous requests, with or without streaming or caching, are priced at the standard rate and suit interactive use. Token counting only measures prompts and does not produce responses.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+ },
+ {
+  "id": "5.1.4-02",
+  "obj": "5.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud runs a live chat assistant in which customers wait for each reply, and the finance team asks to move it to the Message Batches API to get the 50 percent discount.\n\nWhat should you recommend?",
+  "choices": [
+   "Move the traffic to batches and poll each batch every second until it finishes",
+   "Move the traffic to batches and add a 1-hour cache so that replies arrive faster",
+   "Move the traffic to batches only during business hours, when processing is fastest",
+   "Keep synchronous requests and lower cost with a smaller tier and prompt caching"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Batches are asynchronous: most finish within an hour, but results can take up to 24 hours and no completion time is guaranteed, so they do not suit users who wait for a reply. Polling, caching and scheduling do not make a batch interactive. Cost for live traffic is better reduced with a smaller model tier and prompt caching on synchronous calls.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+ },
+ {
+  "id": "5.1.4-03",
+  "obj": "5.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam, Inc. must score 60,000 product reviews every night. Each request starts with the same 15,000-token rubric. The results are needed by morning, and the team wants the lowest cost.\n\nWhich approach should you use?",
+  "choices": [
+   "Submit a Message Batch with identical cache_control blocks on the rubric and a 1-hour cache duration",
+   "Submit a Message Batch with the default 5-minute cache duration, because batches finish in minutes",
+   "Send synchronous requests with prompt caching and the default 5-minute lifetime",
+   "Send synchronous requests in parallel so that every request shares one cache entry"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Batch and caching discounts can stack, but batch requests run asynchronously and concurrently, so cache hits are best effort. Identical cache_control blocks and the 1-hour duration improve the chance of hits, because a batch can take longer than 5 minutes. Synchronous requests miss the batch discount that the overnight deadline allows, and parallel requests cannot share an entry before the first response starts.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+ },
+ {
+  "id": "5.1.4-04",
+  "obj": "5.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys submits a Message Batch of 5,000 requests and downloads the results. The application assumes that the result lines are in the same order as the submitted requests, and some summaries are saved against the wrong product. The team must keep the batch discount.\n\nWhat should you do?",
+  "choices": [
+   "Split the work into batches of 100 requests so that the order is preserved",
+   "Sort the downloaded results by the time that each one completed",
+   "Give each request a unique custom_id and match each result to its request by that value",
+   "Cancel the batch and resend the same requests as synchronous calls"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Batch results can be returned in any order, so the order of the results file does not match the order of the requests. Each request carries a unique custom_id, and matching on it is the reliable approach. Smaller batches do not guarantee order, completion time is not a stable key, and resending synchronously gives up the discount.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+ }
+]

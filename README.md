@@ -15,6 +15,7 @@ difficulty levels. Original questions, not exam dumps.
 | AI-200 | Developing AI Cloud Solutions on Azure | `docs/ai200/` |
 | GH-900 | GitHub Foundations | `docs/gh900/` |
 | CCAR-F | Claude Certified Architect - Foundations | `docs/ccarf/` |
+| CCDV-F | Claude Certified Developer - Foundations | `docs/ccdvf/` |
 
 Open `docs/index.html` in a browser, or host it on GitHub Pages:
 

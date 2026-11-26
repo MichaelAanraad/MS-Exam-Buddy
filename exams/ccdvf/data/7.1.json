@@ -1,0 +1,148 @@
+[
+ {
+  "id": "7.1.1-01",
+  "obj": "7.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. builds a Python agent that summarizes inbound customer emails for support staff. An email body might contain text that tries to redirect the agent.\n\nWhich message structure should you use to pass the email body to Claude?",
+  "choices": [
+   "Append the body to the system prompt inside XML tags that mark it as data",
+   "Send the body as a plain user text block with a note that it is untrusted",
+   "Return the body in a tool_result block, and describe it as an inbound email from an unknown sender",
+   "Place the body in the description field of a summarize_email tool definition"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Third-party content belongs in tool_result blocks, where Claude is trained to treat embedded instructions with skepticism, and describing the source helps Claude calibrate trust. Content in the system prompt gains operator-level authority, and plain user text blocks are treated as the user's own words. A tool description is part of your trusted configuration, not a channel for untrusted data.",
+  "ref": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks"
+ },
+ {
+  "id": "7.1.1-02",
+  "obj": "7.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud's research agent fetches third-party web pages through a fetch_page tool and summarizes them for the user. The user is trusted, but pages can contain hidden text that tries to redirect the agent. The team wants a check that inspects each tool output before Claude acts on it, with low added latency and cost.\n\nWhich control should you add?",
+  "choices": [
+   "A Haiku classification call with structured output that flags injection attempts in each tool output",
+   "Input validation that rejects known jailbreak phrases in the user's chat message",
+   "An Opus call with extended thinking that rewrites every page into a clean summary",
+   "A system prompt statement that retrieved content is untrusted, as the sole control"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A lightweight model such as Haiku can screen each tool output and return a parseable verdict before the content is passed on as a tool_result. Validating the user's message addresses direct injection, but here the user is trusted and the attack is in the pages. An Opus rewrite is slow and costly, and a system prompt statement is a useful policy but does not inspect the output.",
+  "ref": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks"
+ },
+ {
+  "id": "7.1.1-03",
+  "obj": "7.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Fabrikam, Inc. built a document agent that reads vendor contracts through a tool. The code returns one tool_result string that starts with the task instructions and is followed by the raw contract text. Contracts come from outside parties, and the user of the agent is trusted. A test contract that contains hidden instructions sometimes changes the agent's behavior.\n\nWhich two changes should you make? Each correct answer presents part of the solution.",
+  "choices": [
+   "Screen the user's chat messages for known jailbreak phrases",
+   "Return the contract text as a JSON-encoded field with a source label inside the tool_result",
+   "Throttle users who repeatedly trigger refusals from the application",
+   "Copy the contract text into the system prompt so that Claude gives it more weight",
+   "Send the task instructions in a user turn that follows the tool_result block"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "JSON encoding gives the untrusted text unambiguous delimiters so that it cannot close a quote or tag to break out, and a source label tells Claude what it is reading. Instructions placed inside a tool_result may be ignored or flagged, so they belong in a user turn after it. Screening users and throttling repeat offenders address direct attacks, and the system prompt would give the contract text operator-level authority.",
+  "ref": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks"
+ },
+ {
+  "id": "7.1.2-01",
+  "obj": "7.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank is building a Claude agent that answers customers' balance questions through tool use. A prompt injection in a customer message must not be able to expose other customers' data or move money.\n\nWhich tool design should you use?",
+  "choices": [
+   "One read-only get_balance tool whose account ID is set by the server from the authenticated session",
+   "A run_sql tool that connects to the database through a read-only role",
+   "The full banking API as a tool, plus a system prompt rule that forbids transfers",
+   "A get_balance tool that accepts any account ID and asks Claude to confirm ownership"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Least privilege means that the agent can reach only the narrow action and data it needs, and the account scope is enforced by code that the model cannot override. A read-only SQL tool can still read other customers' rows, and a prompt rule is not an enforcement boundary. Asking Claude to confirm ownership leaves the scope decision to the model, which an injection can influence.",
+  "ref": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks"
+ },
+ {
+  "id": "7.1.2-02",
+  "obj": "7.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation uses Claude Code on a shared repository. The security team requires that a script check every Bash command against a policy service and stop disallowed commands before they run, in every permission mode.\n\nWhich Claude Code feature should you configure?",
+  "choices": [
+   "A PostToolUse hook that runs the script after each Bash command",
+   "A PreToolUse hook that blocks the call when the script exits with code 2",
+   "A UserPromptSubmit hook that runs the script when a prompt is sent",
+   "Allow rules in settings.json for the commands that the policy approves"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A PreToolUse hook runs before a tool call executes and can block it, for example with exit code 2, and it fires in every permission mode. A PostToolUse hook runs after the tool has already run, so it cannot stop the command. A UserPromptSubmit hook sees the prompt, not the Bash command, and allow rules do not call a policy service.",
+  "ref": "https://code.claude.com/docs/en/hooks"
+ },
+ {
+  "id": "7.1.2-03",
+  "obj": "7.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys blocks downloads in Claude Code with the permission rule Bash(curl *) in permissions.deny. A security review shows that Claude can still reach the internet by running the same program through its full path and by running it inside sh -c. The team needs a restriction that holds regardless of how a command is written.\n\nWhat should you add?",
+  "choices": [
+   "More deny rules for wget, nc and python network calls",
+   "A PostToolUse hook that logs the destination of each request",
+   "Sandboxing with network isolation and an allowlist of permitted domains",
+   "Accept Edits permission mode for the repository"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A deny rule matches the command as written, so it can be bypassed by a full path or a wrapper such as sh -c. For a restriction that must hold, pair it with the sandbox network allowlist, which is enforced at the network level. More deny rules repeat the same weakness, a PostToolUse hook only records after the fact, and Accept Edits mode controls file edits, not network access.",
+  "ref": "https://code.claude.com/docs/en/permissions"
+ },
+ {
+  "id": "7.1.3-01",
+  "obj": "7.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. runs a Python service that calls the Claude API in development, test and production. A developer committed the single shared key to a repository. The team wants to contain future leaks and to limit how long a leaked key stays useful.\n\nWhich approach should you use?",
+  "choices": [
+   "Use one shared key from an environment variable and add the .env file to the gitignore file",
+   "Use one shared key in a .env file that is committed to a private repository and rotated each year",
+   "Give each developer a personal key and share the production key in the team chat",
+   "Use a separate key for each environment, keep the keys in a secrets manager and rotate them on a schedule"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Separate keys let you disable one use case without affecting the others, a secrets manager keeps keys out of source control, and regular rotation limits the lifetime of any leaked key. A single shared key keeps the same blast radius even if it is in an environment variable. Committing the key to a repository or sharing it in chat spreads it further.",
+  "ref": "https://platform.claude.com/docs/en/manage-claude/authentication"
+ },
+ {
+  "id": "7.1.3-02",
+  "obj": "7.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. runs a Python health-coaching chatbot. Users type names, phone numbers and addresses into the chat. Compliance requires that this personal data is not written to the application's own analytics logs and that Claude receives only the personal data that it needs.\n\nWhich approach should you use?",
+  "choices": [
+   "Add a system prompt instruction that tells Claude not to repeat personal data in replies",
+   "Detect personal data in application code and replace it with placeholders before sending and before logging",
+   "Request a zero data retention arrangement and keep logging the raw text in the analytics store",
+   "Rely on the Claude API to redact personal data from inputs before the model processes them"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Data minimization happens in your own code: replacing personal data with placeholders before the request and before logging keeps it out of both the model input and your logs. A system prompt instruction only shapes replies, and the input and logs already contain the data. Zero data retention is an organization-level arrangement for Anthropic's retention, not your logs, and the API does not redact inputs for you.",
+  "ref": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention"
+ }
+]

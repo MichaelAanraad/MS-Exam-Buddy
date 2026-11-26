@@ -1,0 +1,202 @@
+[
+ {
+  "id": "6.1.1-01",
+  "obj": "6.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. sends Claude a single user message that contains task instructions, a policy excerpt and a customer email pasted one after another as plain text. Claude occasionally treats sentences from the customer email as instructions.\n\nWhich change should you make to the prompt?",
+  "choices": [
+   "Assign Claude the role of a senior support agent in the system prompt and describe its tone",
+   "Wrap the instructions, policy excerpt and email in separate descriptively named XML tags",
+   "Add three diverse examples of finished replies inside example tags in the prompt",
+   "Ask Claude to reason step by step before it writes the final reply to the customer"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "XML tags separate instructions, background and variable input so Claude does not mix them up, which is the symptom described. A role changes tone and focus, examples steer output format and style, and step-by-step reasoning helps with logic problems; none of them separates instructions from pasted data.",
+  "ref": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/use-xml-tags"
+ },
+ {
+  "id": "6.1.1-02",
+  "obj": "6.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. uses Claude to classify support tickets. The output is sometimes a full sentence, sometimes a bare label and sometimes a label followed by an explanation. The ticket text is already wrapped in ticket tags, the system prompt already defines the analyst role, and the labels are clearly defined.\n\nWhich change should you make to get a consistent output format?",
+  "choices": [
+   "Wrap each label definition in additional nested XML tags inside the system prompt",
+   "Ask Claude to reason step by step in thinking tags before it gives the final label",
+   "Add three to five diverse examples that each pair a ticket with the exact label-only output",
+   "Expand the role description in the system prompt with more detail about the analyst's seniority"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Few-shot (multishot) examples are the most reliable way to enforce a uniform output structure, and the stem has already used tags and a role. Extra tags only separate content, step-by-step reasoning helps with logic rather than format, and a longer role changes tone and focus rather than the shape of the answer.",
+  "ref": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/multishot-prompting"
+ },
+ {
+  "id": "6.1.1-03",
+  "obj": "6.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys builds a chat assistant that must keep the same persona and tone rules on every call. To save tokens, the application trims older turns from the conversation history, and each user turn contains a different request. The team also wants the persona text to be identical across calls.\n\nWhich design should you use?",
+  "choices": [
+   "Set the persona and tone rules in the system parameter and send each request as a user message",
+   "State the persona in the first user message and rely on the conversation history to carry it forward",
+   "Write the persona into the system parameter together with the current request and rebuild it each turn",
+   "Prefill each assistant turn with a bracketed persona name and keep the tone rules in the first user message"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The system parameter is the place for the role and persistent behavior, while the task-specific request belongs in the user turn; the system prompt is not affected when older turns are trimmed. A persona in the first user message is lost when that turn is trimmed, rebuilding the system prompt every turn defeats the identical-text goal, and the prefill option still leaves the tone rules in a turn that is trimmed.",
+  "ref": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/system-prompts"
+ },
+ {
+  "id": "6.1.1-04",
+  "obj": "6.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank gives Claude three few-shot examples to extract fields from loan decision emails. All three examples use the same phrasing and all show an approved outcome. Claude now reports an approved outcome for almost every email, and the output must still match a fixed template.\n\nWhat should you do to the examples?",
+  "choices": [
+   "Add ten more examples that follow the same wording and approved outcome to reinforce the template",
+   "Remove the examples and describe the decision rules in a longer paragraph of instructions",
+   "Move the three examples from the user message into the system parameter without changing them",
+   "Replace them with diverse examples covering approved and declined outcomes and varied wording, inside example tags"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Examples must be relevant and diverse so Claude does not pick up unintended patterns such as always answering approved; they also keep the template exact. More near-identical examples strengthen the bias, a paragraph of rules loses the exact template that examples demonstrate, and moving the same examples to the system parameter does not change their content.",
+  "ref": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/multishot-prompting"
+ },
+ {
+  "id": "6.1.2-01",
+  "obj": "6.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A code-analysis agent at Relecloud calls a tool that returns large file listings. After 40 turns the context window is nearly full. The earlier raw tool outputs are no longer needed, but the user messages and Claude's own reasoning must stay verbatim.\n\nWhich technique should you use?",
+  "choices": [
+   "Compaction that replaces the whole conversation with a short summary",
+   "Delegation of the remaining work to a subagent that starts with a fresh context",
+   "Context editing that clears the oldest tool results and leaves a placeholder",
+   "A memory file that stores the history before a new conversation is started"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Tool result clearing removes only stale tool outputs and leaves the user messages and reasoning untouched. Compaction summarizes everything, so verbatim content is lost; a subagent or a new conversation would drop the existing history instead of pruning it.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/context-editing"
+ },
+ {
+  "id": "6.1.2-02",
+  "obj": "6.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The orchestrating agent at Fabrikam, Inc. is asked which module defines retry behavior. Answering means reading about 60 source files, and only the final conclusion matters. The main conversation must not hold the file contents at any point.\n\nWhich technique should you use?",
+  "choices": [
+   "Clear old tool results from the main conversation after each search step",
+   "Delegate the exploration to a subagent that returns only its final summary to the main agent",
+   "Enable compaction so the main conversation is summarized when it grows",
+   "Save the file contents to a memory file and read them back when they are needed"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A subagent works in its own fresh context window and only its final message returns to the parent, so the file contents never enter the main conversation. Clearing and compaction run after the contents have already entered the main context, and a memory file still loads the contents back into the main context when read.",
+  "ref": "https://code.claude.com/docs/en/agent-sdk/subagents"
+ },
+ {
+  "id": "6.1.2-03",
+  "obj": "6.1.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Litware, Inc. runs a multi-day refactoring agent. The work is one sequential task in which each step depends on design decisions made in earlier steps, so it cannot be split among parallel workers. Progress must survive when the context window fills.\n\nWhich two techniques should you use? Each correct answer presents part of the solution.",
+  "choices": [
+   "Write progress notes and design decisions to a file or memory store outside the context window and reload them after a reset",
+   "Truncate the history to the most recent five messages whenever the window fills",
+   "Split every step into parallel subagents so that the parent context never grows",
+   "Enable compaction so the conversation is summarized as it approaches the context limit",
+   "Raise max_tokens so the response budget can hold the earlier history"
+  ],
+  "answer": [
+   0,
+   3
+  ],
+  "explanation": "Structured note-taking keeps decisions outside the window and compaction summarizes the conversation near the limit; Anthropic describes both as techniques for long-running agents. Truncating to five messages discards earlier decisions, parallel subagents do not fit a tightly coupled sequential task, and max_tokens limits the output length rather than the history.",
+  "ref": "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents"
+ },
+ {
+  "id": "6.1.2-04",
+  "obj": "6.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys runs a trip-planning assistant in one continuous 300-turn conversation with a single user. There are very few tool calls. The context window is nearly full, and the assistant must continue the same conversation while keeping the gist of the user's preferences and decisions.\n\nWhich technique should you use?",
+  "choices": [
+   "Compaction, which summarizes earlier turns and continues from the summary",
+   "Tool result clearing, which removes the oldest tool outputs from the history",
+   "Subagent isolation, which moves each topic into its own subagent",
+   "Pruning of the oldest turns until the history fits, without keeping a summary"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Compaction summarizes the earlier conversation near the limit and continues from the summary, keeping the gist of preferences and decisions. Clearing tool results frees little space when there are few tool calls, a single continuous dialogue cannot be split into subagents, and plain pruning loses the early preferences.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/context-windows"
+ },
+ {
+  "id": "6.1.3-01",
+  "obj": "6.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. parses invoices with Claude. A downstream service must receive JSON that conforms to a fixed schema, and a malformed payload breaks the pipeline.\n\nWhich approach should you use to get schema-conforming output?",
+  "choices": [
+   "State in the system prompt that the reply must be valid JSON without commentary",
+   "Include several examples of valid JSON replies inside example tags",
+   "Ask Claude to place the JSON inside answer tags and extract it with a regular expression",
+   "Use the structured outputs feature with a JSON schema so the response is constrained to it"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Structured outputs constrain the response to the supplied JSON schema, which is stronger than any prompt-only technique. Instructions, examples and tag extraction make valid JSON likely but give no guarantee, so they are right only when a best-effort format is acceptable.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+ },
+ {
+  "id": "6.1.3-02",
+  "obj": "6.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank calls Claude with structured outputs. For long documents the JSON parser intermittently fails with an unexpected end of input. The logs show that every failing call has a stop_reason of max_tokens.\n\nWhat should you do in the application?",
+  "choices": [
+   "Set temperature to 0 so the output is deterministic",
+   "Check stop_reason before parsing and retry with a higher max_tokens limit when the response was cut off",
+   "Retry the request whenever the API returns an HTTP 5xx status code",
+   "Strip trailing characters from the reply with a regular expression and parse the remainder"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A max_tokens stop means the output was truncated, so the JSON is incomplete and may not comply with the schema; the fix is to check stop_reason and retry with a higher limit. Temperature does not change the output length, the calls succeed at the HTTP level so a 5xx retry never triggers, and trimming characters cannot restore missing content.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons"
+ },
+ {
+  "id": "6.1.3-03",
+  "obj": "6.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. extracts invoice data with structured outputs. Every response is schema-valid and stop_reason is end_turn on every affected call. Some objects still break business rules: the invoice total does not equal the sum of the line items, or the supplier ID does not exist in the supplier table.\n\nWhich change should you make?",
+  "choices": [
+   "Mark every property in the JSON schema as required and disallow additional properties",
+   "Switch to prompt-only JSON, which offers stronger value checking than a schema does",
+   "Validate the parsed object against the business rules in code and send failures back to Claude",
+   "Raise max_tokens so that the object is not cut off before it is complete"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A schema guarantees structure and types, not whether values are correct, and cross-field or database checks cannot be expressed in it, so the application must validate and retry with the error as feedback. Required properties do not check values, prompt-only JSON has weaker guarantees than a schema, and truncation is ruled out by the end_turn stop reason.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+ }
+]

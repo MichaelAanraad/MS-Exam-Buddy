@@ -1,0 +1,204 @@
+[
+ {
+  "id": "8.1.1-01",
+  "obj": "8.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud defines two tools for a support agent: get_customer with the description \"Gets customer data\" and get_order with the description \"Gets order data\". The tool names are already distinct and clear, but Claude frequently calls the wrong tool or skips tools it should use.\n\nWhat should you change?",
+  "choices": [
+   "Add an input example to each tool definition and keep the one-line descriptions as they are",
+   "Rename the tools with a shared service prefix and keep the one-line descriptions",
+   "Expand each description to cover what the tool does, when to use it and what each parameter means",
+   "Set tool_choice to a specific tool name on every request so that selection is deterministic"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Detailed descriptions are the most important factor in tool performance: what the tool does, when to use it and when not to, and what each parameter means. Examples are secondary to a clear description, the names are already distinct, and forcing one tool name on every request would block the other tool entirely.",
+  "ref": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools"
+ },
+ {
+  "id": "8.1.1-02",
+  "obj": "8.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "The assistant at Tailspin Toys must answer questions that need current web information and must look up stock levels in an internal inventory system. The team does not want to build or host a search integration.\n\nWhich approach should you use?",
+  "choices": [
+   "Define both capabilities as client tools and run both of them in the application",
+   "Use the web search server tool that Anthropic runs and define the inventory lookup as a client tool that the application executes",
+   "Use server tools for both capabilities so that Anthropic runs the inventory lookup against the internal system",
+   "Define web search as a client tool backed by a third-party API and run the inventory lookup as a server tool"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Server tools such as web search run on Anthropic infrastructure, so no integration is needed, while tools that reach your own systems are client tools that your code executes and answers with a tool_result. Making both client tools would require building search, and Anthropic cannot run a lookup against an internal system.",
+  "ref": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/server-tools"
+ },
+ {
+  "id": "8.1.1-03",
+  "obj": "8.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A routing service at Woodgrove Bank sends Claude a request that defines three tools: lookup_account, create_case and escalate. Every turn must end in a tool call and plain-text replies are not allowed, but Claude should decide which of the three tools fits the request.\n\nWhich tool_choice setting should you use?",
+  "choices": [
+   "A tool_choice of type auto",
+   "A tool_choice of type none",
+   "A tool_choice of type tool that names lookup_account",
+   "A tool_choice of type any"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The any setting requires Claude to call one of the provided tools without forcing a specific one. Auto lets Claude answer in plain text, none prevents tool use completely, and naming a tool forces that single tool on every turn.",
+  "ref": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works"
+ },
+ {
+  "id": "8.1.1-04",
+  "obj": "8.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. connects tools from billing, CRM and ticketing services to one agent. Each service exposes tools with generic names such as search, get and update, and Claude often picks the tool of the wrong service. The descriptions are already detailed and strict mode is already enabled on every tool.\n\nWhich change should you make?",
+  "choices": [
+   "Namespace the tool names by service and resource, such as billing_invoices_search and crm_contacts_search",
+   "Set tool_choice to any so that Claude must pick one of the available tools",
+   "Shorten each description so that Claude spends fewer tokens when comparing the tools",
+   "Add input examples to every tool so that the input fields are validated against the schema"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Prefixing tool names by service and resource makes selection unambiguous as the tool library grows, which fits generic overlapping names. The descriptions are already good, so shortening them removes useful signal; tool_choice any does not help Claude choose better, and input validation does not affect which tool is selected.",
+  "ref": "https://www.anthropic.com/engineering/writing-tools-for-agents"
+ },
+ {
+  "id": "8.1.2-01",
+  "obj": "8.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A client tool named query_inventory at Fabrikam, Inc. times out when it calls its backend. Claude must be told explicitly that the call failed so that it can try something else.\n\nWhat should the application send back for this tool call?",
+  "choices": [
+   "A tool_result with is_error set to true that says what failed and what to try next",
+   "An empty tool_result so that Claude assumes the backend has no matching records for the query",
+   "A message that ends the conversation and shows the user the raw exception text",
+   "A normal tool_result that contains the exception text but carries no error flag at all"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A tool_result with is_error set to true tells Claude the call did not succeed, and a specific message lets it recover or choose another approach. An empty result looks like a successful lookup with no records, and a result without the error flag hides the failure that the stem says Claude must know about.",
+  "ref": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+ },
+ {
+  "id": "8.1.2-02",
+  "obj": "8.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An MCP server built by Contoso, Ltd. exposes a create_refund tool. The upstream payments API rejects a call because of a rate limit and asks the caller to retry after 30 seconds. The model should be able to see the failure and decide what to do.\n\nWhat should the server return?",
+  "choices": [
+   "A JSON-RPC protocol error response with a standard error code",
+   "A successful result whose text says the call failed and that has no isError flag",
+   "A tool result with isError set to true and a message that includes the retry delay",
+   "A closed transport connection so that the client reconnects and repeats the call"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "API failures are tool execution errors: they are returned in the tool result with isError true so the model gets feedback it can act on. A JSON-RPC protocol error fits problems such as an unknown tool or a malformed request and is less likely to help the model recover, and the other two hide the failure or drop the session.",
+  "ref": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools"
+ },
+ {
+  "id": "8.1.2-03",
+  "obj": "8.1.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "An agent loop at Litware, Inc. calls a flaky tool. The tool returns the text Error with the error flag set, and Claude retries the same call dozens of times, wasting tokens. Some failures are transient, such as rate limits, and the agent should still recover from those.\n\nWhich two changes should you make? Each correct answer presents part of the solution.",
+  "choices": [
+   "Include in each error result what failed and what to try next, such as the wait time for a rate limit",
+   "Remove the error flag from failed results so that Claude stops treating them as failures",
+   "Add a retry limit to the agent loop so that a repeating failure ends or is escalated",
+   "Let the exception propagate so that the agent loop ends on the first tool failure",
+   "Set tool_choice to none after the first failure for the rest of the session"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Specific error messages let Claude recover without guessing, and a retry limit in the loop bounds the cost when the same call keeps failing. Removing the flag hides real failures, ending the loop on the first error prevents recovery from transient problems, and tool_choice none blocks tool use for the rest of the session.",
+  "ref": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+ },
+ {
+  "id": "8.1.3-01",
+  "obj": "8.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "An MCP server at Relecloud exposes company policy documents. The data is read-only, every document is identified by a URI, and the host application decides which documents to attach as context.\n\nWhich MCP feature should you use to expose the documents?",
+  "choices": [
+   "An MCP tool that the model calls to run a policy search",
+   "MCP resources, each identified by a URI",
+   "An MCP prompt template that users trigger from a menu",
+   "An Agent Skill that bundles the documents with a SKILL.md file"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Resources are read-only context data identified by URIs and loaded by the host application, which matches the stem. Tools are model-invoked actions, prompts are reusable templates that users trigger, and a Skill packages procedural instructions rather than serving live data from a server.",
+  "ref": "https://modelcontextprotocol.io/docs/learn/architecture"
+ },
+ {
+  "id": "8.1.3-02",
+  "obj": "8.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank hosts one MCP server centrally for employees whose clients run on many different machines. Requests must carry a bearer token, the server must not be started once per client, and the team must use a currently supported transport.\n\nWhich transport should you use?",
+  "choices": [
+   "The stdio transport, with a server process launched on each employee machine",
+   "The legacy HTTP with SSE transport from the earlier protocol revision",
+   "The Streamable HTTP transport bound only to localhost on the server",
+   "The Streamable HTTP transport exposed over HTTPS with token authentication"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Streamable HTTP is the transport for remote servers that serve many clients and it supports standard HTTP authentication such as bearer tokens. Stdio launches one local process per client, the HTTP with SSE transport was superseded by Streamable HTTP, and a localhost binding is meant for local servers and would be unreachable for remote clients.",
+  "ref": "https://modelcontextprotocol.io/specification/draft/basic/transports/streamable-http"
+ },
+ {
+  "id": "8.1.3-03",
+  "obj": "8.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A developer at Fabrikam, Inc. builds a local MCP server in Python that must stay on the stdio transport. When the host connects, it reports JSON parse errors. The server code uses print() to write debug messages.\n\nWhat should the developer do?",
+  "choices": [
+   "Switch the server to the Streamable HTTP transport so that printed text is allowed",
+   "Write the debug messages to stdout as JSON objects",
+   "Send diagnostics to stderr with the logging module and keep stdout for protocol messages",
+   "Call flush after each print so that the debug text is not interleaved with responses"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A stdio server uses stdout for JSON-RPC messages, so stray printed text corrupts the stream; diagnostics belong on stderr or in a file. Switching transports would drop the stdio requirement, JSON objects on stdout are still not valid protocol messages, and flushing does not stop the text from sharing the protocol channel.",
+  "ref": "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server"
+ },
+ {
+  "id": "8.1.3-04",
+  "obj": "8.1.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Litware, Inc. wants Claude to query an internal inventory database and to follow a 12-step release-notes procedure. Several AI applications must reuse the database access. The procedure is needed only when release notes are written, and the team wants to avoid spending context on it for other requests.\n\nWhich two actions should you take? Each correct answer presents part of the solution.",
+  "choices": [
+   "Define a custom client tool for the database inside one application's code",
+   "Build an MCP server that exposes the inventory database through a tool",
+   "Add the full procedure to the system prompt of every request",
+   "Package the release-notes procedure as an Agent Skill",
+   "Enable a built-in server tool such as web search to reach the inventory data"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "MCP provides reusable connectivity to external systems, and a Skill carries procedural knowledge that loads only when it is relevant. A custom tool in one application is not reusable across applications, a system prompt procedure consumes context on every request, and web search cannot reach an internal database.",
+  "ref": "https://claude.com/resources/articles/skills-explained"
+ }
+]
