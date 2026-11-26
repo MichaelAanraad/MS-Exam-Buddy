@@ -1,0 +1,731 @@
+[
+ {
+  "id": "3.1.1-01",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: Claude Code in a monorepo. The repository holds a web frontend, a payments service and shared libraries. Coding conventions apply everywhere, but the payments service also has strict rules (no floating-point money, mandatory audit logging) that would only confuse work on the frontend. Where should these instructions go?",
+  "choices": [
+   "Put everything in one root CLAUDE.md, so that every session sees all of the rules at all times, in every folder",
+   "Keep shared conventions in the root CLAUDE.md and the payments rules in a CLAUDE.md in the payments directory",
+   "Put everything in each developer's personal ~/.claude/CLAUDE.md, so that the rules are never committed anywhere",
+   "Document the payments rules in a README, which Claude reads automatically at the start of every session"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Layer CLAUDE.md files: shared rules at the root, specialised rules in the directory where they apply.",
+  "rationale": [
+   "Incorrect: Every session pays the context cost of rules that are irrelevant to most tasks, and the important ones are diluted.",
+   "Correct: Shared conventions apply everywhere while specialised rules load only when relevant, which keeps context focused.",
+   "Incorrect: Personal files are not shared, so the team would drift and new members would miss the rules.",
+   "Incorrect: A README is not loaded automatically as instructions; CLAUDE.md is the mechanism for that."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-02",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: Claude Code on a team. The repository's CLAUDE.md says 'always run prettier after editing a file', yet formatting differences keep appearing in pull requests. The team wants formatting to be applied on every edit, without exception. What is the best change?",
+  "choices": [
+   "Move the instruction to the top of CLAUDE.md and write it in capital letters so that it stands out",
+   "Configure a PostToolUse hook on the file-editing tools that runs the formatter after each edit",
+   "Add the instruction to each slash command that developers use, so that every workflow mentions formatting",
+   "Ask developers to remind Claude to format the files at the end of each session before they commit"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Use hooks for actions that must happen every time; CLAUDE.md is guidance, not enforcement.",
+  "rationale": [
+   "Incorrect: Emphasis improves the odds but it is still an instruction the model may not follow.",
+   "Correct: Hooks run deterministically after matching tool calls, so formatting no longer depends on the model remembering.",
+   "Incorrect: This covers only sessions that use those commands and still depends on the model's compliance.",
+   "Incorrect: A manual reminder is the least reliable option and creates work for every developer."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-03",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: Claude Code settings. A team wants to share a set of permission rules (allowed test commands, denied destructive commands) through the repository, while individual developers add personal experiments that must not be committed. Which arrangement fits?",
+  "choices": [
+   "Put everything in ~/.claude/settings.json on each developer's machine, and share the content by chat message",
+   "Put everything in .claude/settings.json and ask developers not to change the shared rules for personal use",
+   "Share rules in the committed .claude/settings.json; keep personal overrides in .claude/settings.local.json",
+   "Use CLAUDE.md for the permission rules, because Claude reads that file before it uses any of the tools"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Use project settings for shared rules and local settings for personal overrides.",
+  "rationale": [
+   "Incorrect: User-level settings are not shared, so the team has no common rules.",
+   "Incorrect: Personal experiments would end up in the shared file or violate the agreement, and the shared file becomes a point of conflict.",
+   "Correct: Project settings are shared through version control, and local settings stay on the machine for personal changes.",
+   "Incorrect: CLAUDE.md holds instructions, not enforceable permission rules."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-04",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. A team has a 40-step release-notes procedure that is needed only a few times per month. Putting it in CLAUDE.md made the file long, and sessions for unrelated work became slower and less focused. What is the best way to keep the procedure available?",
+  "choices": [
+   "Package it as a skill with a clear description, so that it is loaded only when the task calls for it",
+   "Keep it in CLAUDE.md but shorten the wording of every other instruction to make room for the procedure",
+   "Move it to a comment in the changelog file, and expect Claude to find it when it prepares release notes",
+   "Ask developers to paste the whole procedure into the prompt each time they prepare a release"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Use skills for occasional, detailed procedures; keep CLAUDE.md short and universally relevant.",
+  "rationale": [
+   "Correct: A skill's description is always visible but the body loads only when relevant, so the context stays light.",
+   "Incorrect: Shortening the other rules does not change the fact that a rarely used procedure is always loaded.",
+   "Incorrect: Claude has no reason to look in a changelog comment for a procedure it does not know about.",
+   "Incorrect: Manual pasting is error-prone and wastes effort that a skill avoids."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-05",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. The team wants a shared command that a developer triggers explicitly with an issue number, for example '/fix-issue 123', which then fetches the issue and implements a fix. Where and how should it be defined?",
+  "choices": [
+   "A markdown file in .claude/commands in the repository, using the $ARGUMENTS placeholder for the issue number",
+   "A shell alias in each developer's profile that starts Claude Code with a fixed prompt about the issue",
+   "A line in CLAUDE.md that says 'when the user types /fix-issue, fetch the issue and fix it'",
+   "A hook that runs on every prompt and tries to detect the word 'issue' followed by a number"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Shared, explicitly triggered workflows belong in .claude/commands, with $ARGUMENTS for input.",
+  "rationale": [
+   "Correct: Project commands are shared through version control, and the placeholder passes the number given after the command name.",
+   "Incorrect: A shell alias runs in the terminal and does not create a command inside Claude Code.",
+   "Incorrect: CLAUDE.md can describe behaviour but does not register a command.",
+   "Incorrect: A hook on every prompt is fragile and runs for unrelated work."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-06",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. A team wants a security-review helper that reads code and reports findings but must never modify files. It should be used automatically when the user asks for a security check. Which configuration is best?",
+  "choices": [
+   "A subagent definition with a description about security reviews and a tool list restricted to read-only tools",
+   "A CLAUDE.md line saying 'be careful not to change files during security reviews', which applies to all sessions",
+   "A slash command that includes the sentence 'do not edit anything' and that developers trigger by hand",
+   "A subagent with all tools available, whose prompt states strongly that it must never modify any files"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Restrict tools in the subagent definition to enforce read-only behaviour, and write a clear description for delegation.",
+  "rationale": [
+   "Correct: The description drives delegation, and the tool restriction is enforced by configuration.",
+   "Incorrect: Guidance in CLAUDE.md can be ignored and is not tied to a specific task.",
+   "Incorrect: A sentence in a command is instruction only, and the command has to be triggered manually.",
+   "Incorrect: A prompt-only restriction still lets the subagent edit files if it decides to or is misled."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-07",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. A developer must replace an authentication library across about 60 files in an unfamiliar codebase. Earlier attempts started editing immediately and produced inconsistent changes. Which approach is best?",
+  "choices": [
+   "Start in plan mode, let Claude explore and propose an approach, review and adjust the plan, and then allow edits",
+   "Ask Claude to edit all 60 files in one prompt that says 'be consistent across all of the files'",
+   "Run the change in headless mode, so that it cannot be interrupted before all of the files are done",
+   "Skip exploration and let Claude start with the files that it considers easiest, to build momentum"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "For large changes in unfamiliar code, explore and agree a plan before editing.",
+  "rationale": [
+   "Correct: Exploring first and agreeing on an approach avoids inconsistent changes and wasted edits.",
+   "Incorrect: A single instruction to be consistent does not give Claude the understanding it needs and offers no checkpoint.",
+   "Incorrect: Headless mode removes the opportunity to review and correct the approach.",
+   "Incorrect: Starting with the easiest files delays the real design decisions and invites rework."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-08",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: CI integration. A team wants Claude Code to review each pull request in CI and post a comment. The job runs without a human present. Which setup is most appropriate?",
+  "choices": [
+   "Run it non-interactively with a defined prompt, a narrow tool list, and structured output",
+   "Run it in interactive mode and wait for a person to answer the permission prompts as they appear in the log",
+   "Disable all permission checks on the CI runner, so that the job can never block on a prompt from the tool",
+   "Run it with the maximum set of tools available, in case the review turns out to need any of them later"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Unattended runs should be non-interactive, narrowly scoped, and produce output that code can parse.",
+  "rationale": [
+   "Correct: Non-interactive runs with a narrow tool list and parseable output suit unattended jobs.",
+   "Incorrect: A CI job has nobody to answer prompts, so it would hang.",
+   "Incorrect: Removing checks gives an unattended process unrestricted access to the runner and its secrets.",
+   "Incorrect: Maximum tools increase the damage that a prompt injection in the pull request could cause."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-09",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: Claude Code permissions. A developer wants Claude to run the unit tests freely but never run destructive shell commands or read the production credentials file. Which configuration expresses this?",
+  "choices": [
+   "Allow all Bash commands and trust Claude's judgement to avoid the destructive ones, since it knows the risks well",
+   "Allow the test command, deny destructive command patterns and reads of the credentials file, and let others ask",
+   "Deny every tool so that nothing can go wrong, and run the unit tests by hand outside of Claude Code itself",
+   "Add a CLAUDE.md line telling Claude not to touch the credentials file or run any destructive commands"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Use allow, ask and deny rules to grant exactly what is needed and block what must never happen.",
+  "rationale": [
+   "Incorrect: Judgement is not a control, and a single mistake can be destructive.",
+   "Correct: Specific allow rules remove friction for safe commands, and deny rules block what must never happen.",
+   "Incorrect: This removes the benefit of the assistant entirely.",
+   "Incorrect: A guideline can be missed or overridden; a deny rule is enforced."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-10",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: Claude Code and MCP. A developer wants to try an experimental MCP server for personal use, while the team uses a shared documentation server in every repository clone. Which scopes fit?",
+  "choices": [
+   "Add both servers to the project scope, so that everybody on the team gets the same tools",
+   "Add the experimental server to the user or local scope and the shared documentation server to the project scope",
+   "Add both servers to the user scope of each developer, and describe the setup in the team wiki",
+   "Add the experimental server to the project scope, so that colleagues can try it and give feedback"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Use project scope for shared servers and personal scopes for experiments.",
+  "rationale": [
+   "Incorrect: The experiment would be forced on the whole team, including its permissions and risks.",
+   "Correct: Project scope is shared through the repository and personal scopes stay private to the developer.",
+   "Incorrect: The team would have to configure the shared server individually and would drift apart.",
+   "Incorrect: Colleagues would receive an unreviewed server and its access."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-11",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: Claude Code context. In one session a developer fixed a login bug, then started a data-export feature, then asked about CI. Answers are now slower and Claude sometimes applies conventions from the login work to the export feature. What is the best approach?",
+  "choices": [
+   "Keep going in the same session, since it contains all of the background that Claude could need",
+   "Clear the context between unrelated tasks, and compact the conversation when a single task runs long",
+   "Restart the editor whenever the topic changes, so that the next task begins with a clean slate",
+   "Repeat all earlier instructions at the start of every new prompt, so that nothing is forgotten"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Clear context between unrelated tasks and compact within long ones.",
+  "rationale": [
+   "Incorrect: Accumulated unrelated context dilutes attention and carries over assumptions that no longer apply.",
+   "Correct: A clean context for each task keeps it focused, and compaction preserves the thread of one long task.",
+   "Incorrect: Restarting the editor does not change what is in the conversation context.",
+   "Incorrect: Repetition adds more to the context and does not remove the stale material."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-12",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. A developer wants to run two Claude Code sessions at once, one implementing a feature and one fixing an unrelated bug, in the same repository. They keep overwriting each other's changes. What is the best setup?",
+  "choices": [
+   "Use separate git worktrees, with one session in each worktree on its own branch",
+   "Run both sessions in the same directory and ask them to commit very often to limit the damage",
+   "Clone the repository twice and copy files between the two clones by hand when the work is done",
+   "Run the sessions one after the other and avoid parallel work on the repository altogether"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Use git worktrees to give parallel sessions isolated working directories.",
+  "rationale": [
+   "Correct: Each session has its own working directory and branch, so edits never collide and branches merge normally.",
+   "Incorrect: Both sessions still edit the same files on disk, so conflicts persist.",
+   "Incorrect: Manual copying is error-prone and loses history.",
+   "Incorrect: Safe but gives up the benefit of parallel work that worktrees allow."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-13",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: Claude Code debugging. A test fails about one run in ten in CI. A developer asks Claude to 'fix the flaky test'. Claude changes the assertion timeout and reports success, but the test still fails sometimes. What should the workflow include?",
+  "choices": [
+   "Ask Claude to delete the flaky test and add a new one with the same name that covers the same behaviour",
+   "Have Claude reproduce the failure with repeated runs, form a hypothesis, and verify the fix with repeated runs",
+   "Increase the number of automatic retries in CI, so that the intermittent failure no longer blocks any merges",
+   "Ask Claude to explain in general why tests become flaky, and apply the most common remedy that it names"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Reproduce, observe, hypothesise and verify; do not accept a fix without evidence that the failure is gone.",
+  "rationale": [
+   "Incorrect: This removes coverage without understanding the cause.",
+   "Correct: Evidence from reproduction guides a targeted fix, and repeated runs show whether it worked.",
+   "Incorrect: Retries mask the problem and do not fix it.",
+   "Incorrect: General knowledge about flakiness does not identify the cause in this test."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-14",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. Claude has written a database migration that renames a column used by three services. Which sequence is the safest before it reaches production?",
+  "choices": [
+   "Run it directly on production during low-traffic hours and monitor the services closely while it runs",
+   "Run it on a staging copy with realistic data, review the SQL and affected queries, run tests, and prepare a rollback",
+   "Merge it and rely on the three services to adapt to the new column name when they fail",
+   "Ask Claude to confirm in its summary that the migration is safe, and attach the summary to the pull request"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Rehearse high-impact changes and keep a rollback path; do not accept a summary as verification.",
+  "rationale": [
+   "Incorrect: An irreversible change on production without rehearsal risks an outage.",
+   "Correct: Rehearsal on realistic data, review and a rollback plan reduce the risk of an irreversible failure.",
+   "Incorrect: Services will fail at runtime, which turns a controllable change into an incident.",
+   "Incorrect: The model's statement is not evidence of safety."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-15",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Scenario: Claude Code instructions. A CLAUDE.md has grown to 900 lines. Developers notice that important rules are sometimes ignored. Which TWO changes are most likely to help? (Select 2)",
+  "choices": [
+   "Remove reference material and one-off notes, and keep short, specific and actionable rules",
+   "Move rarely needed procedures into skills or commands that load only when relevant",
+   "Add more explanatory paragraphs so that Claude understands the reasoning in depth",
+   "Repeat all rules in every section so none can be missed",
+   "Translate the file to several languages so that it is robust"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Keep CLAUDE.md short and universally relevant; move occasional material elsewhere.",
+  "rationale": [
+   "Correct: A leaner file puts the important rules in focus and removes noise.",
+   "Correct: Occasional procedures stop competing for attention in every session.",
+   "Incorrect: More text adds to the problem; length dilutes the rules that matter.",
+   "Incorrect: Repetition makes the file longer without making any rule clearer.",
+   "Incorrect: Translations add length and do not improve compliance."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-16",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: Claude Code in an organisation. A platform team has built commands, hooks, a subagent and an MCP configuration that 30 repositories should share, with versioned updates. What is the best way to distribute them?",
+  "choices": [
+   "Package them as a plugin and distribute it through a shared marketplace",
+   "Copy the files into each repository and tell the teams to update them by hand when something changes",
+   "Send the files by e-mail and ask each team to install them in the way that suits that team",
+   "Put all of the instructions into the root CLAUDE.md of each repository and keep a copy in the wiki"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Use plugins to distribute and version bundles of commands, hooks, agents and server configuration.",
+  "rationale": [
+   "Correct: A plugin bundles the components and gives one place to publish and update them.",
+   "Incorrect: Manual copying leads to drift and stale versions across 30 repositories.",
+   "Incorrect: E-mail distribution has no versioning and no update path.",
+   "Incorrect: CLAUDE.md holds instructions and does not install commands, hooks, subagents or servers."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-17",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: Claude Code onboarding. A new repository has no Claude Code configuration. What is a sensible first step?",
+  "choices": [
+   "Write a 500-line CLAUDE.md by hand before the first session, covering every convention that anyone can think of",
+   "Use /init to generate a starting CLAUDE.md from the codebase, then review and trim it",
+   "Copy the CLAUDE.md from an unrelated project that has a similar technology stack, and adapt it later",
+   "Start without any file and add instructions only when problems appear during the sessions"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Generate a draft with /init, then review and refine it.",
+  "rationale": [
+   "Incorrect: A large first draft is likely to contain guesses and noise.",
+   "Correct: The generated draft captures commands and structure, and the team refines it into accurate, concise guidance.",
+   "Incorrect: Another project's rules describe a different codebase and will mislead.",
+   "Incorrect: Avoids early effort but sessions begin without build and test commands and the project conventions."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-18",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: Claude Code safety. The team wants to make sure no session ever force-pushes to the main branch, even when a developer has approved a broad set of shell commands. Which mechanism is most reliable?",
+  "choices": [
+   "A PreToolUse hook that inspects Bash commands and blocks any force-push to the main branch",
+   "A CLAUDE.md line saying 'never force-push to main', which every session loads at the start",
+   "A note in the contributing guide that explains the branch policy and the reasons behind it",
+   "Ask developers to watch the terminal and to interrupt Claude if they see a push command start"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Block must-never-happen commands with a pre-tool hook, not with guidance.",
+  "rationale": [
+   "Correct: The hook runs before the command and can block it deterministically, whatever was approved earlier.",
+   "Incorrect: A guideline can be ignored or overridden by other instructions.",
+   "Incorrect: Documentation does not influence a running session.",
+   "Incorrect: Manual vigilance is unreliable and does not scale."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-19",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. A developer asks Claude to implement a pricing-rule module. Earlier attempts passed the code review but failed in production edge cases. Which workflow most improves reliability?",
+  "choices": [
+   "Ask Claude to write tests for the specified edge cases first, confirm that they fail, then implement until they pass",
+   "Ask Claude to write the module and then to explain in detail why the implementation is correct",
+   "Have Claude implement the module with as few lines of code as possible, which reduces the risk of bugs",
+   "Let Claude choose the edge cases after it has finished the implementation, since it knows the code best"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Give Claude an objective check, such as tests defined in advance, to iterate against.",
+  "rationale": [
+   "Correct: Tests written from the specification give an objective target, and the loop shows when the work is done.",
+   "Incorrect: An explanation is not verification and may repeat the same mistaken assumptions.",
+   "Incorrect: Brevity is unrelated to correctness for edge cases.",
+   "Incorrect: Edge cases chosen after the fact tend to match what the code already does."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-20",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: Claude Code instructions. The team's API conventions live in docs/api-style.md, which several services reference. Developers want Claude to follow them without copying the text into every CLAUDE.md. What is the best approach?",
+  "choices": [
+   "Copy the file contents into every CLAUDE.md and update the copies by hand whenever the document changes",
+   "Reference the file from CLAUDE.md with an import, so that a single source of truth is loaded",
+   "Tell developers to paste the file into the first prompt of each session, before they start any task",
+   "Rename the file to CLAUDE.md in the docs folder, so that all services load it automatically"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Import shared documents from CLAUDE.md instead of copying them.",
+  "rationale": [
+   "Incorrect: Copies drift apart as soon as one is changed.",
+   "Correct: An import keeps one maintained document and includes it where needed.",
+   "Incorrect: Manual pasting is inconsistent and easy to forget.",
+   "Incorrect: A file in docs is loaded only in the context of that directory, not as shared guidance for all services."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-21",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: Claude Code in an enterprise. Security requires that certain tools are always denied and that a particular MCP server is never used, for every employee, regardless of their own settings. Where should this be configured?",
+  "choices": [
+   "Configure them in each developer's user settings file, and verify compliance through an onboarding checklist",
+   "Configure them in the managed policy settings that the organisation deploys to every machine",
+   "Configure them in the shared project settings file, because developers cannot edit that file at all",
+   "Describe them on a company wiki page that every new employee has to read and acknowledge"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Organisation-wide mandatory controls belong in managed policy settings.",
+  "rationale": [
+   "Incorrect: User settings can be changed by the user, and the checklist depends on compliance.",
+   "Correct: Managed settings are deployed by the organisation and take precedence over user and project settings.",
+   "Incorrect: Project settings apply only to that repository and can be overridden locally.",
+   "Incorrect: A wiki page documents a policy but does not enforce it."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-22",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. Developers complain that Claude often declares a task finished while the test suite is red. The team wants Claude to check the tests before it stops. Which mechanism enforces this best?",
+  "choices": [
+   "A Stop hook that runs the tests and, if they fail, returns the output so that Claude continues working",
+   "A reminder in CLAUDE.md to run the tests before declaring any task finished, in the section on workflow",
+   "A pre-commit hook in git that runs the tests when a developer commits the changes",
+   "A comment at the top of the main test file that explains how and when the suite should be run"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Use lifecycle hooks to enforce checks at the moment they matter, such as before Claude stops.",
+  "rationale": [
+   "Correct: The hook runs when Claude would stop and can send it back to work with the failure output.",
+   "Incorrect: Guidance may be forgotten, especially late in a long session.",
+   "Incorrect: This catches problems only at commit time, after Claude has reported the task as finished.",
+   "Incorrect: Comments in test files are not read as instructions."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-23",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: CI integration. A pipeline step uses Claude Code to classify failing builds. The next step must read the classification and decide whether to notify a team. Currently the step parses prose output with a regular expression and breaks whenever the wording changes. What is the best improvement?",
+  "choices": [
+   "Ask for more consistent wording in the prompt and keep the regular expression that reads the classification",
+   "Request structured (JSON) output from the non-interactive run, with a schema in the prompt, and parse it",
+   "Pass the prose output to the next step and let a person read it and decide about the notification",
+   "Run the classification three times and take the wording that appears most often as the result"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Automation needs structured output with a defined contract, not parsing of prose.",
+  "rationale": [
+   "Incorrect: Wording will still vary and the parser stays fragile.",
+   "Correct: Structured output gives the next step a parseable contract instead of depending on phrasing.",
+   "Incorrect: This removes automation from the pipeline.",
+   "Incorrect: Repetition triples the cost and does not remove the parsing problem."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-24",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Scenario: Claude Code workflows. A pull request touches 120 files across four services. A single review session fills its context and misses issues. Which TWO approaches improve the review? (Select 2)",
+  "choices": [
+   "Use subagents to review each service in parallel, each returning a concise findings summary",
+   "Have the main session read all 120 files first so that it has the complete picture",
+   "Split the review into focused passes, for example security, then API changes, then tests",
+   "Ask for a quick overall opinion and skip detailed review to save context",
+   "Paste the diff into the prompt as one large message without file boundaries"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Split large reviews across subagents or focused passes to keep context manageable and analysis sharp.",
+  "rationale": [
+   "Correct: Parallel subagents keep the main context clean and each one can concentrate on its own area.",
+   "Incorrect: Reading everything first exhausts context before analysis starts.",
+   "Correct: Focused passes let each analysis concentrate on one concern instead of everything at once.",
+   "Incorrect: A shallow overall opinion misses the details that review is for.",
+   "Incorrect: A single unstructured block makes it harder to attribute findings and wastes context."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-25",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: CI integration. A nightly Claude Code job needs to run the project's test command and open a draft pull request, but the job keeps pausing for permission. A colleague suggests running it with all permission checks disabled. What is the better solution?",
+  "choices": [
+   "Disable all permission checks, since the runner is a throwaway machine that is destroyed after each run",
+   "Pre-approve only the specific commands the job needs and deny everything else",
+   "Let the job pause at each prompt, and have a developer approve the steps the next morning",
+   "Run the job on a developer laptop under the developer's full account, so that permissions are never a problem"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Unattended runs should use a narrow allowlist, not blanket permission bypass.",
+  "rationale": [
+   "Incorrect: The runner still has repository access and credentials, and a prompt injection could misuse unrestricted permissions.",
+   "Correct: An explicit allowlist keeps the job automatic while limiting what it can do.",
+   "Incorrect: A paused job defeats the purpose of an unattended run.",
+   "Incorrect: A developer's full account raises the blast radius considerably."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-26",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. A developer asks Claude to understand how authentication works in a 2-million-line repository, and then reference every file in the auth directory in the prompt. The session becomes slow, and answers get vague. What is a better approach?",
+  "choices": [
+   "Reference the whole repository in the prompt, so that nothing relevant to authentication is missed by Claude",
+   "Let Claude search for entry points, or delegate exploration to a subagent that returns a summary with references",
+   "Ask Claude to read all files alphabetically until it finds the code that deals with authentication in the system",
+   "Split the repository across several sessions and ask each of them the same question about authentication"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Explore large codebases through targeted search and delegated exploration, not by loading everything.",
+  "rationale": [
+   "Incorrect: More files in the prompt increase noise and fill the context without improving focus.",
+   "Correct: Targeted search finds what matters, and a subagent keeps the raw exploration out of the main session.",
+   "Incorrect: Alphabetical reading is inefficient and fills the context with irrelevant code.",
+   "Incorrect: Repeating the question in several sessions multiplies cost without synthesising the result."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-27",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Scenario: Claude Code instructions. Developers report that rules in CLAUDE.md such as 'write clean code' and 'be careful with the database' are not followed consistently. Which TWO rewrites make the instructions more effective? (Select 2)",
+  "choices": [
+   "Replace vague phrases with specific, verifiable rules, such as 'use parameterised queries; never build SQL by concatenation'",
+   "Add the exact commands for build, test and lint so that the assistant can verify its own work",
+   "Add motivational statements such as 'you are an excellent engineer'",
+   "Repeat the vague rules three times at the end of the file",
+   "Add a paragraph on the history of the project"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Write specific, verifiable instructions and give the commands needed to check the work.",
+  "rationale": [
+   "Correct: Specific rules can be applied and checked, which vague preferences cannot.",
+   "Correct: Commands give Claude a way to check results, which improves reliability.",
+   "Incorrect: Motivation does not tell Claude what to do.",
+   "Incorrect: Repetition adds length without adding precision.",
+   "Incorrect: History does not help Claude apply the rules."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-28",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. Midway through a refactor Claude starts rewriting modules the developer did not ask about. What is the best response?",
+  "choices": [
+   "Let it finish and clean up afterwards, since it is already well on the way through the whole refactor",
+   "Interrupt, restate the scope, and restore unwanted changes from version control before continuing",
+   "Ask Claude to continue but to be more careful about which modules it chooses to modify from now on",
+   "Close the session and start the task again from scratch, without saving any of the earlier work done"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Interrupt early, restate the scope, and use version control to return to a known state.",
+  "rationale": [
+   "Incorrect: Unwanted changes make the final diff larger and harder to review.",
+   "Correct: Stopping early limits the damage, and a clear scope plus a restore point returns the work to a known state.",
+   "Incorrect: A vague request for care does not restore the scope and leaves the unwanted changes in place.",
+   "Incorrect: Discarding everything wastes the useful work that was done earlier."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-29",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: Claude Code workflows. Claude implemented a feature in a long session, and the developer wants a thorough review before merging. Which approach most likely finds problems that Claude missed while writing?",
+  "choices": [
+   "Ask the same session 'is this correct?' and accept the answer that it gives after rereading its work",
+   "Start a fresh session or reviewer subagent, give it the diff and requirements, and have it review independently",
+   "Ask Claude to re-read the code once more in the same session, this time with a stricter attitude",
+   "Skip the review, since all of the tests passed and the implementation follows the specification"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Use an independent context for review so that it does not inherit the author's assumptions.",
+  "rationale": [
+   "Incorrect: The session carries the assumptions that produced the code, so it tends to confirm them.",
+   "Correct: An independent context does not share the author's reasoning and is more likely to notice what it overlooked.",
+   "Incorrect: Re-reading in the same context repeats the same blind spots.",
+   "Incorrect: Passing tests show that tested behaviour works, not that the design and the untested paths are sound."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "3.1.1-30",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: Claude Code safety. A project has a .env file with production credentials in the repository directory. The team wants to be sure that Claude cannot read it during any session, even if a developer asks for broad file access. Which configuration is most reliable?",
+  "choices": [
+   "Add a deny rule for reading the .env file in the project's shared settings",
+   "Add a line 'do not read .env' to CLAUDE.md, which every session loads at the start",
+   "Rename the file to .env.old, so that tools that look for .env no longer find it",
+   "Ask developers to avoid mentioning the file in prompts, so that Claude has no reason to open it"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Protect secrets with enforced deny rules and keep them out of reach rather than relying on instructions.",
+  "rationale": [
+   "Correct: A deny rule is enforced by the tool and is shared with the team through the repository.",
+   "Incorrect: A guideline can be overridden or forgotten and is not enforced.",
+   "Incorrect: Renaming only hides the file from conventions, and Claude can still find and read it.",
+   "Incorrect: Requests do not control what Claude searches or reads."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ }
+]

@@ -1,0 +1,731 @@
+[
+ {
+  "id": "2.1.1-01",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: customer-support agent. Two tools are defined: get_customer ('Retrieves customer information') and lookup_order ('Retrieves order details'). When users ask about the status of an order and give their e-mail address, the agent often calls get_customer and then answers from the profile instead of the order. What is the most effective fix?",
+  "choices": [
+   "Add a keyword pre-processor in code that selects the tool whenever the user's message contains the word 'order'",
+   "Merge both tools into one tool called get_info with a free-text query parameter that accepts any identifier",
+   "Rewrite both descriptions to state what each returns, which identifiers it accepts, and when to use it instead of the other",
+   "Add 'use lookup_order for order questions' as the final line of the system prompt, and leave the descriptions as they are"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Tool descriptions drive tool selection: state what the tool returns, which inputs it accepts and when to use it instead of similar tools.",
+  "rationale": [
+   "Incorrect: Brittle and bypasses the model's understanding; it also misroutes messages that mention orders for other reasons.",
+   "Incorrect: A merged tool with free-text input makes selection and argument errors more likely, not less.",
+   "Correct: Descriptions are the main signal the model uses to choose a tool; stating inputs, outputs and boundaries removes the overlap that caused the confusion.",
+   "Incorrect: A prompt line can help, but the tool descriptions still overlap, and the ambiguity remains in every other context where they are used."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-02",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: customer-support agent. Tool failures currently return the text 'Error' with is_error set to true. The agent retries a permission failure three times and keeps retrying a malformed order id, while genuinely transient timeouts are sometimes abandoned after one try. What is the best improvement to the tool results?",
+  "choices": [
+   "Return a structured error with a category, a retryable flag and a short actionable message",
+   "Return the raw exception message and stack trace, so that the model can work out for itself what happened",
+   "Remove is_error so that the model treats failures as ordinary results and decides what to do about them",
+   "Add a global rule in code that retries every failed call exactly twice, whatever the type of failure was"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Error results should say what kind of failure it was, whether to retry and what to do next.",
+  "rationale": [
+   "Correct: The model can now tell a retryable timeout from a validation or permission problem and respond appropriately.",
+   "Incorrect: Stack traces are noisy, may leak internals, and do not tell the model whether a retry makes sense.",
+   "Incorrect: Is_error is the signal that the call failed; removing it makes failures harder to recognise.",
+   "Incorrect: A fixed retry count repeats non-retryable failures and gives up too soon on genuine transient ones."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-03",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: customer-support agent. search_orders returns an error result when a customer has no orders in the last 90 days. The agent then tells customers 'there is a system problem' and offers to escalate. What should the tool do instead?",
+  "choices": [
+   "Return a successful, empty list with a note that no orders matched, and keep is_error for real failures",
+   "Return a successful result with a placeholder order, so that the response is never empty for the agent",
+   "Keep the error result but write a longer message that explains that the customer simply has no recent orders",
+   "Throw an exception so that the orchestration layer can decide what to tell the model about the empty search"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Reserve error results for failures. No matches is a valid outcome and should be returned as one.",
+  "rationale": [
+   "Correct: An empty result is a valid answer; reporting it as such lets the agent respond accurately.",
+   "Incorrect: A fake order would produce false information downstream.",
+   "Incorrect: The error flag still tells the model that something failed, so the false 'system problem' behaviour is likely to continue.",
+   "Incorrect: Exceptions are for failures; handing a valid outcome to exception handling adds complexity and confuses the model."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-04",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "multi",
+  "stem": "Scenario: engineering platform team. You are designing an MCP server. It should (a) make the company's API style-guide documents available for clients to load as context, (b) let the model trigger a deployment, and (c) offer a reusable 'review this pull request' template that users can pick from a menu. Which TWO mappings are correct? (Select 2)",
+  "choices": [
+   "The style-guide documents are best exposed as resources identified by URI",
+   "Triggering a deployment is best exposed as a resource, because the action has a stable URI",
+   "The review template is best exposed as a prompt that the user selects",
+   "The style-guide documents should be tools, because only tools can return text",
+   "Triggering a deployment is best exposed as a prompt"
+  ],
+  "answer": [
+   0,
+   2
+  ],
+  "explanation": "Tools perform actions (model-controlled), resources expose readable data (application-controlled), and prompts are user-selected templates.",
+  "rationale": [
+   "Correct: Resources expose readable data by URI for the client or application to load into context.",
+   "Incorrect: A deployment is an action with side effects; it belongs to a tool, not to a read-only resource.",
+   "Correct: Prompts are reusable templates that are typically chosen by the user, for example from a menu or slash command.",
+   "Incorrect: Resources can also carry text; reading documents does not require a tool.",
+   "Incorrect: A prompt is a template of messages and does not itself perform an action."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-05",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: document-extraction service. You define three tools, extract_invoice, extract_contract and extract_receipt, each with its own schema. The document type is not known in advance. The service must always return structured data, but occasionally the model replies in plain text asking which type the document is. Which tool_choice setting is the best fit?",
+  "choices": [
+   "tool_choice of type auto, so that the model decides on each request whether a tool call is needed at all",
+   "tool_choice of type tool naming extract_invoice, so that every document is processed in the same way",
+   "tool_choice of type none, combined with a prompt that asks for JSON that follows the schema of the document",
+   "tool_choice of type any, so the model must call one of the tools and picks the one that matches"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Use 'any' to require a tool call while leaving the choice of tool to the model; use a named tool to force one specific tool.",
+  "rationale": [
+   "Incorrect: Auto allows a text reply, which is the behaviour you want to eliminate.",
+   "Incorrect: Forcing one specific tool would produce invoice-shaped output for contracts and receipts.",
+   "Incorrect: None disables tools altogether and gives up schema-based output.",
+   "Correct: Any guarantees a tool call while still letting the model choose the schema that fits the document."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-06",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: developer assistant. An assistant has 45 tools from six MCP servers. Evaluation shows frequent wrong-tool choices, especially between similar tools from different servers, and the tool definitions use a large part of every prompt. Which approach is most effective?",
+  "choices": [
+   "Add more detail to every description so that all 45 tools are fully documented in each request",
+   "Raise the model's max_tokens so that it has room to consider all of the tools before it chooses",
+   "Rename all tools with numeric prefixes so that each one has a unique identifier across the servers",
+   "Expose only the tools relevant to each task or subagent, grouping related tools and loading others on demand"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Keep each task's toolset small and focused; large overlapping toolsets degrade tool selection.",
+  "rationale": [
+   "Incorrect: Longer descriptions across 45 tools increase prompt size and still leave overlapping tools.",
+   "Incorrect: Max_tokens limits output length and has no effect on how well the model chooses among tools.",
+   "Incorrect: Numeric names carry no meaning and make selection harder.",
+   "Correct: Fewer, focused tools reduce confusion and context use, and each task sees only what it needs."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-07",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: IT helpdesk agent. A create_ticket tool has the fields priority (string) and category (string). Logs show values such as 'urgent!!', 'P1-ish' and 'networking/other', which break the downstream ticket system. Which fix is most appropriate?",
+  "choices": [
+   "Define priority and category as enums in the input schema, with a description of when each value applies",
+   "Accept free text and use fuzzy matching in the handler to map whatever the model sends onto valid values",
+   "Lower the temperature to 0 so that the model stops inventing values that the downstream system rejects",
+   "Reject invalid tickets in the handler with a bare error and no explanation, so that the model learns from failure"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Use schemas with enums and descriptions to make invalid input unrepresentable instead of cleaning it up afterwards.",
+  "rationale": [
+   "Correct: Constrained values make invalid input impossible to express, and descriptions tell the model which value fits.",
+   "Incorrect: Fuzzy mapping hides ambiguity and can silently assign the wrong priority.",
+   "Incorrect: Temperature reduces variation but does not stop the model from inventing values that the schema allows.",
+   "Incorrect: An error with no explanation gives the model nothing to correct, and fixing the schema is cheaper than repeated failures."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-08",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: internal tooling. A remote MCP server gives an assistant access to a company's issue tracker. Each employee must only see projects they may access. Which authentication design is most appropriate?",
+  "choices": [
+   "Put one shared API key in the tool description, so that every user can reach the tracker through the assistant",
+   "Use a standard authorisation flow such as OAuth, with each user's token held outside the model's context",
+   "Ask each user to paste their personal token into the chat whenever the assistant needs access to the tracker",
+   "Store a service account token in the system prompt and let the model decide which projects each user may see"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Keep credentials out of the model's context and authorise requests as the individual user.",
+  "rationale": [
+   "Incorrect: A shared key in a description is exposed to the model and to every user, and it ignores per-user permissions.",
+   "Correct: Tokens stay outside the model's context and requests run with the user's own permissions.",
+   "Incorrect: Tokens pasted into a chat end up in context, logs and transcripts.",
+   "Incorrect: A service account sees everything, and the model is not a reliable access-control mechanism."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-09",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: operations assistant. A get_logs tool returns up to 50,000 lines for a service. The assistant's answers get worse as the context fills, and costs are high. What is the best redesign?",
+  "choices": [
+   "Return the latest 200 lines by default, with filters for time, severity and text, a total count and a cursor",
+   "Return only the last 200 lines and do not mention that earlier lines exist, to keep the answer short and focused",
+   "Compress the log output with base64 so that it uses fewer tokens in the context of the conversation",
+   "Keep returning everything and rely on the larger context windows that newer models are said to offer"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Bound tool output, offer filters and pagination, and tell the model when results are partial.",
+  "rationale": [
+   "Correct: A bounded, filterable result keeps context small, and the count and cursor let the model fetch more when it needs it.",
+   "Incorrect: Silent truncation can lead to wrong conclusions because the model does not know that data is missing.",
+   "Incorrect: Encoded text is harder for the model to read and does not reduce meaning-bearing tokens in a useful way.",
+   "Incorrect: A larger window does not remove the cost and the dilution of relevant information."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-10",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: CRM assistant. One tool manage_record(operation, record_id, fields) supports operations read, update and delete. Security wants broad read access but human confirmation on changes. What is the best tool design?",
+  "choices": [
+   "Keep the single tool and add a sentence to the description asking the model to confirm updates and deletes first",
+   "Keep the single tool and rely on the model to pick the operation carefully, since it can see the full schema",
+   "Split it into separate read, update and delete tools, so that permissions and confirmation can be set per tool",
+   "Keep one tool, remove the delete operation, and let updates run without confirmation to keep the workflow fast"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Separate read and write capabilities into distinct tools so that permissions and confirmations can be applied by tool.",
+  "rationale": [
+   "Incorrect: A sentence in a description cannot enforce confirmation.",
+   "Incorrect: A combined tool prevents differentiated permission rules, and carefulness is not a control.",
+   "Correct: Separate tools let the harness allow reads automatically and require confirmation for writes and deletes.",
+   "Incorrect: Removing delete does not address the need to confirm updates, and unconfirmed updates remain risky."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-11",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: platform team. A tool that queries an internal analytics database must be available to 60 developers' assistants and to the CI pipeline. Today each developer runs a local MCP server over stdio with the database password in a shared .env file. Which change best improves security and maintenance?",
+  "choices": [
+   "Keep local stdio servers but rotate the shared database password every month and announce the new one in the team channel",
+   "Host one remote MCP server over HTTP behind authentication, with the credentials held centrally and per-user authorisation",
+   "Put the database password in the tool description, so that clients can reconnect whenever the connection drops",
+   "Let each assistant connect directly to the database without an MCP server, using the credentials in the .env file"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Centralise shared, credentialled capabilities behind an authenticated remote server instead of distributing secrets to every machine.",
+  "rationale": [
+   "Incorrect: A shared password on 60 machines is still widely distributed, and rotating it adds toil without removing the exposure.",
+   "Correct: A central server keeps secrets in one place, gives consistent behaviour and logging, and can enforce who may query what.",
+   "Incorrect: Descriptions are visible to the model, which makes this the worst place for a credential.",
+   "Incorrect: This gives up the controlled tool interface and spreads database credentials even further."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-12",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: developer productivity. A developer wants to add a popular community MCP server that reads and sends e-mail, found on a public list. What is the most responsible way to proceed?",
+  "choices": [
+   "Install the latest version and approve all permissions that it asks for, since many other developers use it",
+   "Review what the server does and which scopes it requests, pin a version, and start with a least-privilege account",
+   "Install it with the developer's main administrator account, so that it never runs into permission problems",
+   "Skip the review, because MCP servers run inside the model's sandbox and cannot reach anything important"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Treat third-party servers as code you run: review, pin versions and grant least privilege.",
+  "rationale": [
+   "Incorrect: Popularity is not a security review, and 'latest' can change underneath you.",
+   "Correct: This limits what a misbehaving or compromised server can do and keeps changes under your control.",
+   "Incorrect: An administrator account maximises the harm if something goes wrong.",
+   "Incorrect: MCP servers run with the permissions you give them; they are not automatically sandboxed."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-13",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: e-commerce operations. A bulk_update_prices tool applies a percentage change to every product that matches a filter. A vague request once changed 14,000 prices. Which design best reduces this risk?",
+  "choices": [
+   "Add a warning to the tool description that bulk changes should be used carefully and only after checking the filter",
+   "Ask the model to double-check the filter in its reasoning before it calls the tool with the bulk change",
+   "Support a dry run that returns the affected count and a sample, and require approval above a row threshold",
+   "Limit the tool so that it can only be called between 02:00 and 04:00, when few customers are active"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "For high-impact tools, offer a preview and enforce thresholds and approvals in the handler.",
+  "rationale": [
+   "Incorrect: A warning guides but does not stop an over-broad call.",
+   "Incorrect: The model can still be wrong, and its reasoning is not an enforcement point.",
+   "Correct: A dry run shows the blast radius before anything changes, and the threshold is enforced by code.",
+   "Incorrect: A time window says nothing about how many products are changed."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-14",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: billing assistant. A create_invoice tool call times out on the network, the client library retries it automatically, and the customer receives two invoices. What is the best fix?",
+  "choices": [
+   "Ask the model to call list_invoices before each create_invoice, to check whether a similar invoice already exists",
+   "Disable all client retries and let the model decide whether to call the tool again after a timeout",
+   "Add a delay between retries, so that the first request has time to finish before the next one is sent",
+   "Accept an idempotency key in create_invoice, so a repeated request returns the original invoice"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Give state-changing tools idempotency keys so that retries cannot duplicate effects.",
+  "rationale": [
+   "Incorrect: Check-then-create is racy: two requests can both pass the check before either creates an invoice.",
+   "Incorrect: This removes protection against genuinely transient failures and hands a technical decision to the model.",
+   "Incorrect: A delay may reduce duplicate attempts but does not make a repeat harmless.",
+   "Correct: The server recognises the repeat and returns the first result, so retries become safe."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-15",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: support knowledge base. A search_articles tool returns three paragraphs of prose per hit without identifiers. The agent often cannot fetch the full article afterwards and sometimes mixes up which paragraph came from which article. What is the best change?",
+  "choices": [
+   "Return structured hits with a stable id, title, url, short snippet and relevance score, to allow follow-up and citation",
+   "Return the complete text of the top ten articles in every result, so that the agent has everything it could need",
+   "Return only article titles and ask the model to guess the identifiers when it wants to read an article",
+   "Return the hits as an image of the results page, so that the agent can see the layout of the knowledge base"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Return concise structured results that include the identifiers needed for follow-up calls and citations.",
+  "rationale": [
+   "Correct: Ids and fields let the model call get_article accurately and attribute information correctly, without excess text.",
+   "Incorrect: This floods the context with text that is mostly unused.",
+   "Incorrect: Guessing identifiers produces failures and wrong lookups.",
+   "Incorrect: Images add no benefit here and are harder to process than structured fields."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-16",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: research assistant. A web-search API allows 10 requests per second. When the model issues 15 search calls in parallel, about a third fail with rate-limit errors. Which approach is best?",
+  "choices": [
+   "Tell the model in the prompt never to make more than 10 calls at once, and repeat the limit in the tool description",
+   "Handle limits in the tool layer with queuing and backoff, and return a clear retry-after message if a call still fails",
+   "Reduce the model's temperature, so that it issues fewer parallel calls to the search API per turn",
+   "Take the search tool out of the parallel calls, and run all of the other tools one after another"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Enforce external rate limits in the tool layer rather than expecting the model to manage them.",
+  "rationale": [
+   "Incorrect: The model does not track call rates reliably and a prompt cannot enforce this.",
+   "Correct: The harness knows the actual limit and can smooth the load, and the model only sees failures that need its attention.",
+   "Incorrect: Temperature does not control the number of parallel calls.",
+   "Incorrect: This slows unrelated tools without solving the search limit."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-17",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: analytics assistant. A generate_report tool takes up to eight minutes. The client times out after 60 seconds, so the agent reports failures even though reports are eventually produced. What is the best design?",
+  "choices": [
+   "Raise the client timeout to ten minutes for all tools, so that the longest report always has time to complete",
+   "Split the work into start_report, returning a job id immediately, and get_report_status, which the agent polls",
+   "Ask the model to call generate_report again after each timeout, until a call finally succeeds in time",
+   "Reduce the report to the first page, so that generation always finishes within the 60 second limit"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Model long-running work as a start-and-poll job rather than as one blocking call.",
+  "rationale": [
+   "Incorrect: It hides slow tools in every other call as well and keeps the session blocked for the duration.",
+   "Correct: An asynchronous job pattern keeps calls fast and lets the agent or user continue while the job runs.",
+   "Incorrect: Repeating the call creates duplicate jobs and wastes resources.",
+   "Incorrect: This changes the product to fit the limit instead of fixing the interaction pattern."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-18",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: customer-support agent. get_customer returns the full national ID number and bank account of the customer. The agent only needs the name, the plan, and the last four digits of the account to answer questions. What is the best design?",
+  "choices": [
+   "Return everything and instruct the model never to repeat sensitive fields to the user in any of its replies",
+   "Return everything, but encrypt the sensitive fields in the response so that the model cannot read their values",
+   "Return only the fields the agent needs, with the account number masked, and keep the full values on the server",
+   "Log all returned fields, so that any leakage of the sensitive values can be traced back after the fact"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Minimise what tools return; data the model never sees cannot leak through it.",
+  "rationale": [
+   "Incorrect: A model can still leak values through errors, summaries or injection, and the data sits in logs and context.",
+   "Incorrect: Encrypted values in the response still enter context and add noise without a purpose.",
+   "Correct: The model cannot reveal what it never receives, which is the strongest and simplest protection.",
+   "Incorrect: Logging more copies of sensitive data increases exposure."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-19",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: platform team. After a new 'create_calendar_event' tool was added, the team's assistant started calling it in situations where it should have searched the calendar. How should the team detect and prevent such regressions?",
+  "choices": [
+   "Review a few conversations by hand every quarter, and add a rule to the prompt when a wrong call is found",
+   "Keep an evaluation set of prompts with expected tools and arguments, and run it before and after every change",
+   "Count the number of tools and keep the total below 20, since fewer tools always give better selection",
+   "Ask the model after each release whether it believes that it selects the right tools for the tasks"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Evaluate tool selection and arguments against labelled examples whenever tools change.",
+  "rationale": [
+   "Incorrect: Too infrequent and too small to catch a regression quickly.",
+   "Correct: A labelled set shows selection accuracy and exposes the effect of each change before release.",
+   "Incorrect: Tool count is not a measure of selection quality.",
+   "Incorrect: The model's self-assessment is not evidence of actual behaviour."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-20",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: platform team. A tool's parameter 'cust' will be renamed to 'customer_id' for clarity. Other teams' agents and scripts already call the tool. What is the safest approach?",
+  "choices": [
+   "Rename the parameter immediately and announce the change in the team channel, so that callers can update quickly",
+   "Accept both parameters for a transition period, mark the old one deprecated, and remove it later",
+   "Keep the old name forever and do not document the new one, so that nothing ever breaks for any caller",
+   "Create a second server with the new name and shut the old server down at the end of the following week"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Evolve tool schemas additively and deprecate old forms with a transition period.",
+  "rationale": [
+   "Incorrect: Every caller breaks at once, including those that did not see the announcement.",
+   "Correct: Backward compatibility with a clear deprecation path lets callers migrate on their own schedule.",
+   "Incorrect: The confusing name stays, and the improvement is never delivered.",
+   "Incorrect: A hard cut-over after one week has the same breakage risk, with extra infrastructure."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-21",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: Claude Code team setup. A team wants everyone in a repository to use the same GitHub MCP server configuration, but the access token must not be committed. Which setup is correct?",
+  "choices": [
+   "Commit a project-level .mcp.json that references the token through an environment variable that each developer sets locally",
+   "Commit .mcp.json with the token in plain text, since the repository is private and only the team can read it",
+   "Put the token in CLAUDE.md, so that the assistant can pass it to the server whenever the server asks for it",
+   "Ask each developer to add the server by hand, and keep no shared configuration for it in the repository"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Share server definitions in a committed project file and keep secrets in environment variables.",
+  "rationale": [
+   "Correct: The shared file carries the setup and the secret stays on each machine.",
+   "Incorrect: Secrets in version control leak through forks, clones and history, even in private repositories.",
+   "Incorrect: CLAUDE.md is loaded into the model's context, which exposes the secret.",
+   "Incorrect: Manual setup leads to drift and inconsistent configurations across the team."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-22",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: platform team. Users of your client application should be able to pick a predefined workflow, such as 'summarise this incident', from a menu, and the chosen workflow supplies a ready-made set of instructions. Which MCP primitive fits this best?",
+  "choices": [
+   "Tools",
+   "Resources",
+   "Prompts",
+   "Sampling"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Prompts are user-selected templates, tools are model-invoked actions, and resources are readable context.",
+  "rationale": [
+   "Incorrect: Tools are invoked by the model to act; they are not menu items that supply instruction templates.",
+   "Incorrect: Resources expose data for context; they do not define reusable instruction templates.",
+   "Correct: Prompts are templates that a server exposes for users to select, which matches the menu scenario.",
+   "Incorrect: Sampling lets a server ask the client's model for a completion and is not a user-facing menu."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-23",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Scenario: customer-support agent. The tool search_orders is sometimes used for product questions, and order ids are passed in different formats. Which TWO additions to the tool definition would improve this most? (Select 2)",
+  "choices": [
+   "State that it finds a customer's order history and is not for product catalogue questions, which should use search_products",
+   "Describe the order_id parameter with its exact format and an example such as ORD-10482",
+   "Add 'This is the best tool, always prefer it' to the description",
+   "Include the company's founding history so that the model understands the business",
+   "Add the API key to the description so that the model can authenticate if needed"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Good definitions state what the tool is for, what it is not for, and the exact format of its inputs.",
+  "rationale": [
+   "Correct: Clear boundaries and pointers to the alternative reduce misuse.",
+   "Correct: A precise format with an example reduces malformed arguments.",
+   "Incorrect: Blanket claims of superiority increase misuse and do not help the model decide.",
+   "Incorrect: Irrelevant text dilutes the useful part of the description.",
+   "Incorrect: Credentials must never appear in descriptions, which the model and logs can expose."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-24",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: CRM assistant. get_customer returns 80 fields, but the assistant usually needs three or four. The context fills quickly when many customers are examined. What is the best approach?",
+  "choices": [
+   "Always return all 80 fields, so that the model never has to call the tool a second time for more detail",
+   "Truncate the response after the first 500 characters, whichever fields happen to be inside that limit",
+   "Return a concise default, and offer a parameter to choose the detail level or specific fields",
+   "Remove the tool and have the user paste the relevant customer data into the chat when it is needed"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Return concise results by default and let the model request more detail when it needs it.",
+  "rationale": [
+   "Incorrect: This wastes context on information that is rarely used.",
+   "Incorrect: Truncation may cut off the fields that matter and gives the model no control.",
+   "Correct: A concise default keeps context small, and the model can ask for more when it needs it.",
+   "Incorrect: This removes automation and exposes data in the chat history."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-25",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: research assistant. A document search tool returns 5,000 hits for broad queries. The model keeps issuing broad queries and then summarises only the first few hits. What is the most effective improvement?",
+  "choices": [
+   "Remove the tool and let the model answer from memory, which avoids broad queries altogether and saves the tokens",
+   "Return a total count and facets with a hint to narrow broad queries, and describe good query practice in the description",
+   "Always return all 5,000 hits and let the model decide which of them matter for the question",
+   "Cap results at three without saying that more exist, so that the answers always stay short"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Let tool results guide the model's next step, for example by showing counts and suggesting how to narrow a query.",
+  "rationale": [
+   "Incorrect: Answers from memory lose the retrieval that makes the answers current and traceable.",
+   "Correct: Feedback in the result guides the next query, and the description sets expectations for how to use the tool.",
+   "Incorrect: This overloads context and does not teach the model to narrow its search.",
+   "Incorrect: Silent capping hides that data exists and can lead to false conclusions."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-26",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: internal tooling. An MCP server queries a ticket system with one shared service account. Users have noticed that the assistant sometimes shows tickets from projects they should not see. Which fix is correct?",
+  "choices": [
+   "Tell the model in the system prompt not to show tickets from projects that the user is not a member of",
+   "Ask the model to filter the results by the user's project list after every query that it runs against the tracker",
+   "Run requests as the end user, or pass the identity along, and enforce authorisation on the server side",
+   "Increase the model's temperature so that it is less likely to repeat data that it should not show to the user"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Enforce authorisation on the server using the end user's identity; never rely on the model to withhold data.",
+  "rationale": [
+   "Incorrect: A prompt is not an access control, and the data has already reached the model.",
+   "Incorrect: Post-filtering by the model is unreliable and the unauthorised data was already in context.",
+   "Correct: The server decides what a user may see, so unauthorised data is never returned.",
+   "Incorrect: Temperature has no relationship with access rights."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-27",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Scenario: regulated industry. Compliance needs an audit trail of what the assistant did with the company's tools. Which TWO design choices best serve this? (Select 2)",
+  "choices": [
+   "Log each call at the tool or server layer with timestamp, user, tool, redacted arguments and outcome",
+   "Keep the audit records separate from the model's context and protect them from modification",
+   "Ask the model to write a summary of its tool use at the end of each conversation, and store the summary as the record",
+   "Log full argument values including secrets, so that nothing is lost",
+   "Store the audit trail in the conversation history so the assistant can read it later"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Record actual calls in the tool layer, with redaction, and keep the record out of the model's control.",
+  "rationale": [
+   "Correct: The tool layer sees what actually ran and does not depend on what the model reports.",
+   "Correct: Separation and protection preserve the integrity of the record and keep it out of the model's reach.",
+   "Incorrect: A model-written summary can be incomplete or wrong, and it is not evidence of what actually executed.",
+   "Incorrect: Storing secrets in logs creates a new exposure.",
+   "Incorrect: Putting records into context makes them modifiable by prompts and consumes tokens."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-28",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: retail assistant. Placing an order for a returning customer needs five sequential calls: get_customer, get_default_address, get_cart, calculate_shipping and create_order. This is the most common task, and each round trip adds latency and chances for error. What is the best design?",
+  "choices": [
+   "Merge every capability into one tool, do_everything(action, params), and rely on the model to choose the action",
+   "Keep the granular tools for unusual cases and add a prepare_checkout tool that returns customer, address, cart and shipping",
+   "Tell the model to issue all five calls in parallel in the same turn, to save the time of the round trips",
+   "Remove calculate_shipping and let the model estimate the shipping cost from the cart contents instead"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Offer a higher-level tool for the common path while keeping focused primitives for the rest.",
+  "rationale": [
+   "Incorrect: A catch-all tool with free-form parameters makes tool selection and validation worse.",
+   "Correct: The common path is shortened without losing precision for rarer cases, and the final consequential call stays separate.",
+   "Incorrect: The later calls depend on earlier results, so they cannot be parallelised.",
+   "Incorrect: An estimate produces incorrect prices and breaks the order."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-29",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: support assistant. The knowledge-base MCP server is unavailable at the start of a session, while the other tools work. What should the assistant do?",
+  "choices": [
+   "Say that it cannot help at all until every server is available, and ask the user to come back later in the day",
+   "Retry the connection every second until it comes back, and do not answer any question in the meantime at all",
+   "Tell the user the knowledge base is down, continue with the working tools, and mark unverified answers as such",
+   "Answer all knowledge-base questions from memory, without mentioning to the user that the knowledge base is down"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Degrade gracefully: continue with what works, state the gap and never present unverified answers as sourced.",
+  "rationale": [
+   "Incorrect: This turns a partial outage into a complete one.",
+   "Incorrect: An endless retry loop blocks the user and hides the problem.",
+   "Correct: Graceful degradation keeps the user moving and is honest about what could not be checked.",
+   "Incorrect: Answers without the source, presented as verified, are the worst outcome."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "2.1.1-30",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: developer assistant. Three MCP servers (Jira, Confluence and GitHub) each expose tools named 'search' and 'get'. The assistant frequently calls the wrong one. Which change is most effective?",
+  "choices": [
+   "Give the tools distinctive names with system and object, such as jira_search_issues and confluence_search_pages",
+   "Keep the names and add the rule 'check which server a tool belongs to' to the system prompt of the assistant",
+   "Number the tools in the order in which the servers were added, so that each one has a unique name for the model",
+   "Combine all three servers into a single server that exposes only one 'search' and one 'get' tool for everything"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Make tool names and descriptions unambiguous across servers.",
+  "rationale": [
+   "Correct: Clear names and distinct descriptions allow the model to select correctly at the point of choice.",
+   "Incorrect: The model has to infer the owner of a tool, and a prompt rule is a weak fix for an ambiguity in the definitions.",
+   "Incorrect: Numbers carry no meaning about the purpose of the tool.",
+   "Incorrect: A combined search tool shifts the ambiguity into one overloaded tool."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ }
+]
