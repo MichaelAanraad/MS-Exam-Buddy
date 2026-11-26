@@ -14,6 +14,7 @@ difficulty levels. Original questions, not exam dumps.
 | AB-731 | AI Transformation Leader | `docs/ab731/` |
 | AI-200 | Developing AI Cloud Solutions on Azure | `docs/ai200/` |
 | GH-900 | GitHub Foundations | `docs/gh900/` |
+| CCAR-F | Claude Certified Architect - Foundations | `docs/ccarf/` |
 
 Open `docs/index.html` in a browser, or host it on GitHub Pages:
 
