@@ -1,0 +1,240 @@
+[
+ {
+  "id": "2.1.1-01",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. keeps product documentation in the /docs folder of Repo1. The documentation team has write access to the repository. Litware wants the documentation team to be requested for review automatically whenever a pull request changes files in /docs.\n\nWhich file should you add to Repo1?",
+  "choices": [
+   "CONTRIBUTING.md",
+   "SUPPORT.md",
+   "CODEOWNERS",
+   "CITATION.cff"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A CODEOWNERS file maps file paths to users or teams, and GitHub requests those owners for review when a pull request changes matching files. The owners need write access, which the documentation team has. CONTRIBUTING.md only shows contribution guidelines, SUPPORT.md points people to help resources, and CITATION.cff describes how to cite the project, so none of them requests reviewers.",
+  "ref": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners"
+ },
+ {
+  "id": "2.1.1-02",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Fabrikam, Inc. publishes Repo1 as a public repository. Maintainers want GitHub to show a link to contribution guidelines when someone opens an issue or a pull request. Maintainers also want security researchers to find the supported versions and the steps for reporting a vulnerability in the repository's security policy.\n\nWhich two files should you add to Repo1? Each correct answer presents part of the solution.",
+  "choices": [
+   "CODE_OF_CONDUCT.md",
+   "CONTRIBUTING.md",
+   "CODEOWNERS",
+   "SECURITY.md",
+   "SUPPORT.md"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "CONTRIBUTING.md holds the guidelines that GitHub links to when someone opens an issue or pull request, and SECURITY.md holds the security policy with supported versions and reporting steps. CODE_OF_CONDUCT.md describes expected behavior, CODEOWNERS assigns reviewers, and SUPPORT.md explains where to get help. They would be right for different requirements than the two in this scenario.",
+  "ref": "https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/setting-guidelines-for-repository-contributors"
+ },
+ {
+  "id": "2.1.1-03",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Tailspin Toys is preparing Repo1 to become a public open-source repository. Visitors who land on the repository home page must see what the project does and how to get started. Other developers must also be told under which terms they may reuse and modify the code, because default copyright law restricts reuse when no terms are stated. Contribution rules and citation details are handled later.\n\nWhich two files should you add to Repo1? Each correct answer presents part of the solution.",
+  "choices": [
+   "CITATION.cff",
+   "README.md",
+   "CONTRIBUTING.md",
+   "CODE_OF_CONDUCT.md",
+   "LICENSE"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "A README is displayed automatically on the repository home page and explains what the project does and how to start. A LICENSE file states the reuse terms, which GitHub can detect and display. CONTRIBUTING.md, CODE_OF_CONDUCT.md, and CITATION.cff are valid community files, but the stem defers contribution rules and citation details and does not ask for conduct rules.",
+  "ref": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes"
+ },
+ {
+  "id": "2.1.2-01",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank wants every new service team to start from the same folder structure, workflow files, and issue templates. Each new repository must be independent and must not keep a link to the starting repository as an upstream.\n\nWhich GitHub feature should you configure for the starting repository?",
+  "choices": [
+   "Fork",
+   "Git submodule",
+   "Template repository",
+   "Repository transfer"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Marking the starting repository as a template lets anyone with access create new repositories that receive its directory structure and files without being linked as an upstream. A fork keeps a connection to the original repository, a submodule embeds one repository inside another, and a transfer moves ownership rather than creating copies.",
+  "ref": "https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository"
+ },
+ {
+  "id": "2.1.2-02",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. has Repo1 with the branches main and release. User1 has admin access to Repo1. New pull requests and commits must use release as the base branch unless someone selects another branch.\n\nWhich repository change should User1 make?",
+  "choices": [
+   "Add a branch protection rule that targets release",
+   "Change the default branch to release in the repository settings",
+   "Set release as the publishing source for GitHub Pages",
+   "Add a CODEOWNERS entry for the release branch"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The default branch is the base branch for pull requests and code commits, and an admin can change it in the repository settings when more than one branch exists. A branch protection rule restricts how a branch is changed but does not make it the base branch. The GitHub Pages source and CODEOWNERS control publishing and review requests.",
+  "ref": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/changing-the-default-branch"
+ },
+ {
+  "id": "2.1.2-03",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. maintains Repo1 as a template repository. Its default branch main holds starter code, and a branch named samples holds optional sample content. User1 created Repo2 from the template and found that only the starter code is present. User1 needs both branches in Repo2 and does not want Repo2 to be a fork of Repo1.\n\nWhat should User1 do?",
+  "choices": [
+   "Open a pull request from the samples branch in Repo1 to Repo2",
+   "Make samples the default branch of Repo1 and create Repo2 again",
+   "Create Repo2 again from the template and choose to include all branches",
+   "Fork Repo1 and delete the branches that are not needed in the fork"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "When a repository is created from a template, GitHub copies the default branch, and the creator can choose to include the template's other branches as well. Branches created from a template have unrelated histories, so a pull request between the repositories is not possible. Changing the default branch would swap the content rather than add it, and a fork is excluded by the stem.",
+  "ref": "https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository"
+ },
+ {
+  "id": "2.1.3-01",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A contributor at Tailspin Toys has write access to Repo1 and works only in a web browser. The contributor must add a new text file named setup.md in a new folder named docs and type the content directly in the browser.\n\nWhich action should the contributor use?",
+  "choices": [
+   "Select Add file, then Upload files, and drop the docs folder on the page",
+   "Create a gist named setup.md and link it from the repository",
+   "Select Add file, then Create new file, and type docs/setup.md as the name",
+   "Create a wiki page named setup in the repository wiki"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In the browser, Add file > Create new file lets you type the content, and a slash in the file name creates the folder. Uploading requires the file to exist locally, and a gist or a wiki page lives outside the repository file tree, so neither adds docs/setup.md to Repo1.",
+  "ref": "https://docs.github.com/en/repositories/working-with-files/managing-files/creating-new-files"
+ },
+ {
+  "id": "2.1.3-02",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam, Inc. needs to store a 150 MiB machine learning model file in Repo1 so that the file is versioned together with the code. User1 tried to upload the file by using the browser and the upload failed.\n\nWhat should User1 do?",
+  "choices": [
+   "Push the file with Git from a local clone without Git LFS",
+   "Upload the file in the browser to a new branch",
+   "Paste the file content into Create new file in the browser",
+   "Track the file with Git LFS and push it from a local clone"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Browser uploads are limited to 25 MiB per file and the command line accepts files up to 100 MiB, so a 150 MiB file must be stored with Git Large File Storage. Plain Git from a clone fails above 100 MiB, and uploading to a new branch does not change the browser limit.",
+  "ref": "https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository"
+ },
+ {
+  "id": "2.1.3-03",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud requires that every change to the default branch of Repo1 is reviewed through a pull request in Repo1 itself. User1 has write access and edits README.md in the browser.\n\nWhich commit option should User1 select?",
+  "choices": [
+   "Commit directly to the default branch",
+   "Commit to a fork of Repo1 and open a pull request from the fork",
+   "Create a new branch for the commit and start a pull request",
+   "Commit directly to the default branch and revert the commit if it is rejected"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "When editing on the default branch, the recommended option is to create a new branch for the commit and open a pull request, which keeps the review inside Repo1. Direct commits bypass the review, and a fork is not needed because User1 has write access and the review must stay in Repo1.",
+  "ref": "https://docs.github.com/en/repositories/working-with-files/managing-files/creating-new-files"
+ },
+ {
+  "id": "2.1.4-01",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "User1 finds a useful open-source repository named Repo1. User1 wants to find it again easily later and show appreciation to its maintainers, without receiving notifications about its activity.\n\nWhich action should User1 take?",
+  "choices": [
+   "Watch the repository",
+   "Star the repository",
+   "Fork the repository",
+   "Follow the repository owner"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Starring a repository bookmarks it on your stars page and shows appreciation to the maintainer, and it does not subscribe you to notifications. Watching sends notifications, forking creates a copy for your own changes, and following a user tracks that user's activity rather than bookmarking a repository.",
+  "ref": "https://docs.github.com/en/get-started/exploring-projects-on-github/saving-repositories-with-stars"
+ },
+ {
+  "id": "2.1.4-02",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank maintains Lib1 as a public repository. The team wants to see which other public repositories and packages depend on Lib1, and also wants to see the dependencies of Lib1 that have known vulnerabilities.\n\nWhich feature should the team use?",
+  "choices": [
+   "Traffic",
+   "Network graph",
+   "Dependency graph",
+   "Pulse"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The dependency graph lists the dependencies of a repository, flags known vulnerabilities, and shows dependents, which are other repositories and packages that use it. Traffic shows visitors and clones, the network graph shows forks, and Pulse summarizes recent issue, pull request, and commit activity.",
+  "ref": "https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-the-dependency-graph"
+ },
+ {
+  "id": "2.1.5-01",
+  "obj": "2.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. has ten developers who all have write access to Repo1. The developers want a simple way to work on changes in parallel and review them through pull requests.\n\nWhat should the developers do?",
+  "choices": [
+   "Fork Repo1 into the account of each developer",
+   "Clone Repo1 and push to a new repository for each developer",
+   "Create a template repository from Repo1 for each change",
+   "Create a branch in Repo1 for each change and open a pull request"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "For regular collaborators with write access, creating branches in the same repository is the recommended practice, and forks are reserved for unaffiliated contributors such as open-source contributors. Forks, separate repositories, and templates add copies that must be kept in sync and are not needed when everyone can push branches.",
+  "ref": "https://docs.github.com/en/repositories/creating-and-managing-repositories/best-practices-for-repositories"
+ },
+ {
+  "id": "2.1.5-02",
+  "obj": "2.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam, Inc. owns 30 public repositories. The company wants one CODE_OF_CONDUCT.md and one SECURITY.md, maintained in one place, to apply to every repository that does not have its own copy, including existing repositories. Repo5 already has its own SECURITY.md that must keep applying.\n\nWhat should you do?",
+  "choices": [
+   "Create a public repository named community-health in the organization and add the files",
+   "Create a template repository that contains the files and apply it to the existing repositories",
+   "Create a public repository named .github in the organization and add the files",
+   "Add the files to the docs folder of every repository, including Repo5"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A public repository named .github in the organization provides default community health files for every repository that lacks its own copy, and a repository's own file takes precedence, so Repo5 keeps its SECURITY.md. A repository with another name is not read for defaults, a template only applies to new repositories, and copying files into each repository is not maintained in one place.",
+  "ref": "https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file"
+ }
+]

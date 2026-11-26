@@ -1,0 +1,258 @@
+[
+ {
+  "id": "6.1.1-01",
+  "obj": "6.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. employees protect their GitHub accounts with two-factor authentication (2FA). User1 wants to use a mobile app that shows a code that changes every 30 seconds and that is typed in after the password.\n\nWhich second factor should User1 set up?",
+  "choices": [
+   "SMS text message",
+   "Security key",
+   "Authenticator app (TOTP)",
+   "GitHub Mobile push approval"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "An authenticator app generates time-based one-time passwords (TOTP) that rotate every 30 seconds and are typed in after the password. SMS delivers a code by text message instead of from an app, a security key is a hardware device that is tapped rather than typed, and GitHub Mobile approves a sign-in with a push notification. Each of those would be right if the stem asked for a text message, a hardware token or a push approval.",
+  "ref": "https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication"
+ },
+ {
+  "id": "6.1.1-02",
+  "obj": "6.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. requires 2FA for all developers. User2 configured only an authenticator app on a phone and downloaded the recovery codes during setup. The phone is now lost. User2 has no security key, no passkey and never enabled SMS.\n\nWhich method should User2 use to sign in to GitHub?",
+  "choices": [
+   "A security key",
+   "An SMS text message code",
+   "GitHub Mobile push approval",
+   "A saved recovery code"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Recovery codes exist for exactly this case: they let a user back into the account when the authenticator app or phone is lost. A security key and SMS were never set up, and GitHub Mobile would run on the lost phone, so none of those can complete the sign-in. They would help only if they had been registered beforehand and were still available.",
+  "ref": "https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication"
+ },
+ {
+  "id": "6.1.1-03",
+  "obj": "6.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank wants developers to sign in to github.com without typing a password. The sign-in must satisfy both the password and the second factor in one step, must resist phishing sites that imitate github.com, and must use the face or fingerprint recognition already available on company laptops.\n\nWhich sign-in method should the developers register?",
+  "choices": [
+   "A passkey",
+   "An authenticator app",
+   "SMS text message codes",
+   "GitHub Mobile approvals"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A passkey is a public and private key pair bound to the github.com domain, confirmed with a biometric or PIN, so it works without a password, covers password and 2FA in one step, and is highly phishing-resistant. An authenticator app and SMS still need a password and a typed code that can be captured by a lookalike site, and GitHub Mobile is a second factor that is added to the password rather than replacing it.",
+  "ref": "https://docs.github.com/en/authentication/authenticating-with-a-passkey/about-passkeys"
+ },
+ {
+  "id": "6.1.2-01",
+  "obj": "6.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys uses a GitHub organization. User1 is a community volunteer who must label, assign and close issues and pull requests, and moderate discussions, but must not push code to the repository.\n\nWhich repository role should you assign to User1?",
+  "choices": [
+   "Read",
+   "Triage",
+   "Write",
+   "Maintain"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Triage is intended for contributors who proactively manage issues, discussions and pull requests without write access. Read only allows viewing and discussing, Write allows pushing code, which the stem rules out, and Maintain adds repository management that the volunteer does not need.",
+  "ref": "https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/managing-repository-roles/repository-roles-for-an-organization"
+ },
+ {
+  "id": "6.1.2-02",
+  "obj": "6.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud has a GitHub organization. A consultant from an external agency must push to one private repository for three months, must not see the other private repositories, and must not become an organization member.\n\nWhich access type should you use for the consultant?",
+  "choices": [
+   "Organization member added to a team with the Write role",
+   "Organization member with the Maintain role on the repository",
+   "Outside collaborator with the Write role on the repository",
+   "Security manager for the organization"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "An outside collaborator is a person who is not an organization member but has access to one or more specific repositories, which matches a temporary consultant limited to a single repository. The two member options make the consultant an organization member, which the stem forbids, and the Security manager role is an organization role that grants read access to all repositories.",
+  "ref": "https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/managing-outside-collaborators/adding-outside-collaborators-to-repositories-in-your-organization"
+ },
+ {
+  "id": "6.1.2-03",
+  "obj": "6.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fabrikam, Inc. assigns a repository role to User3, a project manager. User3 must run the repository day to day, including managing issues, pull requests and general repository settings, but must not have access to sensitive or destructive actions such as deleting the repository or managing security settings.\n\nWhich repository role should you assign to User3?",
+  "choices": [
+   "Write",
+   "Admin",
+   "Triage",
+   "Maintain"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Maintain is recommended for project managers who need to manage the repository without access to sensitive or destructive actions. Admin gives full access, including security settings and deletion, so it breaks the constraint. Write fits contributors who push code, and Triage covers issues and pull requests only, so neither lets User3 manage the repository.",
+  "ref": "https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/managing-repository-roles/repository-roles-for-an-organization"
+ },
+ {
+  "id": "6.1.3-01",
+  "obj": "6.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. uses an external identity provider (IdP). Litware wants the IdP to create, update and remove every developer account on GitHub and to control the usernames and profile data of those accounts.\n\nWhich account model should Litware choose for its GitHub enterprise?",
+  "choices": [
+   "Personal accounts with SAML single sign-on",
+   "Machine user accounts",
+   "Outside collaborator invitations",
+   "Enterprise Managed Users"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "With Enterprise Managed Users (EMUs), the IdP provisions and deprovisions the accounts and controls usernames and profile data. Personal accounts with SAML single sign-on are created and owned by the developers themselves, so the company controls only authentication. Machine user accounts and outside collaborator invitations are not enterprise-wide account models.",
+  "ref": "https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/understanding-iam-for-enterprises/about-enterprise-managed-users"
+ },
+ {
+  "id": "6.1.3-02",
+  "obj": "6.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. uses an identity provider for single sign-on to its GitHub enterprise. Developers must keep one personal GitHub identity that they also use to contribute to public open-source repositories and that they keep after leaving the company.\n\nWhich option should Fabrikam choose?",
+  "choices": [
+   "Enterprise Managed Users with SCIM provisioning",
+   "Personal accounts with SAML single sign-on for the organizations",
+   "Machine user accounts owned by the organization",
+   "Enterprise Managed Users with a guest collaborator role"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Personal accounts remain owned by the developers, so the same identity can contribute to public repositories and outlive employment, while SAML single sign-on still controls access to the organizations. Managed user accounts are controlled by the IdP and cannot create public content or collaborate outside the enterprise, so both EMU options fail the constraint. Machine user accounts are not personal identities.",
+  "ref": "https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/understanding-iam-for-enterprises/about-enterprise-managed-users"
+ },
+ {
+  "id": "6.1.3-03",
+  "obj": "6.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "An enterprise owner at Tailspin Toys enforced a Copilot policy that disables models beyond the basic set for every organization in the enterprise. User1 is an owner of one organization and wants the Copilot users in that organization to use the additional models.\n\nWhich action should User1 take?",
+  "choices": [
+   "Ask an enterprise owner to change the enterprise policy",
+   "Enable the Models policy in the organization Copilot settings",
+   "Switch the organization to a different Copilot plan",
+   "Assign Copilot seats to every organization member"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When an enterprise owner enforces a Copilot policy, organization owners cannot override it, so the enterprise policy itself must be changed. Setting the Models policy at the organization level has no effect against an enforced enterprise policy. A different plan or more seats change who is licensed, not which policies apply.",
+  "ref": "https://docs.github.com/en/copilot/how-tos/administer-copilot/manage-for-organization/manage-policies"
+ },
+ {
+  "id": "6.1.4-01",
+  "obj": "6.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders wants to make sure that no change reaches the main branch without approval from at least one other developer. Developers must still be able to merge their work after it is approved.\n\nWhich branch protection setting should the repository administrator enable?",
+  "choices": [
+   "Require signed commits on the branch",
+   "Lock the branch to make it read-only",
+   "Require a linear history of commits",
+   "Require a pull request with approvals"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Requiring a pull request with approvals means changes reach the protected branch only after the required number of reviewers approve them, and they can be merged afterwards. Signed commits prove commit authorship but do not require review, a locked branch blocks all new commits including approved merges, and linear history only restricts the merge method.",
+  "ref": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches"
+ },
+ {
+  "id": "6.1.4-02",
+  "obj": "6.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation owns a GitHub Enterprise Cloud enterprise that contains several organizations. A repository holds shared source code that every employee in the enterprise must be able to read, without adding people one by one, and that must not be visible outside the enterprise.\n\nWhich visibility should the repository administrator choose?",
+  "choices": [
+   "Public",
+   "Private",
+   "Private with every employee added as a collaborator",
+   "Internal"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Internal repositories are visible to members of the enterprise that owns them and are available with GitHub Enterprise Cloud. Public exposes the code to everyone on the internet, and Private limits access to people and teams who are explicitly added. Adding every employee as a collaborator would give access, but it conflicts with the requirement not to add people one by one.",
+  "ref": "https://docs.github.com/en/repositories/creating-and-managing-repositories/about-repositories"
+ },
+ {
+  "id": "6.1.4-03",
+  "obj": "6.1.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Wide World Importers protects the main branch of a repository. Every pull request must pass the automated build and test workflow before it can be merged, and the developers who own the changed files, as listed in the CODEOWNERS file, must approve the changes.\n\nWhich two branch protection settings should the administrator enable? Each correct answer presents part of the solution.",
+  "choices": [
+   "Require status checks to pass before merging",
+   "Require signed commits",
+   "Require conversation resolution before merging",
+   "Require linear history",
+   "Require review from Code Owners"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "Required status checks make the build and test workflow a gate for merging, and requiring review from Code Owners makes the owners listed in CODEOWNERS approve the pull request. Signed commits, conversation resolution and linear history are valid protections, but none of them enforces passing tests or approval by file owners.",
+  "ref": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches"
+ },
+ {
+  "id": "6.1.5-01",
+  "obj": "6.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fourth Coffee has an organization with 25 developers who all need Write access to eight repositories. Managers also want to notify all 25 developers with a single @mention.\n\nWhat should the organization owner create?",
+  "choices": [
+   "A custom repository role",
+   "A GitHub Project",
+   "A repository ruleset",
+   "A team in the organization"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A team groups organization members, can be granted access to repositories in one step and can be notified with one @mention. A custom repository role defines permissions but not a group of people, a GitHub Project tracks work, and a ruleset enforces rules on branches or tags.",
+  "ref": "https://docs.github.com/en/organizations/organizing-members-into-teams/about-teams"
+ },
+ {
+  "id": "6.1.5-02",
+  "obj": "6.1.5",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Wingtip Toys has a GitHub organization. User1 must manage the billing details and payment method of the organization. User2 must manage the registrations of the GitHub Apps that the organization owns. Neither user should receive organization owner permissions.\n\nWhich two organization roles should you assign? Each correct answer presents part of the solution.",
+  "choices": [
+   "Security manager",
+   "Billing manager",
+   "Moderator",
+   "Owner",
+   "GitHub App manager"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "The billing manager role manages payment information without broader administrative access, and the GitHub App manager role manages the registrations of GitHub Apps owned by the organization. Owner would exceed the stated limit, the Security manager role handles security alerts and settings, and the Moderator role handles blocking users and hiding comments.",
+  "ref": "https://docs.github.com/en/organizations/managing-peoples-access-to-your-organization-with-roles/roles-in-an-organization"
+ }
+]
