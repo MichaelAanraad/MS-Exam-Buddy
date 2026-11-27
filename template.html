@@ -85,6 +85,7 @@ a { color: var(--accent); }
 .note { border-left: 4px solid var(--accent); padding: 8px 12px; background: var(--chip); border-radius: 6px; margin-bottom: 12px; font-size: .9rem; }
 .rv { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
 .rv button { text-align: left; font-weight: 500; }
+/*__ACCENT__*/
 </style>
 </head>
 <body>
@@ -93,6 +94,7 @@ a { color: var(--accent); }
     <h1>__EXAM__ Exam Buddy</h1>
     <button class="ghost" id="theme" type="button" aria-label="Toggle light/dark theme">Theme</button>
   </header>
+  <div id="banner"></div>
   <div id="app"></div>
   <p class="muted">Questions based on the official __EXAM__ study guide (__EXAM_TITLE__). Not real exam questions.</p>
 </main>
@@ -103,6 +105,18 @@ const Q = DATA.questions, DOMAINS = DATA.domains, OBJ = DATA.objectives, CASES =
 const KEY = DATA.exam.id.toLowerCase().replace(/[^a-z0-9]/g, "");
 const $app = document.getElementById("app");
 const $$ = s => [...$app.querySelectorAll(s)];
+// notice (set per category in build.py) and content date (CONTENT_DATE in objectives.py); the date ages by itself
+(function () {
+  const e = DATA.exam, box = document.getElementById("banner"), lines = [];
+  if (e.notice) lines.push(e.notice);
+  if (e.contentDate) {
+    const p = e.contentDate.split("-"), d = new Date(Date.UTC(+p[0], +p[1] - 1, 1)), now = new Date();
+    const months = (now.getFullYear() - +p[0]) * 12 + now.getMonth() + 1 - +p[1];
+    lines.push("Content as of " + d.toLocaleDateString("en", { month: "long", year: "numeric", timeZone: "UTC" }) + "." +
+      (months > 6 ? " That is more than six months ago: the exam or the product may have changed, so check the current official sources." : ""));
+  }
+  lines.forEach(t => { const p = document.createElement("p"); p.className = "note"; p.textContent = t; box.appendChild(p); });
+})();
 
 // ponytail: localStorage only for per-device history; app works without it.
 const store = {

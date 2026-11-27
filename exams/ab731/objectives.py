@@ -3,6 +3,7 @@ EXAM = "AB-731"
 EXAM_TITLE = "AI Transformation Leader"
 CATEGORY = "AI"  # start-page group
 LEVEL = 1  # 1 entry/business, 2 associate, 3 expert
+CONTENT_DATE = "2026-11"  # month the questions were last checked; the pages warn after six months
 STUDY_GUIDE = "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ab-731"
 # Imported banks have one explanation per question and no per-choice rationale.
 IMPORTED_SINGLE_EXPLANATION = True

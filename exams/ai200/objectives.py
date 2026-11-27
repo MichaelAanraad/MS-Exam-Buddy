@@ -3,6 +3,7 @@ EXAM = "AI-200"
 EXAM_TITLE = "Developing AI Cloud Solutions on Azure"
 CATEGORY = "AI"  # start-page group
 LEVEL = 2  # 1 entry/business, 2 associate, 3 expert
+CONTENT_DATE = "2026-11"  # month the questions were last checked; the pages warn after six months
 STUDY_GUIDE = "https://learn.microsoft.com/credentials/certifications/resources/study-guides/ai-200"
 # Imported banks have one explanation per question and no per-choice rationale.
 IMPORTED_SINGLE_EXPLANATION = True

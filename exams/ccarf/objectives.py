@@ -8,6 +8,7 @@ RELAXED_STYLE = True
 REF_PREFIXES = ('https://docs.anthropic.com/',)
 CATEGORY = "Anthropic"
 LEVEL = 1  # 1 entry/business, 2 associate, 3 expert
+CONTENT_DATE = "2026-11"  # month the questions were last checked; the pages warn after six months
 
 # Source: MichaelAanraad/CCAF d1.js to d5.js (150 questions; unofficial, community-reported domain weights), converted 2026-11-18.
 DOMAINS = {

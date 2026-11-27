@@ -8,6 +8,7 @@ RELAXED_STYLE = False
 REF_PREFIXES = ('https://docs.github.com/', 'https://learn.microsoft.com/')
 CATEGORY = "GitHub"
 LEVEL = 1  # 1 entry/business, 2 associate, 3 expert
+CONTENT_DATE = "2026-11"  # month the questions were last checked; the pages warn after six months
 
 # Source: Microsoft Learn study guide for GH-900 (skills measured as of January 2026); questions written for this repo, converted 2026-11-18.
 DOMAINS = {
