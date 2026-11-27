@@ -1,0 +1,330 @@
+[
+ {
+  "id": "1.2.1-01",
+  "obj": "1.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. owns five GitHub organizations. The IT department wants to manage policies and billing for all of them from one place.\n\nWhich type of account should Litware use?",
+  "choices": [
+   "An organization account",
+   "A personal account",
+   "A machine user account",
+   "An enterprise account"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "An enterprise account lets administrators centrally manage policies and billing for multiple organizations. An organization account groups people and repositories but does not span organizations, a personal account is an individual identity, and a machine user account supports automation.",
+  "ref": "https://learn.microsoft.com/training/modules/github-introduction-products/2-what-are-github-products"
+ },
+ {
+  "id": "1.2.1-02",
+  "obj": "1.2.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "User1 is a member of two GitHub organizations at Northwind Traders and must access repositories in both.\n\nHow should User1 sign in?",
+  "choices": [
+   "Sign in to each organization by using its own credentials",
+   "Sign in to a personal account that belongs to both organizations",
+   "Create a second personal account for each organization membership",
+   "Sign in to the enterprise account that owns both organizations"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "People sign in to their personal account, and one personal account can be a member of multiple organizations. You cannot sign in to an organization, and enterprise accounts do not replace the personal account, so creating more accounts or signing in elsewhere is unnecessary.",
+  "ref": "https://docs.github.com/en/get-started/learning-about-github/types-of-github-accounts"
+ },
+ {
+  "id": "1.2.1-03",
+  "obj": "1.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys has an organization of 20 developers with private repositories. The team needs team pull request reviewers, protected branches, and email support. The company does not need SAML single sign-on, an enterprise account, or a self-hosted option.\n\nWhich GitHub plan should Tailspin Toys choose?",
+  "choices": [
+   "GitHub Free",
+   "GitHub Pro",
+   "GitHub Team",
+   "GitHub Enterprise Cloud"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "GitHub Team is designed for organizations and adds email support and advanced private repository tools such as team pull request reviewers and protected branches. GitHub Free lacks those tools, GitHub Pro is for personal accounts, and GitHub Enterprise Cloud adds capabilities the company explicitly does not need.",
+  "ref": "https://docs.github.com/en/get-started/learning-about-github/githubs-plans"
+ },
+ {
+  "id": "1.2.1-04",
+  "obj": "1.2.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank must provision employee accounts from its identity provider, which also controls usernames and organization membership. Compliance also requires that these accounts cannot create public content or collaborate outside the company.\n\nWhich approach should Woodgrove Bank use?",
+  "choices": [
+   "Personal accounts that use SAML single sign-on with an organization",
+   "Enterprise Managed Users in GitHub Enterprise Cloud",
+   "Machine user accounts that are owned by the organization",
+   "Personal accounts that are invited as outside collaborators"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Enterprise Managed Users are created and controlled through the identity provider, and managed users cannot create public content or collaborate outside the enterprise. Personal accounts with SAML single sign-on stay under the control of the individual, so they cannot enforce those restrictions.",
+  "ref": "https://docs.github.com/en/enterprise-cloud@latest/admin/identity-and-access-management/using-enterprise-managed-users-for-iam/about-enterprise-managed-users"
+ },
+ {
+  "id": "1.2.1-05",
+  "obj": "1.2.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adventure Works Cycles has two existing organizations and has just purchased GitHub Enterprise Cloud. The company wants central policies to apply to the existing organizations.\n\nWhich action should the enterprise owner perform?",
+  "choices": [
+   "Transfer the repositories into one new organization",
+   "Assign the enterprise owner role to each organization owner",
+   "Invite the existing organizations to join the enterprise account",
+   "Upgrade each organization to GitHub Team to inherit policies"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Enterprise owners can invite existing organizations to join the enterprise account, and enterprise policies then apply to the organizations it owns. Moving repositories, granting roles, or changing plans does not bring the organizations under enterprise policy.",
+  "ref": "https://learn.microsoft.com/training/modules/github-introduction-products/2-what-are-github-products"
+ },
+ {
+  "id": "1.2.2-01",
+  "obj": "1.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Litware, Inc. is about to start a new feature in a repository that uses GitHub flow. The changes must not affect the default branch until they are reviewed.\n\nWhat should the developer do first?",
+  "choices": [
+   "Open a draft pull request for the feature",
+   "Create a branch from the default branch",
+   "Commit the changes to the default branch",
+   "Fork the repository to a personal account"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "GitHub flow starts by creating a branch, which keeps work separate from the default branch until it is merged. A pull request needs a branch with commits, committing to the default branch skips review, and a fork is not needed when the developer can already work in the repository.",
+  "ref": "https://docs.github.com/en/get-started/using-github/github-flow"
+ },
+ {
+  "id": "1.2.2-02",
+  "obj": "1.2.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Reviewers at Fabrikam, Inc. need to see the differences between a feature branch and the default branch, comment on specific lines, and approve the changes before they are merged.\n\nWhich GitHub feature should the team use?",
+  "choices": [
+   "An issue",
+   "A pull request",
+   "A discussion",
+   "A commit comment"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A pull request proposes merging one branch into another, displays the differences, and supports line comments and approvals before the merge. An issue tracks work, a discussion supports open conversation, and a commit comment does not provide a review and approval process.",
+  "ref": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests"
+ },
+ {
+  "id": "1.2.2-03",
+  "obj": "1.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A pull request for a bug fix at Trey Research was approved and merged into the default branch. The developer will now start an unrelated change.\n\nWhich action should the developer perform?",
+  "choices": [
+   "Reopen the pull request for the unrelated change",
+   "Add the unrelated change to the merged branch",
+   "Delete the merged branch and start a new branch",
+   "Merge the default branch into the merged branch"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In GitHub flow, the branch is deleted after the merge to show the work is complete, and each set of unrelated changes uses its own branch. Deleting does not remove the pull request or commit history, and the branch can be restored if needed.",
+  "ref": "https://docs.github.com/en/get-started/using-github/github-flow"
+ },
+ {
+  "id": "1.2.2-04",
+  "obj": "1.2.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A developer at Proseware, Inc. wants teammates to give early feedback on unfinished work through a pull request. The pull request must not be mergeable until the developer marks it ready for review.\n\nWhich type of pull request should the developer open?",
+  "choices": [
+   "A pull request from a fork",
+   "A pull request with no assigned reviewers",
+   "A draft pull request",
+   "A pull request that targets a different branch"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A draft pull request supports early feedback and cannot be merged until it is marked ready for review. A pull request without reviewers, from a fork, or aimed at another branch is still a normal pull request, which can be merged when checks and rules allow it.",
+  "ref": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests"
+ },
+ {
+  "id": "1.2.2-05",
+  "obj": "1.2.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Wingtip Toys is adopting GitHub flow for its web application. The team lead wants two working practices added to the contributor guidelines.\n\nWhich two practices should the team lead include? Each correct answer presents part of the solution.",
+  "choices": [
+   "Commit small fixes directly to the default branch to save time",
+   "Use a separate branch for each set of unrelated changes",
+   "Wait to push the branch until the entire feature is complete",
+   "Open a pull request to request feedback before merging",
+   "Keep the branch open after the merge so that history is preserved"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "GitHub flow uses a separate branch for each set of unrelated changes and a pull request to gather review feedback before merging. Pushing early backs up work and lets collaborators see it, and deleting the branch after the merge does not lose history because the commits and pull request remain.",
+  "ref": "https://docs.github.com/en/get-started/using-github/github-flow"
+ },
+ {
+  "id": "1.2.3-01",
+  "obj": "1.2.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Contoso, Ltd. is writing a pull request comment and wants to notify a teammate named User2.\n\nWhich Markdown syntax should the developer type?",
+  "choices": [
+   "#User2",
+   "@User2",
+   "[User2](User2)",
+   ":User2:"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "An at sign followed by a username mentions that person, who is then notified if they have read access to the repository. A number sign references an issue or pull request, a link points to a path, and colons around a name produce an emoji.",
+  "ref": "https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+ },
+ {
+  "id": "1.2.3-02",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A maintainer at Relecloud creates an issue to track a release. The issue needs a checklist whose first item refers to the open issue number 42. The item must show the title and state of issue 42 and be checked off automatically when issue 42 closes.\n\nWhich Markdown should the maintainer enter?",
+  "choices": [
+   "- [x] #42",
+   "* #42",
+   "- [ ] #42",
+   "- [ ] issue 42"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A task list item uses a hyphen and an empty checkbox followed by an issue reference, and the reference shows the issue title and state and is checked when the issue closes. A checked box would mean the task is already complete, a plain bullet is not a task, and plain text is not a reference.",
+  "ref": "https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/about-task-lists"
+ },
+ {
+  "id": "1.2.3-03",
+  "obj": "1.2.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "User1 at Tailspin Toys wants to paste five lines of terminal output into an issue comment. The whitespace must be preserved and no Markdown inside the output may be interpreted.\n\nWhich Markdown should User1 use?",
+  "choices": [
+   "A fenced code block that uses triple backticks",
+   "A block quote that starts each line with >",
+   "Inline code that is wrapped in single backticks",
+   "Bold text that is wrapped in double asterisks"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A fenced code block that is delimited by triple backticks renders multiple lines as code and preserves them. Inline code is meant for short spans within a sentence, a block quote still interprets Markdown, and bold text only changes emphasis.",
+  "ref": "https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+ },
+ {
+  "id": "1.2.3-04",
+  "obj": "1.2.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Maintainers at Northwind Traders want a pull request description to include a callout that renders as a highlighted box and warns reviewers about a breaking change.\n\nWhich Markdown should the maintainers use?",
+  "choices": [
+   "A block quote that begins with [!WARNING] on its first line",
+   "A block quote in which the word Warning is bold",
+   "A level-two heading that contains the word Warning",
+   "A task list item that is labeled Warning"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "GitHub alerts use a block quote whose first line is a type such as [!WARNING], which renders as a highlighted callout. A bold quote, a heading, or a task item only formats text and does not produce the styled alert box.",
+  "ref": "https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+ },
+ {
+  "id": "1.2.4-01",
+  "obj": "1.2.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Designers at Wingtip Toys prefer a graphical interface. On Windows laptops, they must clone repositories, review changes, commit, and push without using the command line.\n\nWhich tool should the designers use?",
+  "choices": [
+   "GitHub Mobile",
+   "GitHub Desktop",
+   "GitHub CLI",
+   "GitHub Codespaces"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "GitHub Desktop is an application for Windows and macOS that provides a graphical interface for cloning, committing, and pushing. GitHub CLI is a command-line tool, GitHub Mobile targets phones, and GitHub Codespaces runs a development environment in the cloud.",
+  "ref": "https://learn.microsoft.com/training/modules/github-introduction-products/3-mobile-versus-desktop"
+ },
+ {
+  "id": "1.2.4-02",
+  "obj": "1.2.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "An on-call engineer at Fabrikam, Inc. is traveling with only an iPhone. The engineer must triage notifications and review a pull request that blocks a release.\n\nWhich tool should the engineer use?",
+  "choices": [
+   "GitHub Desktop",
+   "GitHub CLI",
+   "Git command line",
+   "GitHub Mobile"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "GitHub Mobile is available for iOS and Android and supports managing notifications and reviewing pull requests on a phone. GitHub Desktop runs on Windows and macOS, and GitHub CLI and the Git command line need a terminal.",
+  "ref": "https://learn.microsoft.com/training/modules/github-introduction-products/3-mobile-versus-desktop"
+ },
+ {
+  "id": "1.2.4-03",
+  "obj": "1.2.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A designer at Lucerne Publishing works on macOS and edits image files in a repository. Before committing, the designer must visually compare the changed images and add a colleague as coauthor of the commit. The designer wants a locally installed graphical application.\n\nWhich tool should the designer use?",
+  "choices": [
+   "GitHub Mobile",
+   "Git command line",
+   "GitHub Codespaces",
+   "GitHub Desktop"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "GitHub Desktop is installed locally on Windows or macOS and supports comparing changed images and adding coauthors to a commit. GitHub Mobile does not offer these commit features, the Git command line is not graphical, and GitHub Codespaces is hosted in the cloud rather than installed locally.",
+  "ref": "https://learn.microsoft.com/training/modules/github-introduction-products/3-mobile-versus-desktop"
+ },
+ {
+  "id": "1.2.4-04",
+  "obj": "1.2.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "User1 at Margie's Travel uses GitHub Mobile on an Android phone while traveling.\n\nWhich two tasks should User1 expect to perform in GitHub Mobile? Each correct answer presents a complete solution.",
+  "choices": [
+   "Clone a repository to a local folder and start working",
+   "Verify a sign-in attempt from an unrecognized device",
+   "Add a coauthor to a commit before committing",
+   "Triage and clear notifications by marking threads as read",
+   "Compare changed images before committing"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "GitHub Mobile supports managing and clearing notifications and verifying sign-in attempts on unrecognized devices. Cloning repositories, adding coauthors to commits, and comparing changed images are GitHub Desktop capabilities for local Git workflows.",
+  "ref": "https://learn.microsoft.com/training/modules/github-introduction-products/3-mobile-versus-desktop"
+ }
+]

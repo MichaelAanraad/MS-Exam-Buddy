@@ -1,0 +1,731 @@
+[
+ {
+  "id": "5.1.1-01",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: long-running support agent. A conversation lasts two hours and has grown to 150,000 tokens, mostly old tool output. Response quality is declining and cost is rising. Which strategy is best?",
+  "choices": [
+   "Delete the oldest 50% of the messages, without analysing which of them contain facts that are still needed",
+   "Summarise completed phases, keep decisions, identifiers and open items, drop stale output, and store key facts externally",
+   "Switch to a smaller model for the rest of the conversation, which lowers the cost of every further call",
+   "Ask the user to start a new conversation and to repeat their situation from the beginning"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Compact deliberately: keep decisions and open items, drop stale output, and externalise key facts.",
+  "rationale": [
+   "Incorrect: Blind deletion can remove the facts that the next steps depend on.",
+   "Correct: This preserves what matters for the next decision and frees the context from material that no longer helps.",
+   "Incorrect: A smaller model does not shorten the context and may reduce quality.",
+   "Incorrect: Pushes the cost of the problem onto the customer."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-02",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: contract review. A 300-page contract is supplied in full. The key instruction, 'flag any clause that exceeds a liability cap of 1 million EUR', sits in the middle of the prompt, and the model frequently overlooks it. What helps most?",
+  "choices": [
+   "Repeat the instruction 30 times throughout the contract, so that the model cannot overlook it",
+   "Put the key instruction at the start or end of the prompt, state it clearly, and restate it in the final request",
+   "Make the instruction longer and more detailed, so that it stands out from the contract text around it",
+   "Lower the temperature to 0, so that the model attends to the whole input in a consistent way"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "In long contexts, place critical instructions at the edges and restate them in the final request.",
+  "rationale": [
+   "Incorrect: Heavy repetition adds noise and cost without a clear gain.",
+   "Correct: Position and clarity matter in long contexts, and the end of the prompt is well attended.",
+   "Incorrect: Length does not improve its salience and may bury the point.",
+   "Incorrect: Temperature does not affect where the model attends in a long input."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-03",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: production service. During peak hours about 5% of requests fail with rate-limit or overloaded responses. The client currently retries immediately up to ten times. Failures increase during peaks. What is the best change?",
+  "choices": [
+   "Retry more often with no delay, up to 20 times, so that a request gets through once the load drops",
+   "Retry with exponential backoff and jitter, honour any retry-after hint, cap the attempts, then fail gracefully",
+   "Stop retrying and show an error immediately, so that users are told quickly when a request fails",
+   "Send each request to three models at once and take the answer that arrives first"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Handle transient errors with bounded exponential backoff and jitter.",
+  "rationale": [
+   "Incorrect: Immediate retries add load at the worst moment and prolong the overload.",
+   "Correct: Spacing out the retries spreads the load and gives the service time to recover, and a cap prevents endless loops.",
+   "Incorrect: Gives up on failures that a short wait would have resolved.",
+   "Incorrect: Triples the load and cost without addressing the overload."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-04",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: report generator. An agent generates a long weekly report. Sometimes the report ends in the middle of a sentence, and the stop_reason in the response is max_tokens. What should the application do?",
+  "choices": [
+   "Treat the response as complete, since the model stopped generating text by its own choice at that point",
+   "Detect the max_tokens stop, then continue or raise the limit, and never deliver a truncated report",
+   "Reduce the number of sections in the report, which hides the cut-off from the readers of the report",
+   "Ask the model whether it finished, and rely on its answer to decide if the report is complete"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Check stop_reason and handle truncation explicitly.",
+  "rationale": [
+   "Incorrect: The stop reason shows that the limit was reached, not that the report was complete.",
+   "Correct: The application knows about the truncation and can fix it instead of delivering a broken report.",
+   "Incorrect: Hiding the symptom does not address a limit that is set too low for the task.",
+   "Incorrect: The model may not notice its own truncation, and the stop_reason is reliable."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-05",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: multi-hour coding agent. An agent builds a large feature across many sessions. Each new session starts without memory of earlier work and redoes or contradicts earlier decisions. Which design is most effective?",
+  "choices": [
+   "Paste the entire previous transcript at the start of every session, so that the model has all of the history",
+   "Keep a progress file with decisions, completed tasks and next steps, commit regularly, and load it at session start",
+   "Rely on the model to infer the earlier decisions from the code that already exists in the repository",
+   "Use a larger model, so that it remembers more of the earlier sessions when it starts a new one"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Persist decisions and progress in a concise file that each new session loads.",
+  "rationale": [
+   "Incorrect: The transcript is long and mixes useful facts with noise, using up the context.",
+   "Correct: A compact structured record of state gives each session what it needs, and commits provide a checkpoint.",
+   "Incorrect: Code shows what exists but not why choices were made or what is planned next.",
+   "Incorrect: Models do not remember across sessions; size does not change that."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-06",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: customer assistant. After adding the current time to the beginning of the system prompt, cache hit rates dropped from 80% to near zero and costs rose. What explains this?",
+  "choices": [
+   "The cache only works for prompts shorter than 1,000 tokens, and the timestamp pushed the prompt over that limit",
+   "The prefix now changes on every request, so no cached prefix can be reused",
+   "The new timestamp format disabled the cache for the whole account until the format is changed back",
+   "The model now needs more tokens to read the timestamp, which makes every request more expensive"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A changing prefix prevents cache reuse; keep stable content at the beginning.",
+  "rationale": [
+   "Incorrect: Cache applies to long prompts, which is where it saves the most.",
+   "Correct: Caching depends on an identical prefix, and a changing first line breaks it for everything that follows.",
+   "Incorrect: The timestamp format is not what matters; any change in the prefix has the effect.",
+   "Incorrect: The timestamp is only a few tokens and does not explain the cost jump."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-07",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "multi",
+  "stem": "Scenario: agent platform. The team is trying to understand why cache hits dropped after a release. Which TWO changes in the release would most likely break the reusable prefix? (Select 2)",
+  "choices": [
+   "The order of tool definitions was changed",
+   "A new sentence was added near the top of the system prompt",
+   "A new user message was appended at the end of the conversation",
+   "The assistant's answer from the previous turn was appended to the history",
+   "The application log level was changed"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Changes to tools or the beginning of the system prompt invalidate the cached prefix; appending to the end does not.",
+  "rationale": [
+   "Correct: Tools are part of the prefix, so a change in their order produces a different prefix.",
+   "Correct: A change early in the prefix invalidates the cached content that follows.",
+   "Incorrect: Appending at the end leaves the earlier prefix unchanged.",
+   "Incorrect: Appending history extends the prefix without altering the existing part.",
+   "Incorrect: Logging does not alter the prompt."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-08",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: document processing. A company must classify 200,000 archived documents over a weekend. There is no real-time requirement, and cost matters. Which approach fits best?",
+  "choices": [
+   "Process the documents one by one with the standard interactive API, in a simple loop over the archive",
+   "Use the batch processing API, submit the jobs, collect results when ready, and handle failures of single items",
+   "Process the documents in parallel at the highest possible concurrency, with no error handling to keep it simple",
+   "Use the largest model for each document without checking cost, to be sure that quality is the highest"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Use batch processing for large, non-urgent workloads.",
+  "rationale": [
+   "Incorrect: Slower and more expensive than necessary for work that can wait.",
+   "Correct: Batch processing is designed for large asynchronous jobs at lower cost, and individual failures can be retried.",
+   "Incorrect: Uncontrolled concurrency causes rate-limit failures and lost work.",
+   "Incorrect: Ignores cost, which was a stated constraint."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-09",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: regulated decision support. An auditor asks the team to reproduce why an assistant gave a particular recommendation three months ago. The team has only the final answer stored. Which change would best support such audits?",
+  "choices": [
+   "Set the temperature to 0, which makes every output reproducible whenever the same input is supplied again",
+   "Record inputs, prompt version, model identifier, tool results and output for each decision",
+   "Store a screenshot of the final answer that was shown to the user, together with the timestamp",
+   "Ask the model to explain its reasoning at the time of the audit, and file that explanation"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Audit trails record inputs, versions and results; they do not depend on re-running the model.",
+  "rationale": [
+   "Incorrect: Temperature 0 reduces but does not guarantee identical output, and models change over time.",
+   "Correct: A complete record shows what the system saw and did, and it does not depend on reproducing the output.",
+   "Incorrect: A screenshot shows the result, not the basis for it.",
+   "Incorrect: A later explanation is a new generation and not a record of the original one."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-10",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: inventory assistant. Early in a long conversation the agent looked up stock for an item (12 units). Twenty minutes later, the customer asks whether they can order 10 units, and the agent answers 'yes' from the earlier result. In the meantime another order took 5 units. What should the agent have done?",
+  "choices": [
+   "Trust the earlier result because it came from a tool, and tools return reliable data for the whole session",
+   "Re-check the stock before any decision that depends on it, because earlier results can be stale",
+   "Ask the customer to confirm the stock level, since they know what they saw earlier in the conversation",
+   "Reduce the quantity automatically by 20%, to allow for orders that may have been placed in the meantime"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Refresh volatile data before acting on it; earlier tool results age.",
+  "rationale": [
+   "Incorrect: Tool results describe the state at the time of the call.",
+   "Correct: Decisions that rely on changing data need a fresh read.",
+   "Incorrect: The customer does not know the current stock.",
+   "Incorrect: An arbitrary reduction is not based on the real state."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-11",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Scenario: customer-support agent. Human agents complain that escalated cases arrive without the information they need. Which TWO items should the escalation summary always contain? (Select 2)",
+  "choices": [
+   "What the customer wants and the identifiers needed to find the account and the case",
+   "What the agent has already tried, with the results, and why it is escalating",
+   "The full unedited transcript as the only content",
+   "The agent's personal opinion of the customer's tone",
+   "A list of all tools available to the agent"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Good escalation summaries state the goal, identifiers, attempts and reason for escalation.",
+  "rationale": [
+   "Correct: The human can immediately understand and locate the case.",
+   "Correct: This prevents repeated work and explains what is needed next.",
+   "Incorrect: A transcript alone forces the human to read everything and work out the state.",
+   "Incorrect: Opinions about tone are not actionable and may be unfair.",
+   "Incorrect: The tool list is irrelevant to the human's task."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-12",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: research assistant. A price-comparison tool is down. The assistant is asked for the best price among four shops. What is the best behaviour?",
+  "choices": [
+   "Provide prices from memory and present them as current, because the shops rarely change their prices",
+   "Report that the tool is unavailable, give what is verifiable (three of four shops), and say what is unchecked",
+   "Refuse to answer any question about the shops until the price-comparison tool is working again for everybody",
+   "Retry the tool for ten minutes without telling the user, and answer only when it finally succeeds in time"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Degrade gracefully and state what could not be verified.",
+  "rationale": [
+   "Incorrect: Outdated or invented prices presented as current are misleading.",
+   "Correct: A partial but honest answer is useful and shows the limits.",
+   "Incorrect: Refusing everything throws away help that is possible.",
+   "Incorrect: A silent wait leaves the user without information."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-13",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: quality evaluation. A team uses a model to grade answers from another model on a 1 to 5 scale. The grader prefers long answers and consistently scores them higher than short correct ones. What is the best next step?",
+  "choices": [
+   "Accept the grades, since a model is an objective judge that applies the rubric in the same way every time",
+   "Compare scores with human-labelled examples, adjust the rubric to penalise padding, and recalibrate",
+   "Remove the grader and use answer length as the quality measure, which is simpler and cheaper",
+   "Keep the grader but double the scores of short answers to compensate for its preference for long ones"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Calibrate model-based graders against human labels and refine the rubric.",
+  "rationale": [
+   "Incorrect: Model graders have biases, such as preferring length.",
+   "Correct: Calibration against human judgement shows the bias, and a better rubric reduces it.",
+   "Incorrect: Length is the very bias to be avoided.",
+   "Incorrect: Arbitrary scaling does not address the cause."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-14",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: overnight agent. An agent processes 5,000 records, and crashes after 3,200. On restart it begins at record one. What would have prevented the repeated work?",
+  "choices": [
+   "A larger context window, so that the agent can keep all of the 5,000 records in view at once",
+   "Checkpointing processed record ids to durable storage and resuming from there, with idempotent writes",
+   "Running the job only during the day, when engineers are available to restart it after a crash",
+   "A more detailed prompt, which tells the agent exactly how to start again after an interruption"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Checkpoint progress outside the model and make writes idempotent.",
+  "rationale": [
+   "Incorrect: Context does not survive a crashed process.",
+   "Correct: Durable progress records allow resumption, and idempotency protects against duplicates around the crash.",
+   "Incorrect: Time of day does not change what happens on a crash.",
+   "Incorrect: Prompt detail does not preserve state across a restart."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-15",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: two agents. A planning agent and an execution agent both append results to the same JSON file. Occasionally the file is corrupted or entries are lost. What is the best fix?",
+  "choices": [
+   "Ask the agents to coordinate through a prompt instruction that says they must avoid writing at the same time",
+   "Use a single writer or a lock, or give each agent its own file and merge the files afterwards",
+   "Increase the file size limit, so that the two agents have enough room for all of their results",
+   "Let the later write always overwrite the earlier one, so that the file reflects the latest state"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Prevent concurrent write conflicts structurally, not through instructions.",
+  "rationale": [
+   "Incorrect: Agents cannot reliably coordinate timing through a prompt.",
+   "Correct: Structural coordination prevents concurrent writes from conflicting.",
+   "Incorrect: Size is not the problem.",
+   "Incorrect: Overwriting loses entries on purpose."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-16",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: customer-support agent. A compliance review finds personal data (e-mail addresses and phone numbers) in debugging logs of agent conversations. Which approach is best?",
+  "choices": [
+   "Keep the logs as they are but ask staff not to look at the personal data in them",
+   "Redact or tokenise personal data before it is written to logs, restrict access, and define a retention period",
+   "Turn off logging entirely, including error logs, so that no personal data can be stored anywhere",
+   "Move the logs to a public bucket, where they are easier to search and to share with support staff"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Redact sensitive data before logging and limit access and retention.",
+  "rationale": [
+   "Incorrect: Instructions do not remove the exposure.",
+   "Correct: Protecting the data at the source and limiting its lifetime reduces the risk while keeping useful logs.",
+   "Incorrect: Without logs, failures cannot be diagnosed.",
+   "Incorrect: A public bucket maximises exposure."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-17",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: data agent. A tool call to an external API occasionally hangs. The agent loop then waits for hours. What is the best fix?",
+  "choices": [
+   "Wait longer, since the API normally recovers by itself, and keep the agent loop running in the meantime",
+   "Set a timeout on each tool call, treat it as a failure with a bounded retry policy, and report the outcome",
+   "Kill the process whenever any call takes longer than a second, so that hangs never last for very long",
+   "Remove the tool from the agent, so that the hanging call can no longer block the loop of the agent"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Set timeouts and handle them as failures with a bounded retry policy.",
+  "rationale": [
+   "Incorrect: An unlimited wait blocks the work for as long as the API hangs.",
+   "Correct: Timeouts convert hangs into handled errors with a defined policy.",
+   "Incorrect: Too short a timeout will fail healthy calls.",
+   "Incorrect: Removing the tool loses the capability."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-18",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: production assistant. A new prompt version improves evaluation scores. The product owner wants to deploy it to all users immediately. What is the most prudent approach?",
+  "choices": [
+   "Deploy to all users at once and monitor the complaints that come in during the first days after the release",
+   "Roll out to a small share of traffic, compare key metrics with the old version, and keep a rollback ready",
+   "Deploy only at night, when fewer users are present and any problems affect fewer people at the same time",
+   "Skip further testing, since the evaluation scores already show that the new version is better than the old"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Roll out changes gradually with monitoring and a rollback path.",
+  "rationale": [
+   "Incorrect: Problems reach every user before they are noticed.",
+   "Correct: A gradual rollout limits the impact and allows comparison on real traffic.",
+   "Incorrect: Timing does not reduce the number of affected users when a problem exists.",
+   "Incorrect: Evaluation sets do not cover everything that real users do."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-19",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: agent harness. The model calls a tool named update_inventory, which does not exist in the request's tool list. What should the harness do?",
+  "choices": [
+   "Execute a similar existing tool instead, to be helpful and keep the conversation moving for the user",
+   "Return an error that says the tool does not exist and lists the available ones, and execute nothing",
+   "Terminate the session without a message, because the model has clearly gone wrong in its behaviour",
+   "Ignore the call and continue as if nothing happened, so that the conversation is not interrupted"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Reject undefined tool calls with an informative error and execute nothing.",
+  "rationale": [
+   "Incorrect: Guessing which tool was meant may perform the wrong action.",
+   "Correct: The model gets the information it needs to correct itself on the next turn, and nothing unintended runs.",
+   "Incorrect: Ending the session discards work that could be recovered.",
+   "Incorrect: Every tool_use needs a result, and silence breaks the conversation structure."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-20",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: long coding session. The developer corrected an assumption about the data model early in the session. After three hours the agent makes the original mistake again. What is the best remedy?",
+  "choices": [
+   "Raise the temperature to encourage new solutions that differ from the earlier mistaken approach in the session",
+   "Compact or restart the context and restate the verified facts near the start, for example in a notes file",
+   "Tell the agent to try harder and to double-check its assumptions about the data model before it continues",
+   "Add more tools, so that the agent can look up the data model whenever it needs to check a detail"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Restate corrected facts in a compact, prominent form instead of hoping they survive a crowded context.",
+  "rationale": [
+   "Incorrect: More randomness does not restore forgotten facts.",
+   "Correct: Verified facts placed prominently are less likely to be lost in a crowded context.",
+   "Incorrect: Motivation does not restore information.",
+   "Incorrect: Tools do not fix lost context."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-21",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: multi-turn assistant. To save tokens, a developer removes old tool_result messages from the history but leaves the corresponding assistant tool_use messages in place. The next request fails with a validation error. Why?",
+  "choices": [
+   "Tool_use messages must always be at the start of the history, before any other kind of message",
+   "Each tool_use must be followed by its matching tool_result, so trimming has to keep or remove both together",
+   "The history must be shorter than ten messages, otherwise the request is rejected by the service",
+   "Tool results cannot be removed from the history under any circumstances, even if replaced by a summary"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "When trimming history, keep tool_use and tool_result pairs consistent.",
+  "rationale": [
+   "Incorrect: Tool_use messages appear wherever the model requested them.",
+   "Correct: The protocol requires every tool_use to be answered, so trimming must treat the pair as a unit.",
+   "Incorrect: There is no such message limit rule.",
+   "Incorrect: Pairs can be removed together or replaced by a summary."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-22",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: research agent. Tool results from earlier steps (long web pages) stay in context and crowd out recent reasoning. The facts they contained have already been extracted into notes. Which action is most appropriate?",
+  "choices": [
+   "Keep everything in context, because deleting information is always risky and cannot be undone later",
+   "Remove or replace processed tool results with the extracted notes, keeping references to their sources",
+   "Ask the model to ignore the earlier pages, since it then no longer takes them into account",
+   "Double the context limit in the request settings, so that there is room for both pages and reasoning"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Replace processed bulk output with compact notes that keep references to sources.",
+  "rationale": [
+   "Incorrect: Context is a limited resource and stale bulk reduces focus.",
+   "Correct: The useful content is retained in compact form and the source remains traceable.",
+   "Incorrect: The material still occupies the context and still influences attention.",
+   "Incorrect: A larger window does not remove the dilution."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-23",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: operations. A team wants early warning when an agent in production degrades. Which monitoring set is most useful?",
+  "choices": [
+   "Only the number of users per day, which shows how much the assistant is being used by customers",
+   "Tool error rates, stop_reason mix, escalation and retry rates, latency, cost per task, and sampled quality checks",
+   "Only the average length of responses, which changes when the model starts to behave in a different way",
+   "Only customer survey results once a quarter, because they measure what customers actually experience"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Monitor behavioural signals such as errors, stop reasons and escalations, together with sampled quality checks.",
+  "rationale": [
+   "Incorrect: Usage volume says nothing about quality.",
+   "Correct: These signals show behaviour changes quickly, and sampled evaluation tests quality directly.",
+   "Incorrect: Length alone does not indicate correctness.",
+   "Incorrect: Too infrequent to catch regressions in time."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-24",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: automated approvals. An agent approves or escalates insurance claims. The team wants to decide which claims can be approved automatically. Which method sets a defensible threshold?",
+  "choices": [
+   "Pick 90% because it sounds like a safe level, and have staff review the decisions that fall below that line",
+   "Measure precision at several confidence levels on a labelled set and choose the threshold that meets the target error rate",
+   "Let the agent choose its own threshold, since it knows best how certain it is about each individual claim",
+   "Approve everything below a certain amount without further checks, since small claims carry little financial risk"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Set automation thresholds from measured error rates on labelled data.",
+  "rationale": [
+   "Incorrect: A number chosen without data has no known error rate.",
+   "Correct: Data shows the trade-off between automation and errors, and monitoring keeps it valid.",
+   "Incorrect: The agent has no reliable knowledge of its own error rate.",
+   "Incorrect: Amount alone ignores the likelihood of error."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-25",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: knowledge assistant. A policy document changed last week, but the assistant still quotes the old version. The retrieval index is rebuilt monthly. What is the best fix?",
+  "choices": [
+   "Fine-tune the model on the new policy immediately, so that it no longer quotes the old version of the policy",
+   "Update the index when documents change, and show document date and version in retrieved passages",
+   "Add a disclaimer that policies may be outdated, and tell users to check with the HR department themselves",
+   "Remove the policy documents from the index until the monthly rebuild has taken place at the end of the month"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Keep retrieval content current and expose versions and dates in the context.",
+  "rationale": [
+   "Incorrect: It is slow and unnecessary for a content update that retrieval can handle.",
+   "Correct: Fresh content plus visible versions makes answers current and checkable.",
+   "Incorrect: A disclaimer leaves the problem unsolved.",
+   "Incorrect: Users lose access to the relevant information."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-26",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: customer assistant. During an overload period, API calls return overloaded errors for several minutes. Which response is best for users?",
+  "choices": [
+   "Show a technical error message with the full response, so that the user can pass it on to support",
+   "Retry with backoff for a short time, then show a clear busy message, keep the user's input, and let them retry",
+   "Silently drop the request, so that the user does not see an error that they cannot do anything about",
+   "Switch the assistant to answering from memory without telling anyone, so that users still get a reply"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Handle overload with bounded retries and a clear, honest message that preserves the user's work.",
+  "rationale": [
+   "Incorrect: Technical messages do not help users.",
+   "Correct: A short retry handles brief spikes, and a clear message with preserved input handles longer ones.",
+   "Incorrect: Users get no response and no explanation.",
+   "Incorrect: Answers without proper tools or data and without disclosure risk errors."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-27",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Scenario: multi-agent synthesis. A synthesis agent combines summaries from subagents. Reviewers cannot trace claims back to sources. Which TWO practices preserve provenance? (Select 2)",
+  "choices": [
+   "Keep a source reference with each claim through every summarisation step",
+   "Store the original source text or a link, so that a claim can be checked later",
+   "Merge all summaries into one paragraph, without references, for readability",
+   "Replace sources with the name of the subagent that returned them",
+   "Drop the dates to keep the summary short"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "Carry source references with every claim and keep the originals available.",
+  "rationale": [
+   "Correct: References that travel with claims make verification possible.",
+   "Correct: The original material allows a reviewer to confirm what the source says.",
+   "Incorrect: Merging without references destroys traceability.",
+   "Incorrect: A subagent name does not identify the evidence.",
+   "Incorrect: Dates are often needed to judge whether information is current."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-28",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Scenario: quality monitoring. A support agent handles 20 ticket categories, of which one rare category (fraud reports) accounts for 0.5% of tickets but has high impact. Random sampling of 100 conversations per week almost never includes it. What is the better sampling strategy?",
+  "choices": [
+   "Keep random sampling and increase the weekly sample from 100 to 120 conversations",
+   "Stratify the sample by category, so that rare high-impact categories get enough reviewed cases",
+   "Review only the conversations in which the agent rated its own answer as confident",
+   "Review only the shortest conversations, because they are quickest to read and check"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Stratify review samples so that rare, high-impact categories are covered.",
+  "rationale": [
+   "Incorrect: A slightly larger random sample still misses rare categories.",
+   "Correct: Stratification guarantees coverage of the cases that matter most.",
+   "Incorrect: Confident cases are not where hidden problems are most likely to be found.",
+   "Incorrect: Length is not related to risk."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-29",
+  "obj": "5.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Scenario: document analysis. Each of 500 contracts is 80,000 tokens, and the task is to extract the same 15 fields from each. A developer plans to put 20 contracts into one prompt to save calls. Quality drops and fields are mixed up between contracts. What is the better design?",
+  "choices": [
+   "Process each contract in its own request with a clear schema, and combine the results in code",
+   "Put 100 contracts in one prompt, so that the model can compare them and extract the fields at once",
+   "Ask the model to remember each contract's fields in the same response, and list them at the end",
+   "Summarise each contract to one line before extraction, which keeps the prompts small and cheap"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Process independent documents separately and aggregate in code.",
+  "rationale": [
+   "Correct: Isolating each document avoids cross-contamination, and code handles the aggregation.",
+   "Incorrect: More contracts increase the mixing problem.",
+   "Incorrect: This relies on the model to keep many documents apart in a single output, which is the cause of the errors.",
+   "Incorrect: A one-line summary discards the details that extraction needs."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ },
+ {
+  "id": "5.1.1-30",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Scenario: agent evaluation. A new release of the agent reduces average cost by 30%, and the team celebrates. A deeper analysis shows that the share of conversations ending in correct resolution fell from 91% to 84%. How should the team interpret this?",
+  "choices": [
+   "Cost is the primary measure, so the release is a success and should be rolled out to everyone",
+   "Weigh the saving against quality: a seven-point drop in resolution is a regression that needs investigation",
+   "The evaluation is probably wrong, since the cost went down, and should be repeated with a new sample",
+   "Resolution rates do not matter if the cost falls, because the saving can fund more human agents"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Evaluate cost together with quality; a cheaper but less effective agent is not an improvement.",
+  "rationale": [
+   "Incorrect: A cheaper agent that resolves fewer cases may increase total cost through escalations and repeat contacts.",
+   "Correct: The trade-off needs explicit assessment against targets, and the cause should be found.",
+   "Incorrect: A measured drop on a labelled set is evidence to take seriously.",
+   "Incorrect: Resolution is the purpose of the agent."
+  ],
+  "ref": "https://docs.anthropic.com/"
+ }
+]

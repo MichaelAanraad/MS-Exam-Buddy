@@ -1,0 +1,222 @@
+[
+ {
+  "id": "1.1.1-01",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. stores its configuration files in a Git repository. During an audit, the team must determine who changed a specific file last month, when the change was made, and why.\n\nWhich benefit of version control should the team use?",
+  "choices": [
+   "The ability to restore the project to an earlier version",
+   "A recorded history of each change with author, date, and message",
+   "Branches that isolate work in progress from the default branch",
+   "A shared view of the work that teammates have in progress"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Version control records what changed, who changed it, when, and why, so the history answers every audit question in the stem. Restoring an earlier version would be right if the team needed to roll back, and branches or a shared view of work in progress address isolation and coordination, not accountability.",
+  "ref": "https://docs.github.com/en/get-started/using-git/about-git"
+ },
+ {
+  "id": "1.1.1-02",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank has developers in three time zones who change the same application. The team wants every developer to work in parallel and to propose changes without disrupting the version that runs in production.\n\nWhich benefit of version control should the team rely on?",
+  "choices": [
+   "Recovery of any earlier version of the project",
+   "A history that shows what changed and who changed it",
+   "Lines of development that run in parallel and merge later",
+   "A consistent view of the work that is in progress"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Branches let developers work independently and propose changes without disrupting production code, which matches both constraints in the stem. Recovery and history help after the fact, and a consistent view of work in progress improves alignment but does not isolate anyone's changes from production.",
+  "ref": "https://docs.github.com/en/get-started/using-git/about-git"
+ },
+ {
+  "id": "1.1.1-03",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Northwind Traders developers often work on trains and in remote locations with no network connection. The team is replacing a centralized version control system with a distributed version control system.\n\nWhich two capabilities should the developers expect from a distributed version control system? Each correct answer presents part of the solution.",
+  "choices": [
+   "Locking a file on the server while it is edited",
+   "Committing changes to a local repository without a network connection",
+   "Checking out each file from a central server before editing it",
+   "Browsing project history from a complete local copy",
+   "Depending on a central server as the sole location of the project history"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "In a distributed version control system such as Git, each local clone is a complete repository, so developers can commit and view history offline and sync with the server later. File locking, mandatory check-out, and server-only history describe centralized systems, which are the model the team is leaving.",
+  "ref": "https://learn.microsoft.com/devops/develop/git/what-is-git"
+ },
+ {
+  "id": "1.1.1-04",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lucerne Publishing is choosing a version control system for a team that works offline for weeks at a time. Each developer must be able to commit changes, browse the full project history, and compare versions on a laptop without contacting a server.\n\nWhich type of version control system should the team choose?",
+  "choices": [
+   "Distributed, with a full repository on each laptop",
+   "Centralized, with server workspaces and file check-out",
+   "Centralized, with local workspaces that check in to the server",
+   "Centralized, with a separate history stored for each file"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A distributed system gives each developer a complete local repository, so commits, history, and comparisons work with no network. Centralized systems keep the history on the server, even when local workspaces allow offline edits, so browsing history and committing still depend on the server.",
+  "ref": "https://learn.microsoft.com/azure/devops/repos/tfvc/comparison-git-tfvc?view=azure-devops"
+ },
+ {
+  "id": "1.1.2-01",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Proseware, Inc. wants a version control tool that tracks file changes on a laptop and also works with repositories that are hosted on servers other than GitHub.\n\nWhich tool should the team use?",
+  "choices": [
+   "GitHub CLI",
+   "GitHub Mobile",
+   "Git",
+   "GitHub Codespaces"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Git is the distributed version control system that works with any local or remote repository, including ones not hosted on GitHub. GitHub CLI is specifically for working with GitHub, and GitHub Mobile and GitHub Codespaces are GitHub products that do not replace the version control tool itself.",
+  "ref": "https://docs.github.com/en/get-started/using-github/github-cli"
+ },
+ {
+  "id": "1.1.2-02",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys developers use Git to commit and branch on their own computers. The team now wants to review and discuss proposed changes in a browser before the changes are merged into the default branch.\n\nWhich capability that GitHub adds to Git should the team use?",
+  "choices": [
+   "Branches that hold parallel lines of development",
+   "Commits that record snapshots of the project files",
+   "Local repositories that contain the full history",
+   "Pull requests that display differences for review"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Pull requests are a GitHub feature built on top of Git that show the differences between branches and let collaborators comment and review before merging. Branches, commits, and local repositories already come from Git itself, so they are not what GitHub adds.",
+  "ref": "https://docs.github.com/en/get-started/start-your-journey/about-github-and-git"
+ },
+ {
+  "id": "1.1.2-03",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "User1 at Relecloud cloned a repository from GitHub, created a branch, and ran git commit twice. User2 opens the repository on github.com and does not see the new commits or the branch. User1 is not ready to open a pull request.\n\nWhich action should User1 perform?",
+  "choices": [
+   "Fetch the latest changes from the remote repository",
+   "Push the branch to the remote repository on GitHub",
+   "Clone the repository again into a new folder",
+   "Pull the default branch into the local repository"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Commits are saved in the local repository, and git push publishes them to the remote repository on GitHub so that others can see them. Fetch and pull bring remote changes down to the local copy, which is the opposite direction, and a new clone would not contain the unpublished commits.",
+  "ref": "https://docs.github.com/en/get-started/git-basics/about-remote-repositories"
+ },
+ {
+  "id": "1.1.2-04",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Adventure Works Cycles uses Git on developer laptops. Management wants to know which capabilities come from the GitHub platform instead of from Git itself.\n\nWhich two capabilities should you identify? Each correct answer presents a complete solution.",
+  "choices": [
+   "Creating commits in a local repository",
+   "Hosting repositories in the cloud for sharing with a team",
+   "Creating branches from the default branch",
+   "Staging files by running git add",
+   "Tracking planned work by using issues"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "GitHub hosts Git repositories in the cloud and adds planning and collaboration tools such as issues. Creating commits, creating branches, and staging files are Git operations that work in a local repository without GitHub.",
+  "ref": "https://docs.github.com/en/get-started/start-your-journey/about-github-and-git"
+ },
+ {
+  "id": "1.1.3-01",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Wingtip Toys finished editing two files and wants to record a permanent snapshot of the staged changes together with a short message that explains why.\n\nWhat should the developer create?",
+  "choices": [
+   "A branch",
+   "A pull request",
+   "A commit",
+   "A fork"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A commit saves a snapshot of the staged files at a point in time with a message. A branch is a line of development that holds commits, a pull request proposes merging a branch, and a fork is a copy of a repository in another account.",
+  "ref": "https://docs.github.com/en/get-started/using-git/about-git"
+ },
+ {
+  "id": "1.1.3-02",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Margie's Travel developers want to try a new feature in the same repository. The work must stay separate from the default branch until it is reviewed, and the team does not want a copy of the repository in another account.\n\nWhat should the developers create?",
+  "choices": [
+   "A fork",
+   "A branch",
+   "A clone",
+   "A remote"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A branch is a separate line of development inside the same repository, so changes stay off the default branch until they are merged. A fork would copy the repository to another account, a clone is a local copy, and a remote is a named link to a hosted repository.",
+  "ref": "https://docs.github.com/en/get-started/using-git/about-git"
+ },
+ {
+  "id": "1.1.3-03",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A developer at Trey Research edits File1 and File2, stages only File1 by running git add File1, and then runs git commit with a message.\n\nWhich changes should the developer expect the new commit to contain?",
+  "choices": [
+   "The changes to File1 and File2",
+   "The changes to File2 that were edited most recently",
+   "The staged changes to File1",
+   "No changes, because the files must be pushed first"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Changes are first staged with git add and then saved with git commit, so the commit contains what was staged: the changes to File1. File2 was edited but never staged, and pushing happens after the commit to share it, not before.",
+  "ref": "https://docs.github.com/en/get-started/using-git/about-git"
+ },
+ {
+  "id": "1.1.3-04",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "User1 at Fabrikam, Inc. has write access to a repository on GitHub and has no local copy of it. User1 must work offline on a train, switch between existing branches, and browse every earlier commit. Later, User1 will push changes to the same repository.\n\nWhich action should User1 perform first?",
+  "choices": [
+   "Fork the repository to a personal account",
+   "Download the repository as a ZIP archive",
+   "Run git fetch in an empty folder",
+   "Clone the repository to the laptop"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Cloning copies the remote repository, with its branches and complete history, to the computer so the work can continue offline and be pushed back later. A fork creates another repository that is not needed with write access, a ZIP archive has no history, and git fetch needs an existing local repository.",
+  "ref": "https://docs.github.com/en/get-started/git-basics/about-remote-repositories"
+ }
+]

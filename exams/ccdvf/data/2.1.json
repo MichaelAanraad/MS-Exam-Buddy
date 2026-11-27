@@ -1,0 +1,568 @@
+[
+ {
+  "id": "2.1.1-01",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. builds a support chatbot in Python that calls the Messages API. When a user asks a follow-up question, Claude answers as if the conversation had just started. The application currently sends only the newest user message in each request.\n\nWhat should the developer change?",
+  "choices": [
+   "Add a cache_control marker to the newest user message so that the API remembers the earlier turns",
+   "Set stream to true so that the connection keeps the conversation state open between questions",
+   "Send the earlier user and assistant turns together with the new message in the messages array of every request",
+   "Increase max_tokens so that the response has room to refer back to the earlier turns"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Messages API is stateless, so the application must send the full conversation history, including earlier assistant turns, with each request. Prompt caching only lowers the cost of a repeated prefix; the prefix still has to be sent. Streaming changes how a response is delivered and max_tokens only caps its length, so neither gives the model any memory of earlier turns.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/working-with-messages"
+ },
+ {
+  "id": "2.1.1-02",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adatum Corporation extracts invoice fields with the Messages API. The code ends the messages array with a prefilled assistant turn that contains an opening brace so that Claude starts a JSON object. After the team moves to a newer Claude model that no longer accepts prefilled assistant turns, requests return HTTP 400. The downstream parser requires output that is guaranteed to follow a fixed schema.\n\nWhat should the developer do?",
+  "choices": [
+   "Remove the prefill and use structured outputs to constrain the response to the JSON schema",
+   "Remove the trailing whitespace from the prefilled assistant text and resend the request",
+   "Remove the prefill and ask in the system prompt for a reply that contains just the JSON object",
+   "Keep the prefill and add a stop sequence that matches the closing brace of the object"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Models that do not accept a prefill return a 400 error, so the prefill must be removed. Because the output must follow a schema, structured outputs are the documented replacement, since they constrain the response to the schema. A system prompt instruction does not guarantee how the response starts or that it matches a schema, the whitespace rule applies only to models that still accept a prefill, and a stop sequence does not remove the rejected turn.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/working-with-messages"
+ },
+ {
+  "id": "2.1.1-03",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wingtip Toys adds a chat assistant to its web store. The assistant calls the Messages API without streaming, so shoppers see a blank panel until the whole answer is ready. The team wants the answer to appear word by word while Claude generates it.\n\nWhich change should the developer make?",
+  "choices": [
+   "Move the requests to the Message Batches API and poll for the finished answer",
+   "Set stream to true and render the text of each text_delta event as it arrives",
+   "Add cache_control to the system prompt so that the answer is returned from the cache",
+   "Lower max_tokens so that each request returns before the shopper notices a delay"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Setting stream to true returns server-sent events, and the generated text arrives in content_block_delta events whose delta type is text_delta, which the UI can render immediately. The Message Batches API processes requests asynchronously and returns results later, so it does not suit an interactive chat. Prompt caching reduces the cost of repeated input and a lower max_tokens only truncates the answer; neither makes partial text available early.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/streaming"
+ },
+ {
+  "id": "2.1.1-04",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Fabrikam, Inc. streams Claude responses to a web client. During a busy period, some streams end with an overloaded_error event even though the API had already returned HTTP 200. The current code checks only the HTTP status when the stream opens, so users see half-finished answers and no error.\n\nWhich two actions should the developer take? Each correct answer presents part of the solution.",
+  "choices": [
+   "Treat the 200 status returned when the stream opened as proof that the whole response succeeded",
+   "Handle errors that surface while the stream is being read, because an error can arrive after a 200 status",
+   "Discard the partial text, because content received before an error cannot be reused in a later request",
+   "Capture the partial response received before the failure and use it to build a continuation request",
+   "Send the same request again with stream set to false, because a non-streaming request cannot return an overloaded_error"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "An error can occur after the API returns 200, and the SDK surfaces it as an exception to the code that reads the stream, so that code must handle it. Keeping the partial response lets the application send a continuation request instead of reprocessing everything; tool_use and thinking blocks cannot be partially recovered. Trusting the initial status misses mid-stream errors, discarding partial text wastes recoverable work, and non-streaming requests can also return an overloaded error as HTTP 529.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/streaming"
+ },
+ {
+  "id": "2.1.1-05",
+  "obj": "2.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Northwind Traders sends scanned receipts, stored as JPEG files on a private file server, to Claude through the Messages API on the Claude API. Each request must be self-contained: the team wants neither a separate upload call nor a tool round trip before Claude can see an image, and the files are not reachable from the internet.\n\nWhich approach should the developer use?",
+  "choices": [
+   "Image content blocks with a url source that points to the file server",
+   "Image content blocks with a file source that references a file_id from the Files API",
+   "A client tool that reads the file and returns it in a tool_result block",
+   "Image content blocks with a base64 source and the image/jpeg media type"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A base64 image source embeds the image bytes in the request, so it works for private files in a single self-contained call. A url source needs an image the API can reach, a file source needs an earlier Files API upload, and a client tool adds an extra round trip before Claude can see the image.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/vision"
+ },
+ {
+  "id": "2.1.1-06",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. runs an agent on the Claude API that works through many screenshots in one long conversation. Each request resends the full history and the screenshots are base64 encoded, so request size and latency grow with every turn. The screenshots are generated at run time and must not be exposed on a public URL.\n\nWhat should the developer do?",
+  "choices": [
+   "Upload each screenshot once through the Files API and reference it by file_id in later requests",
+   "Switch the image blocks to url sources that point to a public storage location",
+   "Set stream to true so that the screenshots are sent to the API in smaller chunks",
+   "Move the conversation to the Message Batches API so that the batch stores the history"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Each request resends the history, so base64 images are included in the payload on every turn; uploading once and referencing a file_id keeps payloads small however many images accumulate. A url source would also shrink the payload, but it needs a publicly reachable image, which the screenshots must not have. Streaming changes response delivery, not request size, and the Batches API is for asynchronous bulk work rather than an interactive agent.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/vision"
+ },
+ {
+  "id": "2.1.1-07",
+  "obj": "2.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud's research assistant uses extended thinking in manual mode on a model that supports it. The request sets budget_tokens to 10000 and max_tokens to 8000, and the request fails validation. The team still wants a large thinking budget.\n\nWhat should the developer change?",
+  "choices": [
+   "Lower budget_tokens to 512 so that it fits inside max_tokens",
+   "Set display to omitted so that thinking tokens stop counting toward max_tokens",
+   "Raise max_tokens above budget_tokens so that the final answer still has room after thinking",
+   "Switch the request to streaming so that the budget is no longer limited by max_tokens"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "In manual mode thinking tokens count toward max_tokens, so budget_tokens must be less than max_tokens; raising max_tokens leaves room for the answer. A budget below the 1,024-token minimum is rejected, display only controls whether thinking text is returned (billing and limits are unchanged), and streaming does not change the rule.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/extended-thinking"
+ },
+ {
+  "id": "2.1.1-08",
+  "obj": "2.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys runs an agent loop on the Messages API with extended thinking enabled. When Claude returns a tool_use block, the code copies only the text and tool_use blocks of the assistant message into the next request, appends the tool_result, and drops the thinking blocks to reduce request size. The team wants Claude's reasoning to stay intact across the tool call.\n\nHow should the developer build the follow-up request?",
+  "choices": [
+   "Include a summary of the dropped thinking in the system prompt of the follow-up request",
+   "Keep the thinking text but remove the signature field to reduce the request size",
+   "Pass every thinking block back unmodified with its tool_use block, followed by the tool_result",
+   "Drop the thinking blocks and rely on the model to regenerate its reasoning from the tool_result"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "When tool results are returned, the thinking blocks of the assistant message must be passed back complete and unmodified, because the server uses the signature to reconstruct the original thinking and the tool result continues one reasoning flow. A summary in the system prompt, a block without its signature, or no thinking block at all each break that continuity.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/thinking"
+ },
+ {
+  "id": "2.1.2-01",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. writes a Python service that calls Claude directly on the Claude API with the Anthropic SDK. The company does not use Amazon Bedrock or Google Cloud for this workload.\n\nWhich credential should the service use to authenticate?",
+  "choices": [
+   "A Claude API key from the Claude Console, sent in the x-api-key header",
+   "Temporary AWS credentials that sign each request with SigV4",
+   "Google Cloud Application Default Credentials for an identity that can call Vertex AI",
+   "An Amazon Bedrock API key passed as a bearer token"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "The Claude API authenticates with an API key; the SDK reads it from ANTHROPIC_API_KEY and sends it in the x-api-key header together with the anthropic-version header. SigV4 signing and Bedrock bearer tokens belong to Amazon Bedrock, and Application Default Credentials belong to Google Cloud.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/working-with-messages"
+ },
+ {
+  "id": "2.1.2-02",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. hosts its workloads on AWS. A Python service must call Claude through the InvokeModel API on the bedrock-runtime endpoint by using Anthropic's SDK with AWS credentials from the default credential chain.\n\nWhich client class should the developer instantiate?",
+  "choices": [
+   "AnthropicBedrockMantle",
+   "AnthropicAWS",
+   "AnthropicBedrock",
+   "AnthropicVertex"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "AnthropicBedrock is the client for InvokeModel on the bedrock-runtime endpoint and resolves AWS credentials through the default chain. AnthropicBedrockMantle targets the separate bedrock-mantle endpoint, AnthropicAWS is for Claude Platform on AWS, which Anthropic operates, and AnthropicVertex is for Google Cloud.",
+  "ref": "https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/python"
+ },
+ {
+  "id": "2.1.2-03",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. develops on laptops and calls Claude through Google Vertex AI by using the AnthropicVertex client in Python. The client is created with a project ID and a region, but requests fail with an authentication error.\n\nWhich credentials should the developer configure?",
+  "choices": [
+   "A Claude Console API key in the ANTHROPIC_API_KEY environment variable",
+   "AWS access keys in the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY variables",
+   "A Bedrock API key in the AWS_BEARER_TOKEN_BEDROCK environment variable",
+   "Google Cloud Application Default Credentials for an identity that has permission to call Vertex AI"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The AnthropicVertex client authenticates with Google Cloud credentials, for example Application Default Credentials created with gcloud auth application-default login, for an identity whose role includes the aiplatform.endpoints.predict permission. A Console API key is for the Claude API, and the AWS keys and the Bedrock key are credentials for Amazon Bedrock.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/google-managed"
+ },
+ {
+  "id": "2.1.2-04",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank runs the same Python code against several platforms. For a Haiku-tier model released before the 4.6 generation, the model ID on the Claude API is claude-haiku-4-5-20251001. The code now targets Google Vertex AI through the AnthropicVertex client.\n\nWhich model ID should the developer pass?",
+  "choices": [
+   "claude-haiku-4-5-20251001",
+   "claude-haiku-4-5@20251001",
+   "anthropic.claude-haiku-4-5-20251001-v1:0",
+   "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "On Vertex AI, models earlier than the 4.6 generation use the Claude API ID with an at sign in place of the hyphen before the snapshot date. The unchanged Claude API ID is the form for the Claude API, and the last two choices are the Amazon Bedrock base model ID and its US inference profile ID.",
+  "ref": "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions"
+ },
+ {
+  "id": "2.1.2-05",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Tailspin Toys calls an older Claude model on Amazon Bedrock through InvokeModel. A request that passes the base model ID anthropic.claude-sonnet-4-5-20250929-v1:0 fails with HTTP 400 and a message that on-demand throughput is not supported and an inference profile is required. Company policy requires that inference traffic stays inside the United States geography.\n\nWhich model ID should the application pass?",
+  "choices": [
+   "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
+   "eu.anthropic.claude-sonnet-4-5-20250929-v1:0",
+   "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+   "claude-sonnet-4-5@20250929"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Models that AWS serves through cross-region inference need an inference profile ID, which is the base model ID with a prefix. The us. prefix keeps routing inside the United States geography. The global. prefix routes dynamically across regions, the eu. prefix routes inside Europe, and claude-sonnet-4-5@20250929 is the Vertex AI form of the ID.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/claude-on-amazon-bedrock-legacy"
+ },
+ {
+  "id": "2.1.2-06",
+  "obj": "2.1.2",
+  "difficulty": "medium",
+  "type": "multi",
+  "stem": "Alpine Ski House calls Claude on Google Vertex AI with plain HTTPS requests instead of the Anthropic SDK. The team adapts a working Claude API request.\n\nWhich two changes should the team make to the request? Each correct answer presents part of the solution.",
+  "choices": [
+   "Name the model in the endpoint URL and leave the model field out of the request body",
+   "Keep sending the Claude Console API key in the x-api-key header",
+   "Keep sending the anthropic-version header with the latest API version",
+   "Set anthropic_version in the request body",
+   "Request streaming by adding stream set to true to the body of the same endpoint"
+  ],
+  "answer": [
+   0,
+   3
+  ],
+  "explanation": "A Vertex AI request differs from a Claude API request in two main ways: the endpoint URL names the model, so the body omits it, and anthropic_version goes in the body rather than in a header. The request authenticates with Google Cloud credentials rather than a Console API key, and streaming uses the separate :streamRawPredict endpoint instead of a stream field.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/google-managed"
+ },
+ {
+  "id": "2.1.2-07",
+  "obj": "2.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lucerne Publishing has a Python service that sends product photos to Claude on the Claude API by using url image sources. The service must now call Claude on Amazon Bedrock, and requests that contain url image sources fail. The photos stay in a private Amazon S3 bucket.\n\nWhat should the developer change to keep vision working?",
+  "choices": [
+   "Replace the S3 object URL with a pre-signed URL in the url image source",
+   "Read each photo, base64 encode it, and send it as a base64 image source",
+   "Upload the photos with the Files API and reference each file_id",
+   "Submit the image requests through the Message Batches API instead"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Amazon Bedrock accepts only base64 image sources, so the application must encode the images itself and stay within the per-image and request size limits. URL image sources, including pre-signed URLs, the Files API, and the Message Batches API are listed as not supported on Bedrock.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/vision"
+ },
+ {
+  "id": "2.1.2-08",
+  "obj": "2.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel runs a Python service on AWS compute that has an IAM role attached, and the service can sign requests with AWS credentials. Security guidance asks for the most preferred authentication method for calling Claude on Amazon Bedrock.\n\nWhich method should the service use?",
+  "choices": [
+   "A long-term Amazon Bedrock API key stored in the AWS_BEARER_TOKEN_BEDROCK variable",
+   "A short-term Amazon Bedrock API key generated in the console and copied into configuration",
+   "A Claude Console API key sent in the x-api-key header",
+   "Temporary credentials from the IAM role, used to sign requests through the default AWS credential chain"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "AWS recommends signing requests with temporary AWS credentials whenever possible, so bearer tokens, which AWS calls Amazon Bedrock API keys, are the least preferred path and fit software that cannot sign requests. This service can sign, so the IAM role credentials fit. A Claude Console API key authenticates to the Claude API, not to Amazon Bedrock.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock"
+ },
+ {
+  "id": "2.1.3-01",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud's batch job calls the Claude API over HTTPS from Python. Some requests return HTTP 429 with a rate_limit_error and a retry-after header. The job retries immediately in a tight loop and keeps failing.\n\nWhat should the developer do?",
+  "choices": [
+   "Wait for the interval in the retry-after header, then retry with exponential backoff and a retry limit",
+   "Treat the 429 like a 400 invalid_request_error and correct the request body before retrying",
+   "Switch the same requests to streaming so that the rate limit no longer applies",
+   "Reduce the request timeout so that failed requests are retried sooner"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A 429 is a rate limit response, so the client should honor the retry-after header and back off, with a limit on retries because some 429 responses persist until access resumes. A 400 means the request itself is malformed, streaming does not bypass rate limits, and a shorter timeout does not change how often the limit is hit.",
+  "ref": "https://platform.claude.com/docs/en/api/errors"
+ },
+ {
+  "id": "2.1.3-02",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Trey Research enables extended thinking and tools on a Messages API call in Python. The code reads the reply with json.loads(message.content[0].text) and raises an AttributeError on some responses, because the first block is sometimes a thinking block.\n\nWhat should the developer do?",
+  "choices": [
+   "Read message.content[-1].text, because the text block is the last block of a response",
+   "Read message.content[1].text, because a thinking block occupies the first position",
+   "Loop over message.content, select the block whose type is text, and parse its text value",
+   "Parse message.to_json(), which contains just the generated text of the reply"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The content of a response is a list of typed blocks, so code should select blocks by type instead of by position: a text block can follow a thinking block and can be followed by a tool_use block. Position-based reads break when the block order changes, and to_json() serializes the whole message rather than the text alone.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/extended-thinking"
+ },
+ {
+  "id": "2.1.3-03",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Wide World Importers exposes an asyncio-based Python web service that calls Claude. The service uses the synchronous Anthropic client, so each call blocks the event loop and concurrent requests queue up.\n\nWhich change should the developer make?",
+  "choices": [
+   "Set stream to true on the synchronous client so that the call returns immediately",
+   "Create an AsyncAnthropic client and await client.messages.create in the request handlers",
+   "Submit each prompt through the Message Batches API and poll for the result",
+   "Raise max_retries on the synchronous client so that blocked calls are retried"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "The SDK provides AsyncAnthropic with the same interface as the synchronous client, and awaiting its calls lets the event loop serve other requests. Streaming on the synchronous client still blocks the calling thread, the Batches API is for asynchronous bulk work with delayed results, and retries do not make a call non-blocking.",
+  "ref": "https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/python"
+ },
+ {
+  "id": "2.1.3-04",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Lamna Healthcare Company generates long reports with the Python SDK. A non-streaming request with a very large max_tokens raises a ValueError because it is expected to take longer than about 10 minutes. Some corporate networks drop idle connections. The downstream code needs the complete Message object and does not display partial text.\n\nHow should the developer call the API?",
+  "choices": [
+   "Override the timeout option with a larger value so that the check no longer raises",
+   "Increase max_retries so that the SDK repeats the slow request until it finishes",
+   "Switch to AsyncAnthropic so that the request is no longer subject to the timeout check",
+   "Use client.messages.stream and call get_final_message to obtain the complete Message"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "For long-running requests the SDK recommends streaming, and its accumulation helper get_final_message returns the same complete Message that a non-streaming call would, while the open event stream keeps the connection from looking idle. A larger timeout only disables the check and leaves the idle-connection risk, more retries repeat the same slow request, and the async client has the same timeout behavior.",
+  "ref": "https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/python"
+ },
+ {
+  "id": "2.1.3-05",
+  "obj": "2.1.3",
+  "difficulty": "easy",
+  "type": "multi",
+  "stem": "Coho Winery adds the anthropics/claude-code-action GitHub Action to its repository so that developers can mention @claude in pull requests. The workflow file is committed to the repository.\n\nWhich two actions should the team take? Each correct answer presents part of the solution.",
+  "choices": [
+   "Store the API key as a GitHub Actions secret and reference it in the workflow as a secrets value",
+   "Put the API key in the env block of the committed .claude/settings.json file",
+   "Add the API key to the CLAUDE.md file so that Claude can authenticate on each run",
+   "Let Claude push its commits directly to the default branch to keep the history linear",
+   "Review the changes that Claude proposes in a pull request before they are merged"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "Claude Code GitHub Actions guidance is to keep credentials in GitHub secrets, never in committed files, and to review Claude's changes before merging. The settings.json and CLAUDE.md files are committed to version control, so a key placed there is exposed, and pushing directly to the default branch skips the code review that protects it.",
+  "ref": "https://code.claude.com/docs/en/github-actions"
+ },
+ {
+  "id": "2.1.3-06",
+  "obj": "2.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Southridge Video hosts its code on GitHub and has a Claude Team plan. Leadership wants every pull request reviewed by Claude automatically, with inline comments, and does not want engineers to write or maintain workflow files for it.\n\nWhich option should the team use?",
+  "choices": [
+   "A GitHub Actions workflow that runs claude-code-action with a review prompt",
+   "Code Review, turned on by an organization Owner through the Claude GitHub App",
+   "The /code-review command, run by each developer on a local branch",
+   "A custom reviewer subagent that developers invoke during a Claude Code session"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Code Review is a managed service that reviews pull requests on GitHub according to repository settings and posts inline comments, so nobody maintains a workflow. A GitHub Actions review runs in your own CI from a workflow file you maintain, /code-review runs only when a developer invokes it locally, and a custom subagent is invoked by a person or by Claude during a session.",
+  "ref": "https://code.claude.com/docs/en/code-review"
+ },
+ {
+  "id": "2.1.3-07",
+  "obj": "2.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Fourth Coffee uses Code Review on its GitHub repositories. Reviews report only correctness bugs, but the team also wants missing tests flagged. A developer adds a REVIEW.md file with that guidance to a feature branch and opens a pull request, but the review ignores it.\n\nWhat should the team do?",
+  "choices": [
+   "Raise the review level to Deep so that the review also covers missing tests",
+   "Merge REVIEW.md into the default branch, because the review reads it from the base or default branch",
+   "Choose a different review model in the Code Review admin settings",
+   "Rename REVIEW.md to CLAUDE.local.md on the feature branch"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Code Review reads REVIEW.md from the base or default branch and never from the changes of the pull request being reviewed, so the guidance takes effect after it is merged there. The review level sets how thorough a review is rather than what it flags, the admin settings do not offer a model choice, and CLAUDE.local.md is a personal file that is not committed.",
+  "ref": "https://code.claude.com/docs/en/code-review"
+ },
+ {
+  "id": "2.1.4-01",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Humongous Insurance keeps a CLAUDE.md at the root of its monorepo that tells Claude Code to indent with tabs. The packages/api folder has its own CLAUDE.md that says to indent with spaces. Developers start Claude Code in packages/api and report that the indentation Claude uses is inconsistent.\n\nWhat should the team do?",
+  "choices": [
+   "Remove the contradiction so that one indentation rule remains across the CLAUDE.md files that load",
+   "Rely on the CLAUDE.md in packages/api, because it replaces the root file for sessions in that folder",
+   "Move the root instructions into CLAUDE.local.md so that they rank lower than the nested file",
+   "Add an @import of the root file to the nested file so that the nested rule wins"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Claude Code loads the CLAUDE.md files from the working directory and every directory above it and concatenates them, so a nested file does not replace its parent, and contradictory instructions may be followed arbitrarily. The fix is to review the files and remove the conflict. CLAUDE.local.md is appended after CLAUDE.md and an import only adds more text to the context, so neither settles a conflict.",
+  "ref": "https://code.claude.com/docs/en/memory"
+ },
+ {
+  "id": "2.1.4-02",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. has a 600-line project CLAUDE.md. Claude Code follows its rules less reliably, and most of the frontend rules are irrelevant when developers work on backend code. The team wants to cut the context cost of the file without losing the frontend rules.\n\nWhat should the team do?",
+  "choices": [
+   "Split the file into topic files and import each one into CLAUDE.md with @path syntax",
+   "Move the frontend rules into CLAUDE.local.md at the project root",
+   "Move the frontend rules into files under .claude/rules/ that declare a paths field for the frontend folders",
+   "Move the frontend rules into the managed policy CLAUDE.md file"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Path-scoped rules in .claude/rules/ load only when Claude works with matching files, so backend sessions do not pay for the frontend rules. Imports are expanded and loaded together with the CLAUDE.md that imports them, so they organize a long file without reducing its context cost. CLAUDE.local.md and the managed policy CLAUDE.md both load in every session.",
+  "ref": "https://code.claude.com/docs/en/memory"
+ },
+ {
+  "id": "2.1.4-03",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "multi",
+  "stem": "Graphic Design Institute shares its Claude Code configuration with every developer through the Git repository. Each developer also keeps personal preferences for this project, such as sandbox URLs and a personal model override.\n\nWhich two files should the team keep out of version control? Each correct answer presents part of the solution.",
+  "choices": [
+   "CLAUDE.md at the project root",
+   "CLAUDE.local.md at the project root",
+   ".claude/settings.json",
+   ".claude/settings.local.json",
+   ".claude/rules/testing.md"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "CLAUDE.local.md holds personal, project-specific instructions and should be added to .gitignore, and .claude/settings.local.json holds personal project settings and overrides, which Claude Code keeps out of git when it creates the file. CLAUDE.md, .claude/settings.json, and the files under .claude/rules/ are the team-shared project configuration and belong in the repository.",
+  "ref": "https://code.claude.com/docs/en/settings"
+ },
+ {
+  "id": "2.1.4-04",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank requires that Claude Code does not read .env files on any developer machine. A permissions deny rule for these files must stay in force even if developers edit any settings file in their repository or home folder, or pass --settings at startup.\n\nWhich location should the security team use to define the deny rule?",
+  "choices": [
+   "In the shared .claude/settings.json file committed to each repository",
+   "In the user ~/.claude/settings.json file on each developer machine",
+   "In the project CLAUDE.md file as an instruction that forbids reading .env files",
+   "In managed settings delivered by the organization"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Managed settings sit at the top of the precedence order, and nothing in a developer's own settings files or in --settings overrides a managed key. The shared project file and the user file are files that developers can edit, and a CLAUDE.md instruction is guidance for Claude rather than an enforced permission rule.",
+  "ref": "https://code.claude.com/docs/en/settings"
+ },
+ {
+  "id": "2.1.4-05",
+  "obj": "2.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Proseware, Inc. runs Claude Code against the Claude API. Developers select the opus alias in settings.json. After a Claude Code update, the alias resolves to a newer Opus model and the team sees different behavior in its prompts. The team wants the opus alias to stay on the model it has validated.\n\nWhat should the team do?",
+  "choices": [
+   "Set ANTHROPIC_BASE_URL to the validated model so that requests are routed to it",
+   "Set ANTHROPIC_DEFAULT_OPUS_MODEL to the full name of the validated model",
+   "Run /model default so that the session reverts to a fixed runtime model",
+   "Keep the model value as opus in settings.json and commit the file to share the alias"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Aliases point to the recommended version and update over time; to pin one, use the full model name or set the matching environment variable such as ANTHROPIC_DEFAULT_OPUS_MODEL. ANTHROPIC_BASE_URL changes where requests go, not which model answers, the default value only clears an override and returns to the runtime default, and committing the alias still lets it move.",
+  "ref": "https://code.claude.com/docs/en/model-config"
+ },
+ {
+  "id": "2.1.4-06",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Munson's Pickles and Preserves Farm will roll out Claude Code to many developers through Amazon Bedrock. Without configuration, Claude Code resolves aliases such as opus and sonnet to built-in defaults for the provider. That default can lag the newest release, and the model it names may not yet be enabled in a developer's AWS account. The administrator wants to control exactly when users move to a new model.\n\nWhat should the administrator do before the rollout?",
+  "choices": [
+   "Set ANTHROPIC_DEFAULT_OPUS_MODEL and the matching Sonnet and Haiku variables to version-specific Bedrock model IDs",
+   "Set availableModels in managed settings to the opus, sonnet, and haiku aliases",
+   "Set the model value in managed settings to an alias such as opus so that every user starts on it",
+   "Set ANTHROPIC_BASE_URL to the regional Bedrock endpoint for the AWS account"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "On third-party providers the documentation advises pinning model versions before rollout by setting the ANTHROPIC_DEFAULT_*_MODEL variables to version-specific IDs in the provider's format, and then updating them when the organization chooses to move. An allowlist of aliases only restricts selection, an alias in the model setting still resolves to the built-in default, and ANTHROPIC_BASE_URL changes the destination of requests, not the model.",
+  "ref": "https://code.claude.com/docs/en/model-config"
+ },
+ {
+  "id": "2.1.4-07",
+  "obj": "2.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders publishes a Claude Code plugin named deploy-kit that calls an MCP tool provided by another plugin, audit-logger. A new audit-logger release renamed that tool and broke deploy-kit for everyone who updated. The team wants deploy-kit to receive only compatible 2.1 patch releases of audit-logger.\n\nHow should the team declare the dependency?",
+  "choices": [
+   "In the dependencies array of plugin.json, as the plain string audit-logger",
+   "In enabledPlugins of the committed .claude/settings.json file, with the entry audit-logger set to true",
+   "In the dependencies array of plugin.json, as an object with name audit-logger and a version range of ~2.1.0",
+   "In the project CLAUDE.md file, with an instruction to use audit-logger version 2.1"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A plugin declares dependencies in the dependencies array of its plugin.json, and an object entry can carry a semantic-version range such as ~2.1.0 so that only matching releases are installed. A bare string follows whatever version the marketplace provides, enabledPlugins turns plugins on without constraining versions, and CLAUDE.md is instruction text that does not control installation.",
+  "ref": "https://code.claude.com/docs/en/plugin-dependencies"
+ },
+ {
+  "id": "2.1.4-08",
+  "obj": "2.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Adventure Works Cycles maintains the secrets-vault plugin in its own Git repository. Another team's plugin declares a dependency on secrets-vault with the version range ~2.1.0. Installing that plugin fails with a message that secrets-vault has no git tag satisfying the range, although the plugin.json of secrets-vault shows version 2.1.0.\n\nWhat should the maintainer of secrets-vault do?",
+  "choices": [
+   "Add allowCrossMarketplaceDependenciesOn to the marketplace.json file of the root marketplace",
+   "Create the release tag secrets-vault--v2.1.0 on the commit, for example with claude plugin tag --push",
+   "Run claude plugin prune on every machine that installs the dependent plugin",
+   "Change the version in plugin.json to 2.1.0-0 so that the range accepts pre-release builds"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A version constraint resolves against git tags named plugin-name--v-version on the repository that hosts the plugin, so the maintainer must tag each release; the version field in plugin.json alone does not satisfy the range. The cross-marketplace allowlist solves a different problem, claude plugin prune removes auto-installed dependencies that nothing needs, and a pre-release version would not match the range.",
+  "ref": "https://code.claude.com/docs/en/plugin-dependencies"
+ }
+]

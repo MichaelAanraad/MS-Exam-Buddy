@@ -1,0 +1,276 @@
+[
+ {
+  "id": "1.1.1-01",
+  "obj": "1.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Fabrikam, Inc. builds an application that processes supplier contracts. Every contract goes through the same three steps in the same order: extract the clauses, check each clause against a policy checklist, and write a summary for the legal team. The steps are known in advance and the output of each step feeds the next.\n\nWhich design should you use?",
+  "choices": [
+   "An autonomous agent that decides its own steps in a tool loop",
+   "A prompt chaining workflow in which application code makes one Claude call per step",
+   "An orchestrator-workers workflow in which a lead model creates subtasks at runtime",
+   "A routing workflow that classifies each contract and sends it to a specialized prompt"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Prompt chaining fits a task that decomposes into fixed, sequential steps, where each call processes the output of the previous one and the code controls the path. An autonomous agent or orchestrator-workers would add cost and latency for flexibility that is not needed here. Routing is right when inputs fall into distinct categories that need different handling, not when every input follows the same steps.",
+  "ref": "https://www.anthropic.com/research/building-effective-agents"
+ },
+ {
+  "id": "1.1.1-02",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank wants an assistant that investigates failed payment reports. Each report needs a different investigation: the assistant may query several internal systems, read logs, and follow up on what it finds, so the number of steps cannot be known in advance. A human reviews the final report, and the team accepts higher latency and cost in return for better results.\n\nWhich approach should you use?",
+  "choices": [
+   "A prompt chain with a fixed sequence of prompts",
+   "A parallelization workflow that runs the same prompt several times and votes",
+   "An agent in which the model directs its own tool use in a loop",
+   "A routing workflow that sends each report to one of several fixed prompts"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Workflows follow predefined code paths, while an agent lets the model decide its own steps and tool use, which suits open-ended problems where the number of steps cannot be predicted. The stem states both conditions for choosing an agent: unpredictable steps and acceptance of higher cost and latency. A fixed chain, voting, or routing would hard-code a path that these investigations do not follow.",
+  "ref": "https://www.anthropic.com/research/building-effective-agents"
+ },
+ {
+  "id": "1.1.1-03",
+  "obj": "1.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Litware, Inc. runs a customer-issue process as a fixed workflow and is considering replacing it with an autonomous agent. Leadership asks you to confirm that the task really calls for an agent.\n\nWhich two conditions should you confirm before choosing an agent over a workflow? Each correct answer presents part of the solution.",
+  "choices": [
+   "The number of steps needed cannot be predicted from the input",
+   "The same ordered steps apply to every input",
+   "A single call with retrieval and examples already meets the accuracy target",
+   "Responses must return within a fixed, low latency budget",
+   "The value of a better result justifies higher cost and latency"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "An agent suits open-ended problems where the path cannot be hard-coded, and its autonomy trades higher cost and latency for better task performance, so both conditions must hold. Identical steps for every input, a tight latency budget, or a single call that already meets the target all point to a workflow or an optimized single call instead.",
+  "ref": "https://www.anthropic.com/research/building-effective-agents"
+ },
+ {
+  "id": "1.1.1-04",
+  "obj": "1.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys has a support assistant that answers product questions from a 40-page manual. Each question is answered in one step from passages of the manual, latency must stay low, and a pilot that uses retrieval and a few examples in a single call already meets the accuracy target.\n\nWhich design should you use?",
+  "choices": [
+   "An autonomous agent with search tools that loops until it is satisfied",
+   "An orchestrator-workers workflow that splits each question into subtasks",
+   "A prompt chain with a draft step and a separate review step",
+   "A single call to Claude with retrieved passages and in-context examples"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Anthropic advises to start with the simplest solution and add complexity only when it measurably helps; optimizing a single call with retrieval and examples is often enough. The pilot already meets the accuracy target and latency must stay low, so an agent, orchestrator-workers, or an extra chained step would add cost and delay with no benefit. A chain would become right if a measured accuracy gap needed a review step.",
+  "ref": "https://www.anthropic.com/research/building-effective-agents"
+ },
+ {
+  "id": "1.1.2-01",
+  "obj": "1.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders writes its own agent loop on the Messages API in Python. The loop sends the conversation to Claude and, in testing, stops after the first response even when Claude asks to run a tool. The loop must keep running tools until Claude has finished its work.\n\nWhich condition should the loop use to decide to continue?",
+  "choices": [
+   "The response stop_reason is \"end_turn\"",
+   "The response stop_reason is \"tool_use\"",
+   "The response content contains a text block",
+   "The response stop_reason is \"max_tokens\""
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "When stop_reason is tool_use, Claude has requested a tool: the harness runs it, returns a tool_result, and calls the API again. The loop exits on end_turn, which means Claude completed its response. A text block is not a reliable signal because Claude often writes text next to a tool_use block, and max_tokens means the output was truncated rather than that a tool is requested.",
+  "ref": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons"
+ },
+ {
+  "id": "1.1.2-02",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adventure Works Cycles runs a custom tool loop on the Messages API. When a database tool raises an exception because Claude supplied an invalid date format, the harness catches the exception and sends the next request without a tool_result for that tool_use block, and the API returns a 400 error. The team wants Claude to see why the call failed so that it can correct its arguments.\n\nWhich action should you take in the harness?",
+  "choices": [
+   "Return a tool_result for that tool_use id with is_error set to true and the error text",
+   "Send a plain user message that describes the exception instead of a tool_result",
+   "Delete the failed tool_use block from the history and resend the request",
+   "Rerun the tool with default arguments and return that result as a success"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Every tool_use block needs a matching tool_result, and setting is_error to true tells Claude the call failed so it can try again with corrected arguments; the loop should also cap the number of retries. A plain message leaves the tool_use unanswered and triggers the 400 error. Deleting the block or silently substituting default arguments hides the failure from Claude, so it cannot correct the date format.",
+  "ref": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+ },
+ {
+  "id": "1.1.2-03",
+  "obj": "1.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Proseware, Inc. wants a Python service that fixes failing unit tests. The agent must read and edit files, run shell commands, and resume earlier sessions, and the team does not want to implement tool execution or the agent loop itself.\n\nWhich option should you use?",
+  "choices": [
+   "The Messages API with a hand-written tool loop",
+   "The Batches API with one request per failing test",
+   "The Claude Agent SDK, which ships with file and shell tools",
+   "The Messages API with a tool runner that wraps your own Python functions"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Claude Agent SDK exposes Claude Code's agent loop, built-in tools such as Read, Edit and Bash, and session handling as a library, so the team writes neither the loop nor the tools. A hand-written loop and the tool runner both still require the team to implement the file and shell tools, and the Batches API is an asynchronous bulk interface that does not run a tool loop.",
+  "ref": "https://code.claude.com/docs/en/agent-sdk/overview"
+ },
+ {
+  "id": "1.1.2-04",
+  "obj": "1.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Wingtip Toys runs a Claude Agent SDK agent in Python to refactor a large module. A run ends with a result message whose subtype is error_max_turns after the max_turns limit is reached. The agent has already read dozens of files and made partial edits, and the team wants to continue the same work with that gathered context preserved.\n\nWhich action should you take?",
+  "choices": [
+   "Start a new query with the original prompt and no options so that the agent begins again",
+   "Raise max_tokens and rerun the same query from the beginning",
+   "Switch the permission mode to bypassPermissions and rerun the query",
+   "Resume the session by passing its session_id as the resume option with a higher max_turns"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The result message carries the session_id even for error results, and passing it as the resume option continues the same conversation with its history, so a higher max_turns lets the agent finish. A fresh query or a rerun from the start discards the context the agent built up. max_tokens limits output length per response, not the number of turns, and the permission mode does not affect the turn limit.",
+  "ref": "https://code.claude.com/docs/en/agent-sdk/sessions"
+ },
+ {
+  "id": "1.1.3-01",
+  "obj": "1.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lamna Healthcare Company uses a Claude Agent SDK agent to answer questions about a large repository. The main conversation fills with the contents of dozens of files that the agent reads while searching, and later answers become less focused. The lead agent needs only a short summary of each search.\n\nWhich feature should you use?",
+  "choices": [
+   "A PostToolUse hook that logs each file the agent reads",
+   "The acceptEdits permission mode",
+   "Subagents that search in their own context and return a final summary",
+   "Session resume with the resume option"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Each subagent runs in its own fresh context window, and only its final message returns to the parent, so the intermediate file reads never enter the lead agent's context. A logging hook, a permission mode, and session resume do not reduce what the main conversation accumulates; resuming even reloads the full history.",
+  "ref": "https://code.claude.com/docs/en/agent-sdk/subagents"
+ },
+ {
+  "id": "1.1.3-02",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Relecloud generates a weekly operations report with exactly four sections. Each section comes from a different data source and does not depend on the other sections. The list of sections does not change, and the team wants the report finished as fast as possible.\n\nWhich decomposition should you use?",
+  "choices": [
+   "The application code defines the four tasks and runs four Claude calls in parallel",
+   "A lead model decides at runtime which subtasks to create and delegates them to workers",
+   "A single agent that writes the four sections one after another in one conversation",
+   "A prompt chain in which each section is written from the output of the previous section"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "When the subtasks are known in advance and independent, programmatic decomposition in code is simpler, cheaper and more predictable, and running the calls in parallel minimizes latency. Model-driven decomposition is meant for subtasks that cannot be listed ahead of time. Sequential writing in one conversation or a chain adds delay and unneeded coupling between sections that do not depend on each other.",
+  "ref": "https://www.anthropic.com/research/building-effective-agents"
+ },
+ {
+  "id": "1.1.3-03",
+  "obj": "1.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Alpine Ski House builds a research assistant. Users ask open-ended questions such as \"Compare the safety records of eight resort operators.\" The number of sources and the angles to research depend on the question and cannot be listed ahead of time, and the sources can be searched independently.\n\nWhich decomposition should you use?",
+  "choices": [
+   "Application code that splits every question into the same three subtasks",
+   "A lead agent that decides the subtasks at runtime and delegates them to parallel subagents",
+   "A routing workflow that picks one of several prewritten prompts",
+   "A single long prompt that lists every possible research angle"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Orchestrator-workers with model-driven decomposition fits tasks where the subtasks depend on the input and cannot be predicted, and independent searches can run in parallel. Fixed code-defined subtasks or prewritten prompts would not adapt to a question that needs eight sources or a different set of angles, and a single prompt listing every angle cannot cover open-ended questions.",
+  "ref": "https://www.anthropic.com/engineering/multi-agent-research-system"
+ },
+ {
+  "id": "1.1.3-04",
+  "obj": "1.1.3",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Fabrikam, Inc. defines a read-only code-reviewer subagent for a Claude Agent SDK application in Python. The lead agent must delegate to it automatically when a user asks for a review, and the reviewer must not be able to edit files or run shell commands.\n\nWhich two actions should you take? Each correct answer presents part of the solution.",
+  "choices": [
+   "Rely on the subagent starting with a copy of the lead agent's conversation",
+   "Write a description that states when the lead agent should delegate to the reviewer",
+   "Omit the tools field so that the subagent inherits only the tools that it needs",
+   "Name the subagent code-reviewer and leave the description empty",
+   "Set the tools field of the definition to read-only tools such as Read, Grep and Glob"
+  ],
+  "answer": [
+   1,
+   4
+  ],
+  "explanation": "The lead agent chooses a subagent by matching the task against its description, so the description must say when to delegate. The tools field restricts what the subagent can use; omitting it makes the subagent inherit all available tools, which would allow edits and shell commands. A standard subagent starts with a fresh context rather than a copy of the parent conversation, so the lead must pass what it needs in the delegation prompt.",
+  "ref": "https://code.claude.com/docs/en/sub-agents"
+ },
+ {
+  "id": "1.1.4-01",
+  "obj": "1.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Woodgrove Bank runs a Claude Agent SDK agent in Python that can call a refund tool. In unattended runs the refund tool is pre-approved in allowed_tools so that no prompts appear. Policy states that any refund above a set amount must be blocked and routed to a human, and compliance requires that the block cannot be skipped through model behavior.\n\nWhich mechanism should you use?",
+  "choices": [
+   "A PreToolUse hook that returns a deny decision when the amount exceeds the limit",
+   "A canUseTool callback that rejects refunds above the limit",
+   "A system prompt rule that forbids refunds above the limit",
+   "A PostToolUse hook that reverses refunds above the limit after they run"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A PreToolUse hook runs before every tool call, including pre-approved ones, and a deny decision blocks the call deterministically regardless of what the model decides. A canUseTool callback runs only when the permission flow reaches a prompt, so it is skipped for calls pre-approved in allowed_tools. A prompt rule is only guidance, and reversing a refund after it ran does not prevent an irreversible action.",
+  "ref": "https://code.claude.com/docs/en/agent-sdk/permissions"
+ },
+ {
+  "id": "1.1.4-02",
+  "obj": "1.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Trey Research wants a long-running, asynchronous research agent that needs bash, file, and web tools. The team has no capacity to build an agent loop, a tool execution layer, or a sandbox.\n\nWhich option should you use?",
+  "choices": [
+   "The Claude Agent SDK in containers that the team operates",
+   "Claude Managed Agents, which provides a hosted harness and sandbox",
+   "A custom harness on the Messages API with a self-managed sandbox",
+   "The Batches API with a prompt that describes each step"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Claude Managed Agents is an Anthropic-hosted harness: Anthropic runs the agent loop, tool execution, and the sandbox, with built-in bash, file, and web tools. The Agent SDK and a custom harness are self-hosted, so the team would operate the loop and sandbox itself. The Batches API is asynchronous, but it does not run a tool loop.",
+  "ref": "https://platform.claude.com/docs/en/managed-agents/overview"
+ },
+ {
+  "id": "1.1.4-03",
+  "obj": "1.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Litware, Inc. must run its coding agent inside its own virtual network, with custom hooks and a sandbox that the security team controls. The team needs full control of the agent loop and of where it runs, and it is willing to operate the deployment itself.\n\nWhich option should you use?",
+  "choices": [
+   "Claude Managed Agents with the default cloud environment",
+   "A one-shot Messages API call per task with no tools",
+   "The Claude Agent SDK run on infrastructure that Litware operates",
+   "The Batches API with scheduled jobs"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Agent SDK is a library that runs in a process you operate, so you control the loop, hooks, sandbox, and network placement. Claude Managed Agents runs the harness on Anthropic-managed infrastructure, which trades control for convenience. A one-shot call without tools or scheduled batch jobs do not provide an agent loop at all.",
+  "ref": "https://code.claude.com/docs/en/agent-sdk/overview"
+ }
+]

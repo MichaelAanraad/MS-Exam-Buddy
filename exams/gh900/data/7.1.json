@@ -1,0 +1,166 @@
+[
+ {
+  "id": "7.1.1-01",
+  "obj": "7.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing relies on an open-source library that is maintained by an individual developer. Lucerne wants to send the maintainer recurring monthly funding directly on GitHub.\n\nWhich GitHub feature should Lucerne use?",
+  "choices": [
+   "GitHub Discussions",
+   "GitHub Sponsors",
+   "GitHub Marketplace",
+   "GitHub Projects"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "GitHub Sponsors lets people and organizations financially support the developers who build and maintain open-source projects, with one-time or monthly payments. GitHub Marketplace sells tools such as apps and actions, Discussions is a community conversation space, and Projects tracks work.",
+  "ref": "https://docs.github.com/en/sponsors/getting-started-with-github-sponsors/about-github-sponsors"
+ },
+ {
+  "id": "7.1.1-02",
+  "obj": "7.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Coho Winery plans to publish an internal library as an open-source project. The library will have no commercial support or SLA, and the company does not want its upkeep to depend on one developer.\n\nWhich action should Coho Winery take to benefit from the open-source community?",
+  "choices": [
+   "Restrict write access to the original author alone",
+   "Keep roadmap and discussions in a private repository",
+   "Document how to contribute in README and CONTRIBUTING files",
+   "Switch the repository to private after the first release"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A README and a CONTRIBUTING file explain the project and how to contribute, which helps users become contributors and maintainers so that a team of people can sustain the project. Limiting write access, hiding the roadmap and going private all cut off the community that the company wants to rely on.",
+  "ref": "https://learn.microsoft.com/training/modules/create-open-source-program-github/4-describe-benefits-open-source-community"
+ },
+ {
+  "id": "7.1.2-01",
+  "obj": "7.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Trey Research maintains a public open-source repository. The maintainers want an automated build and test run on every pull request without paying for compute minutes.\n\nWhich option should Trey Research use?",
+  "choices": [
+   "A paid continuous integration app from GitHub Marketplace",
+   "GitHub Actions workflows on larger GitHub-hosted runners",
+   "A GitHub Codespaces prebuild for each pull request",
+   "GitHub Actions workflows on standard GitHub-hosted runners"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "GitHub supports open source by making standard GitHub-hosted runners free for public repositories, so GitHub Actions workflows on them cost nothing. Larger runners are billed even for public repositories, a paid Marketplace app is an extra cost, and a Codespaces prebuild is not a pull request test pipeline.",
+  "ref": "https://docs.github.com/en/billing/concepts/product-billing/github-actions"
+ },
+ {
+  "id": "7.1.2-02",
+  "obj": "7.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "VanArsdel, Ltd. maintains a public open-source library. The maintainers want GitHub to open pull requests automatically that raise a dependency to a patched version, and only when a security advisory affects that dependency.\n\nWhich feature should the maintainers enable?",
+  "choices": [
+   "The dependency graph",
+   "Dependabot alerts",
+   "Dependabot version updates",
+   "Dependabot security updates"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Dependabot security updates act on Dependabot alerts and automatically raise a pull request that updates a vulnerable dependency to the minimum patched version. Alerts only notify about vulnerable dependencies, version updates open pull requests for any outdated dependency on a schedule, and the dependency graph only lists dependencies.",
+  "ref": "https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-security-updates"
+ },
+ {
+  "id": "7.1.3-01",
+  "obj": "7.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Proseware, Inc. wants the public activity of a respected open-source maintainer, such as new repositories and sponsorships, to appear on the personal dashboard. The developer does not want notifications for every repository that the maintainer works on.\n\nWhich action should the developer take?",
+  "choices": [
+   "Follow the maintainer",
+   "Watch every repository of the maintainer",
+   "Star every repository of the maintainer",
+   "Sponsor the maintainer"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Following a user shows that person's public activity on your personal dashboard. Watching repositories sends notifications for each repository, starring only bookmarks a repository, and sponsoring funds the maintainer without providing an activity feed.",
+  "ref": "https://docs.github.com/en/get-started/exploring-projects-on-github/following-people"
+ },
+ {
+  "id": "7.1.4-01",
+  "obj": "7.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Blue Yonder Airlines wants to find a third-party code quality tool, try it free for 14 days, install it on selected organization repositories, and pay through the existing GitHub billing of the organization if the team keeps it.\n\nWhich GitHub offering should the organization owner use?",
+  "choices": [
+   "GitHub Sponsors",
+   "GitHub Enterprise Cloud",
+   "GitHub Actions workflow templates",
+   "GitHub Marketplace"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "GitHub Marketplace lists apps and actions that extend GitHub workflows, can offer free trials and paid plans, and bills paid plans to the account that installs them. Sponsors funds people and organizations that maintain open source, Enterprise Cloud is a plan rather than a tool catalog, and workflow templates give starting files without purchasing a product.",
+  "ref": "https://docs.github.com/en/apps/github-marketplace/github-marketplace-overview/about-github-marketplace-for-apps"
+ },
+ {
+  "id": "7.1.5-01",
+  "obj": "7.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Litware, Inc. has many internal teams that build proprietary services. Leaders want the teams to discover each other's code, reuse it and send pull requests to other teams, while the source stays visible only to company employees.\n\nWhich approach should Litware adopt?",
+  "choices": [
+   "A public open-source program",
+   "An InnerSource program",
+   "Closed-source development with isolated teams",
+   "Outsourced development with outside collaborators"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "InnerSource applies open-source patterns, such as visible code and contributions by pull request, to projects with a limited audience like a single company. A public open-source program would expose the code outside the company, and the other two approaches keep teams separate instead of encouraging cross-team contribution.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/manage-innersource-program-github/2-manage-innersource-program"
+ },
+ {
+  "id": "7.1.5-02",
+  "obj": "7.1.5",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Fabrikam, Inc. runs an InnerSource program. A platform team owns a repository that other teams have never worked with. Consumer teams must be able to understand what the repository does and how to propose changes, and the code must remain visible only to Fabrikam employees.\n\nWhich two actions should the platform team take? Each correct answer presents part of the solution.",
+  "choices": [
+   "Add a README that explains the purpose and usage",
+   "Change the repository visibility to public",
+   "Grant every employee the Admin role on the repository",
+   "Create a private copy of the repository for each consumer team",
+   "Add a CONTRIBUTING file that explains how to propose changes"
+  ],
+  "answer": [
+   0,
+   4
+  ],
+  "explanation": "A README tells consumers what the project is for and how to use it, and a CONTRIBUTING file explains how to propose changes, which are the discoverability and guidance practices of a healthy InnerSource program. Public visibility breaks the employees-only rule, Admin for everyone removes the owning team control, and separate copies fragment the project instead of enabling contributions.",
+  "ref": "https://learn.microsoft.com/en-us/training/modules/manage-innersource-program-github/2-manage-innersource-program"
+ },
+ {
+  "id": "7.1.6-01",
+  "obj": "7.1.6",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Alpine Ski House wants a standard starting point for new microservice repositories, with the same folders, workflow files and issue templates. Each new repository must begin with a single commit and must not carry the commit history of the starting repository.\n\nWhich feature should the team use?",
+  "choices": [
+   "A fork of the repository",
+   "A template repository",
+   "A new branch in the repository",
+   "A repository topic"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A repository created from a template copies the structure and files and starts with a single commit, which suits new projects. A fork keeps the full history and stays linked to the upstream repository for contributing changes back, a branch stays inside the same repository, and a topic only makes a repository easier to find.",
+  "ref": "https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template"
+ }
+]

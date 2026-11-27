@@ -1,0 +1,240 @@
+[
+ {
+  "id": "4.1.1-01",
+  "obj": "4.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Contoso, Ltd. maintains a repository on GitHub. The team wants a GitHub Actions workflow to start automatically whenever a pull request is opened against the main branch.\n\nWhich workflow component should you configure to define this trigger?",
+  "choices": [
+   "Job",
+   "Event",
+   "Step",
+   "Runner"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "An event is the repository activity, such as a pull request being opened, that triggers a workflow run. A job is a set of steps that runs on the same runner, a step is a single script or action inside a job, and a runner is the server that executes a job. None of those three decides when a workflow starts.",
+  "ref": "https://docs.github.com/en/actions/get-started/understand-github-actions"
+ },
+ {
+  "id": "4.1.1-02",
+  "obj": "4.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Adatum Corporation builds firmware for a test device that needs an operating system and hardware that GitHub-hosted runners do not provide. The build must still run as a job in a GitHub Actions workflow in the Adatum repository.\n\nWhich runner type should you use?",
+  "choices": [
+   "GitHub-hosted Ubuntu runner",
+   "Larger GitHub-hosted runner",
+   "GitHub-hosted macOS runner",
+   "Self-hosted runner"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Self-hosted runners are the option for operating systems or specific hardware that GitHub-hosted runners do not offer. GitHub-hosted Ubuntu, Windows and macOS runners, and larger runners with bigger configurations, are all provisioned by GitHub and would be right only when the standard images and hardware meet the need.",
+  "ref": "https://docs.github.com/en/actions/get-started/understand-github-actions"
+ },
+ {
+  "id": "4.1.1-03",
+  "obj": "4.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Fabrikam, Inc. has a GitHub Actions workflow with a test job. The team must run that job against three runtime versions on both Linux and Windows without copying the job definition six times. A separate publish job must start only after the test runs succeed.\n\nWhich two features should you use? Each correct answer presents part of the solution.",
+  "choices": [
+   "A matrix on the test job",
+   "A dependency of the publish job on the test job",
+   "A schedule event on the workflow",
+   "A self-hosted runner for the publish job",
+   "A reusable action from GitHub Marketplace for the publish job"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "A matrix runs one job definition multiple times with different variable combinations, which removes the duplication. Jobs run in parallel by default, so the publish job needs a dependency on the test job to wait for it. A schedule event, a self-hosted runner and a Marketplace action do not address either the duplication or the ordering stated in the scenario.",
+  "ref": "https://docs.github.com/en/actions/get-started/understand-github-actions"
+ },
+ {
+  "id": "4.1.2-01",
+  "obj": "4.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Woodgrove Bank developers use GitHub Copilot in their IDE. A developer wants to describe a high-level goal in natural language and have Copilot choose the files to change, edit them, run terminal commands and keep iterating on build or test failures until the goal is met.\n\nWhich Copilot capability should the developer use?",
+  "choices": [
+   "Inline suggestions",
+   "Agent mode",
+   "Ask mode in Copilot Chat",
+   "Copilot code review"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Agent mode in a supported IDE takes a high-level task, decides which files to change, makes the edits, runs commands and iterates until the goal is reached. Ask mode answers a question and stops after a single response, inline suggestions only propose code as you type, and code review evaluates pull requests rather than carrying out a task.",
+  "ref": "https://learn.microsoft.com/visualstudio/ide/copilot-agent-mode?view=visualstudio"
+ },
+ {
+  "id": "4.1.2-02",
+  "obj": "4.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Tailspin Toys developers use Copilot Chat in their IDE. A developer finds that the current model gives shallow answers to architecture questions and wants to try a different available model in the same conversation. Inline suggestions must keep using their current model.\n\nWhat should the developer do?",
+  "choices": [
+   "Select another model in the model dropdown of the chat view",
+   "Change the model setting for inline suggestions",
+   "Add repository custom instructions for Copilot",
+   "Delegate the question to the Copilot cloud agent"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "Copilot supports multiple models, and you switch the chat model from the model dropdown in the chat view; later prompts in the chat use the new model. The chat model is separate from the inline suggestions model, so changing it leaves inline suggestions alone. Custom instructions shape responses but do not change the model, and the cloud agent is for delegated tasks.",
+  "ref": "https://docs.github.com/en/copilot/how-tos/use-ai-models/change-the-chat-model"
+ },
+ {
+  "id": "4.1.2-03",
+  "obj": "4.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Northwind Traders wants Copilot to handle small, well-scoped tasks. A developer must delegate a task, then continue other work without keeping a local session running, and review the result later as a branch with a pull request.\n\nWhich Copilot capability should the developer use?",
+  "choices": [
+   "Agent mode in the IDE",
+   "Copilot CLI in the terminal",
+   "Copilot cloud agent",
+   "Copilot code review"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Copilot cloud agent works asynchronously in a cloud environment after you delegate a task, then delivers its changes on a branch and opens a pull request. Agent mode in the IDE and Copilot CLI are interactive tools that run in your local or sandboxed environment while you guide them, and code review comments on existing pull requests.",
+  "ref": "https://docs.github.com/en/copilot/concepts/agent-capabilities/about-agents/about-github-copilot-agents"
+ },
+ {
+  "id": "4.1.3-01",
+  "obj": "4.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Lucerne Publishing is an organization on the GitHub Team plan. Organization owners want to assign Copilot seats to members and manage Copilot policies for them centrally.\n\nWhich Copilot plan should Lucerne Publishing choose?",
+  "choices": [
+   "Copilot Pro",
+   "Copilot Free",
+   "Copilot Business",
+   "Copilot Enterprise"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Copilot Business is for organizations that want centralized management and policy control over their members, and owners of organizations on GitHub Free or Team can set it up. Copilot Pro and Free are individual plans, and Copilot Enterprise is for enterprises that use GitHub Enterprise Cloud.",
+  "ref": "https://docs.github.com/en/copilot/get-started/plans"
+ },
+ {
+  "id": "4.1.3-02",
+  "obj": "4.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A freelance developer has a personal GitHub account and does not belong to any organization or enterprise. The developer wants a paid Copilot subscription with access to a selection of models and a monthly allowance of AI credits.\n\nWhich Copilot plan should the developer choose?",
+  "choices": [
+   "Copilot Business",
+   "Copilot Pro",
+   "Copilot Enterprise",
+   "Copilot Free"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Copilot Pro is an individual plan for developers who want more flexibility with models and a monthly allowance of AI credits. Business and Enterprise are assigned through an organization or enterprise, which this developer does not have, and Copilot Free offers only limited access to features.",
+  "ref": "https://docs.github.com/en/copilot/get-started/plans"
+ },
+ {
+  "id": "4.1.3-03",
+  "obj": "4.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Proseware, Inc. uses GitHub Enterprise Cloud with several organizations. Most developers have Copilot Business seats. A group of platform engineers needs a plan that is assigned and managed through the company account, includes everything in the plan the other developers have, and adds a larger monthly AI credit pool and further advanced capabilities.\n\nWhich Copilot plan should you assign to the platform engineers?",
+  "choices": [
+   "Copilot Pro+",
+   "Copilot Business",
+   "Copilot Pro",
+   "Copilot Enterprise"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Copilot Enterprise is for enterprises on GitHub Enterprise Cloud and includes all Business features plus a larger AI credit pool and additional enterprise-grade capabilities. Copilot Business is the plan the other developers already have, and Pro and Pro+ are individual plans that are not managed centrally by the company.",
+  "ref": "https://docs.github.com/en/copilot/get-started/plans"
+ },
+ {
+  "id": "4.1.4-01",
+  "obj": "4.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Relecloud wants every contributor who creates a codespace for the Relecloud web app repository to get the same runtime, tools and VS Code extensions automatically. The configuration must be stored in the repository and apply to everyone.\n\nWhat should you add to the repository?",
+  "choices": [
+   "A devcontainer.json file in the .devcontainer folder",
+   "A dotfiles repository for each contributor",
+   "A Codespaces prebuild configuration",
+   "A Settings Sync profile for the team"
+  ],
+  "answer": [
+   0
+  ],
+  "explanation": "A dev container configuration, usually .devcontainer/devcontainer.json, defines the image, features, extensions and settings that every codespace for the repository uses. Dotfiles and Settings Sync personalize individual accounts, and a prebuild only speeds up creating codespaces from an existing dev container configuration.",
+  "ref": "https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers"
+ },
+ {
+  "id": "4.1.4-02",
+  "obj": "4.1.4",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Litware, Inc. developers create codespaces for a large repository. Creating a new codespace takes about six minutes because dependencies are installed each time. Individual developers also want their own shell aliases available in every codespace they create, without affecting teammates.\n\nWhich two actions should you perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Configure a prebuild for the branch and dev container configuration",
+   "Have each developer select a dotfiles repository in personal Codespaces settings",
+   "Add the shell aliases to the devcontainer.json file in the repository",
+   "Increase the default idle timeout in each developer's personal settings",
+   "Move the team to the github.dev editor"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "A prebuild assembles the code, extensions and dependencies ahead of time for a branch and dev container configuration, so new codespaces start faster. A personal dotfiles repository applies each developer's shell setup to the codespaces they create. Putting aliases in devcontainer.json would affect every teammate, and neither the idle timeout nor github.dev, which has no compute, reduces creation time.",
+  "ref": "https://docs.github.com/en/codespaces/prebuilding-your-codespaces/about-github-codespaces-prebuilds"
+ },
+ {
+  "id": "4.1.5-01",
+  "obj": "4.1.5",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A contributor at Adatum Corporation wants to fix a typo in a README file from a browser on a shared computer. No code must be built or run. The editor should open immediately, without cloning the repository or provisioning a virtual machine.\n\nWhich tool should the contributor use?",
+  "choices": [
+   "GitHub Codespaces",
+   "GitHub Desktop",
+   "The github.dev editor",
+   "GitHub CLI"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The github.dev editor is a lightweight, browser-based VS Code that opens immediately, lets you edit files and commit changes without cloning, and has no compute behind it. Codespaces provisions a virtual machine, and GitHub Desktop and GitHub CLI are local tools that need a clone.",
+  "ref": "https://docs.github.com/en/codespaces/the-githubdev-web-based-editor"
+ },
+ {
+  "id": "4.1.5-02",
+  "obj": "4.1.5",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "A reviewer at Fabrikam, Inc. starts by browsing a pull request in the github.dev editor. The reviewer then needs to run the project integration tests from an integrated terminal against that branch, without installing any local tooling.\n\nWhat should the reviewer do?",
+  "choices": [
+   "Install a web extension in github.dev to add a terminal",
+   "Open the pull request branch in a codespace",
+   "Turn on Settings Sync in github.dev to enable a terminal",
+   "Open the pull request branch in GitHub Desktop"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "github.dev has no associated compute, so it cannot build, run or debug code or offer an integrated terminal, and its web extensions or Settings Sync do not change that. A codespace is a cloud-hosted development environment with a terminal for running and debugging. GitHub Desktop would need local tooling, which the scenario rules out.",
+  "ref": "https://docs.github.com/en/codespaces/the-githubdev-web-based-editor"
+ }
+]

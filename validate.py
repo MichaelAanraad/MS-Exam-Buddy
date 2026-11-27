@@ -17,7 +17,8 @@ OBJ = objectives()
 # explanation per question and no per-choice rationale. Only the rationale checks are relaxed.
 IMPORTED_SINGLE_EXPLANATION = bool(getattr(_settings, "IMPORTED_SINGLE_EXPLANATION", False))
 # Opt-in per exam: imported banks keep their source wording. Skips the stem-wording, banned-phrase,
-# Python-only, multi-stem and giveaway checks only; ASCII, explanations, refs and coverage still apply.
+# Python-only, multi-stem, giveaway and minimum-explanation-length checks only; ASCII, explanations, refs
+# and coverage still apply.
 RELAXED_STYLE = bool(getattr(_settings, "RELAXED_STYLE", False))
 REF_PREFIXES = tuple(getattr(_settings, "REF_PREFIXES", ("https://learn.microsoft.com/",)))
 DIFF = ("easy", "medium", "hard")
@@ -149,7 +150,7 @@ def check(qs, groups):
                 err.append(f"{i}: question sentence must be What/Which/How ... should ...?")
         whys = q.get("rationale", []) + q.get("notes", []) + [w for x in tg if isinstance(x, dict) for w in x.get("why", [])]
         short = [w for w in whys if len(w) < MIN_WHY]
-        if short:
+        if short and not RELAXED_STYLE:  # relaxed exams keep the source's short explanations
             err.append(f"{i}: {len(short)} explanation(s) under {MIN_WHY} chars, e.g. '{short[0]}'")
         prose = " ".join([q.get("explanation", "")] + whys).lower()
         dutch = DUTCH.findall(prose)

@@ -1,0 +1,148 @@
+[
+ {
+  "id": "5.1.1-01",
+  "obj": "5.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Margie's Travel tracks work in a GitHub project. The team wants to see items arranged in columns by their Status value and move an item to another column by dragging it.\n\nWhich project feature should the team use?",
+  "choices": [
+   "Table layout",
+   "Roadmap layout",
+   "Board layout",
+   "Insights chart"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Board layout is a kanban-style view whose columns come from a Status or other single select field, and dragging an item to another column updates its field value. The Table layout is a dense spreadsheet-like view, the Roadmap layout is a timeline, and an Insights chart only reports on items.",
+  "ref": "https://docs.github.com/en/issues/planning-and-tracking-with-projects/customizing-views-in-your-project/changing-the-layout-of-a-view"
+ },
+ {
+  "id": "5.1.1-02",
+  "obj": "5.1.1",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Coho Winery created a GitHub project with a view that uses the Roadmap layout. The project contains many issues, but none of them appear on the timeline. The project has no date or iteration fields.\n\nWhat should you do first so the issues appear on the roadmap?",
+  "choices": [
+   "Group the items by Status in the Roadmap layout",
+   "Switch the view to the Board layout",
+   "Enable the auto-add workflow for the repository",
+   "Add a date or iteration field and set values on the items"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The Roadmap layout places items on a timeline by their date or iteration fields, so items without those values do not appear. Grouping or switching layouts does not give items a position in time, and auto-add only brings more items into the project.",
+  "ref": "https://docs.github.com/en/issues/planning-and-tracking-with-projects/customizing-views-in-your-project/changing-the-layout-of-a-view"
+ },
+ {
+  "id": "5.1.2-01",
+  "obj": "5.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Trey Research uses a GitHub project for planning. The team wants every new issue labeled bug in one repository to be added to the project automatically, without anyone adding it by hand.\n\nWhat should you configure?",
+  "choices": [
+   "The Item added to project workflow",
+   "The Auto-archive workflow",
+   "The Auto-add to project workflow",
+   "The Item closed workflow"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Auto-add to project workflow adds items from a repository that match a filter, such as a label, so no manual step is needed. Item added to project sets a field after an item is already in the project, Auto-archive removes items that meet criteria from view, and Item closed updates Status when an issue is closed.",
+  "ref": "https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/using-the-built-in-automations"
+ },
+ {
+  "id": "5.1.2-02",
+  "obj": "5.1.2",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Wingtip Toys is preparing release 2.0 of a product. The team must group the related issues and pull requests in one repository, show a due date and the percentage of completed work for that release, and mark certain issues as suitable for first-time contributors.\n\nWhich two features should you use? Each correct answer presents part of the solution.",
+  "choices": [
+   "A milestone for the release",
+   "A label such as good first issue",
+   "An assignee on each issue",
+   "A saved reply for contributors",
+   "An issue template for bug reports"
+  ],
+  "answer": [
+   0,
+   1
+  ],
+  "explanation": "A milestone tracks progress on a group of issues and pull requests in a repository and shows a due date and completion percentage. A label such as good first issue marks suitable issues for new contributors. Assignees, saved replies and issue templates are useful in other ways but do not provide release progress or the first-time contributor marker.",
+  "ref": "https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/about-milestones"
+ },
+ {
+  "id": "5.1.3-01",
+  "obj": "5.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A maintainer at Fabrikam, Inc. keeps typing the same response to contributors who report duplicate issues across several repositories. The maintainer wants to insert that text with a few clicks when commenting.\n\nWhat should the maintainer use?",
+  "choices": [
+   "Issue templates",
+   "Saved replies",
+   "Labels",
+   "Assignees"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Saved replies are reusable responses tied to your personal account that you can insert into comments in issues, pull requests and discussions, across repositories and organizations. Issue templates are defined per repository to structure new reports, labels categorize items, and assignees identify who is responsible.",
+  "ref": "https://docs.github.com/en/get-started/writing-on-github/working-with-saved-replies/about-saved-replies"
+ },
+ {
+  "id": "5.1.3-02",
+  "obj": "5.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Woodgrove Bank tracks a production incident as a GitHub issue. Two engineers with write access share responsibility for fixing it, and both must be clearly identified as owners of the issue.\n\nWhat should you do?",
+  "choices": [
+   "Add both engineers as pull request reviewers",
+   "Apply a label named after each engineer",
+   "Set the milestone to the incident",
+   "Add both engineers as assignees"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Assignees show who is responsible for an issue, and an issue can have more than one assignee, including anyone with write access. Reviewers apply to pull requests, labels only categorize, and a milestone groups work toward a goal rather than naming owners.",
+  "ref": "https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/assigning-issues-and-pull-requests-to-other-github-users"
+ },
+ {
+  "id": "5.1.4-01",
+  "obj": "5.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Northwind Traders manages a GitHub project and wants a chart that shows how many items are currently assigned to each person. The chart must be visible to anyone who can view the project.\n\nWhich project feature should the team use?",
+  "choices": [
+   "Roadmap layout",
+   "Draft issues",
+   "Project insights",
+   "Built-in workflows"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Insights for projects lets you build charts from project items, and a current chart can show how many items are assigned to each person; anyone who can view the project can see them. The Roadmap layout shows a timeline, draft issues are items, and built-in workflows automate field changes.",
+  "ref": "https://docs.github.com/en/issues/planning-and-tracking-with-projects/viewing-insights-from-your-project/about-insights-for-projects"
+ },
+ {
+  "id": "5.1.4-02",
+  "obj": "5.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Contoso, Ltd. leaders ask whether a team is finishing work at a healthy pace. They need to see, over several weeks, how many issues were opened, completed or not planned, so the team can spot bottlenecks.\n\nWhat should the team use in the project?",
+  "choices": [
+   "A current chart that groups items by assignee",
+   "The milestone completion percentage",
+   "A Roadmap layout with iteration markers",
+   "A historical chart with the X-axis set to Time"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "A historical chart in project insights, created by setting the X-axis to Time, shows how item states change over time; the default burn up chart tracks open, completed and not planned issues. A current chart is a snapshot of today, a milestone percentage is a single number, and the Roadmap layout plans future dates instead of reporting progress.",
+  "ref": "https://docs.github.com/en/issues/planning-and-tracking-with-projects/viewing-insights-from-your-project/about-insights-for-projects"
+ }
+]

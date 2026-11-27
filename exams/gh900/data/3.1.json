@@ -1,0 +1,238 @@
+[
+ {
+  "id": "3.1.1-01",
+  "obj": "3.1.1",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Adatum Corporation maintainers want a place where community members can ask open-ended questions, share ideas, and read announcements. The conversations are not tied to a specific bug or code change and do not need an owner.\n\nWhich GitHub feature should you use?",
+  "choices": [
+   "Issues",
+   "Pull requests",
+   "Discussions",
+   "Wikis"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Discussions work like a forum for open-ended conversation, announcements, and questions that are not tied to specific files or tasks. Issues track actionable work with an owner, pull requests propose code changes, and a wiki holds long-form documentation rather than conversation.",
+  "ref": "https://docs.github.com/en/get-started/using-github/communicating-on-github"
+ },
+ {
+  "id": "3.1.1-02",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A customer of Litware, Inc. reports a reproducible bug in an open-source tool hosted in Repo1. A maintainer must track the bug, assign it to a developer, and add it to a milestone.\n\nWhich feature should the maintainer use?",
+  "choices": [
+   "A discussion in the Q&A category",
+   "An issue",
+   "A pull request",
+   "A wiki page"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Issues track bugs, tasks, and feedback in a repository and support assignees, labels, and milestones. A discussion is meant for open-ended conversation without an owner, a pull request proposes a change to the code, and a wiki page documents the project.",
+  "ref": "https://docs.github.com/en/issues/tracking-your-work-with-issues/learning-about-issues/about-issues"
+ },
+ {
+  "id": "3.1.1-03",
+  "obj": "3.1.1",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "A developer at Tailspin Toys started a feature in the branch feature1 and wants teammates to review the approach early. The work is not finished, so the change must not be merged by accident, and code owners must not be asked to review it yet.\n\nWhat should the developer do?",
+  "choices": [
+   "Open a pull request that has a work in progress label",
+   "Open a draft pull request",
+   "Open an issue that links to the branch",
+   "Start a discussion that links to the branch"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "A draft pull request shares work in progress, cannot be merged until it is marked ready for review, and does not automatically request code owners. A label on a regular pull request does not block merging or the review requests. An issue or a discussion cannot hold the branch changes for review.",
+  "ref": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests"
+ },
+ {
+  "id": "3.1.1-04",
+  "obj": "3.1.1",
+  "difficulty": "hard",
+  "type": "multi",
+  "stem": "Relecloud maintainers use the issues of Repo1 to track bugs. Many issues now contain open-ended debate without actionable work, and Discussions is not enabled for Repo1. The maintainers want to move these conversations out of the issue tracker without losing the existing comments.\n\nWhich two actions should the maintainers perform? Each correct answer presents part of the solution.",
+  "choices": [
+   "Lock each of the issues",
+   "Enable GitHub Discussions for Repo1",
+   "Close each of the issues as not planned",
+   "Convert each of the issues to a discussion",
+   "Pin each of the issues"
+  ],
+  "answer": [
+   1,
+   3
+  ],
+  "explanation": "An administrator must first enable Discussions, and then open-ended issues can be converted to discussions, which moves the conversation and keeps the comments. Locking, closing, or pinning an issue leaves the conversation in the tracker, so none of them moves it out.",
+  "ref": "https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions"
+ },
+ {
+  "id": "3.1.2-01",
+  "obj": "3.1.2",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "A developer at Fabrikam, Inc. opens a pull request that fixes issue 42 in the same repository. Issue 42 must close automatically when the pull request is merged into the default branch.\n\nWhat should the developer add to the pull request description?",
+  "choices": [
+   "The text See #42",
+   "An @mention of the author of issue 42",
+   "The text Fixes #42",
+   "The same label as issue 42"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A closing keyword such as Fixes, Closes, or Resolves followed by the issue number links the pull request to the issue and closes it when the pull request merges into the default branch. A reference without a keyword only creates a link, and mentions and labels do not link the two.",
+  "ref": "https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue"
+ },
+ {
+  "id": "3.1.2-02",
+  "obj": "3.1.2",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Contoso, Ltd. wants every new bug report in Repo1 to include steps to reproduce and an operating system, and submitters must not be able to submit the report without filling in those fields.\n\nWhich approach should you use?",
+  "choices": [
+   "Create a Markdown issue template in the .github/ISSUE_TEMPLATE folder on the default branch",
+   "Create an issue form as a YAML file in a feature branch",
+   "Create a pull request template on the default branch",
+   "Create an issue form as a YAML file in the .github/ISSUE_TEMPLATE folder on the default branch"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "Issue forms are defined in YAML, are stored in .github/ISSUE_TEMPLATE on the default branch, and let you mark inputs as required. A Markdown template only prefills text and cannot enforce fields, a template in a feature branch is not available to collaborators, and a pull request template applies to pull requests rather than issues.",
+  "ref": "https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/about-issue-and-pull-request-templates"
+ },
+ {
+  "id": "3.1.2-03",
+  "obj": "3.1.2",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "The Repo1 repository of Woodgrove Bank has hundreds of open pull requests. User1 needs a list of the open pull requests for which User2 has been asked to review the changes, and not the ones that User2 owns as assignee or author.\n\nWhich search query should User1 enter on the pull requests page?",
+  "choices": [
+   "is:pr is:open assignee:User2",
+   "is:pr is:open author:User2",
+   "is:issue is:open review-requested:User2",
+   "is:pr is:open review-requested:User2"
+  ],
+  "answer": [
+   3
+  ],
+  "explanation": "The review-requested qualifier combined with is:pr and is:open lists open pull requests where User2 has a pending review request. The assignee and author qualifiers match different relationships, and is:issue would search issues instead of pull requests.",
+  "ref": "https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/filtering-and-searching-issues-and-pull-requests"
+ },
+ {
+  "id": "3.1.3-01",
+  "obj": "3.1.3",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "User1 watches Repo1 but receives too many emails. User1 wants notifications from Repo1 only for conversations in which User1 participates or is @mentioned.\n\nWhich watch setting should User1 select?",
+  "choices": [
+   "All Activity",
+   "Participating and @mentions",
+   "Ignore",
+   "Custom with every event type selected"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "Participating and @mentions limits notifications to conversations the user joins or is mentioned in. All Activity and a Custom setting with every event type produce notifications for all conversations, and Ignore silences notifications from the repository entirely.",
+  "ref": "https://docs.github.com/en/subscriptions-and-notifications/get-started/configuring-notifications"
+ },
+ {
+  "id": "3.1.3-02",
+  "obj": "3.1.3",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "User1 depends on a library in Repo1 and wants to be notified when new releases are published and when security alerts are raised for Repo1. User1 does not want notifications about ordinary issues or pull requests in Repo1.\n\nWhich watch setting should User1 select?",
+  "choices": [
+   "Participating and @mentions",
+   "All Activity",
+   "Custom with Releases and Security alerts selected",
+   "Ignore"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "The Custom watch setting lets you choose event types such as releases and security alerts. Participating and @mentions would not report releases or alerts, All Activity would also send every issue and pull request conversation, and Ignore would silence the repository.",
+  "ref": "https://docs.github.com/en/subscriptions-and-notifications/get-started/configuring-notifications"
+ },
+ {
+  "id": "3.1.3-03",
+  "obj": "3.1.3",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "User1 has many notifications in the GitHub inbox. Inbox notifications are removed after about three months. One notification covers a decision that User1 must be able to find again after more than three months, and User1 wants to keep receiving updates on that conversation.\n\nWhich action should User1 apply to that notification?",
+  "choices": [
+   "Done",
+   "Unsubscribe",
+   "Save",
+   "Mark as read"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "Saving a notification keeps it in the inbox indefinitely for later review. Done removes it from the inbox and keeps it only for three months, Unsubscribe also stops updates from the conversation, and marking as read leaves it subject to the normal three-month cleanup.",
+  "ref": "https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/viewing-and-triaging-notifications/managing-notifications-from-your-inbox"
+ },
+ {
+  "id": "3.1.4-01",
+  "obj": "3.1.4",
+  "difficulty": "easy",
+  "type": "single",
+  "stem": "Tailspin Toys has HTML, CSS, and JavaScript files for a product landing page in Repo1. The company wants to publish them as a website directly from the repository without running its own server.\n\nWhich GitHub feature should you use?",
+  "choices": [
+   "A wiki",
+   "GitHub Pages",
+   "A gist",
+   "GitHub Projects"
+  ],
+  "answer": [
+   1
+  ],
+  "explanation": "GitHub Pages is a static site hosting service that publishes a website from HTML, CSS, and JavaScript files in a repository. A wiki and a gist share written content or snippets, and GitHub Projects plans and tracks work, so none of them hosts a website.",
+  "ref": "https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages"
+ },
+ {
+  "id": "3.1.4-02",
+  "obj": "3.1.4",
+  "difficulty": "medium",
+  "type": "single",
+  "stem": "Fabrikam, Inc. wants long-form documentation for Repo1, such as design notes and usage guides across several pages, kept in the documentation area of the repository. By default only users with write access should edit the pages, and the team does not want to run a site build or choose a publishing source.\n\nWhich feature should the team use?",
+  "choices": [
+   "GitHub Pages",
+   "A gist",
+   "The repository wiki",
+   "The README file"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A wiki is the documentation area of a repository for long-form content, with several pages edited on GitHub and write access required by default. GitHub Pages needs a publishing source and can involve a build, a gist is not tied to a repository, and a README gives only a short project overview.",
+  "ref": "https://docs.github.com/en/communities/documenting-your-project-with-wikis/about-wikis"
+ },
+ {
+  "id": "3.1.4-03",
+  "obj": "3.1.4",
+  "difficulty": "hard",
+  "type": "single",
+  "stem": "Litware, Inc. wants to share a 30-line configuration example with a partner who has no access to the Litware organization. The example contains no credentials. It must not appear in public listings or search results, must be viewable by anyone who receives the link, and must keep a revision history.\n\nWhat should you create?",
+  "choices": [
+   "A public gist",
+   "A page in the wiki of a private repository",
+   "A secret gist",
+   "A file in a private repository"
+  ],
+  "answer": [
+   2
+  ],
+  "explanation": "A secret gist is a Git repository with revision history that is hidden from Discover and search but viewable by anyone who has the URL. A public gist would be listed and searchable, and the wiki page or file in a private repository would not be viewable by a partner without access.",
+  "ref": "https://docs.github.com/en/get-started/writing-on-github/editing-and-sharing-content-with-gists/creating-gists"
+ }
+]
