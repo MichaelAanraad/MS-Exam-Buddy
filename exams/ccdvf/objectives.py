@@ -8,6 +8,7 @@ RELAXED_STYLE = False
 REF_PREFIXES = ('https://docs.claude.com/', 'https://docs.anthropic.com/', 'https://platform.claude.com/', 'https://code.claude.com/', 'https://modelcontextprotocol.io/', 'https://www.anthropic.com/', 'https://claude.com/')
 CATEGORY = "Anthropic"
 LEVEL = 1  # 1 entry/business, 2 associate, 3 expert
+CONTENT_DATE = "2026-11"  # month the questions were last checked; the pages warn after six months
 
 # Source: third-party CCDV-F domain write-ups (unofficial; objectives paraphrased); questions written for this repo, converted 2026-11-18.
 DOMAINS = {

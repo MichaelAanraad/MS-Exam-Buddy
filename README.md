@@ -89,6 +89,7 @@ AZ-104.
 | `TOTAL` | bank size the validator and build check |
 | `REF_PREFIXES` | optional; allowed `ref` URL prefixes (default learn.microsoft.com; GH-600 adds docs.github.com) |
 | `CATEGORY`, `LEVEL` | optional; start-page group (default `Other`) and difficulty order inside it: 1 entry/business, 2 associate, 3 expert (default 2) |
+| `CONTENT_DATE` | optional, `"YYYY-MM"`: month the questions were last checked. Shown on the start page and the exam page; after six months both say the content may be outdated, and `build.py` prints a warning |
 
 The simulation (50 questions, 100 minutes) matches role-based exams; adjust it
 in `template.html` if your exam differs.
